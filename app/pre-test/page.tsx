@@ -98,66 +98,115 @@ export default function PreTestPage() {
             levelBadge = 'Level: Lanjut';
             badgeClasses = 'bg-green-100 text-green-800';
             profileDesc = avgTimePerQuestion <= 20 ? 'Profil: Cepat & Tepat. Kamu siap ke materi tingkat lanjut dengan kecepatan tinggi.' : 'Profil: Teliti & Paham. Pemahaman bagus, mari latih efisiensi.';
-            recBody = `
-              <a href="#" class="rec-item"><img src="/modules.png" class="w-8 h-8"><div><p class="font-semibold">Event Handling</p><p class="text-xs text-slate-500">Materi lanjut</p></div></a>
-              <a href="#" class="rec-item"><img src="/modules.png" class="w-8 h-8"><div><p class="font-semibold">Asynchronous JS</p><p class="text-xs text-slate-500">Materi lanjut</p></div></a>
-            `;
+            recBody = `<div class="flex flex-col gap-2">
+                <a href="#" class="flex items-center gap-3 border border-slate-200 rounded-lg p-3 hover:bg-slate-50 transition">
+                  <img src="https://img.icons8.com/fluency/48/cursor.png" alt="Event Handling" class="w-8 h-8 rounded">
+                  <div><p class="font-semibold text-sm text-slate-800">Event Handling</p><p class="text-xs text-slate-500">Materi lanjut</p></div>
+                </a>
+                <a href="#" class="flex items-center gap-3 border border-slate-200 rounded-lg p-3 hover:bg-slate-50 transition">
+                  <img src="https://img.icons8.com/fluency/48/cloud-sync.png" alt="Asynchronous JS" class="w-8 h-8 rounded">
+                  <div><p class="font-semibold text-sm text-slate-800">Asynchronous JS</p><p class="text-xs text-slate-500">Materi lanjut</p></div>
+                </a>
+            </div>`;
         } else if (result.score >= 50) {
             levelBadge = 'Level: Menengah';
             badgeClasses = 'bg-blue-100 text-blue-800';
             profileDesc = avgTimePerQuestion < 15 ? 'Profil: Grasp Cepat. Kamu cepat memahami, tapi hati-hati dengan kesalahan konsep.' : 'Profil: Stabil. Waktu dan hasil seimbang, perkuat konsep inti.';
-            recBody = `
-              <a href="#" class="rec-item"><img src="/modules.png" class="w-8 h-8"><div><p class="font-semibold">JavaScript Lanjutan</p><p class="text-xs text-slate-500">Materi menengah</p></div></a>
-              <a href="#" class="rec-item"><img src="/dom.png" class="w-8 h-8"><div><p class="font-semibold">Manipulasi DOM</p><p class="text-xs text-slate-500">Materi menengah</p></div></a>
-            `;
+            recBody = `<div class="flex flex-col gap-2">
+                <a href="#" class="flex items-center gap-3 border border-slate-200 rounded-lg p-3 hover:bg-slate-50 transition">
+                  <img src="https://img.icons8.com/fluency/48/source-code.png" alt="JavaScript Lanjutan" class="w-8 h-8 rounded">
+                  <div><p class="font-semibold text-sm text-slate-800">JavaScript Lanjutan</p><p class="text-xs text-slate-500">Materi menengah</p></div>
+                </a>
+                <a href="#" class="flex items-center gap-3 border border-slate-200 rounded-lg p-3 hover:bg-slate-50 transition">
+                  <img src="/dom.png" alt="Manipulasi DOM" class="w-8 h-8 rounded">
+                  <div><p class="font-semibold text-sm text-slate-800">Manipulasi DOM</p><p class="text-xs text-slate-500">Materi menengah</p></div>
+                </a>
+            </div>`;
         } else {
             levelBadge = 'Level: Dasar';
             badgeClasses = 'bg-yellow-100 text-yellow-800';
             profileDesc = avgTimePerQuestion < 15 ? 'Profil: Terburu-buru. Sebaiknya ulangi dasar dengan pelan-pelan.' : 'Profil: Perlu Penguatan. Fokus dulu ke materi dasar.';
-            recBody = `
-              <a href="#" class="rec-item"><img src="/modules.png" class="w-8 h-8"><div><p class="font-semibold">JavaScript Dasar</p><p class="text-xs text-slate-500">Materi fundamental</p></div></a>
-              <a href="#" class="rec-item"><img src="/modules.png" class="w-8 h-8"><div><p class="font-semibold">Latihan Dasar</p><p class="text-xs text-slate-500">Materi fundamental</p></div></a>
-            `;
+            recBody = `<div class="flex flex-col gap-2">
+                <a href="#" class="flex items-center gap-3 border border-slate-200 rounded-lg p-3 hover:bg-slate-50 transition">
+                  <img src="https://img.icons8.com/color/48/javascript.png" alt="JavaScript Dasar" class="w-8 h-8 rounded">
+                  <div><p class="font-semibold text-sm text-slate-800">JavaScript Dasar</p><p class="text-xs text-slate-500">Materi fundamental</p></div>
+                </a>
+                <a href="#" class="flex items-center gap-3 border border-slate-200 rounded-lg p-3 hover:bg-slate-50 transition">
+                  <img src="https://img.icons8.com/fluency/48/rules.png" alt="Latihan Dasar" class="w-8 h-8 rounded">
+                  <div><p class="font-semibold text-sm text-slate-800">Latihan Dasar</p><p class="text-xs text-slate-500">Materi fundamental</p></div>
+                </a>
+            </div>`;
         }
 
         return (
             <div className="max-w-5xl mx-auto p-4 sm:p-5 my-4 sm:my-8">
+                {/* Breadcrumb */}
+                <nav className="flex mb-10" aria-label="Breadcrumb">
+                    <ol className="inline-flex items-center space-x-1 md:space-x-2 rtl:space-x-reverse">
+                        <li className="inline-flex items-center">
+                            <Link href="/dashboard" className="inline-flex items-center text-sm font-medium text-slate-700 hover:text-blue-600">
+                                <svg className="w-3 h-3 me-2.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
+                                    <path d="m19.707 9.293-2-2-7-7a1 1 0 0 0-1.414 0l-7 7-2 2a1 1 0 0 0 1.414 1.414L2 10.414V18a2 2 0 0 0 2 2h3a1 1 0 0 0 1-1v-4a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v4a1 1 0 0 0 1 1h3a2 2 0 0 0 2-2v-7.586l.293.293a1 1 0 0 0 1.414-1.414Z" />
+                                </svg>
+                                Dashboard
+                            </Link>
+                        </li>
+                        <li>
+                            <div className="flex items-center">
+                                <svg className="rtl:rotate-180 w-3 h-3 text-slate-400 mx-1" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 6 10">
+                                    <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="m1 9 4-4-4-4" />
+                                </svg>
+                                <span className="ms-1 text-sm font-medium text-slate-500 md:ms-2">Hasil Pre-test</span>
+                            </div>
+                        </li>
+                    </ol>
+                </nav>
+                <header className="flex items-center justify-between gap-2">
+                    <div className="flex items-center gap-2">
+                        <Image src="/logo1.png" width={40} height={40} className="h-10 w-auto" alt="Logo" />
+                        <h1 className="text-lg font-bold">Hasil Pre-test</h1>
+                    </div>
+                </header>
+
+                <section className="bg-gradient-to-r from-indigo-500 to-blue-600 rounded-xl p-6 mt-6 shadow-md text-white flex items-center gap-4">
+                    <Image src="/test.png" width={80} height={80} className="h-20 w-20" alt="pre test" />
+                    <div>
+                        <h2 className="text-base font-bold">Pre-test Selesai!</h2>
+                        <p className="text-sm opacity-90">Berikut adalah hasil dan rekomendasi jalur belajarmu.</p>
+                    </div>
+                </section>
                 <section className="bg-white rounded-xl p-6 mt-6 shadow-lg" id="resultCard">
-                    <h2 className="text-2xl font-bold text-slate-800 mb-4">Hasil Pre-test</h2>
                     <div className="flex items-center justify-between bg-slate-50 p-4 rounded-lg border border-slate-200">
                         <div>
                             <p className="text-sm text-slate-500">Skor Kamu</p>
-                            <p className="text-4xl font-bold text-blue-600">{result.score}%</p>
+                            <p className="text-3xl font-bold text-blue-600">{result.score}%</p>
                         </div>
                         <div className="text-right">
+                            <p className="text-base font-semibold text-slate-700">{Math.floor(result.timeTaken / 60)}m {result.timeTaken % 60}s</p>
                             <p className="text-sm text-slate-500">Waktu</p>
-                            <p className="text-lg font-semibold text-slate-700">{Math.floor(result.timeTaken / 60)}m {result.timeTaken % 60}d</p>
                         </div>
+                        
                         <div className="text-right">
-                            <p className="text-lg font-semibold text-slate-700">{result.correct} / {result.total}</p>
+                            <p className="text-base font-semibold text-slate-700">{result.correct} / {result.total}</p>
                             <p className="text-sm text-slate-500">Jawaban Benar</p>
                         </div>
                     </div>
                     <div className="mt-6">
-                        <h3 className="text-lg font-semibold mb-3">Rekomendasi Jalur Belajar</h3>
+                        <h3 className="text-base font-semibold mb-3">Rekomendasi Jalur Belajar</h3>
                         <div className="border border-slate-200 rounded-lg p-4">
                             <div className="flex flex-wrap gap-2 items-center mb-3">
                                 <span className={`inline-block text-xs font-medium px-3 py-1 rounded-full ${badgeClasses}`}>{levelBadge}</span>
                                 <span className="text-xs text-slate-500">{profileDesc}</span>
                             </div>
-                            <div className="space-y-2" dangerouslySetInnerHTML={{ __html: recBody }}></div>
+                            <div dangerouslySetInnerHTML={{ __html: recBody }}></div>
                         </div>
                     </div>
-                    <div className="mt-3 flex gap-2">
+                    <div className="mt-6 flex gap-2">
                         <button onClick={handleRetake} className="bg-transparent text-blue-500 border border-blue-500/15 px-3.5 py-2.5 rounded-lg cursor-pointer">Ulangi Pre-test</button>
-                        <Link href="/dashboard/modul" className="bg-blue-500 text-white border-none px-3.5 py-2.5 rounded-lg cursor-pointer">Lihat Rekomendasi Modul</Link>
+                        <Link href="/dashboard" className="bg-blue-500 text-white border-none px-3.5 py-2.5 rounded-lg cursor-pointer">Lihat Rekomendasi Modul</Link>
                     </div>
                     <div className="text-sm text-slate-500 mt-3">Catatan: Hasil ini disimpan secara lokal untuk personalisasi pengalaman belajar.</div>
                 </section>
-                <style jsx>{`
-                  .rec-item { display:flex;align-items:center;gap:0.75rem;padding:0.75rem;border-radius:0.5rem;border:1px solid #e2e8f0;transition:all 0.2s; }
-                  .rec-item:hover { background-color:#f8fafc;border-color:#3b82f6; }
-                `}</style>
             </div>
         );
     }
@@ -189,19 +238,19 @@ export default function PreTestPage() {
             <header className="flex items-center justify-between gap-2">
                 <div className="flex items-center gap-2">
                     <Image src="/logo1.png" width={40} height={40} className="h-10 w-auto" alt="Logo" />
-                    <h1 className="text-xl font-bold">Pre-test</h1>
+                    <h1 className="text-lg font-bold">Pre-test</h1>
                 </div>
-                <div className="flex gap-3 items-center text-slate-500 text-sm bg-slate-100 px-3 py-1.5 rounded-lg border">
+                <div className="flex gap-3 items-center text-slate-500 text-sm bg-slate-50 px-3 py-1.5 rounded-lg">
                     <span>Soal: <span>{total}</span></span>
                     <span className="text-slate-300">|</span>
-                    <span>Waktu: <span>{`${String(Math.floor(timeLeft / 60)).padStart(2, '0')}:${String(timeLeft % 60).padStart(2, '0')}`}</span></span>
+                    <span >Waktu: <span>{`${String(Math.floor(timeLeft / 60)).padStart(2, '0')}:${String(timeLeft % 60).padStart(2, '0')}`}</span></span>
                 </div>
             </header>
 
             <section className="bg-gradient-to-r from-indigo-500 to-blue-600 rounded-xl p-6 mt-6 shadow-md text-white flex items-center gap-4">
                 <Image src="/test.png" width={80} height={80} className="h-20 w-20" alt="pre test" />
                 <div>
-                    <h2 className="text-lg font-bold">Selamat Datang di Pre-test</h2>
+                    <h2 className="text-base font-bold">Selamat Datang di Pre-test</h2>
                     <p className="text-sm opacity-90">Kerjakan soal ini untuk menentukan level belajar yang sesuai denganmu 🎯</p>
                 </div>
             </section>
@@ -210,7 +259,7 @@ export default function PreTestPage() {
                 <div id="questionArea">
                     {currentQuestion && (
                         <div className="py-6">
-                            <div className="font-semibold mb-4 text-lg text-slate-800">{idx + 1}. {currentQuestion.q}</div>
+                            <div className="font-semibold mb-4 text-base text-slate-800">{idx + 1}. {currentQuestion.q}</div>
                             {currentQuestion.code && (
                                 <pre className="bg-slate-100 text-slate-800 p-3 rounded-lg overflow-x-auto text-sm mb-3">
                                     <code>{currentQuestion.code}</code>
@@ -218,7 +267,7 @@ export default function PreTestPage() {
                             )}
                             <div className="flex flex-col gap-3">
                                 {currentQuestion.choices.map((c, ci) => (
-                                    <label key={ci} className="border border-slate-200 p-3 rounded-lg cursor-pointer hover:bg-slate-50 has-[:checked]:bg-indigo-50 has-[:checked]:border-blue-400">
+                                    <label key={ci} className="border border-slate-200 p-3 rounded-lg cursor-pointer hover:bg-slate-50 has-[:checked]:bg-indigo-50 has-[:checked]:border-blue-400 text-sm">
                                         <input
                                             type="radio"
                                             className="mr-2.5"
@@ -227,7 +276,7 @@ export default function PreTestPage() {
                                             checked={answers[currentQuestion.id] === ci}
                                             onChange={() => setAnswers(prev => ({ ...prev, [currentQuestion.id]: ci }))}
                                         />
-                                        <span dangerouslySetInnerHTML={{ __html: escapeHtml(c) }} />
+                                        <span className="break-words" dangerouslySetInnerHTML={{ __html: escapeHtml(c) }} />
                                     </label>
                                 ))}
                             </div>

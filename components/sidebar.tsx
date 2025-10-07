@@ -2,10 +2,25 @@
 
 import Link from "next/link"
 import Image from "next/image"
+import { usePathname } from 'next/navigation'
 import { useUI } from "@/context/UIContext"
 
+const navLinks = [
+    { href: "/dashboard", label: "Dashboard", icon: "/dashboard.png", alt: "Dashboard Icon" },
+    { href: "/dashboard/modul", label: "Modul", icon: "/modules.png", alt: "Modul Icon" },
+    { href: "/pre-test", label: "Pre Tes & Post", icon: "/exam.png", alt: "Tes Icon" },
+    { href: "/dashboard/analitik", label: "Analitik Belajar", icon: "/analitik.png", alt: "Analitik Icon" },
+    { href: "/dashboard/profil", label: "Profil", icon: "/profile.png", alt: "Profil Icon" },
+];
+
 export default function Sidebar() {
-  const { isSidebarCollapsed, isMobileDrawerOpen, toggleMobileDrawer, toggleSidebar } = useUI()
+  const { isSidebarCollapsed, isMobileDrawerOpen, toggleMobileDrawer, toggleSidebar } = useUI();
+  const pathname = usePathname();
+
+  const isActive = (href: string) => {
+    if (href === "/dashboard") return pathname === href;
+    return pathname.startsWith(href);
+  };
 
   return (
     <aside
@@ -37,12 +52,21 @@ export default function Sidebar() {
 
       {/* Navigasi Sidebar */}
       <nav className="flex-1 space-y-2 px-4 overflow-y-auto">
-        {/* Pastikan icon ada di folder /public */}
-        <Link href="/dashboard" className="nav-link flex items-center gap-4 p-2 rounded hover:bg-blue-100 dark:hover:bg-gray-700"><Image src="/dashboard.png" alt="Dashboard Icon" width={28} height={28} className="flex-shrink-0" /> <span className={`sidebar-text whitespace-nowrap transition-opacity duration-300 ${isSidebarCollapsed ? 'opacity-0' : 'opacity-100'}`}>Dashboard</span></Link>
-        <Link href="/dashboard/modul" className="nav-link flex items-center gap-4 p-2 rounded hover:bg-blue-100 dark:hover:bg-gray-700"><Image src="/modules.png" alt="Modul Icon" width={28} height={28} className="flex-shrink-0" /> <span className={`sidebar-text whitespace-nowrap transition-opacity duration-300 ${isSidebarCollapsed ? 'opacity-0' : 'opacity-100'}`}>Modul</span></Link>
-        <Link href="/dashboard/tes" className="nav-link flex items-center gap-4 p-2 rounded hover:bg-blue-100 dark:hover:bg-gray-700"><Image src="/exam.png" alt="exam Icon" width={28} height={28} className="flex-shrink-0" /> <span className={`sidebar-text whitespace-nowrap transition-opacity duration-300 ${isSidebarCollapsed ? 'opacity-0' : 'opacity-100'}`}>Pre Tes & Post</span></Link>
-        <Link href="/dashboard/analitik" className="nav-link flex items-center gap-4 p-2 rounded hover:bg-blue-100 dark:hover:bg-gray-700"><Image src="/analitik.png" alt="Analitik Icon" width={28} height={28} className="flex-shrink-0" /> <span className={`sidebar-text whitespace-nowrap transition-opacity duration-300 ${isSidebarCollapsed ? 'opacity-0' : 'opacity-100'}`}>Analitik Belajar</span></Link>
-        <Link href="/dashboard/profil" className="nav-link flex items-center gap-4 p-2 rounded hover:bg-blue-100 dark:hover:bg-gray-700"><Image src="/profile.png" alt="profile Icon" width={28} height={28} className="flex-shrink-0" /> <span className={`sidebar-text whitespace-nowrap transition-opacity duration-300 ${isSidebarCollapsed ? 'opacity-0' : 'opacity-100'}`}>Profil</span></Link>
+        {navLinks.map((link) => {
+          const active = isActive(link.href);
+          return (
+            <Link
+              key={link.href}
+              href={link.href}
+              className={`nav-link flex items-center gap-4 p-2 rounded hover:bg-blue-100 dark:hover:bg-gray-700 ${active ? 'bg-blue-100 dark:bg-gray-700 font-semibold' : ''}`}
+            >
+              <Image src={link.icon} alt={link.alt} width={28} height={28} className="flex-shrink-0" />
+              <span className={`sidebar-text whitespace-nowrap transition-opacity duration-300 ${isSidebarCollapsed ? 'opacity-0' : 'opacity-100'} ${active ? 'text-blue-700 dark:text-blue-300' : ''}`}>
+                {link.label}
+              </span>
+            </Link>
+          );
+        })}
       </nav>
 
       {/* Mobile Overlay */}
