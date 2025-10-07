@@ -1,0 +1,384 @@
+<!doctype html>
+<html lang="id">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Pre-test E-Learning (Personalisasi)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', '-apple-system', 'Segoe UI', 'Roboto', 'Helvetica Neue', 'Arial'],
+                    },
+                },
+            },
+        }
+    </script>
+
+
+</head>
+
+<body class="font-sans bg-gradient-to-b from-indigo-50 to-slate-100 text-slate-900">
+    <div class="max-w-5xl mx-auto p-4 sm:p-5 my-4 sm:my-8">
+        <!-- Breadcrumb -->
+        <nav class="flex mb-10" aria-label="Breadcrumb">
+            <ol class="inline-flex items-center space-x-1 md:space-x-2 rtl:space-x-reverse">
+                <li class="inline-flex items-center">
+                    <a href="dashboard.html"
+                        class="inline-flex items-center text-sm font-medium text-slate-700 hover:text-blue-600">
+                        <svg class="w-3 h-3 me-2.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
+                            fill="currentColor" viewBox="0 0 20 20">
+                            <path
+                                d="m19.707 9.293-2-2-7-7a1 1 0 0 0-1.414 0l-7 7-2 2a1 1 0 0 0 1.414 1.414L2 10.414V18a2 2 0 0 0 2 2h3a1 1 0 0 0 1-1v-4a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v4a1 1 0 0 0 1 1h3a2 2 0 0 0 2-2v-7.586l.293.293a1 1 0 0 0 1.414-1.414Z" />
+                        </svg>
+                        Dashboard
+                    </a>
+                </li>
+                <li>
+                    <div class="flex items-center">
+                        <svg class="rtl:rotate-180 w-3 h-3 text-slate-400 mx-1" aria-hidden="true"
+                            xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 6 10">
+                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="m1 9 4-4-4-4" />
+                        </svg>
+                        <span class="ms-1 text-sm font-medium text-slate-500 md:ms-2">Pre-test</span>
+                    </div>
+                </li>
+            </ol>
+        </nav>
+
+        <header class="flex items-center justify-between gap-2">
+            <div class="flex items-center gap-2">
+                <img src="logo1.png" class="h-10 w-auto" alt="Logo">
+                <h1 class="text-xl font-bold">Pre-test</h1>
+            </div>
+            <div class="flex gap-3 items-center text-slate-500 text-sm bg-slate-100 px-3 py-1.5 rounded-lg border">
+                <span>Soal: <span id="totalQs">0</span></span>
+                <span class="text-slate-300">|</span>
+                <span>Waktu: <span id="timerLabel">--:--</span></span>
+            </div>
+        </header>
+
+        <section
+            class="bg-gradient-to-r from-indigo-500 to-blue-600 rounded-xl p-6 mt-6 shadow-md text-white flex items-center gap-4">
+            <img src="test.png" class="h-20 w-20" alt="pre test">
+            <div>
+                <h2 class="text-lg font-bold">Selamat Datang di Pre-test</h2>
+                <p class="text-sm opacity-90">Kerjakan soal ini untuk menentukan level belajar yang sesuai denganmu 🎯
+                </p>
+            </div>
+        </section>
+
+        <section class="bg-white rounded-xl p-6 mt-6 shadow-lg" id="pretestCard">
+            <div id="questionArea"></div>
+
+            <!-- Tombol Kontrol Responsif -->
+            <div class="flex flex-col sm:flex-row gap-3 sm:gap-2 items-center mt-6">
+                <div class="flex gap-2 w-full sm:w-auto">
+                    <button id="prevBtn"
+                        class="flex-1 bg-white text-slate-700 border border-slate-300 px-4 py-2.5 rounded-lg cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed hover:bg-slate-50">Sebelumnya</button>
+                    <button id="nextBtn"
+                        class="flex-1 bg-blue-600 text-white border-none px-4 py-2.5 rounded-lg cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed hover:bg-blue-700">Berikutnya</button>
+                </div>
+                <div class="flex gap-2 w-full sm:w-auto sm:ml-auto">
+                    <button id="saveBtn"
+                        class="flex-1 sm:flex-none bg-blue-100 text-blue-700 border-none px-4 py-2.5 rounded-lg cursor-pointer hover:bg-blue-200">
+                        Simpan
+                    </button>
+                    <button id="submitBtn"
+                        class="flex-1 sm:flex-none bg-green-600 text-white border-none px-4 py-2.5 rounded-lg cursor-pointer hover:bg-green-700" style="display: none;">
+                        Kirim Jawaban
+                    </button>
+                </div>
+            </div>
+
+            <div class="h-2.5 bg-indigo-100 rounded-full overflow-hidden mt-3" aria-hidden="true">
+                <i id="progBar" class="block h-full bg-gradient-to-r from-blue-500 to-violet-500" style="width:0%"></i>
+            </div>
+            <div class="text-sm text-slate-500 mt-2">Pertanyaan ke <span id="currentIndex">0</span> dari <span
+                    id="totalIndex">0</span></div>
+        </section>
+
+        <section class="bg-white rounded-xl p-6 mt-6 shadow-lg" id="resultCard" style="display:none">
+            <h2 class="text-2xl font-bold text-slate-800 mb-4">Hasil Pre-test</h2>
+            <div id="scoreText"></div>
+            <div id="recommendation" class="mt-2"></div>
+            <div class="mt-3 flex gap-2">
+                <button id="retakeBtn"
+                    class="bg-transparent text-blue-500 border border-blue-500/15 px-3.5 py-2.5 rounded-lg cursor-pointer">Ulangi
+                    Pre-test</button>
+                <button id="toCourseBtn"
+                    class="bg-blue-500 text-white border-none px-3.5 py-2.5 rounded-lg cursor-pointer">Lihat Rekomendasi
+                    Modul</button>
+            </div>
+            <div class="text-sm text-slate-500 mt-3">Catatan: Hasil ini disimpan secara lokal untuk personalisasi
+                pengalaman belajar.</div>
+        </section>
+    </div>
+    <!-- Footer -->
+    <footer
+        class="bg-white dark:bg-gray-800 p-4 text-center text-gray-600 dark:text-gray-400 text-sm mt-8 shadow-inner">
+        <p>&copy; 2025 KELAS. All rights reserved.</p>
+    </footer>
+
+    <script>
+        // Contoh bank soal — ubah sesuai kebutuhan
+        const QUESTIONS = [
+            { id: 1, q: "Apa output dari kode berikut?", code: "console.log(typeof 'Hello');", choices: ["'string'", "'object'", "'text'", "'undefined'"], answer: 0 },
+            { id: 2, q: "Manakah yang akan menghasilkan `true`?", code: null, choices: ["`'5' == 5`", "`'5' === 5`", "`'5' != 5`", "Semua salah"], answer: 0 },
+            { id: 3, q: "Apa isi dari variabel `result` setelah kode ini dijalankan?", code: "const arr = [10, 20, 30];\nconst result = arr[1];", choices: ["10", "20", "30", "undefined"], answer: 1 },
+            { id: 4, q: "Metode array mana yang digunakan untuk menambahkan elemen baru di akhir array?", code: null, choices: ["`pop()`", "`shift()`", "`push()`", "`unshift()`"], answer: 2 },
+            { id: 5, q: "Perhatikan kode berikut. Apa output terakhir yang akan muncul di konsol?", code: "for (let i = 0; i < 3; i++) {\n  console.log(i);\n}", choices: ["0", "1", "2", "3"], answer: 2 },
+            { id: 6, q: "Bagaimana cara yang benar untuk mengubah teks di dalam elemen `<p id='demo'>Hello</p>` menjadi 'Hi'?", code: null, choices: ["`document.getElementById('demo').value = 'Hi';`", "`document.getElementById('demo').innerHTML = 'Hi';`", "`document.querySelector('p').text = 'Hi';`", "`document.p.innerHTML = 'Hi';`"], answer: 1 },
+            { id: 7, q: "Apa output dari kode berikut?", code: "console.log(Boolean(0));", choices: ["true", "false", "0", "null"], answer: 1 },
+            { id: 8, q: "Manakah sintaks *arrow function* yang valid?", code: null, choices: ["`const myFunc = () => 'Hello';`", "`const myFunc = => 'Hello';`", "`const myFunc = function() => 'Hello';`", "`const myFunc() => 'Hello';`"], answer: 0 },
+            { id: 9, q: "Apa yang akan terjadi jika Anda mencoba mengubah nilai variabel yang dideklarasikan dengan `const`?", code: "const PI = 3.14;\nPI = 3.14159;", choices: ["Nilai akan berubah", "Akan muncul pesan warning", "Akan terjadi error (TypeError)", "Tidak terjadi apa-apa"], answer: 2 },
+            { id: 10, q: "Apa output dari kode berikut?", code: "console.log(1 + '2' + 3);", choices: ["6", "'123'", "'33'", "Error"], answer: 1 }
+        ];
+
+
+        // State
+        let state = { answers: {}, idx: 0, startTime: Date.now(), duration: 10 * 60 }; // duration in seconds (10 minutes)
+        const total = QUESTIONS.length;
+        let timerInterval = null;
+
+        // Elements
+        const questionArea = document.getElementById('questionArea');
+        const prevBtn = document.getElementById('prevBtn');
+        const nextBtn = document.getElementById('nextBtn');
+        const submitBtn = document.getElementById('submitBtn');
+        const saveBtn = document.getElementById('saveBtn');
+        const retakeBtn = document.getElementById('retakeBtn');
+        const toCourseBtn = document.getElementById('toCourseBtn');
+        const totalQs = document.getElementById('totalQs');
+        const currentIndex = document.getElementById('currentIndex');
+        const totalIndex = document.getElementById('totalIndex');
+        const progBar = document.getElementById('progBar');
+        const timerLabel = document.getElementById('timerLabel');
+        const resultCard = document.getElementById('resultCard');
+        const pretestCard = document.getElementById('pretestCard');
+        const scoreText = document.getElementById('scoreText');
+        const recommendation = document.getElementById('recommendation');
+
+        // Initialize
+        function init() {
+            totalQs.textContent = total;
+            totalIndex.textContent = total;
+            loadProgress();
+            renderQuestion(state.idx);
+            startTimer();
+        }
+
+        function renderQuestion(i) {
+            const item = QUESTIONS[i];
+            currentIndex.textContent = i + 1;
+            progBar.style.width = ((i + 1) / total * 100) + '%';
+
+            // tampilkan kode kalau ada
+            const codeBlock = item.code ? `<pre class="bg-slate-100 text-slate-800 p-3 rounded-lg overflow-x-auto text-sm mb-3"><code>${escapeHtml(item.code)}</code></pre>` : '';
+
+            questionArea.innerHTML = `
+                <div class="py-6">
+                    <div class="font-semibold mb-4 text-lg text-slate-800">${i + 1}. ${escapeHtml(item.q)}</div>
+                    ${codeBlock}
+                    <div class="flex flex-col gap-3">
+                        ${item.choices.map((c, ci) => {
+                const checked = state.answers[item.id] == ci ? 'checked' : '';
+                return `<label class="border border-slate-200 p-3 rounded-lg cursor-pointer hover:bg-slate-50 has-[:checked]:bg-indigo-50 has-[:checked]:border-blue-400"><input type="radio" class="mr-2.5" name="q${item.id}" value="${ci}" ${checked} onchange="saveAnswer(${item.id}, ${ci})"/> ${escapeHtml(c)}</label>`;
+            }).join('')}
+                    </div>
+                </div>
+            `;
+
+            // Logika untuk menampilkan/menyembunyikan tombol
+            if (i === total - 1) {
+                // Soal terakhir: sembunyikan 'Berikutnya', tampilkan 'Kirim'
+                nextBtn.style.display = 'none';
+                submitBtn.style.display = 'inline-block';
+            } else {
+                // Bukan soal terakhir: tampilkan 'Berikutnya', sembunyikan 'Kirim'
+                nextBtn.style.display = 'inline-block';
+                submitBtn.style.display = 'none';
+            }
+        }
+
+        function saveAnswer(questionId, choiceIndex) {
+            state.answers[questionId] = choiceIndex;
+            // Optional: auto-save to localStorage on every answer
+            // persist();
+        }
+
+
+        prevBtn.addEventListener('click', () => { if (state.idx > 0) { state.idx--; renderQuestion(state.idx); } });
+        nextBtn.addEventListener('click', () => { if (state.idx < total - 1) { state.idx++; renderQuestion(state.idx); } });
+
+        saveBtn.addEventListener('click', () => { persist(); alert('Progress tersimpan secara lokal.'); });
+
+        submitBtn.addEventListener('click', () => { if (confirm('Kirim jawaban dan lihat hasil?')) { grade(); } });
+        retakeBtn.addEventListener('click', () => { if (confirm('Mulai ulang pre-test? Semua jawaban lokal akan dihapus.')) { localStorage.removeItem('pretest_state'); location.reload(); } });
+        toCourseBtn.addEventListener('click', () => { alert('Tombol ini bisa diarahkan ke modul yang direkomendasikan (implementasi selanjutnya).'); });
+
+        function grade() {
+            if (timerInterval) clearInterval(timerInterval); // Hentikan timer
+            let correct = 0;
+            const timeTaken = Math.round((Date.now() - state.startTime) / 1000); // Waktu pengerjaan dalam detik
+            QUESTIONS.forEach(q => { if (state.answers[q.id] === q.answer) correct++; });
+            const score = Math.round(correct / total * 100);
+            // store result for personalization
+            const record = { score, correct, total, timeTaken, timestamp: new Date().toISOString() };
+            localStorage.setItem('pretest_result', JSON.stringify(record));
+            showResult(record);
+        }
+
+        function showResult(record) {
+            pretestCard.style.display = 'none';
+            resultCard.style.display = 'block';
+            scoreText.innerHTML = `
+        <div class="flex items-center justify-between bg-slate-50 p-4 rounded-lg border border-slate-200">
+          <div>
+            <p class="text-sm text-slate-500">Skor Kamu</p>
+            <p class="text-4xl font-bold text-blue-600">${record.score}%</p>
+          </div>
+          <div class="text-right">
+            <p class="text-sm text-slate-500">Waktu</p>
+            <p class="text-lg font-semibold text-slate-700">${Math.floor(record.timeTaken / 60)}m ${record.timeTaken % 60}d</p>
+          </div>
+          <div class="text-right">
+            <p class="text-lg font-semibold text-slate-700">${record.correct} / ${record.total}</p>
+            <p class="text-sm text-slate-500">Jawaban Benar</p>
+          </div>
+        </div>
+    `;
+
+            let levelBadge = '', recBody = '', badgeClasses = '', profileDesc = '';
+            const avgTimePerQuestion = record.timeTaken / total;
+
+            // Gabungan logika skor + gaya belajar
+            if (record.score >= 80) {
+                levelBadge = 'Level: Lanjut';
+                badgeClasses = 'bg-green-100 text-green-800';
+
+                if (avgTimePerQuestion <= 20) {
+                    profileDesc = 'Profil: Cepat & Tepat. Kamu siap ke materi tingkat lanjut dengan kecepatan tinggi.';
+                } else {
+                    profileDesc = 'Profil: Teliti & Paham. Pemahaman bagus, mari latih efisiensi.';
+                }
+
+                recBody = `
+          <a href="#" class="rec-item"><img src="https://img.icons8.com/fluency/48/cursor.png" class="w-8 h-8"><div><p class="font-semibold">Event Handling</p><p class="text-xs text-slate-500">Materi lanjut</p></div></a>
+          <a href="#" class="rec-item"><img src="https://img.icons8.com/fluency/48/cloud-sync.png" class="w-8 h-8"><div><p class="font-semibold">Asynchronous JS</p><p class="text-xs text-slate-500">Materi lanjut</p></div></a>
+        `;
+            }
+            else if (record.score >= 50) {
+                levelBadge = 'Level: Menengah';
+                badgeClasses = 'bg-blue-100 text-blue-800';
+
+                if (avgTimePerQuestion < 15) {
+                    profileDesc = 'Profil: Grasp Cepat. Kamu cepat memahami, tapi hati-hati dengan kesalahan konsep.';
+                } else if (avgTimePerQuestion <= 40) {
+                    profileDesc = 'Profil: Stabil. Waktu dan hasil seimbang, perkuat konsep inti.';
+                } else {
+                    profileDesc = 'Profil: Lambat Tapi Teliti. Butuh latihan biar lebih percaya diri.';
+                }
+
+                recBody = `
+          <a href="#" class="rec-item"><img src="https://img.icons8.com/fluency/48/source-code.png" class="w-8 h-8"><div><p class="font-semibold">JavaScript Lanjutan</p><p class="text-xs text-slate-500">Materi menengah</p></div></a>
+          <a href="#" class="rec-item"><img src="dom.png" class="w-8 h-8"><div><p class="font-semibold">Manipulasi DOM</p><p class="text-xs text-slate-500">Materi menengah</p></div></a>
+        `;
+            }
+            else {
+                levelBadge = 'Level: Dasar';
+                badgeClasses = 'bg-yellow-100 text-yellow-800';
+
+                if (avgTimePerQuestion < 15) {
+                    profileDesc = 'Profil: Terburu-buru. Sebaiknya ulangi dasar dengan pelan-pelan.';
+                } else {
+                    profileDesc = 'Profil: Perlu Penguatan. Fokus dulu ke materi dasar.';
+                }
+
+                recBody = `
+          <a href="#" class="rec-item"><img src="https://img.icons8.com/color/48/javascript.png" class="w-8 h-8"><div><p class="font-semibold">JavaScript Dasar</p><p class="text-xs text-slate-500">Materi fundamental</p></div></a>
+          <a href="#" class="rec-item"><img src="https://img.icons8.com/fluency/48/rules.png" class="w-8 h-8"><div><p class="font-semibold">Latihan Dasar</p><p class="text-xs text-slate-500">Materi fundamental</p></div></a>
+        `;
+            }
+
+            recommendation.innerHTML = `
+        <div class="mt-6">
+          <h3 class="text-lg font-semibold mb-3">Rekomendasi Jalur Belajar</h3>
+          <div class="border border-slate-200 rounded-lg p-4">
+            <div class="flex flex-wrap gap-2 items-center mb-3">
+              <span class="inline-block text-xs font-medium px-3 py-1 rounded-full ${badgeClasses}">${levelBadge}</span>
+              <span class="text-xs text-slate-500">${profileDesc}</span>
+            </div>
+            <div class="space-y-2">${recBody}</div>
+          </div>
+        </div>
+        <style>
+          .rec-item { display:flex;align-items:center;gap:0.75rem;padding:0.75rem;border-radius:0.5rem;border:1px solid #e2e8f0;transition:all 0.2s; }
+          .rec-item:hover { background-color:#f8fafc;border-color:#3b82f6; }
+        </style>
+    `;
+        }
+
+
+
+        // Persistence: save temporary answers to localStorage
+        function saveTemp() {
+            const tmp = { answers: state.answers, idx: state.idx, savedAt: new Date().toISOString() };
+            localStorage.setItem('pretest_state', JSON.stringify(tmp));
+        }
+
+        function loadProgress() {
+            const raw = localStorage.getItem('pretest_state');
+            if (raw) {
+                try {
+                    const parsed = JSON.parse(raw);
+                    state.answers = parsed.answers || {};
+                    state.idx = parsed.idx || 0;
+                } catch (e) { console.warn('Gagal load progress', e); }
+            }
+            // if previous result exists, offer to view
+            const prevRes = localStorage.getItem('pretest_result');
+            if (prevRes) {
+                // show short notice
+                const parsed = JSON.parse(prevRes);
+                console.log('Hasil pretest terakhir:', parsed);
+            }
+        }
+
+        function persist() {
+            // save a snapshot including timestamp
+            const snapshot = { answers: state.answers, idx: state.idx, timestamp: new Date().toISOString() };
+            localStorage.setItem('pretest_state', JSON.stringify(snapshot));
+        }
+
+        // Timer
+        function startTimer() {
+            const end = state.startTime + state.duration * 1000;
+            updateTimer();
+            timerInterval = setInterval(() => {
+                updateTimer();
+                if (Date.now() >= end) { timerLabel.textContent = '00:00'; alert('Waktu habis — jawaban akan dikirim otomatis.'); grade(); }
+            }, 1000);
+
+            function updateTimer() {
+                const left = Math.max(0, Math.round((end - Date.now()) / 1000));
+                const mm = String(Math.floor(left / 60)).padStart(2, '0');
+                const ss = String(left % 60).padStart(2, '0');
+                timerLabel.textContent = `${mm}:${ss}`;
+            }
+        }
+
+        // Utility
+        function escapeHtml(s) { return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
+
+        // start
+        init();
+    </script>
+</body>
+
+</html>
