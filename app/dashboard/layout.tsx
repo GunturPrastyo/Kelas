@@ -1,0 +1,38 @@
+// app/dashboard/layout.tsx
+"use client"
+
+import { UIProvider, useUI } from "@/context/UIContext";
+import Navbar from "@/components/navbar"
+import Sidebar from "@/components/sidebar"
+
+function DashboardContent({ children }: { children: React.ReactNode }) {
+  const { isSidebarCollapsed, isMobileDrawerOpen, toggleMobileDrawer } = useUI();
+  return (
+    <div className="bg-gray-100 dark:bg-gray-900 text-gray-800 dark:text-gray-100 font-sans flex h-full">
+      <Sidebar />
+
+      {/* Mobile Overlay */}
+      {isMobileDrawerOpen && (
+        <div
+          className="fixed inset-0 bg-black/50 z-30 md:hidden"
+          onClick={toggleMobileDrawer}
+        ></div>
+      )}
+
+      {/* Konten */}
+      <div id="main-content" className={`flex-1 flex flex-col min-w-0 transition-all duration-300 ease-in-out overflow-hidden ${isSidebarCollapsed ? 'md:pl-20' : 'md:pl-64'}`}>
+        <Navbar />
+        {/* Konten utama yang bisa di-scroll */}
+        <main id="main-container" className={`p-4 sm:p-6 space-y-6 sm:space-y-8 mx-auto overflow-y-auto flex-1 w-full transition-all duration-300 ease-in-out ${isSidebarCollapsed ? 'sm:max-w-full' : 'sm:max-w-7xl'}`}>{children}</main>
+      </div>
+    </div>
+  )
+}
+
+export default function DashboardLayout({ children }: { children: React.ReactNode }) {
+  return (
+    <UIProvider>
+      <DashboardContent>{children}</DashboardContent>
+    </UIProvider>
+  )
+}
