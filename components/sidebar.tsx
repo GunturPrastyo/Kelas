@@ -7,7 +7,7 @@ import { useUI } from "@/context/UIContext"
 
 const navLinks = [
     { href: "/dashboard", label: "Dashboard", icon: "/dashboard.png", alt: "Dashboard Icon" },
-    { href: "/dashboard/modul", label: "Modul", icon: "/modules.png", alt: "Modul Icon" },
+    { href: "/modul", label: "Modul", icon: "/modules.png", alt: "Modul Icon" },
     { href: "/pre-test", label: "Pre Tes & Post", icon: "/exam.png", alt: "Tes Icon" },
     { href: "/dashboard/analitik", label: "Analitik Belajar", icon: "/analitik.png", alt: "Analitik Icon" },
     { href: "/dashboard/profil", label: "Profil", icon: "/profile.png", alt: "Profil Icon" },
