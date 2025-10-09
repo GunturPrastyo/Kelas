@@ -1,8 +1,9 @@
 "use client";
 
 import { useEffect, useMemo, useState } from 'react';
-import { useUI } from '@/context/UIContext';
 import Image from 'next/image';
+import Link from 'next/link';
+import { useUI } from '@/context/UIContext';
 
 interface Module {
     id: number;
@@ -168,12 +169,14 @@ export default function ModulPage() {
                             </div>
                         )}
 
-                        <button
-                            disabled={modul.status === 'Terkunci'}
-                            className="mt-auto w-full py-2.5 px-4 rounded-lg bg-blue-600 text-white font-semibold hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed disabled:hover:bg-gray-400 dark:disabled:bg-gray-600 transition"
-                        >
-                            {modul.status === 'Berjalan' ? 'Lanjutkan' : 'Mulai Belajar'}
-                        </button>
+                        <Link href={modul.status !== 'Terkunci' ? "/modul/javascript-dasar" : '#'} passHref className={modul.status === 'Terkunci' ? 'pointer-events-none' : ''}>
+                            <button
+                                disabled={modul.status === 'Terkunci'}
+                                className="mt-auto w-full py-2.5 px-4 rounded-lg bg-blue-600 text-white font-semibold hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed disabled:hover:bg-gray-400 dark:disabled:bg-gray-600 transition"
+                            >
+                                {modul.status === 'Berjalan' ? 'Lanjutkan' : 'Mulai Belajar'}
+                            </button>
+                        </Link>
                     </div>
                 ))}
             </div>

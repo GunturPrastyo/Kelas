@@ -159,7 +159,7 @@ export default function PreTestPage() {
         }
 
         return (
-            <div className="max-w-5xl mx-auto p-4 sm:p-5 my-4 sm:my-8">
+            <div className="max-w-5xl mx-auto p-4 sm:p-5 my-4 sm:my-8 font-sans">
                 {/* Breadcrumb */}
                 <nav className="flex mb-10" aria-label="Breadcrumb">
                     <ol className="inline-flex items-center space-x-1 md:space-x-2 rtl:space-x-reverse text-slate-700 dark:text-slate-300">
@@ -181,7 +181,7 @@ export default function PreTestPage() {
                         </li>
                     </ol>
                 </nav>
-                <header className="flex items-center justify-between gap-2">
+                <header className="flex items-center justify-between gap-2 font-poppins">
                     <div className="flex items-center gap-2">
                         <Image src="/logo1.png" width={40} height={40} className="h-10 w-auto" alt="Logo" />
                         <h1 className="text-lg font-bold text-slate-800 dark:text-slate-200">Hasil Pre-test</h1>
@@ -195,7 +195,7 @@ export default function PreTestPage() {
                         <p className="text-sm opacity-90">Berikut adalah hasil dan rekomendasi jalur belajarmu.</p>
                     </div>
                 </section>
-                <section className="bg-white dark:bg-gray-800 rounded-xl p-6 mt-6 shadow-lg" id="resultCard">
+                <section className="bg-white dark:bg-gray-800 rounded-xl p-6 mt-6 shadow-lg font-poppins" id="resultCard">
                     <div className="flex items-center justify-between bg-slate-50 dark:bg-gray-700/50 p-4 rounded-lg border border-slate-200 dark:border-gray-700">
                         <div>
                             <p className="text-sm text-slate-500 dark:text-slate-400">Skor Kamu</p>
@@ -227,7 +227,7 @@ export default function PreTestPage() {
                     </div>
                     <div className="text-sm text-slate-500 dark:text-slate-400 mt-3">Catatan: Hasil ini disimpan secara lokal untuk personalisasi pengalaman belajar.</div>
                 </section>
-                <footer className="bg-white dark:bg-gray-800 p-4 text-center text-gray-600 dark:text-gray-400 text-sm mt-8 shadow-inner">
+                <footer className="bg-white dark:bg-gray-800 p-4 text-center text-gray-600 dark:text-gray-400 text-sm mt-8 shadow-inner font-poppins">
                     <p>&copy; 2025 KELAS. All rights reserved.</p>
                 </footer>
             </div>
@@ -235,7 +235,7 @@ export default function PreTestPage() {
     }
 
     return (
-        <div className="max-w-5xl mx-auto p-4 sm:p-5 my-4 sm:my-8">
+        <div className="max-w-5xl mx-auto p-4 sm:p-5 my-4 sm:my-8 font-sans">
             {/* Breadcrumb */}
             <nav className="flex mb-10" aria-label="Breadcrumb">
                 <ol className="inline-flex items-center space-x-1 md:space-x-2 rtl:space-x-reverse text-slate-700 dark:text-slate-300">
@@ -258,7 +258,7 @@ export default function PreTestPage() {
                 </ol>
             </nav>
 
-            <header className="flex items-center justify-between gap-2">
+            <header className="flex items-center justify-between gap-2 font-poppins">
                 <div className="flex items-center gap-2">
                     <Image src="/logo1.png" width={40} height={40} className="h-10 w-auto" alt="Logo" />
                     <h1 className="text-lg font-bold text-slate-800 dark:text-slate-200">Pre-test</h1>
@@ -355,7 +355,7 @@ export default function PreTestPage() {
                 <div className="text-sm text-slate-500 dark:text-slate-400 mt-2">Pertanyaan ke <span>{idx + 1}</span> dari <span>{total}</span></div>
             </section>
 
-            <footer className="bg-white dark:bg-gray-800 p-4 text-center text-gray-600 dark:text-gray-400 text-sm mt-8 shadow-inner">
+            <footer className="bg-white dark:bg-gray-800 p-4 text-center text-gray-600 dark:text-gray-400 text-sm mt-8 shadow-inner font-poppins">
                 <p>&copy; 2025 KELAS. All rights reserved.</p>
             </footer>
         </div>
