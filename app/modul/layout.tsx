@@ -4,6 +4,7 @@ import { UIProvider, useUI } from "@/context/UIContext";
 import Navbar from "@/components/navbar";
 import Sidebar from "@/components/sidebar";
 
+
 /**
  * Layout untuk halaman modul.
  */
@@ -11,7 +12,7 @@ function ModulContent({ children }: { children: React.ReactNode }) {
   const { isSidebarCollapsed, isMobileDrawerOpen, toggleMobileDrawer } = useUI();
 
   return (
-    <div className="bg-gray-100 dark:bg-gray-900 text-gray-800 dark:text-gray-100 font-sans flex min-h-screen">
+    <div className="font-poppins bg-gray-100 dark:bg-gray-900 text-gray-800 dark:text-gray-100 flex min-h-screen">
       <Sidebar />
 
       {isMobileDrawerOpen && (
