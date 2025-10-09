@@ -12,7 +12,9 @@ function ModulContent({ children }: { children: React.ReactNode }) {
   const { isSidebarCollapsed, isMobileDrawerOpen, toggleMobileDrawer } = useUI();
 
   return (
-    <div className="font-poppins bg-gray-100 dark:bg-gray-900 text-gray-800 dark:text-gray-100 flex min-h-screen">
+    <div
+      className={`font-poppins bg-gray-100 dark:bg-gray-900 text-gray-800 dark:text-gray-100 flex min-h-screen`}
+    >
       <Sidebar />
 
       {isMobileDrawerOpen && (
