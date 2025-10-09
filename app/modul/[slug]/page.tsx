@@ -41,8 +41,7 @@ export default function ModulDetailPage({ params }: { params: { slug: string } }
     };
 
     return (
-        <div className="bg-gray-100 dark:bg-gray-900 min-h-screen">
-            <main className="max-w-7xl mx-auto p-4 space-y-6 w-full font-sans">
+        <>
             {/* Breadcrumb */}
             <nav className="flex mb-5" aria-label="Breadcrumb">
                 <ol className="inline-flex items-center space-x-1 md:space-x-2 rtl:space-x-reverse text-gray-700 dark:text-gray-300">
@@ -76,16 +75,30 @@ export default function ModulDetailPage({ params }: { params: { slug: string } }
             {/* Info Kursus */}
             <section className="bg-gradient-to-r from-indigo-600 via-blue-500 to-cyan-500 text-white p-6 rounded-2xl shadow-lg flex flex-col md:flex-row md:items-center md:justify-between gap-4 font-sans">
                 <div className="w-full space-y-3">
-                    <h2 className="text-2xl md:text-3xl font-extrabold tracking-wide">Dasar Pemrograman dengan Javascript</h2>
+                    <h2 className="text-2xl md:text-3xl font-extrabold tracking-wide">
+                        Javascript Dasar
+                    </h2>
+
+                    {/* 📝 Deskripsi / Overview */}
+                    <p className="text-sm text-blue-100 leading-relaxed">
+                        Mempelajari variabel, tipe data, operator, dan struktur kontrol fundamental dalam JavaScript.
+                    </p>
+
                     <p className="text-sm text-blue-100">3 dari 44 pelajaran selesai</p>
+
                     <div className="w-full bg-white/30 rounded-full h-3 mt-3 overflow-hidden">
-                        <div className="bg-yellow-400 h-3 rounded-full transition-all duration-500 ease-in-out" style={{ width: '7%' }}></div>
+                        <div
+                            className="bg-yellow-400 h-3 rounded-full transition-all duration-500 ease-in-out"
+                            style={{ width: '7%' }}
+                        ></div>
                     </div>
                 </div>
+
                 <button className="w-full md:w-auto flex items-center justify-center gap-2 px-6 py-3 bg-yellow-400 text-black font-semibold rounded-xl shadow-md hover:bg-yellow-300 hover:scale-105 transition-all duration-300">
                     <span className="text-lg">▶</span> Lanjutkan
                 </button>
             </section>
+
 
             {/* Materi dengan Accordion */}
             <section className="bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-lg">
@@ -346,7 +359,6 @@ export default function ModulDetailPage({ params }: { params: { slug: string } }
                     </div>
                 </div>
             </section>
-            </main>
-        </div>
+        </>
     );
 }
