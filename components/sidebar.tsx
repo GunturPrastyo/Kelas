@@ -9,7 +9,7 @@ const navLinks = [
     { href: "/dashboard", label: "Dashboard", icon: "/dashboard.png", alt: "Dashboard Icon" },
     { href: "/modul", label: "Modul", icon: "/modules.png", alt: "Modul Icon" },
     { href: "/pre-test", label: "Pre Tes & Post", icon: "/exam.png", alt: "Tes Icon" },
-    { href: "/dashboard/analitik", label: "Analitik Belajar", icon: "/analitik.png", alt: "Analitik Icon" },
+    { href: "/analitik-belajar", label: "Analitik Belajar", icon: "/analitik.png", alt: "Analitik Icon" },
     { href: "/dashboard/profil", label: "Profil", icon: "/profile.png", alt: "Profil Icon" },
 ];
 
@@ -68,14 +68,6 @@ export default function Sidebar() {
           );
         })}
       </nav>
-
-      {/* Mobile Overlay */}
-      {isMobileDrawerOpen && (
-        <div
-          className="fixed inset-0 z-30 md:hidden"
-          onClick={toggleMobileDrawer}
-        ></div>
-      )}
     </aside>
   )
 }
