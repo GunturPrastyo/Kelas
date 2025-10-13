@@ -1,17 +1,15 @@
-// app/dashboard/layout.tsx
 "use client";
 
 import { UIProvider, useUI } from "@/context/UIContext";
 import Navbar from "@/components/navbar";
 import Sidebar from "@/components/sidebar";
+import AuthGuard from "@/components/AuthGuard";
 
 function DashboardContent({ children }: { children: React.ReactNode }) {
   const { isSidebarCollapsed, isMobileDrawerOpen, toggleMobileDrawer } = useUI();
 
   return (
-    <div
-      className={`font-poppins bg-gray-100 dark:bg-gray-900 text-gray-800 dark:text-gray-100 flex min-h-screen`}
-    >
+    <div className="font-poppins bg-gray-100 dark:bg-gray-900 text-gray-800 dark:text-gray-100 flex min-h-screen">
       {/* Sidebar */}
       <Sidebar />
 
@@ -28,7 +26,8 @@ function DashboardContent({ children }: { children: React.ReactNode }) {
         id="main-content"
         className={`flex-1 flex flex-col min-w-0 transition-all duration-300 ease-in-out overflow-hidden ${
           isSidebarCollapsed ? "md:pl-20" : "md:pl-64"
-        }`}>
+        }`}
+      >
         <Navbar />
 
         {/* Isi halaman */}
@@ -51,8 +50,10 @@ export default function DashboardLayout({
   children: React.ReactNode;
 }) {
   return (
-    <UIProvider>
-      <DashboardContent>{children}</DashboardContent>
-    </UIProvider>
+    <AuthGuard>
+      <UIProvider>
+        <DashboardContent>{children}</DashboardContent>
+      </UIProvider>
+    </AuthGuard>
   );
 }
