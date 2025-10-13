@@ -1,8 +1,8 @@
 "use client"
 
 import { UIProvider, useUI } from "@/context/UIContext"
-import Navbar from "@/components/navbar"
-import Sidebar from "@/components/sidebar"
+import Navbar from "@/components/navbarUser"
+import Sidebar from "@/components/sidebarUser"
 
 /**
  * Layout untuk halaman analitik belajar.
