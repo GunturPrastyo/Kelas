@@ -5,10 +5,13 @@ import { useRouter } from "next/navigation";
 
 export default function LoginPage() {
   const router = useRouter();
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [formData, setFormData] = useState({ email: "", password: "" });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -21,24 +24,23 @@ export default function LoginPage() {
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ email, password }),
+          body: JSON.stringify(formData),
         }
       );
 
       const data = await res.json();
+      if (!res.ok) throw new Error(data.message || "Login gagal.");
 
-      if (!res.ok) {
-        throw new Error(data.message || "Login gagal, silakan coba lagi.");
-      }
-
-      // Simpan token dan data user
+      // ✅ Simpan token & user info ke localStorage
       localStorage.setItem("token", data.token);
       localStorage.setItem("user", JSON.stringify(data.user));
 
-      // Redirect ke dashboard
-      router.push("/dashboard");
+      // ✅ Redirect berdasarkan role
+      const targetRoute =
+        data.user.role === "admin" ? "/admin" : "/dashboard";
+      router.push(targetRoute);
     } catch (err: any) {
-      setError(err.message || "Terjadi kesalahan saat login");
+      setError(err.message || "Terjadi kesalahan, coba lagi.");
     } finally {
       setLoading(false);
     }
@@ -61,55 +63,59 @@ export default function LoginPage() {
           </div>
         )}
 
+        {/* Input Email */}
         <div>
           <label className="block text-gray-700 text-sm font-medium mb-1">
             Email
           </label>
           <input
             type="email"
+            name="email"
             className="w-full border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition"
             placeholder="contoh@email.com"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            value={formData.email}
+            onChange={handleChange}
             required
           />
         </div>
 
+        {/* Input Password */}
         <div>
           <label className="block text-gray-700 text-sm font-medium mb-1">
             Password
           </label>
           <input
             type="password"
+            name="password"
             className="w-full border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition"
             placeholder="••••••••"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
+            value={formData.password}
+            onChange={handleChange}
             required
           />
         </div>
 
+        {/* Tombol Login */}
         <button
           type="submit"
           disabled={loading}
-          className={`w-full py-2.5 rounded-lg text-white font-semibold transition ${
-            loading
+          className={`w-full py-2.5 rounded-lg text-white font-semibold transition ${loading
               ? "bg-indigo-400 cursor-not-allowed"
               : "bg-indigo-600 hover:bg-indigo-700"
-          }`}
+            }`}
         >
           {loading ? "Memproses..." : "Masuk Sekarang"}
         </button>
 
-        <p className="text-center text-sm text-gray-500 mt-4">
-          Belum punya akun?{" "}
-          <a
-            href="#"
-            className="text-indigo-600 hover:underline font-medium"
-          >
+        {/* Tambahan opsional */}
+        <div className="flex justify-between text-sm text-gray-500 mt-3">
+          <a href="#" className="hover:underline">
+            Lupa password?
+          </a>
+          <a href="#" className="text-indigo-600 hover:underline font-medium">
             Hubungi admin
           </a>
-        </p>
+        </div>
       </form>
     </div>
   );
