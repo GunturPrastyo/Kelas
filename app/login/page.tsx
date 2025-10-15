@@ -14,6 +14,7 @@ export default function LoginPage() {
 
   const handleSuccess = async (credentialResponse: any) => {
     setIsLoading(true);
+  console.log("Google ID Token:", credentialResponse.credential); // Tambahkan baris ini
     try {
       const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/users/google`, {
         method: "POST",
@@ -31,7 +32,7 @@ export default function LoginPage() {
 
       // Arahkan sesuai role
       if (data.user.role === "admin") {
-        router.push("/admin");
+        router.push("/admin/dashboard");
       } else {
         router.push("/dashboard");
       }
@@ -62,7 +63,7 @@ export default function LoginPage() {
       localStorage.setItem("user", JSON.stringify(data.user));
 
       if (data.user.role === "admin") {
-        router.push("/admin");
+        router.push("/admin/dashboard");
       } else {
         router.push("/dashboard");
       }
