@@ -2,32 +2,88 @@
 
 import dynamic from "next/dynamic";
 import Link from "next/link";
-import { useState, use } from "react"; // tambahkan use()
-import { Modal, Button } from "flowbite-react";
+import { useState, use, useEffect } from "react";
+import { Modal } from "flowbite-react";
 
-// Dynamic import untuk Tiptap karena client-side only
 const TiptapEditor = dynamic(() => import("@/components/TiptapEditor"), {
   ssr: false,
 });
 
 interface MateriEditorPageProps {
-  params: Promise<{ slug: string; topikSlug: string }>; // params sekarang Promise
+  params: Promise<{ slug: string; topikSlug: string }>;
 }
 
 export default function MateriEditorPage({ params }: MateriEditorPageProps) {
-  // unwrap Promise dengan use()
   const { slug, topikSlug } = use(params);
 
-  const [content, setContent] = useState("<p>Mulai menulis materi...</p>");
+  const [content, setContent] = useState("");
   const [youtube, setYoutube] = useState("");
   const [saved, setSaved] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [showModal, setShowModal] = useState(false);
+  const [materiId, setMateriId] = useState<string | null>(null);
 
-  const handleSave = () => {
-    setSaved(true);
-    setTimeout(() => {
-      window.location.href = `/admin/modul/${slug}`;
-    }, 800);
+  useEffect(() => {
+    const fetchMateri = async () => {
+      try {
+        const res = await fetch(
+          `${process.env.NEXT_PUBLIC_API_URL}/api/materi/modul/${slug}/topik/${topikSlug}`
+        );
+
+        if (!res.ok) {
+          // Jika 404, berarti materi belum ada. Biarkan state default.
+          if (res.status !== 404) throw new Error("Gagal memuat materi");
+          return;
+        }
+
+        const data = await res.json();
+        if (data) {
+          setContent(data.content || "");
+          setYoutube(data.youtube || "");
+          setMateriId(data._id);
+        }
+      } catch (err) {
+        console.error("❌ Error saat memuat materi:", err);
+      } finally {
+      }
+    };
+
+    fetchMateri();
+  }, [slug, topikSlug]);
+
+  const handleSave = async () => {
+    setLoading(true);
+    try {
+      const isUpdate = !!materiId;
+      const url = isUpdate
+        ? `${process.env.NEXT_PUBLIC_API_URL}/api/materi/${materiId}`
+        : `${process.env.NEXT_PUBLIC_API_URL}/api/materi`;
+      const method = isUpdate ? "PUT" : "POST";
+
+      const res = await fetch(url, {
+        method,
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          content,
+          youtube,
+          ...(!isUpdate && { modulId: slug, topikId: topikSlug }),
+        }),
+      });
+
+      if (!res.ok) throw new Error("Gagal menyimpan materi");
+      const data = await res.json();
+
+      // Update state setelah berhasil menyimpan
+      setSaved(true);
+      // Pastikan kita mendapatkan _id dari data yang dikembalikan
+      setMateriId(data.data?._id || data._id);
+      setTimeout(() => setSaved(false), 2000);
+    } catch (err) {
+      console.error("❌ Error saat menyimpan materi:", err);
+      alert("Terjadi kesalahan saat menyimpan materi. Periksa log console.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -38,10 +94,7 @@ export default function MateriEditorPage({ params }: MateriEditorPageProps) {
           Modul
         </Link>{" "}
         /{" "}
-        <Link
-          href={`/admin/modul/${slug}`}
-          className="hover:underline text-blue-600"
-        >
+        <Link href={`/admin/modul/${slug}`} className="hover:underline text-blue-600">
           {slug.replace(/-/g, " ")}
         </Link>{" "}
         /{" "}
@@ -52,10 +105,7 @@ export default function MateriEditorPage({ params }: MateriEditorPageProps) {
 
       {/* Input YouTube */}
       <div className="mb-5 flex items-center space-x-2">
-        <label
-          htmlFor="youtube"
-          className="block text-sm font-medium text-gray-900 dark:text-white"
-        >
+        <label htmlFor="youtube" className="block text-sm font-medium text-gray-900 dark:text-white">
           Embed Video YouTube (opsional)
         </label>
         <button
@@ -66,6 +116,7 @@ export default function MateriEditorPage({ params }: MateriEditorPageProps) {
           ?
         </button>
       </div>
+
       <input
         type="text"
         id="youtube"
@@ -80,15 +131,20 @@ export default function MateriEditorPage({ params }: MateriEditorPageProps) {
 
       {/* Editor */}
       <div className="bg-white dark:bg-gray-800 rounded-xl shadow-md border p-5 mb-5">
-        <TiptapEditor content={content} onChange={setContent} />
+        <TiptapEditor
+          key={materiId}
+          content={content}
+          onChange={setContent}
+          placeholder="Mulai menulis materi di sini..." />
       </div>
 
       {/* Tombol simpan */}
       <button
         onClick={handleSave}
-        className="bg-blue-700 text-white px-6 py-2 rounded-lg hover:bg-blue-800"
+        disabled={loading}
+        className="bg-blue-700 text-white px-6 py-2 rounded-lg hover:bg-blue-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
       >
-        Simpan Materi
+        {loading ? "Menyimpan..." : saved ? "✅ Tersimpan!" : "💾 Simpan Materi"}
       </button>
 
       {/* Preview Video */}
@@ -132,7 +188,6 @@ export default function MateriEditorPage({ params }: MateriEditorPageProps) {
           </div>
         </Modal>
       )}
-
     </div>
   );
 }

@@ -14,7 +14,7 @@ export default function LoginPage() {
 
   const handleSuccess = async (credentialResponse: any) => {
     setIsLoading(true);
-  console.log("Google ID Token:", credentialResponse.credential); // Tambahkan baris ini
+
     try {
       const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/users/google`, {
         method: "POST",
@@ -78,7 +78,7 @@ export default function LoginPage() {
     <GoogleOAuthProvider clientId={process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID!}>
       <div
         className="flex items-center justify-center min-h-screen bg-cover bg-center p-4"
-        style={{ backgroundImage: "url('/bg-login.jpg')" }}
+        style={{ backgroundImage: "url('')" }}
       >
         <div className="grid grid-cols-1 md:grid-cols-2 max-w-4xl w-full bg-white/20 backdrop-blur-xl rounded-2xl shadow-2xl overflow-hidden border border-white/10">
           {/* Kolom Kiri: Form Login */}
@@ -108,7 +108,7 @@ export default function LoginPage() {
                   onChange={(e) => setEmail(e.target.value)}
                   required
                   className="w-full px-4 py-2 mt-1 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 bg-white/50"
-                  placeholder="admin@example.com"
+                  placeholder="Masukkan email Anda"
                 />
               </div>
               <div>
@@ -122,7 +122,7 @@ export default function LoginPage() {
                   onChange={(e) => setPassword(e.target.value)}
                   required
                   className="w-full px-4 py-2 mt-1 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 bg-white/50"
-                  placeholder="••••••••"
+                  placeholder="Masukkan password Anda"
                 />
               </div>
               <button
