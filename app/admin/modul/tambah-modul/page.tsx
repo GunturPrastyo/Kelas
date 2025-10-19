@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 
-export default function TambahModulPage() {
+export default function TambahModulPage({ isSidebarCollapsed }: { isSidebarCollapsed?: boolean }) {
   const router = useRouter();
   const [title, setTitle] = useState("");
   const [category, setCategory] = useState("mudah");
@@ -53,7 +53,7 @@ export default function TambahModulPage() {
   };
 
   return (
-    <div className="p-10 max-w-4xl mx-auto">
+    <div className={`p-6 mx-auto transition-all duration-300 ${isSidebarCollapsed ? 'max-w-full' : 'max-w-7xl'}`}>
       <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl p-10 space-y-8">
         <h1 className="text-4xl font-bold text-gray-900 dark:text-white">Tambah Modul Baru</h1>
         {error && <p className="text-red-600">{error}</p>}
@@ -65,7 +65,7 @@ export default function TambahModulPage() {
 
           <div>
             <label htmlFor="file_input" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Upload Icon Modul</label>
-            <input className="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 dark:text-gray-400 focus:outline-none dark:bg-gray-700 dark:border-gray-600" id="file_input" type="file" accept="image/*" onChange={handleFileChange} />
+            <input className="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 dark:text-gray-400 focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400" id="file_input" type="file" accept="image/*" onChange={handleFileChange} />
             {iconPreview && (
               <div className="mt-4">
                 <p className="text-sm text-gray-600 dark:text-gray-300 mb-1">Preview Icon:</p>

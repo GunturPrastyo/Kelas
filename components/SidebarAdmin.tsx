@@ -8,7 +8,7 @@ import { useUI } from "@/context/UIContext"
 const adminNavLinks = [
     { href: "/admin/dashboard", label: "Dashboard", icon: "/dashboard.png", alt: "Dashboard Icon" },
     { href: "/admin/modul", label: "Manajemen Modul", icon: "/modules.png", alt: "Modul Icon" },
-    { href: "/admin/manajemen-tes", label: "Manajemen Tes", icon: "/exam.png", alt: "Tes Icon" },
+    { href: "/admin/manajemen-test", label: "Manajemen Tes", icon: "/exam.png", alt: "Tes Icon" },
      { href: "/admin/manajemen-pengguna", label: "Manajemen Pengguna", icon: "/profile.png", alt: "Users Icon" },
     { href: "/admin/analitik", label: "Analitik", icon: "/analitik.png", alt: "Analitik Icon" },
     // { href: "/admin/profil", label: "Profil", icon: "/profile.png", alt: "Profil Icon" },
@@ -45,7 +45,7 @@ export default function SidebarAdmin() {
         </button>
         <div className="flex-1 flex items-center gap-4 overflow-hidden" >
           {!isSidebarCollapsed && (
-            <Image src="/logo.png" alt="KELAS Logo" width={150} height={40} className="h-10 w-auto transition-opacity duration-300" />
+            <Image src="/logo.png" alt="KELAS Logo" width={150} height={40} className="h-10 w-auto transition-opacity duration-300" priority />
           )}
         </div>
       </div>

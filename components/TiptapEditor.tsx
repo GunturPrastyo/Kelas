@@ -3,8 +3,6 @@
 import { useEditor, EditorContent, Editor } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import { TextStyle } from "@tiptap/extension-text-style";
-import { Color } from "@tiptap/extension-color";
-import Underline from "@tiptap/extension-underline";
 import Highlight from "@tiptap/extension-highlight";
 import Link from "@tiptap/extension-link";
 import TextAlign from "@tiptap/extension-text-align";
@@ -14,6 +12,8 @@ import TaskList from "@tiptap/extension-task-list";
 import TaskItem from "@tiptap/extension-task-item";
 import HorizontalRule from "@tiptap/extension-horizontal-rule";
 import Image from "@tiptap/extension-image";
+
+import { Color } from "@tiptap/extension-color";
 import {
   Bold,
   Italic,
@@ -146,20 +146,22 @@ const MenuBar = ({ editor }: { editor: Editor | null }) => {
 export default function TiptapEditor({
   content,
   onChange,
+  placeholder,
 }: {
   content: string;
   onChange: (val: string) => void;
+  placeholder?: string;
 }) {
   const editor = useEditor({
     extensions: [
       StarterKit.configure({
         codeBlock: true,
         horizontalRule: false,
+        // Underline and Link are part of StarterKit by default
       }),
-      Underline,
+ 
       Highlight,
       TextStyle,
-      Color,
       Link,
       TextAlign.configure({ types: ["heading", "paragraph"] }),
       Subscript,
@@ -167,6 +169,7 @@ export default function TiptapEditor({
       TaskList,
       TaskItem.configure({ nested: true }),
       HorizontalRule,
+      Color,
       Image,
     ],
     content,
