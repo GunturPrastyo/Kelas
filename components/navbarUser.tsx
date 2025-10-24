@@ -6,12 +6,24 @@ import { useTheme } from "next-themes"
 import { usePathname } from "next/navigation"
 import { useUI } from "@/context/UIContext"
 
+interface User {
+  name: string;
+  avatar?: string;
+}
+
 export default function Navbar() {
   const [mounted, setMounted] = useState(false)
   const { theme, setTheme } = useTheme()
   const { isSidebarCollapsed, toggleMobileDrawer, searchQuery, setSearchQuery } = useUI()
   const pathname = usePathname();
   const isAdminPage = pathname.startsWith('/admin');
+  const [user, setUser] = useState<User | null>(null);
+
+  useEffect(() => {
+    const userData = localStorage.getItem("user");
+    if (userData) setUser(JSON.parse(userData));
+    setMounted(true);
+  }, []);
 
   // Logika untuk placeholder search bar
   const getPlaceholder = () => {
@@ -19,8 +31,6 @@ export default function Navbar() {
     if (/^\/admin\/modul\/[^/]+$/.test(pathname)) return "Cari topik...";
     return isAdminPage ? "Search di halaman admin..." : "Mau belajar apa hari ini?";
   }
-
-  useEffect(() => setMounted(true), [])
 
   return (
     <header
@@ -108,8 +118,20 @@ export default function Navbar() {
         </div>
 
         {/* Nama user */}
-        <span className="hidden lg:inline">Halo, <strong>Guntur Prastyo</strong></span>
-        <Image src="https://i.pravatar.cc/40" alt="User" width={40} height={40} className="rounded-full" />
+        {user ? (
+          <>
+            <span className="hidden lg:inline">Halo, <strong>{user.name.split(' ')[0]}</strong></span>
+            {user.avatar ? (
+              <Image src={user.avatar} alt={user.name} width={40} height={40} className="rounded-full" />
+            ) : (
+              <div className="w-10 h-10 rounded-full bg-blue-500 text-white flex items-center justify-center font-bold text-lg">
+                {user.name.charAt(0).toUpperCase()}
+              </div>
+            )}
+          </>
+        ) : (
+          <div className="w-10 h-10 rounded-full bg-gray-200 dark:bg-gray-700 animate-pulse"></div>
+        )}
       </div>
     </header>
   )

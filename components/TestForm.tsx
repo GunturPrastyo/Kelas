@@ -1,0 +1,339 @@
+"use client";
+
+import { useState, useEffect } from "react";
+import dynamic from "next/dynamic";
+import { useRouter } from "next/navigation";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { PlusCircle, Trash2, CheckCircle2, Edit3, Save } from "lucide-react";
+
+// Impor TiptapEditor secara dinamis
+const TiptapEditor = dynamic(() => import("@/components/TiptapEditor"), {
+  ssr: false,
+  loading: () => (
+    <div className="p-4 border rounded-lg min-h-[50px] animate-pulse bg-gray-100 dark:bg-gray-700">
+      Memuat editor...
+    </div>
+  ),
+});
+
+interface Question {
+  _id?: string;
+  questionText: string;
+  options: string[];
+  answer: string;
+}
+
+interface TestFormProps {
+  modulId?: string;
+  topikId?: string;
+  modulSlug?: string;
+  topikSlug?: string;
+  isEditing: boolean;
+  initialQuestions?: Question[];
+  testType: "pre-test-global" | "post-test-modul" | "post-test-topik";
+}
+
+const emptyInitialQuestions: Question[] = [];
+
+export default function TestForm({
+  testType,
+  modulId,
+  topikId,
+  modulSlug,
+  topikSlug,
+  isEditing,
+  initialQuestions = emptyInitialQuestions,
+}: TestFormProps) {
+  const router = useRouter();
+  const [questions, setQuestions] = useState<Question[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [fetching, setFetching] = useState(isEditing);
+
+  // state untuk melacak editor opsi mana yang aktif
+  const [activeOption, setActiveOption] = useState<{
+    qIndex: number;
+    oIndex: number | null;
+  }>({ qIndex: -1, oIndex: null });
+
+  useEffect(() => {
+    if (isEditing) {
+      setQuestions(initialQuestions);
+      setFetching(false);
+    } else {
+      setQuestions([{ questionText: "", options: [""], answer: "" }]);
+    }
+  }, [isEditing, initialQuestions]);
+
+  const handleAddQuestion = () => {
+    setQuestions([...questions, { questionText: "", options: [""], answer: "" }]);
+  };
+
+  const handleRemoveQuestion = (index: number) => {
+    const updated = [...questions];
+    updated.splice(index, 1);
+    setQuestions(updated);
+  };
+
+  const handleAddOption = (qIndex: number) => {
+    const updated = [...questions];
+    updated[qIndex].options.push("");
+    setQuestions(updated);
+  };
+
+  const handleRemoveOption = (qIndex: number, oIndex: number) => {
+    const updated = [...questions];
+    updated[qIndex].options.splice(oIndex, 1);
+    setQuestions(updated);
+  };
+
+  const handleChangeQuestion = (qIndex: number, value: string) => {
+    const updated = [...questions];
+    updated[qIndex].questionText = value;
+    setQuestions(updated);
+  };
+
+  const handleChangeOption = (qIndex: number, oIndex: number, value: string) => {
+    const updated = [...questions];
+    updated[qIndex].options[oIndex] = value;
+    setQuestions(updated);
+  };
+
+  const handleSelectAnswer = (qIndex: number, option: string) => {
+    const updated = [...questions];
+    updated[qIndex].answer = option;
+    setQuestions(updated);
+  };
+
+  const handleSubmit = async () => {
+    setLoading(true);
+
+    // Validasi sebelum mengirim
+    for (let i = 0; i < questions.length; i++) {
+      const q = questions[i];
+      if (!q.answer || q.answer.trim() === "") {
+        alert(`Soal ${i + 1} belum memiliki jawaban yang benar. Silakan pilih salah satu opsi sebagai jawaban.`);
+        setLoading(false);
+        return;
+      }
+    }
+
+    const baseUrl = process.env.NEXT_PUBLIC_API_URL;
+    let endpoint = "";
+    let method = "";
+    let body: any = { questions };
+    
+    if (testType === "pre-test-global") {
+      endpoint = isEditing ? `/api/questions/pre-test` : `/api/questions`;
+      method = isEditing ? "PUT" : "POST"; // Pre-test bisa jadi dibuat pertama kali
+      body = { ...body, testType: "pre-test-global" };
+    } else if (testType === "post-test-topik" && modulId && topikId) {
+      endpoint = isEditing
+        ? `/api/questions/post-test-topik/${modulId}/${topikId}`
+        : `/api/questions/post-test-topik`;
+      method = isEditing ? "PUT" : "POST";
+      body = { ...body, modulId, topikId, testType: "post-test-topik" };
+    } else if (testType === "post-test-modul" && modulId) {
+      endpoint = isEditing
+        ? `/api/questions/post-test-modul/${modulId}`
+        : `/api/questions/post-test-modul`;
+      method = isEditing ? "PUT" : "POST";
+      body = { ...body, modulId, testType: "post-test-modul" };
+    } else {
+      alert("Konteks tes tidak valid. Pastikan semua ID (modul/topik) tersedia.");
+      setLoading(false);
+      return;
+    }
+
+    const url = `${baseUrl}${endpoint}`;
+
+    try {
+      const response = await fetch(url, {
+        method,
+        headers: { "Content-Type": "application/json" },
+        credentials: "include", // Kirim cookie untuk otentikasi
+        body: JSON.stringify(body),
+      });
+
+      const result = await response.json();
+
+      if (response.ok) {
+        alert(`Post test berhasil ${isEditing ? "diperbarui" : "disimpan"}!`);
+        
+        if (testType === "pre-test-global") {
+          router.push(`/admin/modul`);
+        } else if (topikSlug) {
+          router.push(`/admin/modul/${modulSlug}/${topikSlug}`);
+        } else if (modulSlug) {
+          router.push(`/admin/modul`);
+        }
+        router.refresh();
+      } else {
+        alert(`Gagal menyimpan: ${result.message}`);
+      }
+    } catch (err) {
+      console.error(err);
+      alert("Terjadi kesalahan jaringan.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (fetching) {
+    return <div className="text-center p-6">Memuat soal...</div>;
+  }
+
+  return (
+    <>
+      {questions.map((q, qIndex) => (
+        <Card
+          key={q._id || qIndex}
+          className="mb-6 border-gray-200 dark:border-gray-700"
+        >
+          <CardContent className="p-4 sm:p-6">
+            <div className="flex justify-between items-center mb-3">
+              <h2 className="text-lg font-medium text-gray-800 dark:text-white">
+                Soal {qIndex + 1}
+              </h2>
+              {questions.length > 1 && (
+                <button
+                  onClick={() => handleRemoveQuestion(qIndex)}
+                  className="text-red-500 hover:text-red-700 dark:text-red-400 dark:hover:text-red-500"
+                >
+                  <Trash2 size={18} />
+                </button>
+              )}
+            </div>
+
+            {/* Editor untuk soal */}
+            <div className="mb-4">
+              <TiptapEditor
+                content={q.questionText}
+                onChange={(value) => handleChangeQuestion(qIndex, value)}
+                placeholder="Masukkan pertanyaan di sini..."
+              />
+            </div>
+
+            {/* Daftar opsi */}
+            <div className="space-y-3">
+              {q.options.map((option, oIndex) => (
+                <div
+                  key={oIndex}
+                  className="border border-gray-200 dark:border-gray-700 rounded-lg p-2"
+                >
+                  <div className="flex justify-between items-center mb-2">
+                    <div className="flex items-center gap-2">
+                      <input
+                        type="radio"
+                        checked={q.answer === option && q.answer !== ""}
+                        onChange={() => handleSelectAnswer(qIndex, option)}
+                        className="text-blue-600 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+                      />
+                      <span className="text-sm text-gray-600 dark:text-gray-300">
+                        Opsi {oIndex + 1} {q.answer === option && q.answer !== "" && "(Jawaban Benar)"}
+                      </span>
+                    </div>
+                    <div className="flex gap-2">
+                      {activeOption.qIndex === qIndex &&
+                      activeOption.oIndex === oIndex ? (
+                        <button
+                          onClick={() =>
+                            setActiveOption({ qIndex: -1, oIndex: null })
+                          }
+                          className="text-green-600 hover:text-green-700 dark:text-green-400 dark:hover:text-green-500"
+                        >
+                          <Save size={16} />
+                        </button>
+                      ) : (
+                        <button
+                          onClick={() =>
+                            setActiveOption({ qIndex, oIndex })
+                          }
+                          className="text-blue-500 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-500"
+                        >
+                          <Edit3 size={16} />
+                        </button>
+                      )}
+                      {q.options.length > 1 && (
+                        <button
+                          onClick={() => handleRemoveOption(qIndex, oIndex)}
+                          className="text-red-500 hover:text-red-700 dark:text-red-400 dark:hover:text-red-500"
+                        >
+                          <Trash2 size={16} />
+                        </button>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Jika opsi sedang diedit → tampilkan editor */}
+                  {activeOption.qIndex === qIndex &&
+                  activeOption.oIndex === oIndex ? (
+                    <TiptapEditor
+                      content={option}
+                      onChange={(value) =>
+                        handleChangeOption(qIndex, oIndex, value)
+                      }
+                      placeholder={`Masukkan isi opsi ${oIndex + 1}...`}
+                    />
+                  ) : (
+                    <div
+                      className="prose prose-sm dark:prose-invert max-w-none px-2 py-1"
+                      dangerouslySetInnerHTML={{ __html: option || "<i>Kosong</i>" }}
+                    />
+                  )}
+                </div>
+              ))}
+            </div>
+
+            {/* Tombol tambahan opsi */}
+            <div className="flex justify-between items-center mt-4">
+              <Button
+                variant="outline"
+                onClick={() => handleAddOption(qIndex)}
+                className="flex items-center gap-2 text-xs sm:text-sm px-3 py-1.5 dark:text-gray-300 dark:hover:text-white"
+              >
+                <PlusCircle size={16} />
+                Tambah Opsi
+              </Button>
+
+              {q.answer && (
+                <div className="flex items-center text-green-600 dark:text-green-500 text-sm gap-1">
+                  <CheckCircle2 size={14} />
+                  <span
+                    className="prose prose-sm dark:prose-invert"
+                    dangerouslySetInnerHTML={{
+                      __html: `Jawaban: ${q.answer || "<i>Belum dipilih</i>"}`,
+                    }}
+                  />
+                </div>
+              )}
+            </div>
+          </CardContent>
+        </Card>
+      ))}
+
+      {/* Tombol akhir */}
+      <div className="flex justify-between items-center">
+        <Button
+          onClick={handleAddQuestion}
+          variant="outline"
+          className="flex items-center gap-2 text-xs sm:text-sm px-3 py-1.5 dark:text-gray-300 dark:hover:text-white"
+        >
+          <PlusCircle size={18} />
+          Tambah Soal
+        </Button>
+        <Button
+          onClick={handleSubmit}
+          disabled={loading}
+          className="bg-blue-600 hover:bg-blue-700 text-white text-xs sm:text-sm px-3 py-1.5 disabled:opacity-50"
+        >
+          {loading
+            ? "Menyimpan..."
+            : isEditing
+            ? "Simpan Perubahan"
+            : "Simpan Semua"}
+        </Button>
+      </div>
+    </>
+  );
+}

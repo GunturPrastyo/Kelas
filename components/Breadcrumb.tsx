@@ -17,10 +17,16 @@ export default function Breadcrumb({ paths }: Props) {
       <ol className="inline-flex items-center space-x-1">
         {paths.map((path, idx) => (
           <li key={idx} className="inline-flex items-center">
-            <Link href={path.href} className="hover:text-blue-600 dark:hover:text-blue-400">
-              {path.name}
-            </Link>
-            {idx < paths.length - 1 && <span className="mx-2">/</span>}
+            {idx < paths.length - 1 ? (
+              <>
+                <Link href={path.href} className="hover:text-blue-600 dark:hover:text-blue-400">
+                  {path.name}
+                </Link>
+                <span className="mx-2">/</span>
+              </>
+            ) : (
+              <span className="font-medium text-gray-800 dark:text-gray-200">{path.name}</span>
+            )}
           </li>
         ))}
       </ol>

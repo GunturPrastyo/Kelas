@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import Breadcrumb from "@/components/Breadcrumb";
 
 export default function TambahModulPage({ isSidebarCollapsed }: { isSidebarCollapsed?: boolean }) {
   const router = useRouter();
@@ -54,6 +55,15 @@ export default function TambahModulPage({ isSidebarCollapsed }: { isSidebarColla
 
   return (
     <div className={`p-6 mx-auto transition-all duration-300 ${isSidebarCollapsed ? 'max-w-full' : 'max-w-7xl'}`}>
+      <div className="mb-6">
+        <Breadcrumb
+          paths={[
+            { name: "Manajemen Modul", href: "/admin/modul" },
+            { name: "Tambah Modul", href: "/admin/modul/tambah-modul" },
+          ]}
+        />
+      </div>
+
       <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl p-10 space-y-8">
         <h1 className="text-4xl font-bold text-gray-900 dark:text-white">Tambah Modul Baru</h1>
         {error && <p className="text-red-600">{error}</p>}

@@ -1,98 +1,138 @@
 "use client";
 
 import { useEffect, useMemo, useState } from 'react';
-import Image from 'next/image';
 import Link from 'next/link';
+import Image from 'next/image';
 import { useUI } from '@/context/UIContext';
 
-interface Module {
-    id: number;
-    title: string;
-    description: string;
-    category: 'dasar' | 'menengah' | 'lanjut';
-    progress: number;
-    status: 'Selesai' | 'Berjalan' | 'Terkunci' | 'Belum Mulai';
-    icon: string;
+interface User {
+    _id: string;
+    // tambahkan properti lain jika perlu
 }
 
-const ALL_MODULES: Module[] = [
-    { id: 1, title: "JavaScript Dasar", description: "Mempelajari variabel, tipe data, operator, dan struktur kontrol fundamental dalam JavaScript.", category: "dasar", status: "Selesai", progress: 100, icon: "https://img.icons8.com/color/48/javascript.png" },
-    { id: 2, title: "Fungsi dan Lingkup", description: "Memahami cara kerja fungsi, parameter, return values, dan konsep scope (global vs lokal).", category: "dasar", status: "Berjalan", progress: 75, icon: "https://img.icons8.com/fluency/48/settings-3.png" },
-    { id: 3, title: "Array dan Objek", description: "Mengelola kumpulan data menggunakan array dan objek, serta metode-metode bawaannya.", category: "dasar", status: "Belum Mulai", progress: 0, icon: "https://img.icons8.com/fluency/48/data-configuration.png" },
-    { id: 4, title: "Manipulasi DOM", description: "Belajar cara memilih dan memanipulasi elemen HTML menggunakan JavaScript untuk membuat halaman interaktif.", category: "menengah", status: "Terkunci", progress: 0, icon: "/dom.png" },
-    { id: 5, title: "Event Handling", description: "Menangani interaksi pengguna seperti klik, input, dan hover untuk membangun aplikasi web yang responsif.", category: "menengah", status: "Terkunci", progress: 0, icon: "https://img.icons8.com/fluency/48/cursor.png" },
-    { id: 6, title: "JavaScript Asynchronous", description: "Mendalami Promise, async/await untuk mengelola operasi yang tidak berjalan secara sinkron seperti fetch data.", category: "lanjut", status: "Terkunci", progress: 0, icon: "https://img.icons8.com/fluency/48/cloud-sync.png" },
-    { id: 7, title: "API & Fetch", description: "Berinteraksi dengan server dan layanan eksternal menggunakan Fetch API untuk mengambil dan mengirim data.", category: "lanjut", status: "Terkunci", progress: 0, icon: "https://img.icons8.com/fluency/48/services.png" },
-];
-
+type Category = 'mudah' | 'sedang' | 'sulit';
 type UserLevel = 'dasar' | 'menengah' | 'lanjut' | null;
+type ModuleStatus = 'Selesai' | 'Berjalan' | 'Terkunci' | 'Belum Mulai';
+
+export interface Module {
+    _id: string;
+    title: string;
+    overview: string;
+    category: Category;
+    progress: number;
+    icon: string;
+    slug: string;
+    status: ModuleStatus;
+    isHighlighted?: boolean;
+}
+
 
 export default function ModulPage() {
+    const [modules, setModules] = useState<Module[]>([]);
+    const [loading, setLoading] = useState(true);
     const [selectedCategory, setSelectedCategory] = useState('');
     const [userLevel, setUserLevel] = useState<UserLevel>(null); // State untuk level pengguna
     const [recommendation, setRecommendation] = useState({ title: '', description: '', icon: '' });
+    const [user, setUser] = useState<User | null>(null);
     const { searchQuery, setSearchQuery } = useUI(); // Gunakan state global
 
     useEffect(() => {
-        const resultRaw = localStorage.getItem('pretest_result');
-        if (resultRaw) {
-            try {
-                const parsedResult = JSON.parse(resultRaw);
-                if (parsedResult.score >= 80) {
-                    setUserLevel('lanjut');
-                    setRecommendation({
-                        title: 'Jalur Belajar: Lanjut',
-                        description: 'Pemahamanmu sudah kuat. Kamu siap untuk tantangan materi tingkat lanjut!',
-                        icon: '/target.png'
-                    });
-                } else if (parsedResult.score >= 50) {
-                    setUserLevel('menengah');
-                    setRecommendation({
-                        title: 'Jalur Belajar: Menengah',
-                        description: 'Dasar-dasarmu sudah cukup. Mari perdalam dengan manipulasi DOM dan event.',
-                        icon: '/target.png'
-                    });
-                } else {
-                    setUserLevel('dasar');
-                    setRecommendation({
-                        title: 'Jalur Belajar: Dasar',
-                        description: 'Mari kita mulai dari awal untuk membangun fondasi JavaScript yang kokoh.',
-                        icon: '/target.png'
-                    });
+        const userRaw = localStorage.getItem('user');
+        if (userRaw) {
+            const parsedUser = JSON.parse(userRaw);
+            setUser(parsedUser);
+
+            // Ambil hasil pre-test yang spesifik untuk user ini
+            const resultKey = `pretest_result_${parsedUser._id}`;
+            const resultRaw = localStorage.getItem(resultKey);
+            if (resultRaw) {
+                try {
+                    const parsedResult = JSON.parse(resultRaw);
+                    if (parsedResult.score >= 75) {
+                        setUserLevel('lanjut');
+                        setRecommendation({ title: 'Jalur Belajar: Lanjut', description: 'Pemahamanmu sudah kuat. Kamu siap untuk tantangan materi tingkat lanjut!', icon: '/target.png' });
+                    } else if (parsedResult.score >= 40) {
+                        setUserLevel('menengah');
+                        setRecommendation({ title: 'Jalur Belajar: Menengah', description: 'Dasar-dasarmu sudah cukup. Mari perdalam dengan manipulasi DOM dan event.', icon: '/target.png' });
+                    } else {
+                        setUserLevel('dasar');
+                        setRecommendation({ title: 'Jalur Belajar: Dasar', description: 'Mari kita mulai dari awal untuk membangun fondasi JavaScript yang kokoh.', icon: '/target.png' });
+                    }
+                } catch (e) {
+                    console.warn('Gagal memuat hasil pre-test untuk personalisasi.', e);
+                    setUserLevel(null); // Reset jika data rusak
                 }
-            } catch (e) {
-                console.warn('Gagal memuat hasil pre-test untuk personalisasi.', e);
-                setUserLevel(null);
             }
         }
-    }, []);
+
+        // Fetch modules from API
+        const fetchModules = async () => {
+            try {
+                setLoading(true);
+                // Endpoint baru yang menyertakan progres
+                const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/modul/progress`, {
+                    credentials: 'include' // Penting untuk mengirim cookie
+                });
+                if (!res.ok) throw new Error("Gagal memuat data modul.");
+                const data = await res.json();
+                setModules(data);
+            } catch (error) {
+                console.error("Error fetching modules:", error);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchModules();
+    }, []); // Hanya dijalankan sekali saat komponen dimuat
 
     const personalizedModules = useMemo(() => {
-        return ALL_MODULES.map(modul => {
-            const isRecommended = modul.category === userLevel;
-            const isLocked = (userLevel === 'dasar' && modul.category !== 'dasar') || (userLevel === 'menengah' && modul.category === 'lanjut');
-            
-            let status: Module['status'] = modul.status;
-            let isHighlighted = false;
+        // Map 'mudah' -> 'dasar', 'sedang' -> 'menengah', 'sulit' -> 'lanjut'
+        const categoryMap = { mudah: 'dasar', sedang: 'menengah', sulit: 'lanjut' };
 
-            if (userLevel) {
-                if (isRecommended && modul.status !== 'Selesai' && modul.status !== 'Berjalan') {
-                    status = 'Belum Mulai'; // Buka kunci jika direkomendasikan
-                    isHighlighted = true;
-                } else if (isLocked) {
-                    status = 'Terkunci';
-                }
+        return modules.map(modul => {
+            const mappedCategory = categoryMap[modul.category];
+
+            let status: ModuleStatus;
+            let isHighlighted = false;
+            let isLocked = true; // Secara default, semua modul terkunci
+
+            // Logika untuk membuka kunci berdasarkan level pengguna
+            if (userLevel === 'lanjut') {
+                isLocked = false; // Buka semua modul
+            } else if (userLevel === 'menengah') {
+                isLocked = mappedCategory === 'lanjut'; // Kunci hanya modul lanjut
+            } else if (userLevel === 'dasar') {
+                isLocked = mappedCategory !== 'dasar'; // Kunci modul menengah dan lanjut
+            }
+
+            if (modul.progress === 100) {
+                status = 'Selesai';
+            } else if (modul.progress > 0) {
+                status = 'Berjalan';
+            } else {
+                status = 'Belum Mulai';
+            }
+
+            // Terapkan status 'Terkunci' jika isLocked true, kecuali modul sudah selesai
+            if (isLocked && status !== 'Selesai') {
+                status = 'Terkunci';
+            }
+            // Sorot modul yang direkomendasikan dan belum dimulai
+            if (!isLocked && mappedCategory === userLevel && status === 'Belum Mulai') {
+                isHighlighted = true;
             }
 
             return { ...modul, status, isHighlighted };
         }).filter(m => {
-            const categoryMatch = selectedCategory ? m.category === selectedCategory : true;
+            const mappedCategory = categoryMap[m.category];
+            const categoryMatch = selectedCategory ? mappedCategory === selectedCategory : true;
             const searchMatch = m.title.toLowerCase().includes(searchQuery.toLowerCase());
             return categoryMatch && searchMatch;
         });
-    }, [searchQuery, selectedCategory, userLevel]);
+    }, [searchQuery, selectedCategory, userLevel, modules]);
 
-    const getStatusBadge = (status: Module['status'], progress: number) => {
+    const getStatusBadge = (status: ModuleStatus, progress: number) => {
         if (status === "Selesai") return <span className="text-xs font-medium px-2 py-1 bg-green-100 text-green-700 rounded-full">✅ Selesai</span>;
         if (status === "Berjalan") return <span className="text-xs font-medium px-2 py-1 bg-blue-100 text-blue-700 rounded-full">⏳ {progress}%</span>;
         if (status === "Terkunci") return <span className="text-xs font-medium px-2 py-1 bg-gray-200 text-gray-600 dark:bg-gray-700 dark:text-gray-400 rounded-full">🔒 Terkunci</span>;
@@ -101,6 +141,22 @@ export default function ModulPage() {
 
     return (
         <>
+            {loading && (
+                <div className="text-center py-16 text-gray-500">
+                    <p>Memuat modul...</p>
+                </div>
+            )}
+
+            {!loading && !userLevel && (
+                <section className="bg-gradient-to-br from-yellow-50 to-orange-100 dark:from-gray-900 dark:to-gray-800 p-5 rounded-xl shadow-sm flex items-center gap-4 mb-6">
+                    <Image src="/exam2.png" alt="Pre-test" width={48} height={48} className="w-12 h-12" />
+                    <div>
+                        <h2 className="text-lg font-semibold text-yellow-800 dark:text-yellow-300">Tentukan Jalur Belajarmu!</h2>
+                        <p className="text-sm text-gray-600 dark:text-gray-400">Ambil pre-test terlebih dahulu untuk membuka modul yang sesuai dengan level kemampuanmu. <Link href="/pre-test" className="font-semibold text-blue-600 hover:underline">Mulai Pre-test</Link></p>
+                    </div>
+                </section>
+            )}
+
             {userLevel && (
                 <section className="bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800 p-5 rounded-xl shadow-sm flex items-center gap-4 mb-6">
                     <Image src={recommendation.icon} alt="Rekomendasi" width={48} height={48} className="w-12 h-12" />
@@ -146,30 +202,30 @@ export default function ModulPage() {
             <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
                 {personalizedModules.map((modul) => (
                     <div
-                        key={modul.id}
+                        key={modul._id}
                         className={`bg-white dark:bg-gray-800 rounded-xl shadow-md p-5 flex flex-col transition-all duration-300 ${modul.isHighlighted ? 'ring-2 ring-blue-500 shadow-blue-500/20' : 'hover:-translate-y-1 hover:shadow-lg'} ${modul.status === 'Terkunci' ? 'opacity-60 bg-gray-50 dark:bg-gray-800/50' : ''}`}
                     >
                         <div className="flex items-start justify-between mb-3">
                             <div className="flex items-center gap-3">
                                 <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${modul.isHighlighted ? 'bg-blue-100 dark:bg-blue-900/50' : 'bg-gray-100 dark:bg-gray-700'}`}>
-                                    <Image src={modul.icon} alt={modul.title} width={24} height={24} />
+                                    <Image src={modul.icon.startsWith('http') ? modul.icon : `${process.env.NEXT_PUBLIC_API_URL}/uploads/${modul.icon}`} alt={modul.title} width={24} height={24} />
                                 </div>
                                 <h3 className="font-semibold text-base text-gray-800 dark:text-gray-100">{modul.title}</h3>
                             </div>
                             {getStatusBadge(modul.status, modul.progress)}
                         </div>
 
-                        <p className="text-sm text-gray-600 dark:text-gray-400 mb-4 line-clamp-3 flex-grow">
-                            {modul.description}
+                        <p className="text-sm text-gray-600 dark:text-gray-400 mb-4 line-clamp-2 flex-grow">
+                            {modul.overview}
                         </p>
 
                         {modul.progress > 0 && (
                             <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-1.5 mb-4">
-                                <div className="bg-blue-500 h-1.5 rounded-full" style={{ width: `${modul.progress}%` }}></div>
+                                <div className="bg-blue-500 h-1.5 rounded-full" style={{ width: `${modul.progress}%` }} />
                             </div>
                         )}
 
-                        <Link href={modul.status !== 'Terkunci' ? "/modul/javascript-dasar" : '#'} passHref className={modul.status === 'Terkunci' ? 'pointer-events-none' : ''}>
+                        <Link href={modul.status !== 'Terkunci' ? `/modul/${modul.slug}` : '#'} passHref className={modul.status === 'Terkunci' ? 'pointer-events-none' : ''}>
                             <button
                                 disabled={modul.status === 'Terkunci'}
                                 className="mt-auto w-full py-2.5 px-4 rounded-lg bg-blue-600 text-white font-semibold hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed disabled:hover:bg-gray-400 dark:disabled:bg-gray-600 transition"
@@ -180,9 +236,9 @@ export default function ModulPage() {
                     </div>
                 ))}
             </div>
-            {personalizedModules.length === 0 && (
+            {!loading && personalizedModules.length === 0 && (
                 <div className="text-center py-16 text-gray-500">
-                    <p>Tidak ada modul yang cocok dengan pencarian Anda.</p>
+                    <p>{searchQuery ? `Tidak ada modul yang cocok dengan "${searchQuery}".` : "Tidak ada modul yang tersedia."}</p>
                 </div>
             )}
         </>

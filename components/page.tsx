@@ -1,8 +1,9 @@
 "use client";
 
-import { useMemo, useRef } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import Image from "next/image";
-import Link from 'next/link';
+import Link from "next/link";
+import { ChevronRight } from "lucide-react";
 
 interface Module {
   _id: string;
@@ -23,7 +24,7 @@ const getStatusBadge = (status: Module["status"], progress: number | undefined) 
   if (status === "Selesai")
     return (
       <span className="inline-block text-xs font-medium px-3 py-1 bg-green-100 text-green-700 rounded-full shadow-sm">
-        ✅ Selesai
+        Selesai
       </span>
     );
   if (status === "Berjalan")
@@ -39,7 +40,7 @@ const getStatusBadge = (status: Module["status"], progress: number | undefined) 
       </span>
     );
   return (
-    <span className="inline-flex items-center gap-1 text-xs px-3 py-1 bg-gray-200 text-gray-600 dark:bg-gray-700 dark:text-gray-400 rounded-full">
+    <span className="text-xs px-3 py-1 bg-gray-200 text-gray-600 dark:bg-gray-700 dark:text-gray-400 rounded-full flex items-center gap-1">
       Terkunci
     </span>
   );
@@ -76,8 +77,8 @@ export default function ModuleList({ title, allModules, filter }: ModuleListProp
   };
 
   if (modules.length === 0) {
-    // Jangan tampilkan apapun jika tidak ada modul yang cocok
-    if (title.toLowerCase().includes("rekomendasi") || title.toLowerCase().includes("terkunci")) {
+    // Tampilkan pesan jika tidak ada modul yang cocok, kecuali untuk "Rekomendasi"
+    if (title.toLowerCase().includes("rekomendasi")) {
       return null;
     }
     return (
@@ -102,34 +103,25 @@ export default function ModuleList({ title, allModules, filter }: ModuleListProp
         className="flex gap-6 overflow-x-auto scroll-smooth pb-4 scrollbar-hidden snap-x snap-mandatory cursor-grab active:cursor-grabbing select-none"
       >
         {modules.map((modul) => (
-          <Link 
-            href={modul.status !== 'Terkunci' ? `/modul/${modul.slug}` : '#'} 
-            key={modul._id} 
-            className={`
-              min-w-[240px] sm:min-w-[260px] p-5 rounded-2xl bg-white/80 dark:bg-gray-900/80 border border-gray-200 dark:border-gray-700 
-              flex-shrink-0 snap-start backdrop-blur-md shadow-lg transition-all duration-300
-              ${modul.status === 'Terkunci' 
-                ? 'opacity-60 cursor-not-allowed' 
-                : 'hover:shadow-xl hover:-translate-y-1'
-              }
-            `}
-            onClick={(e) => modul.status === 'Terkunci' && e.preventDefault()}
-          >
-            <div className={`w-12 h-12 mb-3 rounded-lg flex items-center justify-center ${modul.progress === 100 ? "bg-green-100 dark:bg-green-900/50" : "bg-blue-100 dark:bg-blue-900/50"}`}>
-              <Image
-                src={`${process.env.NEXT_PUBLIC_API_URL}/uploads/${modul.icon}`}
-                alt={`${modul.title} icon`}
-                width={32}
-                height={32}
-              />
-            </div>
-            <h3 className="font-semibold text-lg mb-3 text-gray-800 dark:text-gray-100">
-              {modul.title}
-            </h3>
-            <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2 mb-3 overflow-hidden">
-              <div className={`h-2 rounded-full ${modul.progress === 100 ? "bg-green-500" : "bg-blue-500"}`} style={{ width: `${modul.progress}%` }}></div>
-            </div>
-            {getStatusBadge(modul.status, modul.progress)}
+          <Link href={`/modul/${modul.slug}`} key={modul._id} className="min-w-[240px] sm:min-w-[260px] p-5 rounded-2xl bg-white/80 dark:bg-gray-900/80 border border-gray-200 dark:border-gray-700 flex-shrink-0 snap-start backdrop-blur-md shadow-lg hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
+              <div className={`w-12 h-12 mb-3 rounded-lg flex items-center justify-center ${modul.progress === 100 ? "bg-green-100 dark:bg-green-900/50" : "bg-blue-100 dark:bg-blue-900/50"}`}>
+                <Image
+                  src={`${process.env.NEXT_PUBLIC_API_URL}/uploads/${modul.icon}`}
+                  alt={`${modul.title} icon`}
+                  width={32}
+                  height={32}
+                />
+              </div>
+              <h3 className="font-semibold text-lg mb-3 text-gray-800 dark:text-gray-100">
+                {modul.title}
+              </h3>
+              <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2 mb-3 overflow-hidden">
+                <div
+                  className={`h-2 rounded-full ${modul.progress === 100 ? "bg-green-500" : "bg-blue-500"}`}
+                  style={{ width: `${modul.progress}%` }}
+                ></div>
+              </div>
+              {getStatusBadge(modul.status, modul.progress)}
           </Link>
         ))}
       </div>

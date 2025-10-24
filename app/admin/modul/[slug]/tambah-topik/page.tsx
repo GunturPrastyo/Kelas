@@ -1,16 +1,16 @@
 "use client";
-import { useState } from "react";
+import { useState, use } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 
 interface TambahTopikProps {
-  params: { slug: string };
+  params: Promise<{ slug: string }>;
   searchParams: { modulId: string };
 }
 
 export default function TambahTopik({ params, searchParams, isSidebarCollapsed }: TambahTopikProps & { isSidebarCollapsed?: boolean }) {
   const router = useRouter();
-  const { slug: modulSlug } = params;
+  const { slug: modulSlug } = use(params);
   const { modulId } = searchParams;
 
   const [title, setTitle] = useState("");

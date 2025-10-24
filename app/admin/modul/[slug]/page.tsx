@@ -98,7 +98,7 @@ export default function ModulDetail({ params }: ModulDetailProps) {
   if (!modul) return <p className="p-6 text-center text-red-500">Modul tidak ditemukan.</p>;
 
   return (
-    <div className="p-6">
+    <div className="p-5">
       <Breadcrumb
         paths={[
           { name: "Modul", href: "/admin/modul" },
@@ -123,7 +123,7 @@ export default function ModulDetail({ params }: ModulDetailProps) {
       ) : (
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {filteredTopics.map((topik) => (
-            <TopicCard key={topik._id} topik={topik} modulSlug={slug} onDelete={handleDelete} />
+            <TopicCard key={topik._id} topik={topik} modulId={modul._id} modulSlug={slug} onDelete={handleDelete} />
           ))}
         </div>
       )}
