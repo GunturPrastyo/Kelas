@@ -1,6 +1,5 @@
 import Image from "next/image"
 import Link from "next/link"
-import ModuleList from "@/components/ModuleList"
 
 export default function DashboardPage() {
   return (
@@ -151,9 +150,6 @@ export default function DashboardPage() {
           </div>
         </div>
       </section>
-
-      {/* Learning Path */}
-      <ModuleList />
     </>
   )
 }

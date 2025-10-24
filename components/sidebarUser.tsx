@@ -1,9 +1,10 @@
 "use client"
 
 import Link from "next/link"
-import Image from "next/image"
-import { usePathname } from 'next/navigation'
+import Image from "next/image";
+import { usePathname, useRouter } from 'next/navigation';
 import { useUI } from "@/context/UIContext"
+import { LogOut } from "lucide-react";
 
 const navLinks = [
     { href: "/dashboard", label: "Dashboard", icon: "/dashboard.png", alt: "Dashboard Icon" },
@@ -16,10 +17,27 @@ const navLinks = [
 export default function Sidebar() {
   const { isSidebarCollapsed, isMobileDrawerOpen, toggleMobileDrawer, toggleSidebar } = useUI();
   const pathname = usePathname();
+  const router = useRouter();
 
   const isActive = (href: string) => {
     if (href === "/dashboard") return pathname === href;
     return pathname.startsWith(href);
+  };
+
+  const handleLogout = async () => {
+    try {
+      await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/users/logout`, {
+        method: "POST",
+        credentials: "include", // Penting untuk mengirim cookie
+      });
+    } catch (error) {
+      console.error("Gagal melakukan logout di server:", error);
+    } finally {
+      // Hapus data sisi klien apa pun yang terjadi
+      localStorage.removeItem("user");
+      localStorage.removeItem("token"); // Hapus sisa token jika masih ada
+      router.push("/login");
+    }
   };
 
   return (
@@ -68,6 +86,19 @@ export default function Sidebar() {
           );
         })}
       </nav>
+
+      {/* Tombol Logout */}
+      <div className="px-4 py-4 mt-auto border-t border-gray-200 dark:border-gray-700">
+        <button
+          onClick={handleLogout}
+          className={`flex items-center gap-4 p-2 rounded w-full hover:bg-red-100 dark:hover:bg-red-900/50 text-red-600 dark:text-red-400 ${isSidebarCollapsed ? 'justify-center' : ''}`}
+        >
+          <LogOut size={28} className="flex-shrink-0" />
+          <span className={`sidebar-text whitespace-nowrap transition-opacity duration-300 ${isSidebarCollapsed ? 'opacity-0' : 'opacity-100'}`}>
+            Keluar
+          </span>
+        </button>
+      </div>
     </aside>
   )
 }

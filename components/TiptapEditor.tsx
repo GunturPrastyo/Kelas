@@ -55,11 +55,10 @@ const ToolButton = ({
     type="button"
     onClick={onClick}
     title={title}
-    className={`p-2 rounded-md transition-colors ${
-      isActive
-        ? "bg-purple-100 text-gray-700 dark:bg-gray-600 dark:text-white"
-        : "text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700"
-    }`}
+    className={`p-2 rounded-md transition-colors ${isActive
+      ? "bg-purple-100 text-gray-700 dark:bg-gray-600 dark:text-white"
+      : "text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700"
+      }`}
   >
     <Icon size={18} />
   </button>
@@ -74,18 +73,43 @@ const MenuBar = ({ editor }: { editor: Editor | null }) => {
   }, [editor]);
 
   const handleFileChange = useCallback(
-    (e: React.ChangeEvent<HTMLInputElement>) => {
+    async (e: React.ChangeEvent<HTMLInputElement>) => {
       const file = e.target.files?.[0];
       if (!file) return;
-      const reader = new FileReader();
-      reader.onload = (ev) => {
-        const src = ev.target?.result as string;
-        editor?.chain().focus().setImage({ src }).run();
-      };
-      reader.readAsDataURL(file);
+
+      // Siapkan form data untuk dikirim ke server
+      const formData = new FormData();
+      formData.append("image", file);
+
+      try {
+        // Kirim ke backend upload route kamu
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/upload/image`, {
+          method: "POST",
+          body: formData,
+        });
+
+        if (!res.ok) {
+          alert("Gagal mengunggah gambar.");
+          return;
+        }
+
+        const data = await res.json();
+        const imageUrl = data.url;
+
+        // Masukkan URL hasil upload ke editor Tiptap
+        editor?.chain().focus().setImage({ src: imageUrl }).run();
+      } catch (error) {
+        console.error(error);
+        alert("Terjadi kesalahan saat mengunggah gambar.");
+      } finally {
+        // Reset input file supaya bisa upload file yang sama lagi jika mau
+        e.target.value = "";
+      }
     },
     [editor]
   );
+
+
 
   if (!editor) return null;
 
@@ -159,10 +183,9 @@ export default function TiptapEditor({
         horizontalRule: false,
         // Underline and Link are part of StarterKit by default
       }),
- 
+
       Highlight,
       TextStyle,
-      Link,
       TextAlign.configure({ types: ["heading", "paragraph"] }),
       Subscript,
       Superscript,

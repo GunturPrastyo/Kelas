@@ -10,7 +10,9 @@ import { UIProvider } from "@/context/UIContext";
 export default function PreTestLayout({ children }: { children: React.ReactNode }) {
   return (
     <UIProvider>
-      <div className="bg-gray-100 dark:bg-gray-900">{children}</div>
+      <div className="dark:bg-gray-900">
+        {children}
+      </div>
     </UIProvider>
   );
 }

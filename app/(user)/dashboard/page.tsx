@@ -1,76 +1,186 @@
+"use client";
+
+import { useState, useEffect, useMemo } from "react";
+import { useUI } from "@/context/UIContext";
 import Image from "next/image"
 import Link from "next/link"
 import ModuleList from "@/components/ModuleList"
 
+type ModuleStatus = 'Selesai' | 'Berjalan' | 'Terkunci' | 'Belum Mulai';
+
+interface Module {
+  [x: string]: any;
+  _id: string;
+  title: string;
+  slug: string;
+  // status akan dihitung di client-side, jadi tidak perlu dari API
+  status: ModuleStatus;
+  progress: number;
+  icon: string;
+  category: 'mudah' | 'sedang' | 'sulit';
+  isHighlighted?: boolean;
+}
+
 export default function DashboardPage() {
+  const [modules, setModules] = useState<Module[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [userLevel, setUserLevel] = useState<string | null>(null);
+  const { searchQuery } = useUI();
+
+  useEffect(() => {
+    // 1. Ambil data user dan level dari pre-test
+    const userRaw = localStorage.getItem('user');
+    if (userRaw) {
+      const parsedUser = JSON.parse(userRaw);
+      const resultKey = `pretest_result_${parsedUser._id}`;
+      const resultRaw = localStorage.getItem(resultKey);
+      if (resultRaw) {
+        const parsedResult = JSON.parse(resultRaw);
+        if (parsedResult.score >= 75) setUserLevel('lanjut');
+        else if (parsedResult.score >= 40) setUserLevel('menengah');
+        else setUserLevel('dasar');
+      }
+    }
+
+    // 2. Fetch modul dari API
+    const fetchModules = async () => {
+      try {
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/modul/progress`, {
+          credentials: 'include',
+        });
+        if (!res.ok) {
+          throw new Error("Gagal memuat data modul.");
+        }
+        const data = await res.json();
+        setModules(data);
+      } catch (error) {
+        console.error("Error fetching modules:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchModules();
+  }, []);
+
+  const personalizedModules = useMemo(() => {
+    const categoryMap = { mudah: 'dasar', sedang: 'menengah', sulit: 'lanjut' };
+
+    return modules.map(modul => {
+      const mappedCategory = categoryMap[modul.category as keyof typeof categoryMap];
+      let status: ModuleStatus;
+      let isLocked = userLevel === null; // Kunci semua jika belum pre-test
+
+      if (userLevel) {
+        if (userLevel === 'lanjut') isLocked = false;
+        else if (userLevel === 'menengah') isLocked = mappedCategory === 'lanjut';
+        else if (userLevel === 'dasar') isLocked = mappedCategory !== 'dasar';
+      }
+
+      if (modul.progress === 100) {
+        status = 'Selesai';
+      } else if (modul.progress > 0) {
+        status = 'Berjalan';
+      } else {
+        status = 'Belum Mulai';
+      }
+
+      if (isLocked && status !== 'Selesai') {
+        status = 'Terkunci';
+      }
+
+      return { ...modul, status };
+    }).filter(m => m.title.toLowerCase().includes(searchQuery.toLowerCase()));
+  }, [modules, userLevel, searchQuery]);
+
+
   return (
     <>
-      {/* Overview */}
       <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
 
         {/* Progres Belajar */}
-        <div className="bg-gradient-to-br from-blue-50 to-blue-100 dark:from-gray-900 dark:to-gray-800 p-4 sm:p-5 rounded-xl shadow flex flex-row flex-wrap items-center justify-between gap-4">
+        <div className="bg-gradient-to-br from-blue-50 to-blue-100 dark:from-gray-900 dark:to-gray-800 p-4 sm:p-5 rounded-xl shadow flex items-center justify-between overflow-hidden">
           {/* Konten Teks */}
-          <div className="flex-1">
+          <div className="flex flex-col justify-center flex-1 min-w-0">
             <div className="flex items-center gap-3 mb-3">
               <div className="bg-blue-600 rounded-lg w-10 h-10 flex items-center justify-center">
                 <Image src="/progress1.png" width={40} height={40} className="w-full h-full object-contain p-1" alt="" />
               </div>
-              <h2 className="text-lg font-semibold">Progres Belajar</h2>
+              <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Progres Belajar</h2>
             </div>
 
             <div className="flex items-center gap-3">
-              <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-3">
+              <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-3 overflow-hidden">
                 <div className="bg-blue-500 h-3 rounded-full" style={{ width: '45%' }}></div>
               </div>
               <p className="text-sm font-medium text-blue-600 dark:text-blue-400 flex-shrink-0">45%</p>
             </div>
           </div>
+
           {/* Gambar */}
-          <div className="flex-shrink-1">
-            <Image src="/progress.png" alt="Progress Illustration" width={128} height={128} className="w-24 h-24 sm:w-32 sm:h-32 object-contain" />
+          <div className="flex-shrink-0 flex items-center justify-center max-w-[40%]">
+            <Image
+              src="/progress.png"
+              alt="Progress Illustration"
+              width={128}
+              height={128}
+              className="w-24 h-24 sm:w-28 sm:h-28 object-contain"
+            />
           </div>
         </div>
 
         {/* Jam Belajar */}
-        <div className="bg-gradient-to-br from-purple-50 to-purple-100 dark:from-gray-900 dark:to-gray-800 p-5 rounded-xl shadow flex flex-row flex-wrap items-center gap-4">
-          <div className="flex-1">
+        <div className="bg-gradient-to-br from-purple-50 to-purple-100 dark:from-gray-900 dark:to-gray-800 p-4 sm:p-5 rounded-xl shadow flex items-center justify-between overflow-hidden">
+          <div className="flex flex-col justify-center flex-1 min-w-0">
             <div className="flex items-center gap-3 mb-3">
               <div className="bg-purple-600 rounded-lg w-10 h-10 flex items-center justify-center">
                 <Image src="/clock2.png" width={40} height={40} className="w-full h-full object-contain p-1" alt="" />
               </div>
-              <h2 className="text-lg font-semibold">Jam Belajar</h2>
+              <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Jam Belajar</h2>
             </div>
             <p className="text-2xl sm:text-3xl font-bold text-purple-700 dark:text-purple-400">12 Jam</p>
             <p className="text-sm text-gray-600 dark:text-gray-300">
               Total waktu belajar hingga saat ini
             </p>
           </div>
-          <div className="flex-shrink-1">
-            <Image src="/clock.png" alt="Clock Illustration" width={128} height={128} className="w-24 h-24 sm:w-32 sm:h-32 object-contain" />
+
+          <div className="flex-shrink-0 flex items-center justify-center max-w-[40%]">
+            <Image
+              src="/clock.png"
+              alt="Clock Illustration"
+              width={128}
+              height={128}
+              className="w-24 h-24 sm:w-28 sm:h-28 object-contain"
+            />
           </div>
         </div>
 
         {/* Rekomendasi */}
-        <div className="bg-gradient-to-br from-green-50 to-green-100 dark:from-gray-900 dark:to-gray-800 p-5 rounded-xl shadow flex flex-col md:col-span-2 lg:col-span-1">
-          <div className="flex items-center gap-3 mb-3">
-            <div className="bg-green-600 rounded-lg w-10 h-10 flex items-center justify-center">
-              <Image src="/target.png" width={40} height={40} className="w-full h-full object-contain p-1" alt="" />
+        <div className="bg-gradient-to-br from-green-50 to-green-100 dark:from-gray-900 dark:to-gray-800 p-4 sm:p-5 rounded-xl shadow flex items-center justify-between md:col-span-2 lg:col-span-1 overflow-hidden">
+          <div className="flex flex-col justify-center flex-1 min-w-0">
+            <div className="flex items-center gap-3 mb-3">
+              <div className="bg-green-600 rounded-lg w-10 h-10 flex items-center justify-center">
+                <Image src="/target.png" width={40} height={40} className="w-full h-full object-contain p-1" alt="" />
+              </div>
+              <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Rekomendasi</h2>
             </div>
-            <h2 className="text-lg font-semibold">Rekomendasi</h2>
+
+            <div className="p-4 border border-green-200 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-900 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer transition">
+              <h3 className="font-medium text-green-700 dark:text-green-400">
+                Mulai Modul: DOM Manipulation
+              </h3>
+              <p className="text-sm text-gray-600 dark:text-gray-400">
+                Berdasarkan hasil evaluasi, kamu siap ke materi berikutnya 🚀
+              </p>
+            </div>
           </div>
 
-          {/* Konten di dalam card */}
-          <div className="p-4 border border-green-200 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-900 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer transition max-w-2xl mx-auto w-full">
-            <h3 className="font-medium text-green-700 dark:text-green-400">
-              Mulai Modul: DOM Manipulation
-            </h3>
-            <p className="text-sm text-gray-600 dark:text-gray-400">
-              Berdasarkan hasil evaluasi, kamu siap ke materi berikutnya 🚀
-            </p>
-          </div>
+        
         </div>
       </section>
+
+
+
 
 
       {/* Pre-Test + Analitik */}
@@ -133,8 +243,13 @@ export default function DashboardPage() {
         </div>
       </section>
 
-      {/* Learning Path */}
-      <ModuleList />
+      {/* Learning Path - Sekarang dengan data dinamis */}
+      {loading ? (
+        <div className="text-center p-8">Memuat modul...</div>
+      ) : (
+        // Gabungkan semua modul ke dalam satu section "Jalur Belajar"
+        <ModuleList title="Jalur Belajar" allModules={personalizedModules} filter={() => true} />
+      )}
     </>
   )
 }

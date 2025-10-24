@@ -1,32 +1,49 @@
 "use client"
 
 import Link from "next/link"
-import Image from "next/image"
-import { usePathname } from 'next/navigation'
+import Image from "next/image";
+import { usePathname, useRouter } from 'next/navigation';
 import { useUI } from "@/context/UIContext"
+import { LogOut } from "lucide-react";
 
 const adminNavLinks = [
-    { href: "/admin/dashboard", label: "Dashboard", icon: "/dashboard.png", alt: "Dashboard Icon" },
-    { href: "/admin/modul", label: "Manajemen Modul", icon: "/modules.png", alt: "Modul Icon" },
-    { href: "/admin/manajemen-test", label: "Manajemen Tes", icon: "/exam.png", alt: "Tes Icon" },
-     { href: "/admin/manajemen-pengguna", label: "Manajemen Pengguna", icon: "/profile.png", alt: "Users Icon" },
-    { href: "/admin/analitik", label: "Analitik", icon: "/analitik.png", alt: "Analitik Icon" },
-    // { href: "/admin/profil", label: "Profil", icon: "/profile.png", alt: "Profil Icon" },
+  { href: "/admin/dashboard", label: "Dashboard", icon: "/dashboard.png", alt: "Dashboard Icon" },
+  { href: "/admin/modul", label: "Modul dan Tes", icon: "/modules.png", alt: "Modul Icon" },
+  { href: "/admin/manajemen-pengguna", label: "Manajemen Pengguna", icon: "/profile.png", alt: "Users Icon" },
+  { href: "/admin/analitik", label: "Analitik", icon: "/analitik.png", alt: "Analitik Icon" },
+  // { href: "/admin/profil", label: "Profil", icon: "/profile.png", alt: "Profil Icon" },
 ];
 
 export default function SidebarAdmin() {
-  const { isSidebarCollapsed, isMobileDrawerOpen, toggleSidebar } = useUI();
+  const { isSidebarCollapsed, isMobileDrawerOpen, toggleSidebar } = useUI()
   const pathname = usePathname();
+  const router = useRouter();
 
   const isActive = (href: string) => {
     if (href === "/admin/dashboard") return pathname === href;
     return pathname.startsWith(href);
   };
 
+  const handleLogout = async () => {
+    try {
+      await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/users/logout`, {
+        method: "POST",
+        credentials: "include", // Penting untuk mengirim cookie
+      });
+    } catch (error) {
+      console.error("Gagal melakukan logout di server:", error);
+    } finally {
+      // Hapus data sisi klien apa pun yang terjadi
+      localStorage.removeItem("user");
+      localStorage.removeItem("token"); // Hapus sisa token jika masih ada
+      router.push("/login");
+    }
+  };
+
   return (
     <aside
       id="sidebar-admin"
-      className={`fixed top-0 left-0 z-40 h-screen bg-white dark:bg-gray-800 shadow-md transition-all duration-300 ease-in-out flex flex-col
+      className={`fixed top-0 left-0 z-50 h-screen bg-white dark:bg-gray-800 shadow-md transition-all duration-300 ease-in-out flex flex-col
         ${isSidebarCollapsed ? 'w-20' : 'w-64'}
         ${isMobileDrawerOpen ? 'translate-x-0' : '-translate-x-full'}
         md:translate-x-0`}
@@ -61,6 +78,19 @@ export default function SidebarAdmin() {
           </Link>
         ))}
       </nav>
+
+      {/* Tombol Logout */}
+      <div className="px-4 py-4 mt-auto border-t border-gray-200 dark:border-gray-700">
+        <button
+          onClick={handleLogout}
+          className={`flex items-center gap-4 p-2 rounded w-full hover:bg-red-100 dark:hover:bg-red-900/50 text-red-600 dark:text-red-400 ${isSidebarCollapsed ? 'justify-center' : ''}`}
+        >
+          <LogOut size={28} className="flex-shrink-0" />
+          <span className={`whitespace-nowrap transition-opacity duration-300 text-sm ${isSidebarCollapsed ? 'opacity-0' : 'opacity-100'}`}>
+            Keluar
+          </span>
+        </button>
+      </div>
     </aside>
   )
 }
