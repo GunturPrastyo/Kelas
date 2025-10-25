@@ -63,7 +63,7 @@ export default function Sidebar() {
         </button>
         <div id="sidebar-title-container" className="flex-1 flex items-center gap-4 overflow-hidden" >
           {!isSidebarCollapsed && (
-            <Image id="sidebar-title" src="/logo.png" alt="KELAS Logo" width={150} height={40} className="h-10 w-auto transition-opacity duration-300" />
+            <Image id="sidebar-title" src="/logo.png" alt="KELAS Logo" width={150} height={40} className="h-10 w-auto transition-opacity duration-300" style={{ width: 'auto' }} />
           )}
         </div>
       </div>
@@ -79,7 +79,7 @@ export default function Sidebar() {
               className={`nav-link flex items-center gap-4 p-2 rounded hover:bg-blue-100 dark:hover:bg-gray-700 ${active ? 'bg-blue-100 dark:bg-gray-700 font-semibold' : ''}`}
             >
               <Image src={link.icon} alt={link.alt} width={28} height={28} className="flex-shrink-0" />
-              <span className={`sidebar-text whitespace-nowrap transition-opacity duration-300 ${isSidebarCollapsed ? 'opacity-0' : 'opacity-100'} ${active ? 'text-blue-700 dark:text-blue-300' : ''}`}>
+              <span className={`sidebar-text whitespace-nowrap transition-opacity duration-300 ${isSidebarCollapsed ? 'opacity-0 hidden' : 'opacity-100'} ${active ? 'text-blue-700 dark:text-blue-300' : ''}`}>
                 {link.label}
               </span>
             </Link>
@@ -94,7 +94,7 @@ export default function Sidebar() {
           className={`flex items-center gap-4 p-2 rounded w-full hover:bg-red-100 dark:hover:bg-red-900/50 text-red-600 dark:text-red-400 ${isSidebarCollapsed ? 'justify-center' : ''}`}
         >
           <LogOut size={28} className="flex-shrink-0" />
-          <span className={`sidebar-text whitespace-nowrap transition-opacity duration-300 ${isSidebarCollapsed ? 'opacity-0' : 'opacity-100'}`}>
+          <span className={`sidebar-text whitespace-nowrap transition-opacity duration-300 ${isSidebarCollapsed ? 'opacity-0 hidden' : 'opacity-100'}`}>
             Keluar
           </span>
         </button>

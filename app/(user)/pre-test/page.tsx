@@ -386,10 +386,9 @@ export default function PreTestPage() {
                             <div className="flex items-start font-semibold mb-4 text-base text-slate-800 dark:text-slate-200">
                                 <span className="mr-2">{idx + 1}.</span>
                                 <div
-                                    className="flex-1 prose prose-sm dark:prose-invert max-w-none
+                                    className="flex-1 prose dark:prose-invert max-w-none
                                     [&_pre]:bg-gray-100 [&_pre]:dark:bg-gray-900
                                     [&_pre]:text-sm [&_pre]:p-3 [&_pre]:rounded-md
-                                    [&_code]:font-mono [&_code]:text-gray-600 [&_code]:dark:text-gray-300
                                     "
                                     dangerouslySetInnerHTML={{ __html: currentQuestion.questionText }} 
                                 />

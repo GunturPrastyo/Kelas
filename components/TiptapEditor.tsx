@@ -1,6 +1,7 @@
 "use client";
 
 import { useEditor, EditorContent, Editor } from "@tiptap/react";
+import { Node } from '@tiptap/core';
 import StarterKit from "@tiptap/starter-kit";
 import { TextStyle } from "@tiptap/extension-text-style";
 import Highlight from "@tiptap/extension-highlight";
@@ -36,7 +37,8 @@ import {
   Subscript as SubIcon,
   Superscript as SuperIcon,
   Minus,
-  Plus,
+  ArrowUpFromLine,
+  ArrowDownFromLine,
 } from "lucide-react";
 import { useCallback, useRef } from "react";
 
@@ -64,12 +66,70 @@ const ToolButton = ({
   </button>
 );
 
+// Ekstensi kustom untuk menambahkan atribut 'style' ke node
+const StyleAttribute = Node.create({
+  name: 'styleAttribute',
+  addGlobalAttributes() {
+    return [
+      {
+        types: ['paragraph', 'listItem'], // Terapkan pada paragraf dan item list
+        attributes: {
+          style: {
+            default: null,
+            parseHTML: element => element.getAttribute('style'),
+            renderHTML: attributes => {
+              if (!attributes.style) {
+                return {};
+              }
+              return { style: attributes.style };
+            },
+          },
+        },
+      },
+    ];
+  },
+});
+
 const MenuBar = ({ editor }: { editor: Editor | null }) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const setLink = useCallback(() => {
     const url = window.prompt("Masukkan URL:");
     if (url) editor?.chain().focus().setLink({ href: url }).run();
+  }, [editor]);
+
+  const adjustMargin = useCallback((increment: number) => {
+    if (!editor) return;
+
+    const { state, dispatch } = editor.view;
+    const { from, to } = state.selection;
+
+    let transaction = state.tr;
+    const nodesToUpdate: { node: any, pos: number, newMargin: number }[] = [];
+
+    state.doc.nodesBetween(from, to, (node, pos) => {
+      if (node.type.name === 'paragraph' || node.type.name === 'listItem') {
+        // Hindari duplikasi jika node sudah ada di list
+        if (nodesToUpdate.some(item => item.pos === pos)) return;
+
+        const currentStyle = node.attrs.style || '';
+        const marginMatch = currentStyle.match(/margin-top:\s*([0-9.]+)rem/);
+        let currentMargin = 0;
+        if (marginMatch) {
+          currentMargin = parseFloat(marginMatch[1]);
+        } else {
+          // Jika tidak ada style, ambil dari class prose-p:my-2 (0.5rem) atau prose-li:my-2 (0.5rem)
+          currentMargin = 0.5; 
+        }
+
+        const newMargin = Math.max(0, currentMargin + increment);
+        const newStyle = `marginTop: ${newMargin}rem; marginBottom: ${newMargin}rem;`;
+        
+        transaction = transaction.setNodeMarkup(pos, undefined, { ...node.attrs, style: newStyle });
+      }
+    });
+
+    dispatch(transaction);
   }, [editor]);
 
   const handleFileChange = useCallback(
@@ -85,6 +145,8 @@ const MenuBar = ({ editor }: { editor: Editor | null }) => {
         // Kirim ke backend upload route kamu
         const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/upload/image`, {
           method: "POST",
+          // Tidak perlu header Authorization, cookie akan dikirim otomatis
+          credentials: 'include', // Penting: untuk mengirim cookie ke backend
           body: formData,
         });
 
@@ -94,10 +156,13 @@ const MenuBar = ({ editor }: { editor: Editor | null }) => {
         }
 
         const data = await res.json();
-        const imageUrl = data.url;
+        // Backend mengirimkan { imageUrl: '...' }, jadi kita ambil dari sana
+        const imageUrl = data.imageUrl; 
 
         // Masukkan URL hasil upload ke editor Tiptap
-        editor?.chain().focus().setImage({ src: imageUrl }).run();
+        // URL dari backend adalah path relatif, kita perlu menggabungkannya dengan base URL API
+        const fullImageUrl = `${process.env.NEXT_PUBLIC_API_URL}${imageUrl}`;
+        editor?.chain().focus().setImage({ src: fullImageUrl }).run();
       } catch (error) {
         console.error(error);
         alert("Terjadi kesalahan saat mengunggah gambar.");
@@ -157,10 +222,11 @@ const MenuBar = ({ editor }: { editor: Editor | null }) => {
       <div className="flex-1" />
 
       {/* Extra tools */}
+      <ToolButton onClick={() => adjustMargin(0.25)} icon={ArrowUpFromLine} title="Increase Spacing" />
+      <ToolButton onClick={() => adjustMargin(-0.25)} icon={ArrowDownFromLine} title="Decrease Spacing" />
       <ToolButton onClick={setLink} icon={LinkIcon} title="Add Link" />
       <ToolButton onClick={() => fileInputRef.current?.click()} icon={ImageIcon} title="Add Image" />
       <ToolButton onClick={() => editor.chain().focus().setHorizontalRule().run()} icon={Minus} title="Horizontal Rule" />
-      <ToolButton onClick={() => editor.chain().focus().setParagraph().run()} icon={Plus} title="New Paragraph" />
 
       <input ref={fileInputRef} type="file" accept="image/*" onChange={handleFileChange} className="hidden" />
     </div>
@@ -179,11 +245,15 @@ export default function TiptapEditor({
   const editor = useEditor({
     extensions: [
       StarterKit.configure({
+        bulletList: {
+          HTMLAttributes: { class: 'list-disc pl-5' },
+        },
+        orderedList: {
+          HTMLAttributes: { class: 'list-decimal pl-5' },
+        },
         codeBlock: true,
         horizontalRule: false,
-        // Underline and Link are part of StarterKit by default
       }),
-
       Highlight,
       TextStyle,
       TextAlign.configure({ types: ["heading", "paragraph"] }),
@@ -194,6 +264,7 @@ export default function TiptapEditor({
       HorizontalRule,
       Color,
       Image,
+      StyleAttribute, // Tambahkan ekstensi kustom di sini
     ],
     content,
     onUpdate: ({ editor }) => onChange(editor.getHTML()),
@@ -207,7 +278,7 @@ export default function TiptapEditor({
   });
 
   return (
-    <div className="space-y-2">
+    <div className="space-y-2 my-4">
       <MenuBar editor={editor} />
       <EditorContent
         editor={editor}

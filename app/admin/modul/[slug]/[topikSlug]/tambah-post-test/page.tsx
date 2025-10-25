@@ -99,6 +99,7 @@ export default function TambahPostTestPage() {
             modulSlug={slug}
             topikSlug={topikSlug}
             isEditing={false}
+            testType="post-test-topik"
           />
         ) : (
           <div className="text-center text-gray-500">

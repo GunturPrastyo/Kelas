@@ -72,7 +72,7 @@ export default function SidebarAdmin() {
         {adminNavLinks.map((link) => (
           <Link key={link.href} href={link.href} className={`flex items-center gap-4 p-2 rounded hover:bg-blue-100 dark:hover:bg-gray-700 ${isActive(link.href) ? 'bg-blue-100 dark:bg-gray-700 font-semibold' : ''}`}>
             <Image src={link.icon} alt={link.alt} width={28} height={28} className="flex-shrink-0" />
-            <span className={`whitespace-nowrap transition-opacity duration-300 text-sm ${isSidebarCollapsed ? 'opacity-0' : 'opacity-100'} ${isActive(link.href) ? 'text-blue-700 dark:text-blue-300' : ''}`}>
+            <span className={`whitespace-nowrap transition-opacity duration-300 text-sm ${isSidebarCollapsed ? 'opacity-0 hidden' : 'opacity-100'} ${isActive(link.href) ? 'text-blue-700 dark:text-blue-300' : ''}`}>
               {link.label}
             </span>
           </Link>
@@ -86,7 +86,7 @@ export default function SidebarAdmin() {
           className={`flex items-center gap-4 p-2 rounded w-full hover:bg-red-100 dark:hover:bg-red-900/50 text-red-600 dark:text-red-400 ${isSidebarCollapsed ? 'justify-center' : ''}`}
         >
           <LogOut size={28} className="flex-shrink-0" />
-          <span className={`whitespace-nowrap transition-opacity duration-300 text-sm ${isSidebarCollapsed ? 'opacity-0' : 'opacity-100'}`}>
+          <span className={`whitespace-nowrap transition-opacity duration-300 text-sm ${isSidebarCollapsed ? 'opacity-0 hidden' : 'opacity-100'}`}>
             Keluar
           </span>
         </button>
