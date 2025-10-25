@@ -35,3 +35,13 @@ body {
   color: var(--foreground);
   font-family: var(--font-poppins), sans-serif;
 }
+
+.prose img {
+  margin: 1rem auto;
+  border-radius: 0.5rem;
+}
+
+.prose h1, .prose h2, .prose h3 {
+  scroll-margin-top: 100px; /* biar enak kalau pakai anchor */
+}
+

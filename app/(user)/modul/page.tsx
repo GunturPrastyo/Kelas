@@ -158,7 +158,7 @@ export default function ModulPage() {
             )}
 
             {userLevel && (
-                <section className="bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800 p-5 rounded-xl shadow-sm flex items-center gap-4 mb-6">
+                <section className="bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800 p-5 rounded-xl shadow-md flex items-center gap-4 mb-6">
                     <Image src={recommendation.icon} alt="Rekomendasi" width={48} height={48} className="w-12 h-12" />
                     <div>
                         <h2 className="text-lg font-semibold text-blue-800 dark:text-blue-300">{recommendation.title}</h2>

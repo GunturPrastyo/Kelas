@@ -2,6 +2,8 @@
 
 import { useEffect, useState, use } from "react";
 import Link from "next/link";
+import { Button } from "@/components/ui/button";
+import { PlusCircle, FileEdit } from "lucide-react";
 import { useUI } from "@/context/UIContext";
 import TopicCard from "@/components/Topic";
 import Breadcrumb from "@/components/Breadcrumb";
@@ -30,6 +32,7 @@ export default function ModulDetail({ params }: ModulDetailProps) {
   const [filteredTopics, setFilteredTopics] = useState<Topik[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [hasModulPostTest, setHasModulPostTest] = useState<boolean | null>(null);
   const { searchQuery } = useUI();
 
   useEffect(() => {
@@ -57,6 +60,19 @@ export default function ModulDetail({ params }: ModulDetailProps) {
         const topikData = await topikRes.json();
         setAllTopics(topikData);
         setFilteredTopics(topikData);
+
+        // Cek apakah modul ini punya post-test
+        if (modulData._id) {
+          try {
+            const postTestRes = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/questions/check/${modulData._id}`, { credentials: 'include' });
+            if (postTestRes.ok) {
+              const postTestData = await postTestRes.json();
+              setHasModulPostTest(postTestData.exists);
+            }
+          } catch (err) {
+            console.error("Gagal memeriksa post-test modul:", err);
+          }
+        }
       } catch (err) {
         console.error(err);
         setError(err instanceof Error ? err.message : "Terjadi kesalahan yang tidak diketahui.");
@@ -109,11 +125,29 @@ export default function ModulDetail({ params }: ModulDetailProps) {
       <div className="flex justify-between items-center mt-4 mb-6">
         <h1 className="text-2xl font-bold">Topik di Modul: {modul.title}</h1>
 
-        <Link href={`/admin/modul/${slug}/tambah-topik?modulId=${modul._id}`}>
-          <button className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
-            + Tambah Topik
-          </button>
-        </Link>
+        <div className="flex items-center gap-2">
+          {hasModulPostTest === null ? (
+            <Button disabled className="animate-pulse">Memeriksa Tes...</Button>
+          ) : hasModulPostTest ? (
+            <Link href={`/admin/modul/${slug}/edit-post-test?modulId=${modul._id}`}>
+              <Button variant="outline" className="flex items-center gap-2 text-yellow-600 border-yellow-500 hover:bg-yellow-50 hover:text-yellow-700">
+                <FileEdit size={16} /> Edit Post Test Modul
+              </Button>
+            </Link>
+          ) : (
+            <Link href={`/admin/modul/${slug}/tambah-post-test?modulId=${modul._id}`}>
+              <Button variant="outline" className="flex items-center gap-2 text-blue-600 border-blue-500 hover:bg-blue-50 hover:text-blue-700">
+                <PlusCircle size={16} /> Tambah Post Test Modul
+              </Button>
+            </Link>
+          )}
+
+          <Link href={`/admin/modul/${slug}/tambah-topik?modulId=${modul._id}`}>
+            <Button className="bg-blue-600 hover:bg-blue-700">
+              <PlusCircle size={16} className="mr-2" /> Tambah Topik
+            </Button>
+          </Link>
+        </div>
       </div>
 
       {filteredTopics.length === 0 && !loading ? (

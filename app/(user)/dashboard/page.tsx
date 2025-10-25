@@ -21,11 +21,24 @@ interface Module {
   isHighlighted?: boolean;
 }
 
+interface AnalyticsData {
+  averageScore: number;
+  weakestTopic: { title: string } | null;
+  completedModulesCount: number;
+}
+
 export default function DashboardPage() {
   const [modules, setModules] = useState<Module[]>([]);
   const [loading, setLoading] = useState(true);
   const [userLevel, setUserLevel] = useState<string | null>(null);
+  const [studyTime, setStudyTime] = useState({ hours: 0, minutes: 0 });
+  const [hasTakenPreTest, setHasTakenPreTest] = useState(false);
   const { searchQuery } = useUI();
+  const [analytics, setAnalytics] = useState<AnalyticsData>({
+    averageScore: 0,
+    weakestTopic: null,
+    completedModulesCount: 0,
+  });
 
   useEffect(() => {
     // 1. Ambil data user dan level dari pre-test
@@ -35,6 +48,7 @@ export default function DashboardPage() {
       const resultKey = `pretest_result_${parsedUser._id}`;
       const resultRaw = localStorage.getItem(resultKey);
       if (resultRaw) {
+        setHasTakenPreTest(true);
         const parsedResult = JSON.parse(resultRaw);
         if (parsedResult.score >= 75) setUserLevel('lanjut');
         else if (parsedResult.score >= 40) setUserLevel('menengah');
@@ -60,7 +74,50 @@ export default function DashboardPage() {
       }
     };
 
+    const fetchStudyTime = async () => {
+      try {
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/results/study-time`, {
+          credentials: 'include',
+        });
+        if (!res.ok) {
+          // Log the error but don't throw, so other fetches can proceed
+          console.error(`Error fetching study time: ${res.status} ${res.statusText}`);
+          return;
+        }
+        const data = await res.json();
+        const totalSeconds = data.totalTimeInSeconds || 0;
+        const hours = Math.floor(totalSeconds / 3600);
+        const minutes = Math.floor((totalSeconds % 3600) / 60);
+        setStudyTime({ hours, minutes });
+      } catch (error) {
+        console.error("Error fetching study time:", error);
+      }
+    };
+
+    const fetchAnalytics = async () => {
+      try {
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/results/analytics`, {
+          credentials: 'include',
+        });
+        if (!res.ok) {
+          // Log the error but don't throw
+          console.error(`Error fetching analytics: ${res.status} ${res.statusText}`);
+          return;
+        }
+        const data = await res.json();
+        setAnalytics(prev => ({
+          ...prev,
+          averageScore: data.averageScore || 0,
+          weakestTopic: data.weakestTopic || null,
+        }));
+      } catch (error) {
+        console.error("Error fetching analytics:", error);
+      }
+    };
+
     fetchModules();
+    fetchStudyTime();
+    fetchAnalytics();
   }, []);
 
   const personalizedModules = useMemo(() => {
@@ -93,6 +150,26 @@ export default function DashboardPage() {
     }).filter(m => m.title.toLowerCase().includes(searchQuery.toLowerCase()));
   }, [modules, userLevel, searchQuery]);
 
+  // Hitung modul yang selesai setelah personalizedModules dihitung
+  useEffect(() => {
+    const completedCount = personalizedModules.filter(m => m.status === 'Selesai').length;
+    setAnalytics(prev => ({ ...prev, completedModulesCount: completedCount }));
+  }, [personalizedModules]);
+
+  const overallProgress = useMemo(() => {
+    if (modules.length === 0) return 0;
+    const totalAllTopics = modules.reduce((sum, module) => sum + (module.totalTopics || 0), 0);
+    const totalCompletedTopics = modules.reduce((sum, module) => sum + (module.completedTopics || 0), 0);
+    if (totalAllTopics === 0) return 0;
+    return Math.round((totalCompletedTopics / totalAllTopics) * 100);
+  }, [modules]);
+
+  const recommendedModule = useMemo(() => {
+    if (!userLevel) return null;
+    const categoryMap = { mudah: 'dasar', sedang: 'menengah', sulit: 'lanjut' };
+    // Cari modul pertama yang sesuai level dan belum dimulai
+    return personalizedModules.find(m => categoryMap[m.category as keyof typeof categoryMap] === userLevel && m.status === 'Belum Mulai');
+  }, [personalizedModules, userLevel]);
 
   return (
     <>
@@ -111,9 +188,9 @@ export default function DashboardPage() {
 
             <div className="flex items-center gap-3">
               <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-3 overflow-hidden">
-                <div className="bg-blue-500 h-3 rounded-full" style={{ width: '45%' }}></div>
+                <div className="bg-blue-500 h-3 rounded-full" style={{ width: `${overallProgress}%` }}></div>
               </div>
-              <p className="text-sm font-medium text-blue-600 dark:text-blue-400 flex-shrink-0">45%</p>
+              <p className="text-sm font-medium text-blue-600 dark:text-blue-400 flex-shrink-0">{overallProgress}%</p>
             </div>
           </div>
 
@@ -138,7 +215,7 @@ export default function DashboardPage() {
               </div>
               <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Jam Belajar</h2>
             </div>
-            <p className="text-2xl sm:text-3xl font-bold text-purple-700 dark:text-purple-400">12 Jam</p>
+            <p className="text-2xl sm:text-3xl font-bold text-purple-700 dark:text-purple-400">{studyTime.hours} Jam {studyTime.minutes} Mnt</p>
             <p className="text-sm text-gray-600 dark:text-gray-300">
               Total waktu belajar hingga saat ini
             </p>
@@ -165,14 +242,23 @@ export default function DashboardPage() {
               <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Rekomendasi</h2>
             </div>
 
-            <div className="p-4 border border-green-200 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-900 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer transition">
-              <h3 className="font-medium text-green-700 dark:text-green-400">
-                Mulai Modul: DOM Manipulation
-              </h3>
-              <p className="text-sm text-gray-600 dark:text-gray-400">
-                Berdasarkan hasil evaluasi, kamu siap ke materi berikutnya 🚀
-              </p>
-            </div>
+            {recommendedModule ? (
+              <Link href={`/modul/${recommendedModule.slug}`} className="block p-4 border border-green-200 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-900 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer transition">
+                <h3 className="font-medium text-green-700 dark:text-green-400">
+                  Mulai Modul: {recommendedModule.title}
+                </h3>
+                <p className="text-sm text-gray-600 dark:text-gray-400">
+                  Rekomendasi topik untuk dimulai: <b>{recommendedModule.firstTopicTitle || 'Topik pertama'}</b> 🚀
+                </p>
+              </Link>
+            ) : (
+              <div className="p-4 border border-gray-200 dark:border-gray-700 rounded-lg bg-white/50 dark:bg-gray-900/50">
+                <h3 className="font-medium text-gray-700 dark:text-gray-400">
+                  Semua modul rekomendasi telah dimulai!
+                </h3>
+                <p className="text-sm text-gray-600 dark:text-gray-400">Kerja bagus! Lanjutkan progres belajarmu. 👍</p>
+              </div>
+            )}
           </div>
 
         
@@ -196,7 +282,7 @@ export default function DashboardPage() {
               <span className="text-red-600 dark:text-red-400 font-medium">Hasil pre-test menentukan jalur belajar wajib.</span>
             </p>
             <Link href="/pre-test" className="inline-block px-4 sm:px-5 py-2 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition">
-              Mulai Pre-Test
+              {hasTakenPreTest ? 'Lihat Hasil' : 'Mulai Pre-Test'}
             </Link>
           </div>
           {/* Ilustrasi */}
@@ -215,7 +301,7 @@ export default function DashboardPage() {
                 <div className="bg-blue-600 rounded-full w-10 h-10 flex items-center justify-center">
                   <Image src="/book.png" width={40} height={40} className="w-full h-full object-contain p-1" alt="" />
                 </div>
-                <p className="text-2xl font-bold text-blue-700 dark:text-blue-400">12</p>
+                <p className="text-2xl font-bold text-blue-700 dark:text-blue-400">{analytics.completedModulesCount}</p>
                 <p className="text-sm text-gray-600 dark:text-gray-300">Modul Selesai</p>
               </div>
             </div>
@@ -225,17 +311,17 @@ export default function DashboardPage() {
                 <div className="bg-green-600 rounded-full w-10 h-10 flex items-center justify-center">
                   <Image src="/score.png" width={40} height={40} className="w-full h-full object-contain p-1" alt="" />
                 </div>
-                <p className="text-2xl font-bold text-green-700 dark:text-green-400">78%</p>
+                <p className="text-2xl font-bold text-green-700 dark:text-green-400">{loading ? '...' : `${Math.round(analytics.averageScore)}%`}</p>
                 <p className="text-sm text-gray-600 dark:text-gray-300">Rata-rata Skor</p>
               </div>
             </div>
             {/* Topik Terlemah */}
             <div className="max-w-full shadow-lg p-4 rounded-lg bg-gradient-to-br from-red-50 to-red-100 dark:from-gray-700 dark:to-gray-800 shadow hover:shadow-md transition">
-              <div className="flex flex-col items-center gap-2 break-words">
+              <div className="flex flex-col items-center justify-center gap-2 break-words h-full">
                 <div className="bg-red-600 rounded-full w-10 h-10 flex items-center justify-center">
                   <Image src="/thunder.png" width={40} height={40} className="w-full h-full object-contain p-1" alt="" />
                 </div>
-                <p className="text-md font-bold text-red-700 dark:text-red-400">DOM Manipulation</p>
+                <p className="text-md font-bold text-red-700 dark:text-red-400 truncate w-full">{analytics.weakestTopic?.title || 'Belum ada'}</p>
                 <p className="text-sm text-gray-600 dark:text-gray-300">Topik Terlemah</p>
               </div>
             </div>

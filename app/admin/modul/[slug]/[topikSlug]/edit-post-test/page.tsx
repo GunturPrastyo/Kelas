@@ -114,6 +114,7 @@ export default function EditPostTestTopikPage() {
                         modulSlug={slug}
                         topikSlug={topikSlug}
                         initialQuestions={questions}
+                        testType="post-test-topik"
 
                     />
                 )}

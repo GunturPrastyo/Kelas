@@ -53,13 +53,17 @@ export const TiptapMenuBar = ({ editor }: { editor: Editor | null }) => {
             try {
                 const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/upload/image`, {
                     method: "POST",
-                    body: formData,
+                    // Tidak perlu header Authorization, cookie akan dikirim otomatis
+                    credentials: 'include', // Penting: untuk mengirim cookie ke backend
+                    body: formData
                 });
 
                 if (!res.ok) throw new Error("Gagal mengunggah gambar.");
 
                 const data = await res.json();
-                editor.chain().focus().setImage({ src: data.url }).run();
+                // Backend mengirimkan { imageUrl: '...' }, jadi kita ambil dari sana
+                const fullImageUrl = `${process.env.NEXT_PUBLIC_API_URL}${data.imageUrl}`;
+                editor.chain().focus().setImage({ src: fullImageUrl }).run();
             } catch (error) {
                 console.error("Error uploading image:", error);
                 alert("Gagal mengunggah gambar. Periksa konsol untuk detail.");

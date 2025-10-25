@@ -1,20 +1,27 @@
 "use client";
 
-import { useState, useEffect, use } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { initFlowbite } from 'flowbite';
-import PostTestTopik from '@/components/PostTestTopik';
+import { useParams } from 'next/navigation';
+import TopicContent from '@/components/TopicContent';
 
-interface Materi {
-    content: string;
-    youtube: string | null;
+// --- Interface Definitions ---
+interface User {
+    _id: string;
 }
 
 interface Question {
     _id: string;
     questionText: string;
     options: string[];
+    answer?: string; // Optional, as it's not sent to the client initially
+}
+
+interface Materi {
+    _id: string;
+    content: string;
+    youtube?: string;
 }
 
 interface Topik {
@@ -29,193 +36,610 @@ interface Topik {
 interface Modul {
     _id: string;
     title: string;
+    slug: string;
     overview: string;
+    category: string;
+    icon: string;
     progress: number;
     completedTopics: number;
     totalTopics: number;
     topics: Topik[];
 }
 
-export default function ModulDetailPage({ params }: { params: { slug: string } }) {
-    const { slug } = use(params); // Membuka promise `params` dengan React.use()
+const DURATION_PER_QUESTION = 2 * 60; // 2 menit per soal
+
+export default function ModulDetailPage() {
+    const params = useParams();
+    const { slug } = params;
+
+    const [user, setUser] = useState<User | null>(null);
     const [modul, setModul] = useState<Modul | null>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
-    const [unlockedTopics, setUnlockedTopics] = useState<Set<string>>(new Set());
-    // State untuk accordion tidak lagi diperlukan karena Flowbite akan menangani inisialisasinya
+    const [openTopicId, setOpenTopicId] = useState<string | null>(null);
+    const [hasModulPostTest, setHasModulPostTest] = useState(false);
+    const [hasCompletedModulPostTest, setHasCompletedModulPostTest] = useState(false);
+
+    // --- State for Post-Test ---
+    const [activeTest, setActiveTest] = useState<Topik | null>(null);
+    const [testAnswers, setTestAnswers] = useState<{ [key: string]: string }>({});
+    const [testIdx, setTestIdx] = useState(0);
+    const [testStartTime, setTestStartTime] = useState(0);
+    const [testTimeLeft, setTestTimeLeft] = useState(0);
+    const [testResult, setTestResult] = useState<any>(null);
+    const [isSubmitting, setIsSubmitting] = useState(false);
+
+    const persistTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+    const studyTimeTrackerRef = useRef<{ [topicId: string]: number }>({});
+
+    // --- Fetch User and Modul Data ---
+    useEffect(() => {
+        const userRaw = localStorage.getItem('user');
+        if (userRaw) setUser(JSON.parse(userRaw));
+    }, []);
+
+    const fetchModulData = useCallback(async () => {
+        if (!user || !slug) return;
+        setLoading(true);
+        try {
+            const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/modul/user-view/${slug}`, { credentials: 'include' });
+            if (!res.ok) throw new Error("Gagal memuat data modul.");
+            const data = await res.json();
+            setModul(data);
+        } catch (err) {
+            setError(err instanceof Error ? err.message : "Terjadi kesalahan.");
+        } finally {
+            setLoading(false);
+        }
+    }, [user, slug]);
 
     useEffect(() => {
-        const fetchModulDetails = async () => {
-            try {
-                setLoading(true);
-                const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/modul/user-view/${slug}`, {
-                    credentials: 'include',
-                });
-                if (!res.ok) {
-                    const errData = await res.json();
-                    throw new Error(errData.message || 'Gagal memuat data modul.');
-                }
-                const data: Modul = await res.json();
-                setModul(data);
+        fetchModulData();
+    }, [fetchModulData]);
 
-                // Tentukan topik yang terbuka
-                const newUnlocked = new Set<string>();
-                let previousTopicCompleted = true;
-                for (const topic of data.topics) {
-                    if (previousTopicCompleted) {
-                        newUnlocked.add(topic._id);
-                        previousTopicCompleted = topic.isCompleted;
-                    } else {
-                        break; // Stop jika menemukan topik yang belum selesai
-                    }
-                }
-                setUnlockedTopics(newUnlocked);
+    // --- Study Time Tracking Logic ---
+    const logStudyDuration = useCallback((topicId: string, startTime: number) => {
+        const durationInSeconds = Math.round((Date.now() - startTime) / 1000);
+        // Kirim durasi ke backend jika lebih dari 10 detik (menghindari data tidak relevan)
+        if (durationInSeconds > 10) {
+            // Gunakan navigator.sendBeacon untuk pengiriman yang lebih andal saat halaman ditutup
+            const url = `${process.env.NEXT_PUBLIC_API_URL}/api/results/log-study-time`;
+            const headers = { type: 'application/json' };
+            const body = JSON.stringify({
+                topikId: topicId,
+                durationInSeconds: durationInSeconds,
+            });
+            const blob = new Blob([body], headers);
+            navigator.sendBeacon(url, blob);
+        }
+    }, []);
 
-            } catch (err: any) {
-                setError(err.message);
-            } finally {
-                setLoading(false);
+    useEffect(() => {
+        // Cleanup function: akan berjalan saat komponen di-unmount (pengguna pindah halaman)
+        return () => {
+            if (openTopicId && studyTimeTrackerRef.current[openTopicId]) {
+                logStudyDuration(openTopicId, studyTimeTrackerRef.current[openTopicId]);
             }
         };
+    }, [openTopicId, logStudyDuration]);
+    // Cek apakah modul ini punya post-test
+    useEffect(() => {
+        if (!modul) return;
 
-        fetchModulDetails();
-    }, [slug]);
+        const checkModulPostTest = async () => {
+            try {
+                const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/questions/check/${modul._id}`, { credentials: 'include' });
+                if (res.ok) {
+                    const data = await res.json();
+                    setHasModulPostTest(data.exists);
+
+                    // Cek juga apakah post-test modul sudah pernah dikerjakan
+                    if (data.exists && user) {
+                        const resultKey = `post_test_result_${user._id}_${modul._id}`;
+                        const resultRaw = localStorage.getItem(resultKey);
+                        setHasCompletedModulPostTest(!!resultRaw);
+                    }
+                }
+            } catch (err) {
+                console.error("Gagal memeriksa post-test modul:", err);
+            }
+        };
+        checkModulPostTest();
+    }, [modul, user]);
+
+    // --- Post-Test Progress Persistence Logic ---
+    const persistProgress = useCallback(async () => {
+        if (!user || !activeTest) return;
+        try {
+            await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/results/progress`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                credentials: 'include',
+                body: JSON.stringify({
+                    testType: 'post-test-topik-progress', // Use a dedicated type for progress
+                    answers: testAnswers,
+                    currentIndex: testIdx,
+                    modulId: modul?._id,
+                    topikId: activeTest._id,
+                }),
+            });
+        } catch (error) {
+            console.warn("Gagal menyimpan progres post-test:", error);
+        }
+    }, [user, activeTest, testAnswers, testIdx, modul?._id]);
 
     useEffect(() => {
-        // Inisialisasi Flowbite setelah komponen di-mount dan setiap kali modul berubah
-        // Ini memastikan elemen-elemennya sudah ada di DOM
-        if (modul) {
-            initFlowbite();
+        if (!activeTest || isSubmitting) return;
+
+        if (persistTimeoutRef.current) {
+            clearTimeout(persistTimeoutRef.current);
         }
-    }, [modul]);
 
-    const handleTestComplete = (isSuccess: boolean, completedTopicId: string) => {
-        if (isSuccess && modul) {
-            // Update state secara lokal untuk UX yang lebih cepat
-            const updatedTopics = modul.topics.map(t =>
-                t._id === completedTopicId ? { ...t, isCompleted: true } : t
-            );
+        persistTimeoutRef.current = setTimeout(() => {
+            persistProgress();
+        }, 1500); // Simpan setelah 1.5 detik tidak ada perubahan
 
-            const completedCount = updatedTopics.filter(t => t.isCompleted).length;
-            const newProgress = Math.round((completedCount / modul.totalTopics) * 100);
+        return () => {
+            if (persistTimeoutRef.current) clearTimeout(persistTimeoutRef.current);
+        };
+    }, [testAnswers, testIdx, activeTest, isSubmitting, persistProgress]);
 
-            setModul(prev => prev ? { ...prev, topics: updatedTopics, progress: newProgress, completedTopics: completedCount } : null);
+    // --- Post-Test Actions ---
+    const startTest = async (topik: Topik, retake: boolean = false) => {
+        if (topik.questions.length === 0) {
+            alert("Belum ada soal post-test untuk topik ini.");
+            return;
+        }
 
-            // Buka topik berikutnya
-            const completedIndex = modul.topics.findIndex(t => t._id === completedTopicId);
-            if (completedIndex > -1 && completedIndex + 1 < modul.topics.length) {
-                const nextTopicId = modul.topics[completedIndex + 1]._id;
-                setUnlockedTopics(prev => new Set(prev).add(nextTopicId));
+        setTestResult(null);
+        setActiveTest(topik);
+        
+        // Jika tidak mengulang, dan topik sudah selesai, langsung tampilkan skor.
+        if (!retake && topik.isCompleted) {
+            await viewScore(topik);
+            return;
+        }
+
+        // 2. Jika tidak ada hasil lulus, lanjutkan untuk memulai tes (dan cek progress yang sedang berjalan)
+        try {
+            const progressRes = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/results/progress?testType=post-test-topik-progress&modulId=${modul?._id}&topikId=${topik._id}`, { credentials: 'include' });
+            if (progressRes.ok) {
+                const progressData = await progressRes.json();
+                if (progressData && progressData.answers && Object.keys(progressData.answers).length > 0) {
+                    // Jika ada progress pengerjaan, muat progress tersebut
+                    setTestAnswers(progressData.answers.reduce((acc: any, ans: any) => {
+                        acc[ans.questionId] = ans.selectedOption;
+                        return acc;
+                    }, {}) || {});
+                    setTestIdx(progressData.currentIndex || 0);
+                } else {
+                    // Jika tidak ada progress, reset ke awal
+                    setTestAnswers({});
+                    setTestIdx(0);
+                }
+            } else {
+                 // Jika tidak ada progress (404) atau error lain, mulai dari awal
+                 setTestAnswers({});
+                 setTestIdx(0);
             }
+        } catch (err) {
+            console.warn('Gagal memuat progress post-test dari server', err);
+            // Fallback jika API progress error, mulai dari awal
+            setTestAnswers({});
+            setTestIdx(0);
+        }
+
+        setTestStartTime(Date.now());
+    };
+
+    const handleTopicToggle = (topicId: string) => {
+        const tracker = studyTimeTrackerRef.current;
+        const now = Date.now();
+
+        // Jika topik yang sama diklik lagi (untuk menutup)
+        if (openTopicId === topicId) {
+            const startTime = tracker[topicId];
+            if (startTime) {
+                logStudyDuration(topicId, startTime);
+                delete tracker[topicId];
+            }
+            setOpenTopicId(null); // Tutup accordion
+        } else {
+            // Jika topik lain sedang terbuka, tutup dan catat waktunya
+            if (openTopicId && tracker[openTopicId]) {
+                logStudyDuration(openTopicId, tracker[openTopicId]);
+                delete tracker[openTopicId];
+            }
+            // Buka topik baru dan mulai timer
+            tracker[topicId] = now;
+            setOpenTopicId(topicId);
         }
     };
 
-    if (loading) return <div className="p-6 text-center text-gray-500">Memuat detail modul...</div>;
-    if (error) return <div className="p-6 text-center text-red-500">Error: {error}</div>;
-    if (!modul) return <div className="p-6 text-center text-gray-500">Modul tidak ditemukan.</div>;
+    const viewScore = async (topik: Topik) => {
+        setActiveTest(topik);
+        setTestResult(null);
+        try {
+            const resultRes = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/results/latest-by-topic?modulId=${modul?._id}&topikId=${topik._id}`, { credentials: 'include' });
+            if (resultRes.ok) {
+                const latestResult = await resultRes.json();
+                setTestResult(latestResult);
+            } else {
+                throw new Error('Gagal memuat hasil tes.');
+            }
+        } catch (err) {
+            alert(err instanceof Error ? err.message : 'Terjadi kesalahan saat memuat skor.');
+            setActiveTest(null);
+        }
+    };
 
+    const submitTest = useCallback(async () => {
+        if (!user || !activeTest) return;
+        setIsSubmitting(true);
+
+        try {
+            const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/results/submit-test`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                credentials: 'include',
+                body: JSON.stringify({
+                    testType: 'post-test-topik',
+                    answers: testAnswers,
+                    timeTaken: Math.round((Date.now() - testStartTime) / 1000),
+                    modulId: modul?._id,
+                    topikId: activeTest._id,
+                }),
+            });
+
+            const resultData = await response.json();
+            if (!response.ok) throw new Error(resultData.message || "Gagal mengirimkan jawaban.");
+
+            const finalResult = resultData.data; // Backend mengembalikan { message, data: newResult }
+            setTestResult(finalResult);
+
+            // Tandai topik sebagai selesai di backend jika lulus
+            if (finalResult.score >= 80) {
+                fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/users/complete-topic`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    credentials: 'include',
+                    body: JSON.stringify({
+                        topikId: activeTest._id,
+                    }),
+                }).catch(err => console.warn("Gagal menandai topik selesai di backend:", err));
+            }
+
+            // Jika lulus, update state modul secara lokal agar topik berikutnya terbuka & progress bar terupdate
+            if (finalResult.score >= 80) {
+                setModul(prevModul => {
+                    if (!prevModul) return null;
+
+                    const updatedTopics = prevModul.topics.map(t => t._id === activeTest._id ? { ...t, isCompleted: true } : t);
+                    const currentTopicIndex = updatedTopics.findIndex(t => t._id === activeTest._id);
+                    const nextTopic = updatedTopics[currentTopicIndex + 1];
+                    
+                    const newCompletedCount = updatedTopics.filter(t => t.isCompleted).length;
+                    const newProgress = Math.round((newCompletedCount / updatedTopics.length) * 100);
+                    
+                    // Buka topik selanjutnya secara otomatis
+                    if (nextTopic) {
+                        setOpenTopicId(nextTopic._id);
+                    }
+
+                    return { 
+                        ...prevModul, 
+                        topics: updatedTopics,
+                        completedTopics: newCompletedCount,
+                        progress: newProgress
+                    };
+                });
+            } else {
+                // Jika tidak lulus, pastikan accordion topik yang sama tetap terbuka setelah modal ditutup.
+                setOpenTopicId(activeTest._id); // Jika tidak lulus, tetap buka topik yang sama
+            }
+
+            // Hapus progress dari DB setelah berhasil submit
+            fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/results/progress`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                credentials: 'include',
+                body: JSON.stringify({
+                    testType: 'post-test-topik-progress',
+                    answers: {},
+                    currentIndex: 0,
+                    modulId: modul?._id,
+                    topikId: activeTest._id,
+                }),
+            });
+
+        } catch (error) {
+            alert(`Terjadi kesalahan: ${error instanceof Error ? error.message : 'Unknown error'}`);
+        } finally {
+            setIsSubmitting(false);
+        }
+    }, [testAnswers, testStartTime, user, activeTest, modul?._id]);
+
+    // --- Timer Effect for Test ---
+    useEffect(() => {
+        if (!activeTest || testResult) return;
+
+        const DURATION = (activeTest.questions.length || 1) * DURATION_PER_QUESTION;
+        const end = testStartTime + DURATION * 1000;
+
+        const timerInterval = setInterval(() => {
+            const left = Math.max(0, Math.round((end - Date.now()) / 1000));
+            setTestTimeLeft(left);
+            if (left === 0) {
+                alert('Waktu habis — jawaban akan dikirim otomatis.');
+                submitTest();
+            }
+        }, 1000);
+
+        return () => clearInterval(timerInterval);
+    }, [activeTest, testStartTime, testResult, submitTest]);
+
+
+    // --- Render Logic ---
+    if (loading) {
+        return <div className="flex justify-center items-center min-h-screen"><p>Memuat data modul...</p></div>;
+    }
+
+    if (error) {
+        return <div className="p-6 text-center text-red-500">Error: {error}</div>;
+    }
+
+    if (!modul) {
+        return <div className="p-6 text-center">Modul tidak ditemukan.</div>;
+    }
+
+    // --- RENDER POST-TEST MODAL ---
+    if (activeTest) {
+        const currentQuestion = activeTest.questions[testIdx];
+        const totalQuestions = activeTest.questions.length;
+        const DURATION = totalQuestions * DURATION_PER_QUESTION;
+
+        return (
+            <div className="fixed inset-0 bg-black bg-opacity-60 z-50 flex justify-center items-center p-4">
+                <div className="bg-white dark:bg-gray-800 rounded-xl shadow-2xl w-full max-w-3xl max-h-[90vh] flex flex-col">
+                    {/* Header */}
+                    <header className="p-4 border-b border-gray-200 dark:border-gray-700 flex justify-between items-center">
+                        <div>
+                            <h2 className="text-lg font-bold text-gray-900 dark:text-white">Post-test: {activeTest.title}</h2>
+                            <p className="text-sm text-gray-500 dark:text-gray-400">Modul: {modul.title}</p>
+                        </div>
+                        <div className="flex gap-3 items-center text-sm bg-slate-100 dark:bg-gray-700 px-3 py-1.5 rounded-lg">
+                            <span>Soal: {totalQuestions}</span>
+                            <span className="text-slate-300">|</span>
+                            <span>Waktu: {`${String(Math.floor(testTimeLeft / 60)).padStart(2, '0')}:${String(testTimeLeft % 60).padStart(2, '0')}`}</span>
+                        </div>
+                    </header>
+
+                    {/* Body */}
+                    <main className="p-6 overflow-y-auto">
+                        {testResult ? (
+                            // --- HASIL TEST ---
+                            <div className="text-center">
+                                <h3 className="text-2xl font-bold text-blue-600 dark:text-blue-400 mb-2">Tes Selesai!</h3>
+                                <p className="text-gray-600 dark:text-gray-300 mb-4">Berikut adalah hasilmu.</p>
+                                <div className="bg-slate-50 dark:bg-gray-700/50 p-6 rounded-lg inline-block">
+                                    <p className="text-sm text-slate-500 dark:text-slate-400">Skor Kamu</p>
+                                    <p className="text-5xl font-bold text-blue-600 dark:text-blue-400 my-2">{testResult.score}%</p>
+                                    <p className="text-base text-slate-700 dark:text-slate-300">{testResult.correct} / {testResult.total} Jawaban Benar</p>
+                                </div>
+                                {testResult.score >= 80 ? (
+                                    <p className="mt-4 text-green-600 dark:text-green-400">Selamat! Kamu telah menguasai topik ini. Lanjutkan ke topik berikutnya!</p>
+                                ) : (
+                                    <p className="mt-4 text-yellow-600 dark:text-yellow-500">Skor kamu belum mencapai 80%. Coba pelajari lagi materinya dan ulangi tes.</p>
+                                )}
+                            </div>
+                        ) : currentQuestion ? (
+                            // --- PENGERJAAN TEST ---
+                            <div>
+                                <div className="flex items-start font-semibold mb-4 text-base text-slate-800 dark:text-slate-200">
+                                    <span className="mr-2">{testIdx + 1}.</span>
+                                    <div
+                                        className="flex-1 prose dark:prose-invert max-w-none"
+                                        dangerouslySetInnerHTML={{ __html: currentQuestion.questionText }}
+                                    />
+                                </div>
+                                <div className="flex flex-col gap-3">
+                                    {currentQuestion.options.map((option, oIndex) => (
+                                        <label key={oIndex} className="flex items-start border border-slate-200 dark:border-gray-700 p-3 rounded-lg cursor-pointer hover:bg-slate-50 dark:hover:bg-gray-700/50 has-[:checked]:bg-indigo-50 dark:has-[:checked]:bg-indigo-900/50 has-[:checked]:border-blue-400 dark:has-[:checked]:border-blue-500">
+                                            <input
+                                                type="radio"
+                                                className="mr-2.5 mt-0.5"
+                                                name={`q${currentQuestion._id}`}
+                                                value={option}
+                                                checked={testAnswers[currentQuestion._id] === option}
+                                                onChange={() => setTestAnswers(prev => ({ ...prev, [currentQuestion._id]: option }))}
+                                            />
+                                            <span className="break-words" dangerouslySetInnerHTML={{ __html: option }} />
+                                        </label>
+                                    ))}
+                                </div>
+                            </div>
+                        ) : null}
+                    </main>
+
+                    {/* Footer */}
+                    <footer className="p-4 border-t border-gray-200 dark:border-gray-700">
+                        {testResult ? (
+                            // --- Tombol setelah hasil keluar ---
+                            <div className="flex justify-end gap-3">
+                                {testResult.score < 80 && (
+                                    <button onClick={() => startTest(activeTest)} className="px-4 py-2 bg-yellow-500 text-white rounded-lg hover:bg-yellow-600">
+                                        Ulangi Tes
+                                    </button>
+                                )}
+                                <button 
+                                    onClick={() => { 
+                                        setActiveTest(null);
+                                        // Tidak perlu fetch ulang, state sudah diupdate secara lokal di submitTest
+                                    }} 
+                                    className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+                                    Tutup
+                                </button>
+                            </div>
+                        ) : (
+                            // --- Tombol saat pengerjaan ---
+                            <>
+                                <div className="flex justify-between items-center">
+                                    <button
+                                        onClick={() => {
+                                            persistProgress(); // Pastikan progress terakhir tersimpan sebelum menutup
+                                            setActiveTest(null);
+                                        }}
+                                        className="text-sm text-gray-600 dark:text-gray-400 hover:underline"
+                                    >
+                                        Tutup & Simpan Progress
+                                    </button>
+                                    <div className="flex gap-2">
+                                        <button
+                                            onClick={() => setTestIdx(i => Math.max(0, i - 1))}
+                                            disabled={testIdx === 0}
+                                            className="px-4 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg disabled:opacity-50"
+                                        >
+                                            Sebelumnya
+                                        </button>
+                                        {testIdx < totalQuestions - 1 ? (
+                                            <button
+                                                onClick={() => setTestIdx(i => Math.min(totalQuestions - 1, i + 1))}
+                                                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+                                            >
+                                                Berikutnya
+                                            </button>
+                                        ) : (
+                                            <button
+                                                onClick={() => { if (confirm('Kirim jawaban dan lihat hasil?')) { submitTest(); } }}
+                                                disabled={isSubmitting}
+                                                className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50"
+                                            >
+                                                {isSubmitting ? 'Mengirim...' : 'Kirim Jawaban'}
+                                            </button>
+                                        )}
+                                    </div>
+                                </div>
+                                <div className="h-2 bg-indigo-100 dark:bg-gray-700 rounded-full overflow-hidden mt-3">
+                                    <div className="h-full bg-blue-500" style={{ width: `${((testIdx + 1) / totalQuestions) * 100}%` }}></div>
+                                </div>
+                                <div className="text-xs text-slate-500 dark:text-slate-400 mt-1">Pertanyaan {testIdx + 1} dari {totalQuestions}</div>
+                            </>
+                        )}
+                    </footer>
+                </div>
+            </div>
+        );
+    }
+
+    // --- RENDER MAIN PAGE ---
     return (
-        <>
+        <div className="max-w-full p-5 pt-0">
             {/* Breadcrumb */}
-            <nav className="flex mb-5" aria-label="Breadcrumb">
-                <ol className="inline-flex items-center space-x-1 md:space-x-2 rtl:space-x-reverse text-gray-700 dark:text-gray-300">
-                    <li className="inline-flex items-center">
-                        <Link href="/dashboard" className="inline-flex items-center text-sm font-medium hover:text-blue-600 dark:hover:text-blue-400">
-                            <svg className="w-3 h-3 me-2.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20"><path d="m19.707 9.293-2-2-7-7a1 1 0 0 0-1.414 0l-7 7-2 2a1 1 0 0 0 1.414 1.414L2 10.414V18a2 2 0 0 0 2 2h3a1 1 0 0 0 1-1v-4a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v4a1 1 0 0 0 1 1h3a2 2 0 0 0 2-2v-7.586l.293.293a1 1 0 0 0 1.414-1.414Z" /></svg>
-                            Dashboard
-                        </Link>
-                    </li>
-                    <li>
-                        <div className="flex items-center">
-                            <svg className="rtl:rotate-180 w-3 h-3 text-gray-400 dark:text-gray-500 mx-1" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 6 10"><path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="m1 9 4-4-4-4" /></svg>
-                            <Link href="/modul" className="ms-1 text-sm font-medium hover:text-blue-600 md:ms-2 dark:hover:text-blue-400">Modul</Link>
-                        </div>
-                    </li>
-                    <li aria-current="page">
-                        <div className="flex items-center">
-                            <svg className="rtl:rotate-180 w-3 h-3 text-gray-400 dark:text-gray-500 mx-1" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 6 10"><path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="m1 9 4-4-4-4" /></svg>
-                            <span className="ms-1 text-sm font-medium text-gray-500 md:ms-2 dark:text-gray-400 capitalize">{slug.replace(/-/g, ' ')}</span>
-                        </div>
-                    </li>
+            <nav className="flex mb-6" aria-label="Breadcrumb">
+                <ol className="inline-flex items-center space-x-1 md:space-x-2 text-slate-700 dark:text-slate-300">
+                    <li><Link href="/dashboard" className="text-sm font-medium hover:text-blue-600">Dashboard</Link></li>
+                    <li><div className="flex items-center"><span className="mx-2 text-slate-400">/</span><Link href="/modul" className="text-sm font-medium hover:text-blue-600">Modul</Link></div></li>
+                    <li><div className="flex items-center"><span className="mx-2 text-slate-400">/</span><span className="text-sm font-medium text-gray-800 dark:text-gray-200">{modul.title}</span></div></li>
                 </ol>
             </nav>
 
-            {/* Info Kursus */}
-            <section className="bg-gradient-to-r from-indigo-600 via-blue-500 to-cyan-500 text-white p-6 rounded-2xl shadow-lg flex flex-col md:flex-row md:items-center md:justify-between gap-4 font-sans">
-                <div className="w-full space-y-3">
-                    <h2 className="text-2xl md:text-3xl font-extrabold tracking-wide">{modul.title}</h2>
-                    <p className="text-sm text-blue-100 leading-relaxed">{modul.overview}</p>
-                    <p className="text-sm text-blue-100">{modul.completedTopics} dari {modul.totalTopics} topik selesai</p>
-                    <div className="w-full bg-white/30 rounded-full h-3 mt-3 overflow-hidden">
-                        <div className="bg-yellow-400 h-3 rounded-full transition-all duration-500 ease-in-out" style={{ width: `${modul.progress}%` }} />
+            {/* Header Modul */}
+            <header className="bg-gradient-to-r from-indigo-500 to-blue-600 rounded-xl p-6 mt-6 shadow-md text-white flex flex-col items-start gap-2 mb-8 md:flex-row md:items-center md:gap-4">
+                {/* Ikon untuk desktop (di kiri) */}
+                <Image src={`${process.env.NEXT_PUBLIC_API_URL}/uploads/${modul.icon}`} alt={modul.title} width={80} height={80} className="hidden md:block h-20 w-20 rounded-lg object-cover bg-white/20 p-1" />
+                
+                <div className="flex-1 text-left w-full"> {/* Wrapper untuk teks dan ikon mobile */}
+                    <span className="text-xs font-semibold uppercase tracking-wider text-blue-200">{modul.category}</span>
+                    <h1 className="text-3xl font-bold text-white mt-1 mb-2">{modul.title}</h1>
+                    
+                    {/* Ikon untuk mobile (di bawah judul, di tengah) */}
+                    <Image src={`${process.env.NEXT_PUBLIC_API_URL}/uploads/${modul.icon}`} alt={modul.title} width={80} height={80} className="hidden h-20 w-20 rounded-lg object-cover bg-white/20 p-1 mb-4 mx-auto" />
+                    
+                    <p className="text-sm text-white/90 mb-2">{modul.overview}</p>
+                    <div className="w-full bg-white/30 rounded-full h-2.5">
+                        <div className="bg-yellow-400 h-2.5 rounded-full" style={{ width: `${modul.progress}%` }}></div>
                     </div>
+                    <p className="text-sm opacity-90 mt-2">{modul.completedTopics} dari {modul.totalTopics} topik selesai ({modul.progress}%)</p>
                 </div>
-            </section>
+            </header>
 
-            {/* Materi dengan Accordion */}
-            <section className="bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-lg mb-6">
-                <h3 className="text-lg font-semibold mb-4">📖 Materi Pembelajaran</h3>
-                <div id="accordion-flush" data-accordion="collapse" data-active-classes="bg-white dark:bg-gray-900 text-gray-900 dark:text-white" data-inactive-classes="text-gray-800 dark:text-gray-400">
-                    {modul.topics.map((topic) => {
-                        const isUnlocked = unlockedTopics.has(topic._id);
+            {/* Daftar Topik */}
+            <main>
+                <h2 className="text-xl font-bold text-gray-800 dark:text-white mb-4">Daftar Topik</h2>
+                <div className="space-y-4">
+                    {modul.topics.map((topik, index) => {
+                        const prevTopic = index > 0 ? modul.topics[index - 1] : null;
+                        const isLocked = prevTopic ? !prevTopic.isCompleted : false;
+                        const isOpen = openTopicId === topik._id;
+
                         return (
-                            <div key={topic._id}>
-                                <h2 id={`accordion-flush-heading-${topic._id}`}>
-                                    <button type="button" disabled={!isUnlocked} className={`flex items-center justify-between w-full py-4 font-medium text-gray-700 dark:text-gray-200 border-b border-gray-200 dark:border-gray-700 gap-3 ${!isUnlocked ? 'opacity-50 cursor-not-allowed' : ''}`} data-accordion-target={`#accordion-flush-body-${topic._id}`} aria-expanded="false" aria-controls={`accordion-flush-body-${topic._id}`}>
-                                        <span className="flex items-center">
-                                            {topic.isCompleted ? <span className="text-green-500 mr-2">✅</span> : isUnlocked ? <span className="text-blue-500 mr-2">▶️</span> : <span className="text-gray-500 mr-2">🔒</span>}
-                                            {topic.title}
-                                        </span>
-                                        <svg data-accordion-icon className="w-3 h-3 rotate-180 shrink-0" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6"><path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5 5 1 1 5" /></svg>
-                                    </button>
-                                </h2>
-                                <div id={`accordion-flush-body-${topic._id}`} className="hidden" aria-labelledby={`accordion-flush-heading-${topic._id}`}>
-                                    <div className="py-5 border-b border-gray-200 dark:border-gray-700 space-y-6">
-                                        {topic.materi.youtube && (
-                                            <div className="w-full flex justify-center">
-                                                <iframe src={topic.materi.youtube} title="YouTube video player" frameBorder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerPolicy="strict-origin-when-cross-origin" allowFullScreen className="rounded-lg shadow-md w-full max-w-2xl aspect-video"></iframe>
-                                            </div>
-                                        )}
-                                        <div className="prose prose-sm sm:prose-base dark:prose-invert max-w-none" dangerouslySetInnerHTML={{ __html: topic.materi.content }} />
-                                        
-                                        {!topic.isCompleted && (
-                                            <PostTestTopik
-                                                questions={topic.questions}
-                                                modulId={modul._id}
-                                                topikId={topic._id}
-                                                onTestComplete={(isSuccess) => handleTestComplete(isSuccess, topic._id)}
-                                            />
-                                        )}
+                            <div key={topik._id} className={`bg-white dark:bg-gray-800 rounded-lg shadow-md transition-all duration-300 ${isLocked ? 'opacity-60 cursor-not-allowed' : 'cursor-pointer'}`}>
+                                <div className="p-5 flex justify-between items-center" onClick={() => !isLocked && handleTopicToggle(topik._id)}>
+                                    <div className="flex items-center gap-4">
+                                        <div className={`w-10 h-10 rounded-full flex items-center justify-center font-bold text-lg ${topik.isCompleted ? 'bg-green-100 dark:bg-green-900 text-green-600 dark:text-green-300' : 'bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400'}`}>
+                                            {topik.isCompleted ? '✓' : index + 1}
+                                        </div>
+                                        <div>
+                                            <h3 className="font-bold text-gray-800 dark:text-white">{topik.title}</h3>
+                                            <p className="text-sm text-gray-500 dark:text-gray-400">
+                                                {topik.isCompleted ? 'Selesai' : isLocked ? 'Terkunci' : 'Siap dipelajari'}
+                                            </p>
+                                        </div>
                                     </div>
+                                    <svg className={`w-5 h-5 text-gray-500 dark:text-gray-400 transform transition-transform ${isOpen ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path></svg>
+                                </div>
+                                {/* Accordion Content */}
+                                <div className={`transition-all duration-500 ease-in-out overflow-hidden ${isOpen && !isLocked ? 'max-h-[2000px]' : 'max-h-0'}`}>
+                                    <TopicContent topik={topik} onStartTest={startTest} />
                                 </div>
                             </div>
                         );
                     })}
                 </div>
-            </section>
+            </main>
 
-            {/* Post Test Akhir */}
-            <section className="bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-lg mb-6">
-                <div className="bg-white dark:bg-gray-800 rounded-2xl flex flex-col md:flex-row items-center md:items-start gap-6 lg:p-2">
-                    <div className="flex-1 text-center md:text-left w-full md:w-4/5">
-                        <h2 className="text-xl lg:text-xl font-bold text-gray-800 dark:text-gray-100 mb-3">Post Test Akhir Modul</h2>
-                        <div className="sm:hidden w-full flex justify-center mb-4">
-                            <Image src="/post-test.png" alt="Post Test" width={160} height={160} className="object-contain" />
+            {/* Kartu Post-Test Akhir Modul */}
+            {hasModulPostTest && (() => {
+                const isPostTestLocked = modul.progress < 100;
+                return (
+                    <section className={`bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-lg mt-12 transition-all ${isPostTestLocked ? 'opacity-60 cursor-not-allowed' : ''}`}>
+                        <div className="flex flex-col md:flex-row items-center md:items-start gap-6 lg:p-2">
+
+                            {/* Konten Teks */}
+                            <div className="flex-1 text-center md:text-left">
+                                <h2 className="text-xl lg:text-2xl font-bold text-gray-800 dark:text-gray-100 mb-3">
+                                    Post Test Akhir
+                                </h2>
+                                <div className="sm:hidden w-full flex justify-center mb-4">
+                                    <Image src="/post-test.png" alt="Post Test" width={160} height={160} className="w-40 h-40 object-contain" />
+                                </div>
+                                {isPostTestLocked ? (
+                                    <p className="text-sm lg:text-base text-gray-500 dark:text-gray-400 mb-6">
+                                        Selesaikan semua topik di modul ini untuk membuka post-test akhir.
+                                    </p>
+                                ) : (
+                                    <p className="text-sm lg:text-base text-gray-600 dark:text-gray-400 mb-6">
+                                        Selamat! Anda telah menyelesaikan semua topik. Uji pemahaman akhir Anda untuk menyelesaikan modul ini.
+                                    </p>
+                                )}
+
+                                <Link href={!isPostTestLocked ? `/modul/${slug}/post-test` : '#'} passHref>
+                                    <button
+                                        disabled={isPostTestLocked}
+                                        className="px-6 py-3 bg-yellow-400 hover:bg-yellow-300 text-black font-semibold rounded-xl shadow-md transition transform hover:scale-105 disabled:bg-gray-300 disabled:hover:bg-gray-300 disabled:text-gray-500 disabled:cursor-not-allowed disabled:transform-none dark:disabled:bg-gray-600 dark:disabled:text-gray-400">
+                                        🚀 {isPostTestLocked ? 'Terkunci' : (hasCompletedModulPostTest ? 'Lihat Skor' : 'Mulai Post Test')}
+                                    </button>
+                                </Link>
+                            </div>
+
+                            {/* Gambar */}
+                            <div className="hidden sm:flex w-full md:w-1/3 justify-center items-center">
+                                <Image src="/post-test.png" alt="Post Test" width={240} height={240} className="w-48 h-48 md:w-60 md:h-60 object-contain" />
+                            </div>
                         </div>
-                        <p className="text-sm lg:text-base text-gray-600 dark:text-gray-400 mb-6">
-                            Uji pemahamanmu setelah menyelesaikan seluruh materi di modul ini. Selesaikan post-test untuk menandai modul ini sebagai selesai.
-                        </p>
-                        <Link href={`/post-test/modul/${slug}`} passHref>
-                            <button disabled={modul.progress < 100} className="px-6 py-3 bg-yellow-400 hover:bg-yellow-300 text-black font-semibold rounded-xl shadow-md transition disabled:bg-gray-300 disabled:cursor-not-allowed disabled:hover:bg-gray-300 dark:disabled:bg-gray-600">
-                                🚀 Mulai Post Test Modul
-                            </button>
-                        </Link>
-                    </div>
-                    <div className="hidden sm:flex w-full md:w-1/3 justify-center">
-                        <Image src="/post-test.png" alt="Post Test" width={240} height={240} className="object-contain" />
-                    </div>
-                </div>
-            </section>
-        </>
+                    </section>
+                );
+            })()}
+        </div>
     );
 }

@@ -30,7 +30,8 @@ export default function EditPostTestPage() {
         const fetchQuestions = async () => {
             try {
                 const res = await fetch(
-                    `${process.env.NEXT_PUBLIC_API_URL}/api/questions/post-test-modul/${modulId}`
+                    `${process.env.NEXT_PUBLIC_API_URL}/api/questions/post-test-modul/${modulId}`,
+                    { credentials: 'include' } // Tambahkan ini untuk otentikasi
                 );
                 const data = await res.json();
                 if (res.ok) {
@@ -51,7 +52,9 @@ export default function EditPostTestPage() {
         const fetchModul = async () => {
             if (!slug) return;
             try {
-                const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/modul/${slug}`);
+                const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/modul/${slug}`, {
+                    credentials: 'include' // Sebaiknya ditambahkan juga di sini
+                });
                 const data = await res.json();
                 if (res.ok) setModul(data);
             } catch (error) {
@@ -84,7 +87,13 @@ export default function EditPostTestPage() {
                 <h1 className="text-2xl font-semibold text-gray-800 dark:text-white mb-6">
                     Edit Post Test Modul
                 </h1>
-                {modulId && <TestForm modulId={modulId} modulSlug={slug} isEditing={true} initialQuestions={questions} />}
+                {modulId && <TestForm 
+                    modulId={modulId} 
+                    modulSlug={slug} 
+                    isEditing={true} 
+                    initialQuestions={questions} 
+                    testType="post-test-modul"
+                />}
             </div>
         </div>
     );

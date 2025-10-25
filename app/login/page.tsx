@@ -20,18 +20,18 @@ export default function LoginPage() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ token: credentialResponse.credential }),
+        credentials: "include", // Kirim cookie dengan request
       });
 
       const data = await res.json();
 
-      if (!res.ok) throw new Error(data.message);
+      if (!res.ok || !data.user) throw new Error(data.message || "Data pengguna tidak ditemukan setelah login.");
 
       // Simpan token dan data user
-      localStorage.setItem("token", data.token);
       localStorage.setItem("user", JSON.stringify(data.user));
 
       // Arahkan sesuai role
-      if (data.user.role === "admin") {
+      if (data.user && data.user.role === "admin") {
         router.push("/admin/dashboard");
       } else {
         router.push("/dashboard");
@@ -53,16 +53,15 @@ export default function LoginPage() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),
+        credentials: "include", // Kirim cookie dengan request
       });
 
       const data = await res.json();
 
-      if (!res.ok) throw new Error(data.message);
-
-      localStorage.setItem("token", data.token);
+      if (!res.ok || !data.user) throw new Error(data.message || "Data pengguna tidak ditemukan setelah login.");
       localStorage.setItem("user", JSON.stringify(data.user));
 
-      if (data.user.role === "admin") {
+      if (data.user && data.user.role === "admin") {
         router.push("/admin/dashboard");
       } else {
         router.push("/dashboard");
