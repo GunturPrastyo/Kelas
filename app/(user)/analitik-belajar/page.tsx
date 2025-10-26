@@ -1,30 +1,98 @@
 "use client"
 
-import { useEffect, useRef } from "react"
+import { useEffect, useRef, useState } from "react"
 import Image from "next/image"
 import { Chart, registerables } from "chart.js"
 Chart.register(...registerables)
+
+interface SummaryData {
+  completedModules: number;
+  totalModules: number;
+  averageScore: number;
+  studyHours: number;
+  studyMinutes: number;
+  dailyStreak: number;
+}
 
 export default function AnalitikBelajarPage() {
   const chartAktivitasRef = useRef<HTMLCanvasElement>(null)
   const chartNilaiRef = useRef<HTMLCanvasElement>(null)
   const chartPerbandinganRef = useRef<HTMLCanvasElement>(null)
+  const [summary, setSummary] = useState<SummaryData | null>(null);
+  const [weeklyActivity, setWeeklyActivity] = useState<number[]>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    const fetchAllAnalytics = async () => {
+      try {
+        setLoading(true);
+        // Menggunakan Promise.all untuk fetch data secara paralel
+        const [progressRes, analyticsRes, timeRes, streakRes, weeklyActivityRes] = await Promise.all([
+          fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/modul/progress`, { credentials: 'include' }),
+          fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/results/analytics`, { credentials: 'include' }),
+          fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/results/study-time`, { credentials: 'include' }),
+          fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/results/streak`, { credentials: 'include' }),
+          fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/results/weekly-activity`, { credentials: 'include' }),
+        ]);
+
+        // Proses data progress modul
+        const progressData = await progressRes.json();
+        // Pastikan progressData adalah array sebelum melakukan filter
+        const modulesArray = Array.isArray(progressData) ? progressData : [];
+        const completedModules = modulesArray.filter((m: any) => m.progress === 100).length;
+        const totalModules = modulesArray.length;
+
+        // Proses data analitik (skor)
+        const analyticsData = await analyticsRes.json();
+        const averageScore = analyticsData.averageScore || 0;
+
+        // Proses data waktu belajar
+        const timeData = await timeRes.json();
+        const totalSeconds = timeData.totalTimeInSeconds || 0;
+        const studyHours = Math.floor(totalSeconds / 3600);
+        const studyMinutes = Math.floor((totalSeconds % 3600) / 60);
+
+        // Proses data streak
+        const streakData = await streakRes.json();
+        const dailyStreak = streakData.streak || 0;
+
+        // Proses data aktivitas mingguan
+        const weeklyActivityData = await weeklyActivityRes.json();
+        setWeeklyActivity(weeklyActivityData.weeklyHours || Array(7).fill(0));
+
+        setSummary({
+          completedModules,
+          totalModules,
+          averageScore,
+          studyHours,
+          studyMinutes,
+          dailyStreak,
+        });
+
+      } catch (error) {
+        console.error("Gagal memuat data analitik:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchAllAnalytics();
+
     let chartAktivitasInstance: Chart | null = null
     let chartNilaiInstance: Chart | null = null
     let chartPerbandinganInstance: Chart | null = null
     
+    const dayLabels = ["-6", "-5", "-4", "-3", "-2", "Kemarin", "Hari Ini"];
     // Aktivitas belajar
     if (chartAktivitasRef.current) {
       chartAktivitasInstance = new Chart(chartAktivitasRef.current, {
         type: "line",
         data: {
-          labels: ["Sen", "Sel", "Rab", "Kam", "Jum", "Sab", "Min"],
+          labels: dayLabels,
           datasets: [
             {
               label: "Jam Belajar",
-              data: [1.5, 2, 1, 2.5, 3, 2, 1.2],
+              data: weeklyActivity,
               borderColor: "#2563eb",
               backgroundColor: "rgba(37,99,235,0.15)",
               fill: true,
@@ -129,8 +197,8 @@ export default function AnalitikBelajarPage() {
       chartAktivitasInstance?.destroy()
       chartNilaiInstance?.destroy()
       chartPerbandinganInstance?.destroy()
-    }
-  }, [])
+    };
+  }, [weeklyActivity]) // Tambahkan dependency agar chart di-render ulang saat data aktivitas mingguan berubah
 
   return (
     <div className="space-y-10">
@@ -151,8 +219,16 @@ export default function AnalitikBelajarPage() {
             </div>
             <div>
               <p className="text-sm opacity-80">Modul Selesai</p>
-              <h2 className="text-3xl font-bold mt-1">8 / 12</h2>
-              <p className="text-sm mt-1">Kamu telah menyelesaikan 67%</p>
+              {loading || !summary ? (
+                <div className="h-12 w-32 bg-white/20 rounded-md animate-pulse mt-1"></div>
+              ) : (
+                <>
+                  <h2 className="text-3xl font-bold mt-1">{summary.completedModules} / {summary.totalModules}</h2>
+                  <p className="text-sm mt-1">
+                    Kamu telah menyelesaikan {summary.totalModules > 0 ? Math.round((summary.completedModules / summary.totalModules) * 100) : 0}%
+                  </p>
+                </>
+              )}
             </div>
           </div>
 
@@ -163,8 +239,14 @@ export default function AnalitikBelajarPage() {
             </div>
             <div>
               <p className="text-sm opacity-80">Rata-rata Nilai</p>
-              <h2 className="text-3xl font-bold mt-1">86%</h2>
-              <p className="text-sm mt-1">Lebih tinggi dari rata-rata kelas</p>
+              {loading || !summary ? (
+                <div className="h-12 w-24 bg-white/20 rounded-md animate-pulse mt-1"></div>
+              ) : (
+                <>
+                  <h2 className="text-3xl font-bold mt-1">{Math.round(summary.averageScore)}%</h2>
+                  <p className="text-sm mt-1">Dari semua post-test topik</p>
+                </>
+              )}
             </div>
           </div>
 
@@ -181,8 +263,14 @@ export default function AnalitikBelajarPage() {
             </div>
             <div>
               <p className="text-sm opacity-80">Total Waktu Belajar</p>
-              <h2 className="text-3xl font-bold mt-1">12 jam</h2>
-              <p className="text-sm mt-1">Rata-rata 1.5 jam per sesi</p>
+              {loading || !summary ? (
+                <div className="h-12 w-32 bg-white/20 rounded-md animate-pulse mt-1"></div>
+              ) : (
+                <>
+                  <h2 className="text-3xl font-bold mt-1">{summary.studyHours} jam</h2>
+                  <p className="text-sm mt-1">{summary.studyMinutes} menit</p>
+                </>
+              )}
             </div>
           </div>
 
@@ -193,8 +281,14 @@ export default function AnalitikBelajarPage() {
             </div>
             <div>
               <p className="text-sm opacity-80">Streak Harian</p>
-              <h2 className="text-3xl font-bold mt-1">6 </h2>
-              <p className="text-sm mt-1">Hari berturut-turut aktif</p>
+              {loading || !summary ? (
+                <div className="h-12 w-20 bg-white/20 rounded-md animate-pulse mt-1"></div>
+              ) : (
+                <>
+                  <h2 className="text-3xl font-bold mt-1">{summary.dailyStreak}</h2>
+                  <p className="text-sm mt-1">Hari berturut-turut aktif</p>
+                </>
+              )}
             </div>
           </div>
         </div>
