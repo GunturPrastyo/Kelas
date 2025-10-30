@@ -1,8 +1,13 @@
 "use client"
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
+import Breadcrumb from '@/components/Breadcrumb';
+// 1. Import highlight.js dan tema CSS-nya
+import hljs from 'highlight.js';
+import 'highlight.js/styles/atom-one-dark.css'; // Tema gelap mirip VS Code
+
 
 interface Question {
     _id: string;
@@ -27,11 +32,6 @@ interface User {
 }
 
 const DURATION = 10 * 60; // 10 menit dalam detik
-
-function escapeHtml(s: string) {
-    if (!s) return '';
-    return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-}
 
 export default function PreTestPage() {
     const [questions, setQuestions] = useState<Question[]>([]);
@@ -67,7 +67,7 @@ export default function PreTestPage() {
         // 2. Kirim hasil ke database
         const saveResultToDB = async () => {
             try {
-                const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/results`, {
+                const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/results`, { // Menggunakan endpoint baru
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     credentials: 'include', // Penting untuk autentikasi via cookie
@@ -95,60 +95,75 @@ export default function PreTestPage() {
     useEffect(() => {
         if (!user) return; // Jangan lakukan apa-apa jika user belum termuat
 
-        const resultKey = `pretest_result_${user._id}`;
-        const stateKey = `pretest_state_${user._id}`;
-
-        // Cek dulu apakah sudah ada hasil akhir yang tersimpan
-        const resultRaw = localStorage.getItem(resultKey);
-        if (resultRaw) {
+        const fetchAndSetPreTestState = async () => {
+            setLoading(true);
             try {
-                const parsedResult = JSON.parse(resultRaw);
-                setResult(parsedResult);
-                // Jika sudah ada hasil, kita tidak perlu memuat progress soal atau memulai timer baru.
-                return;
-            } catch (e) {
-                console.warn('Gagal memuat hasil pre-test dari localStorage', e);
-                // Hapus data yang rusak jika ada
-                localStorage.removeItem(resultKey);
-            }
-        }
-
-        // Fetch soal dari API
-        const fetchQuestions = async () => {
-            try {
-                const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/questions/pre-test`, {
-                    credentials: 'include', // Kirim cookie untuk autentikasi
+                // Prioritas 1: Cek hasil pre-test dari database
+                const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/results/latest-by-type/pre-test-global`, {
+                    credentials: 'include',
                 });
-                if (!res.ok) throw new Error("Gagal memuat soal.");
-                const data = await res.json();
+
+                if (res.ok) {
+                    const latestResult = await res.json();
+                    if (latestResult) {
+                        // Sinkronkan localStorage dengan data server jika ada perbedaan
+                        const resultKey = `pretest_result_${user._id}`;
+                        const localResultRaw = localStorage.getItem(resultKey);
+                        if (!localResultRaw || JSON.stringify(latestResult) !== localResultRaw) {
+                            localStorage.setItem(resultKey, JSON.stringify(latestResult));
+                        }
+                        setResult(latestResult);
+                        setLoading(false);
+                        return; // Hasil ditemukan di DB, proses selesai.
+                    }
+                }
+
+                // Prioritas 2: Jika tidak ada di DB, cek localStorage (untuk backward compatibility atau offline)
+                const resultKey = `pretest_result_${user._id}`;
+                const resultRaw = localStorage.getItem(resultKey);
+                if (resultRaw) {
+                    const parsedResult = JSON.parse(resultRaw);
+                    // Kirim hasil dari localStorage ke DB jika belum ada di sana
+                    fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/results`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        credentials: 'include',
+                        body: JSON.stringify({ ...parsedResult, testType: 'pre-test-global' }),
+                    }).catch(err => console.warn("Gagal sinkronisasi hasil localStorage ke DB:", err));
+
+                    setResult(parsedResult);
+                    setLoading(false);
+                    return; // Hasil ditemukan di localStorage, proses selesai.
+                }
+
+                // Prioritas 3: Jika tidak ada hasil sama sekali, muat soal untuk tes baru
+                const questionsRes = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/questions/pre-test`, {
+                    credentials: 'include',
+                });
+                if (!questionsRes.ok) throw new Error("Gagal memuat soal.");
+                const data = await questionsRes.json();
                 setQuestions(data.questions || []);
+
+                // Muat progress yang belum selesai dari localStorage jika ada
+                const stateKey = `pretest_state_${user._id}`;
+                const progressRaw = localStorage.getItem(stateKey);
+                if (progressRaw) {
+                    const parsedProgress = JSON.parse(progressRaw);
+                    setAnswers(parsedProgress.answers || {});
+                    setIdx(parsedProgress.idx || 0);
+                }
+                setStartTime(Date.now());
+
             } catch (err) {
-                setError(err instanceof Error ? err.message : "Terjadi kesalahan tidak diketahui.");
+                setError(err instanceof Error ? err.message : "Terjadi kesalahan.");
                 console.error(err);
             } finally {
                 setLoading(false);
             }
         };
 
-        if (!resultRaw) {
-            fetchQuestions();
-        }
+        fetchAndSetPreTestState();
 
-        // Jika tidak ada hasil akhir, baru kita coba muat progress pengerjaan yang belum selesai
-        const progressRaw = localStorage.getItem(stateKey);
-        if (progressRaw) {
-            try {
-                const parsedProgress = JSON.parse(progressRaw);
-                setAnswers(parsedProgress.answers || {});
-                setIdx(parsedProgress.idx || 0);
-            } catch (e) {
-                console.warn('Gagal memuat progress', e);
-            }
-        }
-        // Mulai timer hanya jika kita memulai tes baru (bukan melihat hasil)
-        if (!resultRaw) {
-            setStartTime(Date.now());
-        }
     }, [user]); // Efek ini sekarang bergantung pada user
 
     // Fetch semua modul untuk ditampilkan di rekomendasi
@@ -157,7 +172,7 @@ export default function PreTestPage() {
 
         const fetchAllModules = async () => {
             try {
-                const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/modul`);
+                const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/modul`, { credentials: 'include' });
                 if (!res.ok) throw new Error("Gagal memuat data modul untuk rekomendasi.");
                 const data = await res.json();
                 setAllModules(data);
@@ -206,6 +221,19 @@ export default function PreTestPage() {
 
     const currentQuestion = questions[idx];
 
+    // 2. Ref untuk menargetkan area pertanyaan
+    const questionAreaRef = useRef<HTMLDivElement>(null);
+
+    // 3. useEffect untuk menerapkan syntax highlighting
+    useEffect(() => {
+        if (questionAreaRef.current) {
+            // Temukan semua blok <pre><code> di dalam area pertanyaan dan terapkan highlight
+            questionAreaRef.current.querySelectorAll('pre code').forEach((block) => {
+                hljs.highlightElement(block as HTMLElement);
+            });
+        }
+    }, [idx, questions]); // Jalankan setiap kali soal berubah
+
     if (loading && !result) {
         return (
             <div className="flex justify-center items-center min-h-screen">
@@ -247,28 +275,11 @@ export default function PreTestPage() {
 
         return (
             <div className="max-w-5xl mx-auto p-4 sm:p-5 my-4 sm:my-8 font-sans">
-                {/* Breadcrumb */}
-                <nav className="flex mb-10" aria-label="Breadcrumb">
-                    <ol className="inline-flex items-center space-x-1 md:space-x-2 rtl:space-x-reverse text-slate-700 dark:text-slate-300">
-                        <li className="inline-flex items-center">
-                            <Link href="/dashboard" className="inline-flex items-center text-sm font-medium hover:text-blue-600 dark:hover:text-blue-400">
-                                <svg className="w-3 h-3 me-2.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
-                                    <path d="m19.707 9.293-2-2-7-7a1 1 0 0 0-1.414 0l-7 7-2 2a1 1 0 0 0 1.414 1.414L2 10.414V18a2 2 0 0 0 2 2h3a1 1 0 0 0 1-1v-4a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v4a1 1 0 0 0 1 1h3a2 2 0 0 0 2-2v-7.586l.293.293a1 1 0 0 0 1.414-1.414Z" />
-                                </svg>
-                                Dashboard
-                            </Link>
-                        </li>
-                        <li>
-                            <div className="flex items-center">
-                                <svg className="rtl:rotate-180 w-3 h-3 text-slate-400 dark:text-slate-500 mx-1" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 6 10">
-                                    <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="m1 9 4-4-4-4" />
-                                </svg>
-                                <span className="ms-1 text-sm font-medium text-gray-800 dark:text-gray-200 md:ms-2">Hasil Pre-test</span>
-                            </div>
-                        </li>
-                    </ol>
-                </nav>
-                <header className="flex items-center justify-between gap-2 font-poppins">
+                <Breadcrumb paths={[
+                    { name: "Dashboard", href: "/dashboard" },
+                    { name: "Hasil Pre-test", href: "#" }
+                ]} />
+                <header className="flex items-center justify-between gap-2 font-poppins mt-6">
                     <div className="flex items-center gap-2">
                         <Image src="/logo1.png" width={40} height={40} className="h-10 w-auto" alt="Logo" />
                         <h1 className="text-lg font-bold text-slate-800 dark:text-slate-200">Hasil Pre-test</h1>
@@ -337,29 +348,12 @@ export default function PreTestPage() {
 
     return (
         <div className="max-w-5xl mx-auto p-4 sm:p-5 my-4 sm:my-8 font-sans">
-            {/* Breadcrumb */}
-            <nav className="flex mb-10" aria-label="Breadcrumb">
-                <ol className="inline-flex items-center space-x-1 md:space-x-2 rtl:space-x-reverse text-slate-700 dark:text-slate-300">
-                    <li className="inline-flex items-center">
-                        <Link href="/dashboard" className="inline-flex items-center text-sm font-medium hover:text-blue-600 dark:hover:text-blue-400">
-                            <svg className="w-3 h-3 me-2.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
-                                <path d="m19.707 9.293-2-2-7-7a1 1 0 0 0-1.414 0l-7 7-2 2a1 1 0 0 0 1.414 1.414L2 10.414V18a2 2 0 0 0 2 2h3a1 1 0 0 0 1-1v-4a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v4a1 1 0 0 0 1 1h3a2 2 0 0 0 2-2v-7.586l.293.293a1 1 0 0 0 1.414-1.414Z" />
-                            </svg>
-                            Dashboard
-                        </Link>
-                    </li>
-                    <li>
-                        <div className="flex items-center">
-                            <svg className="rtl:rotate-180 w-3 h-3 text-slate-400 dark:text-slate-500 mx-1" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 6 10">
-                                <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="m1 9 4-4-4-4" />
-                            </svg>
-                            <span className="ms-1 text-sm font-medium text-slate-500 dark:text-slate-400 md:ms-2">Pre-test</span>
-                        </div>
-                    </li>
-                </ol>
-            </nav>
+            <Breadcrumb paths={[
+                { name: "Dashboard", href: "/dashboard" },
+                { name: "Pre-test", href: "#" }
+            ]} />
 
-            <header className="flex items-center justify-between gap-4 font-poppins">
+            <header className="flex items-center justify-between gap-4 font-poppins mt-6">
                 <div className="flex items-center gap-2">
                     <Image src="/logo1.png" width={40} height={40} className="h-10 w-auto" alt="Logo" />
                     <h1 className="text-lg font-bold text-slate-800 dark:text-slate-200">Pre-test</h1>
@@ -380,16 +374,13 @@ export default function PreTestPage() {
             </section>
 
             <section className="bg-white dark:bg-gray-800 rounded-xl p-6 mt-6 shadow-lg" id="pretestCard">
-                <div id="questionArea">
+                <div id="questionArea" ref={questionAreaRef}> {/* Tambahkan ref di sini */}
                     {currentQuestion && (
                         <div className="py-6">
                             <div className="flex items-start font-semibold mb-4 text-base text-slate-800 dark:text-slate-200">
                                 <span className="mr-2">{idx + 1}.</span>
                                 <div
-                                    className="flex-1 prose dark:prose-invert max-w-none
-                                    [&_pre]:bg-gray-100 [&_pre]:dark:bg-gray-900
-                                    [&_pre]:text-sm [&_pre]:p-3 [&_pre]:rounded-md
-                                    "
+                                    className="flex-1 prose dark:prose-invert max-w-none"
                                     dangerouslySetInnerHTML={{ __html: currentQuestion.questionText }} 
                                 />
                             </div>

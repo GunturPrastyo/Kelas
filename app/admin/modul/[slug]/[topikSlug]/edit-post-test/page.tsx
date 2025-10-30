@@ -1,124 +1,102 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { useParams, useSearchParams } from "next/navigation";
-import Breadcrumb from "@/components/Breadcrumb";
+import { useEffect, useState } from "react";
+import { useParams } from "next/navigation";
 import TestForm from "@/components/TestForm";
+import Link from "next/link";
+import { Home, ChevronRight } from "lucide-react";
 
-interface Modul {
-    _id: string;
-    title: string;
-    slug: string;
+interface Question {
+  _id?: string;
+  questionText: string;
+  options: string[];
+  answer: string;
 }
 
 interface Topik {
-    _id: string;
-    title: string;
-    slug: string;
+  _id: string;
+  title: string;
+  modulId: string;
 }
 
 export default function EditPostTestTopikPage() {
-    const params = useParams();
-    const searchParams = useSearchParams();
+  const params = useParams();
+  const { slug, topikSlug } = params;
 
-    const slug = params.slug as string; // modul slug
-    const topikSlug = params.topikSlug as string; // topik slug
+  const [topik, setTopik] = useState<Topik | null>(null);
+  const [questions, setQuestions] = useState<Question[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-    const modulId = searchParams.get("modulId");
-    const topikId = searchParams.get("topikId");
+  useEffect(() => {
+    if (!slug || !topikSlug) return;
 
-    const [modul, setModul] = useState<Modul | null>(null);
-    const [topik, setTopik] = useState<Topik | null>(null);
-    const [questions, setQuestions] = useState<
-        { _id?: string; questionText: string; options: string[]; answer: string }[]
-    >([]);
+    const fetchData = async () => {
+      try {
+        setLoading(true);
+        // 1. Ambil data topik dulu untuk mendapatkan ID-nya (disamakan dengan halaman tambah-post-test)
+        const topikRes = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/topik/modul-slug/${slug}/topik-slug/${topikSlug}`, { credentials: 'include' });
+        if (!topikRes.ok) throw new Error("Gagal memuat data topik.");
+        const topikResponse = await topikRes.json();
+        const topikData = topikResponse.data || topikResponse; // Menangani jika data ada di dalam properti 'data'
+        setTopik(topikData);
 
-    const [loading, setLoading] = useState(true);
+        // 2. Ambil data soal menggunakan ID dari topik
+        const questionsRes = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/questions/post-test-topik/${topikData.modulId}/${topikData._id}`, { credentials: 'include' });
+        if (questionsRes.ok) {
+          const questionsData = await questionsRes.json();
+          setQuestions(questionsData.questions || []);
+        } else if (questionsRes.status !== 404) { // 404 berarti belum ada soal, itu bukan error
+          throw new Error("Gagal memuat data soal.");
+        }
+      } catch (err) {
+        setError(err instanceof Error ? err.message : "Terjadi kesalahan tidak diketahui.");
+      } finally {
+        setLoading(false);
+      }
+    };
 
-    // Fetch data modul dan topik untuk breadcrumb
-    useEffect(() => {
-        const fetchNames = async () => {
-            if (!slug || !topikSlug) return;
-            try {
-                const [modulRes, topikRes] = await Promise.all([
-                    fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/modul/${slug}`),
-                    fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/topik/modul/${slug}/topik/${topikSlug}`), // Asumsi endpoint ini ada
-                ]);
-                if (modulRes.ok) setModul(await modulRes.json());
-            } catch (error) { console.error("Gagal memuat nama untuk breadcrumb:", error); }
-        };
-        fetchNames();
-    }, [slug, topikSlug]);
-    useEffect(() => {
-        if (!modulId || !topikId) return;
+    fetchData();
+  }, [slug, topikSlug]);
 
-        const fetchData = async () => {
-            try {
-                // ✅ Ambil semua soal post test berdasarkan modul dan topik
-                const res = await fetch(
-                    `${process.env.NEXT_PUBLIC_API_URL}/api/questions/post-test-topik/${modulId}/${topikId}`
-                );
-                const data = await res.json();
+  if (loading) {
+    return <div className="p-6 text-center">Memuat data post-test...</div>;
+  }
 
-                if (res.ok) {
-                    setQuestions(data.questions || []);
-                } else {
-                    alert("Gagal memuat data soal: " + data.message);
-                }
+  if (error) {
+    return <div className="p-6 text-center text-red-500">Error: {error}</div>;
+  }
 
+  if (!topik) {
+    return <div className="p-6 text-center text-red-500">Topik tidak ditemukan.</div>;
+  }
 
-    
-            } catch (err) {
-                console.error(err);
-                alert("Terjadi kesalahan jaringan saat memuat data.");
-            } finally {
-                setLoading(false);
-            }
-        };
+  return (
+    <div className="p-5">
+      <nav className="flex items-center text-sm text-gray-500 dark:text-gray-400 mb-6">
+        <Link href="/admin/dashboard" className="hover:underline">Dashboard</Link>
+        <ChevronRight size={16} className="mx-1" />
+        <Link href="/admin/modul" className="hover:underline">Modul</Link>
+        <ChevronRight size={16} className="mx-1" />
+        <Link href={`/admin/modul/${slug}`} className="hover:underline">Detail Modul</Link>
+        <ChevronRight size={16} className="mx-1" />
+        <span className="font-medium text-gray-700 dark:text-gray-200">Edit Post Test</span>
+      </nav>
 
-        fetchData();
-    }, [modulId, topikId, slug, topikSlug]);
+      <div className="mb-6">
+        <h1 className="text-2xl font-bold">Edit Post Test: {topik.title}</h1>
+        <p className="text-gray-600 dark:text-gray-400">Ubah soal dan jawaban untuk post test topik ini.</p>
+      </div>
 
-    if (loading) {
-        return (
-            <div className="flex justify-center items-center min-h-screen">
-                <p className="text-gray-600">Memuat data...</p>
-            </div>
-        );
-    }
-
-    return (
-        <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
-            <div className="max-w-screen p-5 mx-auto">
-                <div className="py-4">
-                    <Breadcrumb
-                        paths={[
-                            { name: "Manajemen Modul", href: "/admin/modul" },
-                            { name: modul?.title || "...", href: `/admin/modul/${slug}` },
-                            { name: "Edit Post Test Topik", href: "#" },
-                        ]}
-                    />
-                </div>
-
-                
-
-                <h1 className="text-2xl font-semibold text-gray-800 dark:text-white mb-6">
-                    Edit Post Test Topik
-                </h1>
-
-                {modulId && topikId && (
-                    <TestForm
-                        modulId={modulId}
-                        topikId={topikId}
-                        isEditing={true}
-                        modulSlug={slug}
-                        topikSlug={topikSlug}
-                        initialQuestions={questions}
-                        testType="post-test-topik"
-
-                    />
-                )}
-            </div>
-        </div>
-    );
+      <TestForm
+        testType="post-test-topik"
+        modulId={topik.modulId}
+        topikId={topik._id}
+        modulSlug={slug as string}
+        topikSlug={topikSlug as string}
+        isEditing={questions.length > 0}
+        initialQuestions={questions}
+      />
+    </div>
+  );
 }

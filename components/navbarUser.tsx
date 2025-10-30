@@ -1,10 +1,11 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import Image from "next/image"
 import { useTheme } from "next-themes"
 import { usePathname } from "next/navigation"
 import { useUI } from "@/context/UIContext"
+import Avatar from "./Avatar" // 1. Import komponen Avatar
+import Image from "next/image"
 
 interface User {
   name: string;
@@ -34,7 +35,7 @@ export default function Navbar() {
 
   return (
     <header
-      className="bg-white/80 dark:bg-gray-800/80 shadow-md p-4 flex flex-wrap md:flex-nowrap justify-between items-center backdrop-blur-sm sticky top-0 z-40 gap-3"
+      className="bg-white/80 dark:bg-gray-800/80 border-b border-gray-200/80 dark:border-gray-700/80 p-4 flex flex-wrap md:flex-nowrap justify-between items-center backdrop-blur-sm sticky top-0 z-40 gap-3 h-20"
     >
       {/* Kiri */}
       <div id="header-left" className="flex items-center gap-4 flex-shrink-0">
@@ -69,7 +70,7 @@ export default function Navbar() {
           <input
             type="text"
             id="navbar-search"
-            className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full ps-10 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-800"
+            className="bg-gray-100 border-gray-200 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full ps-10 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-800"
             placeholder={getPlaceholder()}
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
@@ -121,13 +122,8 @@ export default function Navbar() {
         {user ? (
           <>
             <span className="hidden lg:inline">Halo, <strong>{user.name.split(' ')[0]}</strong></span>
-            {user.avatar ? (
-              <Image src={user.avatar} alt={user.name} width={40} height={40} className="rounded-full" />
-            ) : (
-              <div className="w-10 h-10 rounded-full bg-blue-500 text-white flex items-center justify-center font-bold text-lg">
-                {user.name.charAt(0).toUpperCase()}
-              </div>
-            )}
+            {/* 2. Ganti logika lama dengan komponen Avatar yang konsisten */}
+            <Avatar user={user} size={40} />
           </>
         ) : (
           <div className="w-10 h-10 rounded-full bg-gray-200 dark:bg-gray-700 animate-pulse"></div>

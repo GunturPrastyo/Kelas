@@ -8,8 +8,9 @@ import AuthGuard from "@/components/AuthGuard";
 function DashboardContent({ children }: { children: React.ReactNode }) {
   const { isSidebarCollapsed, isMobileDrawerOpen, toggleMobileDrawer } = useUI();
 
-  return (
-    <div className="font-poppins bg-gray-100 dark:bg-gray-900 text-gray-800 dark:text-gray-100 flex min-h-screen">
+  return (    
+    <div className="font-poppins bg-gray-100 dark:bg-gray-900 text-gray-800 dark:text-gray-100 flex min-h-screen"
+    suppressHydrationWarning={true}>
       {/* Sidebar */}
       <Sidebar />
 

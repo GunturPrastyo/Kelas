@@ -28,6 +28,7 @@ import {
   AlignLeft,
   AlignCenter,
   AlignRight,
+  AlignJustify,
   Image as ImageIcon,
   Highlighter,
   Heading1,
@@ -37,8 +38,6 @@ import {
   Subscript as SubIcon,
   Superscript as SuperIcon,
   Minus,
-  ArrowUpFromLine,
-  ArrowDownFromLine,
 } from "lucide-react";
 import { useCallback, useRef } from "react";
 
@@ -96,40 +95,6 @@ const MenuBar = ({ editor }: { editor: Editor | null }) => {
   const setLink = useCallback(() => {
     const url = window.prompt("Masukkan URL:");
     if (url) editor?.chain().focus().setLink({ href: url }).run();
-  }, [editor]);
-
-  const adjustMargin = useCallback((increment: number) => {
-    if (!editor) return;
-
-    const { state, dispatch } = editor.view;
-    const { from, to } = state.selection;
-
-    let transaction = state.tr;
-    const nodesToUpdate: { node: any, pos: number, newMargin: number }[] = [];
-
-    state.doc.nodesBetween(from, to, (node, pos) => {
-      if (node.type.name === 'paragraph' || node.type.name === 'listItem') {
-        // Hindari duplikasi jika node sudah ada di list
-        if (nodesToUpdate.some(item => item.pos === pos)) return;
-
-        const currentStyle = node.attrs.style || '';
-        const marginMatch = currentStyle.match(/margin-top:\s*([0-9.]+)rem/);
-        let currentMargin = 0;
-        if (marginMatch) {
-          currentMargin = parseFloat(marginMatch[1]);
-        } else {
-          // Jika tidak ada style, ambil dari class prose-p:my-2 (0.5rem) atau prose-li:my-2 (0.5rem)
-          currentMargin = 0.5; 
-        }
-
-        const newMargin = Math.max(0, currentMargin + increment);
-        const newStyle = `marginTop: ${newMargin}rem; marginBottom: ${newMargin}rem;`;
-        
-        transaction = transaction.setNodeMarkup(pos, undefined, { ...node.attrs, style: newStyle });
-      }
-    });
-
-    dispatch(transaction);
   }, [editor]);
 
   const handleFileChange = useCallback(
@@ -218,12 +183,11 @@ const MenuBar = ({ editor }: { editor: Editor | null }) => {
       <ToolButton onClick={() => editor.chain().focus().setTextAlign("left").run()} isActive={editor.isActive({ textAlign: "left" })} icon={AlignLeft} title="Align Left" />
       <ToolButton onClick={() => editor.chain().focus().setTextAlign("center").run()} isActive={editor.isActive({ textAlign: "center" })} icon={AlignCenter} title="Align Center" />
       <ToolButton onClick={() => editor.chain().focus().setTextAlign("right").run()} isActive={editor.isActive({ textAlign: "right" })} icon={AlignRight} title="Align Right" />
+      <ToolButton onClick={() => editor.chain().focus().setTextAlign("justify").run()} isActive={editor.isActive({ textAlign: "justify" })} icon={AlignJustify} title="Align Justify" />
 
       <div className="flex-1" />
 
       {/* Extra tools */}
-      <ToolButton onClick={() => adjustMargin(0.25)} icon={ArrowUpFromLine} title="Increase Spacing" />
-      <ToolButton onClick={() => adjustMargin(-0.25)} icon={ArrowDownFromLine} title="Decrease Spacing" />
       <ToolButton onClick={setLink} icon={LinkIcon} title="Add Link" />
       <ToolButton onClick={() => fileInputRef.current?.click()} icon={ImageIcon} title="Add Image" />
       <ToolButton onClick={() => editor.chain().focus().setHorizontalRule().run()} icon={Minus} title="Horizontal Rule" />
@@ -252,6 +216,7 @@ export default function TiptapEditor({
           HTMLAttributes: { class: 'list-decimal pl-5' },
         },
         codeBlock: true,
+        blockquote: true, // Aktifkan blockquote
         horizontalRule: false,
       }),
       Highlight,

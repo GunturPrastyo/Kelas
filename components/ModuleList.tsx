@@ -2,7 +2,8 @@
 
 import { useMemo, useRef } from "react";
 import Image from "next/image";
-import Link from 'next/link';
+import Link from "next/link";
+import { Route, CheckCircle2, Activity, Rocket, Lock } from "lucide-react";
 
 interface Module {
   _id: string;
@@ -20,29 +21,33 @@ interface ModuleListProps {
 }
 
 const getStatusBadge = (status: Module["status"], progress: number | undefined) => {
-  if (status === "Selesai")
-    return (
-      <span className="inline-block text-xs font-medium px-3 py-1 bg-green-100 text-green-700 rounded-full shadow-sm">
-        ✅ Selesai
-      </span>
-    );
-  if (status === "Berjalan")
-    return (
-      <span className="inline-block text-xs font-medium px-3 py-1 bg-blue-100 text-blue-700 dark:bg-blue-900/50 dark:text-blue-300 rounded-full shadow-sm">
-        {progress}%
-      </span>
-    );
-  if (status === "Belum Mulai")
-    return (
-      <span className="inline-block text-xs font-medium px-3 py-1 bg-yellow-100 text-yellow-800 dark:bg-yellow-900/50 dark:text-yellow-300 rounded-full shadow-sm">
-        Mulai
-      </span>
-    );
-  return (
-    <span className="inline-flex items-center gap-1 text-xs px-3 py-1 bg-gray-200 text-gray-600 dark:bg-gray-700 dark:text-gray-400 rounded-full">
-      Terkunci
-    </span>
-  );
+  const base = "inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-1 rounded-full shadow-sm transition-all";
+  switch (status) {
+    case "Selesai":
+      return (
+        <span className={`${base} bg-green-100 text-green-700 dark:bg-green-900/40 dark:text-green-300`}>
+          <CheckCircle2 size={14} /> Selesai
+        </span>
+      );
+    case "Berjalan":
+      return (
+        <span className={`${base} bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300`}>
+          <Activity size={14} /> {progress}%
+        </span>
+      );
+    case "Belum Mulai":
+      return (
+        <span className={`${base} bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-300`}>
+          <Rocket size={14} /> Mulai
+        </span>
+      );
+    default:
+      return (
+        <span className={`${base} bg-gray-200 text-gray-600 dark:bg-gray-700 dark:text-gray-400`}>
+          <Lock size={14} /> Terkunci
+        </span>
+      );
+  }
 };
 
 export default function ModuleList({ title, allModules, filter }: ModuleListProps) {
@@ -61,7 +66,7 @@ export default function ModuleList({ title, allModules, filter }: ModuleListProp
       if (!isDown) return;
       e.preventDefault();
       const x = e.pageX - slider.offsetLeft;
-      const walk = (x - startX) * 1.2; // kecepatan drag
+      const walk = (x - startX) * 1.2;
       slider.scrollLeft = scrollLeft - walk;
     };
 
@@ -75,61 +80,74 @@ export default function ModuleList({ title, allModules, filter }: ModuleListProp
     window.addEventListener("mouseup", handleMouseUpOrLeave);
   };
 
-  if (modules.length === 0) {
-    // Jangan tampilkan apapun jika tidak ada modul yang cocok
-    if (title.toLowerCase().includes("rekomendasi") || title.toLowerCase().includes("terkunci")) {
-      return null;
-    }
-    return (
-      <div className="bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-md text-center text-gray-500">
-        <p>Tidak ada modul untuk ditampilkan di kategori "{title}".</p>
-      </div>
-    );
-  }
+  if (modules.length === 0) return null;
 
   return (
-    <section className="bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-md">
-      <div className="flex justify-between items-center mb-5">
-        <h2 className="text-xl font-bold text-gray-800 dark:text-gray-100">
+    <section className="bg-gradient-to-br from-indigo-50 via-blue-50 to-sky-100 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 p-6 rounded-3xl shadow-xl border border-white/10">
+      <div className="flex justify-between items-center mb-6">
+        <h2 className="text-xl font-semibold text-gray-800 dark:text-gray-100 flex items-center gap-2">
+          <Route className="w-6 h-6 text-indigo-700 dark:text-indigo-300" />
           {title}
         </h2>
       </div>
 
-      {/* Kontainer scroll horizontal + drag-scroll */}
       <div
         ref={scrollRef}
         onMouseDown={handleMouseDown}
         className="flex gap-6 overflow-x-auto scroll-smooth pb-4 scrollbar-hidden snap-x snap-mandatory cursor-grab active:cursor-grabbing select-none"
       >
         {modules.map((modul) => (
-          <Link 
-            href={modul.status !== 'Terkunci' ? `/modul/${modul.slug}` : '#'} 
-            key={modul._id} 
-            className={`
-              min-w-[240px] sm:min-w-[260px] p-5 rounded-2xl bg-white/80 dark:bg-gray-900/80 border border-gray-200 dark:border-gray-700 
-              flex-shrink-0 snap-start backdrop-blur-md shadow-lg transition-all duration-300
-              ${modul.status === 'Terkunci' 
-                ? 'opacity-60 cursor-not-allowed' 
-                : 'hover:shadow-xl hover:-translate-y-1'
-              }
-            `}
-            onClick={(e) => modul.status === 'Terkunci' && e.preventDefault()}
+          <Link
+            href={modul.status !== "Terkunci" ? `/modul/${modul.slug}` : "#"}
+            key={modul._id}
+            className={`group relative min-w-[240px] sm:min-w-[260px] p-6 rounded-2xl flex flex-col items-start bg-white/80 dark:bg-gray-900/70 border border-gray-200 dark:border-gray-700 backdrop-blur-md transition-all duration-300 hover:shadow-2xl snap-start flex-shrink-0
+              ${
+                modul.status === "Terkunci"
+                  ? "opacity-60 cursor-not-allowed"
+                  : "hover:-translate-y-2"
+              }`}
+            onClick={(e) => modul.status === "Terkunci" && e.preventDefault()}
           >
-            <div className={`w-12 h-12 mb-3 rounded-lg flex items-center justify-center ${modul.progress === 100 ? "bg-green-100 dark:bg-green-900/50" : "bg-blue-100 dark:bg-blue-900/50"}`}>
+            {/* Icon */}
+            <div
+              className={`w-14 h-14 mb-4 rounded-xl flex items-center justify-center shadow-inner transition-all
+                ${
+                  modul.progress === 100
+                    ? "bg-green-100 dark:bg-green-900/40"
+                    : "bg-blue-100 dark:bg-blue-900/40"
+                }`}
+            >
               <Image
                 src={`${process.env.NEXT_PUBLIC_API_URL}/uploads/${modul.icon}`}
                 alt={`${modul.title} icon`}
-                width={32}
-                height={32}
+                width={36}
+                height={36}
+                className="object-contain"
               />
             </div>
-            <h3 className="font-semibold text-lg mb-3 text-gray-800 dark:text-gray-100">
+
+            {/* Judul */}
+            <h3 className="font-semibold text-lg mb-3 text-gray-800 dark:text-gray-100 line-clamp-2 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
               {modul.title}
             </h3>
+
+            {/* Progress Bar */}
             <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2 mb-3 overflow-hidden">
-              <div className={`h-2 rounded-full ${modul.progress === 100 ? "bg-green-500" : "bg-blue-500"}`} style={{ width: `${modul.progress}%` }}></div>
+              <div
+                className={`h-2 rounded-full transition-all duration-500 ease-out ${
+                  modul.progress === 100 ? "bg-green-500" : "bg-blue-500"
+                }`}
+                style={{ width: `${modul.progress}%` }}
+              ></div>
             </div>
+
+            {/* Status Badge */}
             {getStatusBadge(modul.status, modul.progress)}
+
+            {/* Glow efek ketika hover */}
+            {modul.status !== "Terkunci" && (
+              <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-blue-400/0 via-blue-400/0 to-blue-400/10 opacity-0 group-hover:opacity-100 transition duration-300 blur-lg"></div>
+            )}
           </Link>
         ))}
       </div>

@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useUI } from '@/context/UIContext';
+import { Home, CheckCircle2, Activity, Lock, Rocket } from "lucide-react";
 
 interface User {
     _id: string;
@@ -133,14 +134,46 @@ export default function ModulPage() {
     }, [searchQuery, selectedCategory, userLevel, modules]);
 
     const getStatusBadge = (status: ModuleStatus, progress: number) => {
-        if (status === "Selesai") return <span className="text-xs font-medium px-2 py-1 bg-green-100 text-green-700 rounded-full">✅ Selesai</span>;
-        if (status === "Berjalan") return <span className="text-xs font-medium px-2 py-1 bg-blue-100 text-blue-700 rounded-full">⏳ {progress}%</span>;
-        if (status === "Terkunci") return <span className="text-xs font-medium px-2 py-1 bg-gray-200 text-gray-600 dark:bg-gray-700 dark:text-gray-400 rounded-full">🔒 Terkunci</span>;
-        return <span className="text-xs font-medium px-2 py-1 bg-yellow-100 text-yellow-700 rounded-full">🚀 Mulai</span>;
+        const base = "inline-flex items-center gap-1.5 text-xs font-medium px-2.5 py-1 rounded-full";
+        if (status === "Selesai") return (
+            <span className={`${base} bg-green-100 text-green-700 dark:bg-green-900/40 dark:text-green-300`}>
+                <CheckCircle2 size={14} /> Selesai
+            </span>
+        );
+        if (status === "Berjalan") return (
+            <span className={`${base} bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300`}>
+                <Activity size={14} /> {progress}%
+            </span>
+        );
+        if (status === "Terkunci") return (
+            <span className={`${base} bg-gray-200 text-gray-600 dark:bg-gray-700 dark:text-gray-400`}>
+                <Lock size={14} /> Terkunci
+            </span>
+        );
+        return <span className={`${base} bg-yellow-100 text-yellow-700 dark:bg-amber-900/40 dark:text-amber-300`}><Rocket size={14} /> Mulai</span>;
     };
 
     return (
         <>
+            {/* Breadcrumb */}
+            <nav className="flex" aria-label="Breadcrumb">
+                <ol className="inline-flex items-center space-x-1 md:space-x-2 rtl:space-x-reverse text-slate-700 dark:text-slate-300">
+                    <li className="inline-flex items-center">
+                        <Link href="/dashboard" className="inline-flex items-center text-sm font-medium hover:text-blue-600 dark:hover:text-blue-400">
+                            <Home className="w-4 h-4 me-2.5" />
+                            Dashboard
+                        </Link>
+                    </li>
+                    <li>
+                        <div className="flex items-center">
+                            <svg className="rtl:rotate-180 w-3 h-3 text-slate-400 dark:text-slate-500 mx-1" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 6 10">
+                                <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="m1 9 4-4-4-4" />
+                            </svg>
+                            <span className="ms-1 text-sm font-medium text-gray-800 dark:text-gray-200 md:ms-2">Modul</span>
+                        </div>
+                    </li>
+                </ol>
+            </nav>
             {loading && (
                 <div className="text-center py-16 text-gray-500">
                     <p>Memuat modul...</p>
@@ -149,7 +182,7 @@ export default function ModulPage() {
 
             {!loading && !userLevel && (
                 <section className="bg-gradient-to-br from-yellow-50 to-orange-100 dark:from-gray-900 dark:to-gray-800 p-5 rounded-xl shadow-sm flex items-center gap-4 mb-6">
-                    <Image src="/exam2.png" alt="Pre-test" width={48} height={48} className="w-12 h-12" />
+                    <Image src="/warning-test.png" alt="Pre-test" width={480} height={480} className="w-20 h-20" />
                     <div>
                         <h2 className="text-lg font-semibold text-yellow-800 dark:text-yellow-300">Tentukan Jalur Belajarmu!</h2>
                         <p className="text-sm text-gray-600 dark:text-gray-400">Ambil pre-test terlebih dahulu untuk membuka modul yang sesuai dengan level kemampuanmu. <Link href="/pre-test" className="font-semibold text-blue-600 hover:underline">Mulai Pre-test</Link></p>
@@ -199,40 +232,63 @@ export default function ModulPage() {
                 </div>
             </div>
 
-            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+            <div className="relative grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+                {/* Garis vertikal untuk tampilan mobile */}
+                <div className="absolute left-6 top-0 bottom-0 w-0.5 bg-gray-200 dark:bg-gray-700 md:hidden"></div>
+
                 {personalizedModules.map((modul) => (
                     <div
                         key={modul._id}
-                        className={`bg-white dark:bg-gray-800 rounded-xl shadow-md p-5 flex flex-col transition-all duration-300 ${modul.isHighlighted ? 'ring-2 ring-blue-500 shadow-blue-500/20' : 'hover:-translate-y-1 hover:shadow-lg'} ${modul.status === 'Terkunci' ? 'opacity-60 bg-gray-50 dark:bg-gray-800/50' : ''}`}
+                        // Wrapper untuk positioning nomor urut di mobile
+                        className="relative sm:static"
                     >
-                        <div className="flex items-start justify-between mb-3">
-                            <div className="flex items-center gap-3">
-                                <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${modul.isHighlighted ? 'bg-blue-100 dark:bg-blue-900/50' : 'bg-gray-100 dark:bg-gray-700'}`}>
-                                    <Image src={modul.icon.startsWith('http') ? modul.icon : `${process.env.NEXT_PUBLIC_API_URL}/uploads/${modul.icon}`} alt={modul.title} width={24} height={24} />
-                                </div>
-                                <h3 className="font-semibold text-base text-gray-800 dark:text-gray-100">{modul.title}</h3>
+                        {/* Nomor urut yang "duduk" di atas garis (hanya mobile) */}
+                        <div className="absolute top-5 left-0 z-10 w-12 h-12 flex items-center justify-center md:hidden">
+                            <div className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm
+                                ${modul.status === 'Selesai' ? 'bg-green-500 text-white border-2 border-white dark:border-gray-800' : ''}
+                                ${modul.status === 'Berjalan' ? 'bg-blue-500 text-white border-2 border-white dark:border-gray-800' : ''}
+                                ${modul.status === 'Belum Mulai' && !modul.isHighlighted ? 'bg-white dark:bg-gray-900 border-2 border-gray-300 dark:border-gray-600 text-gray-500' : ''}
+                                ${modul.status === 'Terkunci' ? 'bg-gray-200 dark:bg-gray-700 border-2 border-white dark:border-gray-800 text-gray-400' : ''}
+                                ${modul.isHighlighted ? 'bg-blue-500 text-white border-2 border-white dark:border-gray-800 ring-4 ring-blue-300 dark:ring-blue-500/50' : ''}
+                            `}>
+                                {modul.status === 'Selesai' ? <CheckCircle2 size={16} /> : '•'}
                             </div>
-                            {getStatusBadge(modul.status, modul.progress)}
                         </div>
-
-                        <p className="text-sm text-gray-600 dark:text-gray-400 mb-4 line-clamp-2 flex-grow">
-                            {modul.overview}
-                        </p>
-
-                        {modul.progress > 0 && (
-                            <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-1.5 mb-4">
-                                <div className="bg-blue-500 h-1.5 rounded-full" style={{ width: `${modul.progress}%` }} />
+                        <div className={`bg-white dark:bg-gray-800 rounded-xl shadow-md p-5 flex flex-col transition-all duration-300 ml-12 sm:ml-0 ${modul.isHighlighted ? 'ring-2 ring-blue-500 shadow-blue-500/20' : 'hover:-translate-y-1 hover:shadow-lg'} ${modul.status === 'Terkunci' ? 'opacity-60 bg-gray-50 dark:bg-gray-800/50' : ''}`}>
+                            <div className="flex items-start justify-between mb-3">
+                                <div className="flex items-center gap-3">
+                                    <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${modul.isHighlighted ? 'bg-blue-100 dark:bg-blue-900/50' : 'bg-gray-100 dark:bg-gray-700'}`}>
+                                        <Image src={modul.icon.startsWith('http') ? modul.icon : `${process.env.NEXT_PUBLIC_API_URL}/uploads/${modul.icon}`} alt={modul.title} width={24} height={24} />
+                                    </div>
+                                <div>
+                                    {/* Nomor urut untuk tampilan desktop/tablet */}
+                                    <span className="hidden sm:block text-xs font-bold text-gray-400 dark:text-gray-500">
+                                        MODUL {personalizedModules.indexOf(modul) + 1}
+                                    </span>
+                                    <h3 className="font-semibold text-base text-gray-800 dark:text-gray-100">
+                                        {modul.title}
+                                    </h3>
+                                </div>
+                                </div>
+                                {getStatusBadge(modul.status, modul.progress)}
                             </div>
-                        )}
-
-                        <Link href={modul.status !== 'Terkunci' ? `/modul/${modul.slug}` : '#'} passHref className={modul.status === 'Terkunci' ? 'pointer-events-none' : ''}>
-                            <button
-                                disabled={modul.status === 'Terkunci'}
-                                className="mt-auto w-full py-2.5 px-4 rounded-lg bg-blue-600 text-white font-semibold hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed disabled:hover:bg-gray-400 dark:disabled:bg-gray-600 transition"
-                            >
-                                {modul.status === 'Berjalan' ? 'Lanjutkan' : 'Mulai Belajar'}
-                            </button>
-                        </Link>
+                            <p className="text-sm text-gray-600 dark:text-gray-400 mb-4 line-clamp-2 flex-grow">
+                                {modul.overview}
+                            </p>
+                            {modul.progress > 0 && (
+                                <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-1.5 mb-4">
+                                    <div className="bg-blue-500 h-1.5 rounded-full" style={{ width: `${modul.progress}%` }} />
+                                </div>
+                            )}
+                            <Link href={modul.status !== 'Terkunci' ? `/modul/${modul.slug}` : '#'} passHref className={modul.status === 'Terkunci' ? 'pointer-events-none' : ''}>
+                                <button
+                                    disabled={modul.status === 'Terkunci'}
+                                    className="mt-auto w-full py-2.5 px-4 rounded-lg bg-blue-600 text-white font-semibold hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed disabled:hover:bg-gray-400 dark:disabled:bg-gray-600 transition"
+                                >
+                                    {modul.status === 'Berjalan' ? 'Lanjutkan' : 'Mulai Belajar'}
+                                </button>
+                            </Link>
+                        </div>
                     </div>
                 ))}
             </div>

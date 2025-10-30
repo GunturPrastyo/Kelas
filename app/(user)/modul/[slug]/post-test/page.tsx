@@ -117,7 +117,7 @@ export default function PostTestPage() {
 
                 const questionsRes = await fetch(
                     `${process.env.NEXT_PUBLIC_API_URL}/api/questions/post-test-modul/${modulData._id}`,
-                    { credentials: "include" }
+                    { credentials: "include" } // Tambahkan ini
                 );
 
                 if (!questionsRes.ok) {
@@ -199,24 +199,24 @@ export default function PostTestPage() {
     if (result) {
         const isPassed = result.score >= 80;
         return (
-            <div className="max-w-5xl mx-auto p-4 sm:p-5 my-4 sm:my-8 font-sans">
-                <Breadcrumb paths={[
+            <div className="max-w-full p-5 font-sans">
+                <Breadcrumb paths={modul ? [
                     { name: "Modul", href: "/modul" },
                     { name: modul?.title || "...", href: `/modul/${slug}` },
                     { name: "Hasil Post Test", href: "#" }
-                ]} />
+                ] : []} />
                 <section className="bg-white dark:bg-gray-800 rounded-xl p-6 mt-6 shadow-lg">
                     <h2 className="text-2xl font-bold text-center text-gray-800 dark:text-white mb-4">Hasil Post Test: {modul?.title}</h2>
-                    <div className="flex items-center justify-between bg-slate-50 dark:bg-gray-700/50 p-4 rounded-lg border border-slate-200 dark:border-gray-700">
-                        <div>
+                    <div className="flex flex-col sm:flex-row items-center justify-between gap-4 sm:gap-2 bg-slate-50 dark:bg-gray-700/50 p-4 rounded-lg border border-slate-200 dark:border-gray-700">
+                        <div className="text-center sm:text-left">
                             <p className="text-sm text-slate-500 dark:text-slate-400">Skor Kamu</p>
                             <p className={`text-3xl font-bold ${isPassed ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>{result.score}%</p>
                         </div>
-                        <div className="text-right">
+                        <div className="text-center sm:text-right">
                             <p className="text-base font-semibold text-slate-700 dark:text-slate-300">{Math.floor(result.timeTaken / 60)}m {result.timeTaken % 60}s</p>
                             <p className="text-sm text-slate-500 dark:text-slate-400">Waktu</p>
                         </div>
-                        <div className="text-right">
+                        <div className="text-center sm:text-right">
                             <p className="text-base font-semibold text-slate-700 dark:text-slate-300">{result.correct} / {result.total}</p>
                             <p className="text-sm text-slate-500 dark:text-slate-400">Jawaban Benar</p>
                         </div>
@@ -244,12 +244,12 @@ export default function PostTestPage() {
     const currentQuestion = questions[idx];
 
     return (
-        <div className="max-w-5xl mx-auto p-4 sm:p-5 my-4 sm:my-8 font-sans">
-            <Breadcrumb paths={[
+        <div className="max-w-full p-5 font-sans">
+            <Breadcrumb paths={modul ? [
                 { name: "Modul", href: "/modul" },
                 { name: modul?.title || "...", href: `/modul/${slug}` },
                 { name: "Post Test", href: "#" }
-            ]} />
+            ] : []} />
 
             <header className="flex items-center justify-between gap-4 mt-6">
                 <h1 className="text-xl font-bold text-slate-800 dark:text-slate-200">Post Test: {modul?.title}</h1>

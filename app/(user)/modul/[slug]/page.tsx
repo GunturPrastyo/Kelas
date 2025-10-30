@@ -4,7 +4,12 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useParams } from 'next/navigation';
+// 1. Import highlight.js dan tema CSS-nya
+import hljs from 'highlight.js';
+import 'highlight.js/styles/atom-one-dark.css'; // Tema gelap mirip VS Code
+
 import TopicContent from '@/components/TopicContent';
+import { Home, CheckCircle2, Lock, Rocket, Award } from 'lucide-react';
 
 // --- Interface Definitions ---
 interface User {
@@ -28,7 +33,7 @@ interface Topik {
     _id: string;
     title: string;
     slug: string;
-    materi: Materi;
+    materi?: Materi | null;
     questions: Question[];
     isCompleted: boolean;
 }
@@ -44,6 +49,7 @@ interface Modul {
     completedTopics: number;
     totalTopics: number;
     topics: Topik[];
+    hasCompletedModulPostTest?: boolean; // Tambahkan properti ini
 }
 
 const DURATION_PER_QUESTION = 2 * 60; // 2 menit per soal
@@ -58,7 +64,6 @@ export default function ModulDetailPage() {
     const [error, setError] = useState<string | null>(null);
     const [openTopicId, setOpenTopicId] = useState<string | null>(null);
     const [hasModulPostTest, setHasModulPostTest] = useState(false);
-    const [hasCompletedModulPostTest, setHasCompletedModulPostTest] = useState(false);
 
     // --- State for Post-Test ---
     const [activeTest, setActiveTest] = useState<Topik | null>(null);
@@ -71,6 +76,10 @@ export default function ModulDetailPage() {
 
     const persistTimeoutRef = useRef<NodeJS.Timeout | null>(null);
     const studyTimeTrackerRef = useRef<{ [topicId: string]: number }>({});
+    
+    // Hooks untuk modal post-test dipindahkan ke top-level
+    const questionModalRef = useRef<HTMLDivElement>(null);
+    const currentQuestionForModal = activeTest ? activeTest.questions[testIdx] : null;
 
     // --- Fetch User and Modul Data ---
     useEffect(() => {
@@ -79,7 +88,7 @@ export default function ModulDetailPage() {
     }, []);
 
     const fetchModulData = useCallback(async () => {
-        if (!user || !slug) return;
+        if (!user || typeof slug !== 'string') return;
         setLoading(true);
         try {
             const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/modul/user-view/${slug}`, { credentials: 'include' });
@@ -94,8 +103,25 @@ export default function ModulDetailPage() {
     }, [user, slug]);
 
     useEffect(() => {
-        fetchModulData();
-    }, [fetchModulData]);
+        if (user && slug) {
+            fetchModulData();
+        }
+    }, [user, slug, fetchModulData]);
+
+    // --- Auto-open and scroll to topic from URL hash ---
+    useEffect(() => {
+        if (modul && window.location.hash) {
+            const topicIdFromHash = window.location.hash.substring(1);
+            const topicExists = modul.topics.some(t => t._id === topicIdFromHash);
+
+            if (topicExists) {
+                setOpenTopicId(topicIdFromHash);
+                setTimeout(() => {
+                    document.getElementById(`topic-card-${topicIdFromHash}`)?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }, 300); // Delay to allow accordion to open
+            }
+        }
+    }, [modul]);
 
     // --- Study Time Tracking Logic ---
     const logStudyDuration = useCallback((topicId: string, startTime: number) => {
@@ -128,17 +154,10 @@ export default function ModulDetailPage() {
 
         const checkModulPostTest = async () => {
             try {
-                const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/questions/check/${modul._id}`, { credentials: 'include' });
+                const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/questions/check/modul/${modul._id}`, { credentials: 'include' });
                 if (res.ok) {
                     const data = await res.json();
                     setHasModulPostTest(data.exists);
-
-                    // Cek juga apakah post-test modul sudah pernah dikerjakan
-                    if (data.exists && user) {
-                        const resultKey = `post_test_result_${user._id}_${modul._id}`;
-                        const resultRaw = localStorage.getItem(resultKey);
-                        setHasCompletedModulPostTest(!!resultRaw);
-                    }
                 }
             } catch (err) {
                 console.error("Gagal memeriksa post-test modul:", err);
@@ -194,13 +213,13 @@ export default function ModulDetailPage() {
         setTestResult(null);
         setActiveTest(topik);
         
-        // Jika tidak mengulang, dan topik sudah selesai, langsung tampilkan skor.
+        // Jika tidak mengulang (retake=false) DAN topik sudah selesai, langsung tampilkan skor.
         if (!retake && topik.isCompleted) {
             await viewScore(topik);
             return;
         }
 
-        // 2. Jika tidak ada hasil lulus, lanjutkan untuk memulai tes (dan cek progress yang sedang berjalan)
+        // Jika ini adalah retake, atau tes pertama kali, reset state dan mulai dari awal.
         try {
             const progressRes = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/results/progress?testType=post-test-topik-progress&modulId=${modul?._id}&topikId=${topik._id}`, { credentials: 'include' });
             if (progressRes.ok) {
@@ -301,8 +320,8 @@ export default function ModulDetailPage() {
             if (finalResult.score >= 80) {
                 fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/users/complete-topic`, {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
                     credentials: 'include',
+                    headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
                         topikId: activeTest._id,
                     }),
@@ -341,8 +360,8 @@ export default function ModulDetailPage() {
             // Hapus progress dari DB setelah berhasil submit
             fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/results/progress`, {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
                 credentials: 'include',
+                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     testType: 'post-test-topik-progress',
                     answers: {},
@@ -377,6 +396,17 @@ export default function ModulDetailPage() {
 
         return () => clearInterval(timerInterval);
     }, [activeTest, testStartTime, testResult, submitTest]);
+
+    // useEffect untuk syntax highlighting di modal, sekarang di top-level
+    useEffect(() => {
+        if (questionModalRef.current && currentQuestionForModal) {
+            // Temukan semua blok <pre><code> di dalam area pertanyaan dan terapkan highlight
+            questionModalRef.current.querySelectorAll('pre code').forEach((block) => {
+                hljs.highlightElement(block as HTMLElement);
+            });
+        }
+    }, [currentQuestionForModal]); // Jalankan setiap kali soal di modal berubah
+
 
 
     // --- Render Logic ---
@@ -415,7 +445,7 @@ export default function ModulDetailPage() {
                     </header>
 
                     {/* Body */}
-                    <main className="p-6 overflow-y-auto">
+                    <main className="p-6 overflow-y-auto" ref={questionModalRef}> {/* Tambahkan ref di sini */}
                         {testResult ? (
                             // --- HASIL TEST ---
                             <div className="text-center">
@@ -467,7 +497,7 @@ export default function ModulDetailPage() {
                             // --- Tombol setelah hasil keluar ---
                             <div className="flex justify-end gap-3">
                                 {testResult.score < 80 && (
-                                    <button onClick={() => startTest(activeTest)} className="px-4 py-2 bg-yellow-500 text-white rounded-lg hover:bg-yellow-600">
+                                    <button onClick={() => startTest(activeTest, true)} className="px-4 py-2 bg-yellow-500 text-white rounded-lg hover:bg-yellow-600">
                                         Ulangi Tes
                                     </button>
                                 )}
@@ -536,10 +566,25 @@ export default function ModulDetailPage() {
         <div className="max-w-full p-5 pt-0">
             {/* Breadcrumb */}
             <nav className="flex mb-6" aria-label="Breadcrumb">
-                <ol className="inline-flex items-center space-x-1 md:space-x-2 text-slate-700 dark:text-slate-300">
-                    <li><Link href="/dashboard" className="text-sm font-medium hover:text-blue-600">Dashboard</Link></li>
-                    <li><div className="flex items-center"><span className="mx-2 text-slate-400">/</span><Link href="/modul" className="text-sm font-medium hover:text-blue-600">Modul</Link></div></li>
-                    <li><div className="flex items-center"><span className="mx-2 text-slate-400">/</span><span className="text-sm font-medium text-gray-800 dark:text-gray-200">{modul.title}</span></div></li>
+                <ol className="inline-flex items-center space-x-1 md:space-x-2 rtl:space-x-reverse text-slate-700 dark:text-slate-300">
+                    <li className="inline-flex items-center">
+                        <Link href="/dashboard" className="inline-flex items-center text-sm font-medium hover:text-blue-600 dark:hover:text-blue-400">
+                            <Home className="w-4 h-4 me-2.5" />
+                            Dashboard
+                        </Link>
+                    </li>
+                    <li>
+                        <div className="flex items-center">
+                            <svg className="rtl:rotate-180 w-3 h-3 text-slate-400 mx-1" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 6 10"><path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="m1 9 4-4-4-4" /></svg>
+                            <Link href="/modul" className="ms-1 text-sm font-medium hover:text-blue-600 md:ms-2 dark:hover:text-blue-400">Modul</Link>
+                        </div>
+                    </li>
+                    <li aria-current="page">
+                        <div className="flex items-center">
+                            <svg className="rtl:rotate-180 w-3 h-3 text-slate-400 mx-1" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 6 10"><path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="m1 9 4-4-4-4" /></svg>
+                            <span className="ms-1 text-sm font-medium text-gray-800 dark:text-gray-200 md:ms-2">{modul.title}</span>
+                        </div>
+                    </li>
                 </ol>
             </nav>
 
@@ -573,11 +618,11 @@ export default function ModulDetailPage() {
                         const isOpen = openTopicId === topik._id;
 
                         return (
-                            <div key={topik._id} className={`bg-white dark:bg-gray-800 rounded-lg shadow-md transition-all duration-300 ${isLocked ? 'opacity-60 cursor-not-allowed' : 'cursor-pointer'}`}>
+                            <div key={topik._id} id={`topic-card-${topik._id}`} className={`bg-white dark:bg-gray-800 rounded-lg shadow-md transition-all duration-300 ${isLocked ? 'opacity-60 cursor-not-allowed' : 'cursor-pointer'}`}>
                                 <div className="p-5 flex justify-between items-center" onClick={() => !isLocked && handleTopicToggle(topik._id)}>
                                     <div className="flex items-center gap-4">
                                         <div className={`w-10 h-10 rounded-full flex items-center justify-center font-bold text-lg ${topik.isCompleted ? 'bg-green-100 dark:bg-green-900 text-green-600 dark:text-green-300' : 'bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400'}`}>
-                                            {topik.isCompleted ? '✓' : index + 1}
+                                            {topik.isCompleted ? <CheckCircle2 size={20} /> : isLocked ? <Lock size={18} /> : index + 1}
                                         </div>
                                         <div>
                                             <h3 className="font-bold text-gray-800 dark:text-white">{topik.title}</h3>
@@ -590,7 +635,7 @@ export default function ModulDetailPage() {
                                 </div>
                                 {/* Accordion Content */}
                                 <div className={`transition-all duration-500 ease-in-out overflow-hidden ${isOpen && !isLocked ? 'max-h-[2000px]' : 'max-h-0'}`}>
-                                    <TopicContent topik={topik} onStartTest={startTest} />
+                                    <TopicContent topik={topik} onStartTest={startTest} onViewScore={viewScore} />
                                 </div>
                             </div>
                         );
@@ -599,42 +644,52 @@ export default function ModulDetailPage() {
             </main>
 
             {/* Kartu Post-Test Akhir Modul */}
-            {hasModulPostTest && (() => {
+            {(() => {
                 const isPostTestLocked = modul.progress < 100;
-                return (
+                const hasCompletedModulPostTest = modul.hasCompletedModulPostTest;
+                return ( // Kartu ini akan muncul jika `hasModulPostTest` bernilai true
                     <section className={`bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-lg mt-12 transition-all ${isPostTestLocked ? 'opacity-60 cursor-not-allowed' : ''}`}>
                         <div className="flex flex-col md:flex-row items-center md:items-start gap-6 lg:p-2">
-
                             {/* Konten Teks */}
                             <div className="flex-1 text-center md:text-left">
-                                <h2 className="text-xl lg:text-2xl font-bold text-gray-800 dark:text-gray-100 mb-3">
+                                <h2 className="text-xl lg:text-2xl font-bold text-gray-800 dark:text-gray-100 mb-2">
                                     Post Test Akhir
                                 </h2>
-                                <div className="sm:hidden w-full flex justify-center mb-4">
-                                    <Image src="/post-test.png" alt="Post Test" width={160} height={160} className="w-40 h-40 object-contain" />
-                                </div>
                                 {isPostTestLocked ? (
                                     <p className="text-sm lg:text-base text-gray-500 dark:text-gray-400 mb-6">
                                         Selesaikan semua topik di modul ini untuk membuka post-test akhir.
                                     </p>
                                 ) : (
                                     <p className="text-sm lg:text-base text-gray-600 dark:text-gray-400 mb-6">
-                                        Selamat! Anda telah menyelesaikan semua topik. Uji pemahaman akhir Anda untuk menyelesaikan modul ini.
+                                        {hasCompletedModulPostTest
+                                            ? "Kerja bagus! Anda telah menyelesaikan post-test untuk modul ini. Anda dapat melihat kembali hasil Anda."
+                                            : "Selamat! Anda telah menyelesaikan semua topik. Uji pemahaman akhir Anda untuk menyelesaikan modul ini."}
                                     </p>
                                 )}
 
-                                <Link href={!isPostTestLocked ? `/modul/${slug}/post-test` : '#'} passHref>
-                                    <button
-                                        disabled={isPostTestLocked}
-                                        className="px-6 py-3 bg-yellow-400 hover:bg-yellow-300 text-black font-semibold rounded-xl shadow-md transition transform hover:scale-105 disabled:bg-gray-300 disabled:hover:bg-gray-300 disabled:text-gray-500 disabled:cursor-not-allowed disabled:transform-none dark:disabled:bg-gray-600 dark:disabled:text-gray-400">
-                                        🚀 {isPostTestLocked ? 'Terkunci' : (hasCompletedModulPostTest ? 'Lihat Skor' : 'Mulai Post Test')}
-                                    </button>
+                                <Link
+                                    href={!isPostTestLocked ? `/modul/${slug}/post-test` : '#'}
+                                    passHref
+                                    className={`inline-block px-6 py-3 font-semibold rounded-xl shadow-md transition-all ${
+                                        isPostTestLocked
+                                            ? 'bg-gray-300 text-gray-500 cursor-not-allowed dark:bg-gray-600 dark:text-gray-400'
+                                            : 'bg-yellow-400 hover:bg-yellow-300 text-black transform hover:scale-105'
+                                    }`}
+                                    aria-disabled={isPostTestLocked}
+                                    onClick={(e) => {
+                                        if (isPostTestLocked) e.preventDefault();
+                                    }}
+                                >
+                                    <div className="flex items-center gap-2">
+                                        {isPostTestLocked ? <Lock size={16} /> : hasCompletedModulPostTest ? <Award size={16} /> : <Rocket size={16} />}
+                                        <span>{isPostTestLocked ? 'Terkunci' : (hasCompletedModulPostTest ? 'Lihat Hasil' : 'Mulai Post Test')}</span>
+                                    </div>
                                 </Link>
                             </div>
 
-                            {/* Gambar */}
-                            <div className="hidden sm:flex w-full md:w-1/3 justify-center items-center">
-                                <Image src="/post-test.png" alt="Post Test" width={240} height={240} className="w-48 h-48 md:w-60 md:h-60 object-contain" />
+                            {/* Gambar (akan muncul di atas pada mobile, di kanan pada desktop) */}
+                            <div className="flex w-full md:w-1/3 justify-center items-center mt-4 md:mt-0 order-first md:order-last">
+                                <Image src={hasCompletedModulPostTest ? "/post-test-akhir.png" : "/post-test.png"} alt="Post Test" width={240} height={240} className="w-48 h-48 md:w-60 md:h-60 object-contain" unoptimized />
                             </div>
                         </div>
                     </section>

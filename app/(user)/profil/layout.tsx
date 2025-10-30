@@ -5,10 +5,10 @@ import Navbar from "@/components/navbarUser"
 import Sidebar from "@/components/sidebarUser"
 
 /**
- * Layout untuk halaman analitik belajar.
+ * Layout untuk halaman profil pengguna.
  * Membungkus konten dengan UIProvider dan layout dasar (Sidebar, Navbar).
  */
-function AnalitikBelajarContent({ children }: { children: React.ReactNode }) {
+function ProfileContent({ children }: { children: React.ReactNode }) {
   const { isSidebarCollapsed, isMobileDrawerOpen, toggleMobileDrawer } = useUI()
 
   return (
@@ -36,7 +36,7 @@ function AnalitikBelajarContent({ children }: { children: React.ReactNode }) {
         <Navbar />
         <main
           id="main-container"
-          className={`p-4 sm:p-6 space-y-6 sm:space-y-8 mx-auto overflow-y-auto flex-1 w-full transition-all duration-300 ease-in-out ${isSidebarCollapsed ? "sm:max-w-full" : "sm:max-w-7xl"}`}
+          className={`overflow-y-auto flex-1 w-full transition-all duration-300 ease-in-out`}
         >
           {children}
         </main>
@@ -45,6 +45,6 @@ function AnalitikBelajarContent({ children }: { children: React.ReactNode }) {
   )
 }
 
-export default function AnalitikBelajarLayout({ children }: { children: React.ReactNode }) {
-  return <UIProvider><AnalitikBelajarContent>{children}</AnalitikBelajarContent></UIProvider>
+export default function ProfileLayout({ children }: { children: React.ReactNode }) {
+  return <UIProvider><ProfileContent>{children}</ProfileContent></UIProvider>
 }

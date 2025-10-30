@@ -1,10 +1,11 @@
 "use client";
 
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useRef } from "react";
 import { useUI } from "@/context/UIContext";
 import Image from "next/image"
 import Link from "next/link"
 import ModuleList from "@/components/ModuleList"
+import { BarChart2, ClipboardCheck, Clock, TrendingUp, Target } from "lucide-react";
 
 type ModuleStatus = 'Selesai' | 'Berjalan' | 'Terkunci' | 'Belum Mulai';
 
@@ -19,6 +20,7 @@ interface Module {
   icon: string;
   category: 'mudah' | 'sedang' | 'sulit';
   isHighlighted?: boolean;
+  firstTopicTitle?: string; // Menambahkan properti yang hilang
 }
 
 interface AnalyticsData {
@@ -26,6 +28,70 @@ interface AnalyticsData {
   weakestTopic: { title: string } | null;
   completedModulesCount: number;
 }
+
+// Opsi untuk useInView, termasuk properti kustom `triggerOnce`
+interface InViewOptions extends IntersectionObserverInit {
+  triggerOnce?: boolean;
+}
+
+// --- Custom Hook untuk mendeteksi elemen di viewport ---
+const useInView = (options: InViewOptions = { threshold: 0.1, triggerOnce: true }) => {
+  const [isInView, setIsInView] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(([entry]) => {
+      if (entry.isIntersecting) {
+        setIsInView(true);
+        if (ref.current && options.triggerOnce) { // TypeScript sekarang mengenali `triggerOnce`
+          observer.unobserve(ref.current);
+        }
+      }
+    }, options);
+
+    if (ref.current) observer.observe(ref.current);
+    return () => { if (ref.current) observer.unobserve(ref.current) };
+  }, [options]);
+
+  return [ref, isInView] as const;
+};
+
+// --- Custom Hook untuk Animasi Hitung (dengan pemicu) ---
+const useCountUp = (end: number, duration: number = 1500, start: boolean = true) => {
+  const [count, setCount] = useState(0); // Memberikan nilai awal
+  const frameRef = useRef<number | undefined>(); // Mengizinkan undefined
+  const startTimeRef = useRef<number | undefined>(); // Mengizinkan undefined
+
+  const easeOutExpo = (t: number) => (t === 1 ? 1 : 1 - Math.pow(2, -10 * t));
+
+  useEffect(() => {
+    if (!start || end === undefined || isNaN(end)) return;
+
+    const animate = (timestamp: number) => {
+      if (startTimeRef.current === undefined) {
+        startTimeRef.current = timestamp;
+      }
+
+      const elapsed = timestamp - startTimeRef.current;
+      const progress = Math.min(elapsed / duration, 1);
+      const easedProgress = easeOutExpo(progress);
+      
+      const currentCount = Math.floor(easedProgress * end);
+      setCount(currentCount);
+
+      if (progress < 1) {
+        frameRef.current = requestAnimationFrame(animate);
+      }
+    };
+
+    startTimeRef.current = undefined;
+    frameRef.current = requestAnimationFrame(animate);
+
+    return () => cancelAnimationFrame(frameRef.current!);
+  }, [end, duration, start]);
+
+  return count;
+};
 
 export default function DashboardPage() {
   const [modules, setModules] = useState<Module[]>([]);
@@ -41,84 +107,136 @@ export default function DashboardPage() {
   });
 
   useEffect(() => {
-    // 1. Ambil data user dan level dari pre-test
-    const userRaw = localStorage.getItem('user');
-    if (userRaw) {
-      const parsedUser = JSON.parse(userRaw);
-      const resultKey = `pretest_result_${parsedUser._id}`;
-      const resultRaw = localStorage.getItem(resultKey);
-      if (resultRaw) {
-        setHasTakenPreTest(true);
-        const parsedResult = JSON.parse(resultRaw);
-        if (parsedResult.score >= 75) setUserLevel('lanjut');
-        else if (parsedResult.score >= 40) setUserLevel('menengah');
-        else setUserLevel('dasar');
-      }
-    }
-
-    // 2. Fetch modul dari API
-    const fetchModules = async () => {
+    const fetchDashboardData = async () => {
       try {
-        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/modul/progress`, {
-          credentials: 'include',
-        });
-        if (!res.ok) {
-          throw new Error("Gagal memuat data modul.");
+        setLoading(true);
+
+        // Mengambil semua data yang dibutuhkan secara paralel
+        const [preTestRes, modulesRes, studyTimeRes, analyticsRes] = await Promise.all([
+          fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/results/latest-by-type/pre-test-global`, {
+            credentials: 'include',
+          }),
+          fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/modul/progress`, {
+            credentials: 'include',
+          }),
+          fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/results/study-time`, {
+            credentials: 'include',
+          }),
+          fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/results/analytics`, {
+            credentials: 'include',
+          }),
+        ]);
+
+        // Memproses data pre-test
+        if (preTestRes.ok) {
+          const preTestResult = await preTestRes.json();
+          if (preTestResult) {
+            setHasTakenPreTest(true);
+            if (preTestResult.score >= 75) setUserLevel('lanjut');
+            else if (preTestResult.score >= 40) setUserLevel('menengah');
+            else setUserLevel('dasar');
+
+            // Sinkronkan ke localStorage untuk akses cepat
+            const userRaw = localStorage.getItem('user');
+            if (userRaw) {
+              const parsedUser = JSON.parse(userRaw);
+              const resultKey = `pretest_result_${parsedUser._id}`;
+              localStorage.setItem(resultKey, JSON.stringify(preTestResult));
+            }
+          }
+        } else {
+          console.error(`Error fetching pre-test data: ${preTestRes.status} ${preTestRes.statusText}`);
         }
-        const data = await res.json();
-        setModules(data);
+
+        // Memproses data modul
+        if (modulesRes.ok) {
+          const data = await modulesRes.json();
+          setModules(data);
+        } else {
+          console.error(`Error fetching modules: ${modulesRes.status} ${modulesRes.statusText}`);
+        }
+
+        // Memproses data waktu belajar
+        if (studyTimeRes.ok) {
+          const data = await studyTimeRes.json();
+          const totalSeconds = data.totalTimeInSeconds || 0;
+          const hours = Math.floor(totalSeconds / 3600);
+          const minutes = Math.floor((totalSeconds % 3600) / 60);
+          setStudyTime({ hours, minutes });
+        } else {
+          console.error(`Error fetching study time: ${studyTimeRes.status} ${studyTimeRes.statusText}`);
+        }
+
+        // Memproses data analitik
+        if (analyticsRes.ok) {
+          const data = await analyticsRes.json();
+          setAnalytics(prev => ({
+            ...prev,
+            averageScore: data.averageScore || 0,
+            weakestTopic: data.weakestTopic || null,
+          }));
+        } else {
+          console.error(`Error fetching analytics: ${analyticsRes.status} ${analyticsRes.statusText}`);
+        }
+
       } catch (error) {
-        console.error("Error fetching modules:", error);
+        console.error("Gagal memuat data dashboard:", error);
       } finally {
         setLoading(false);
       }
     };
 
-    const fetchStudyTime = async () => {
-      try {
-        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/results/study-time`, {
+    fetchDashboardData();
+  }, []);
+
+  // Fungsi fetchStudyTime dan fetchAnalytics yang asli tidak lagi diperlukan
+  // karena logikanya sudah diintegrasikan ke dalam fetchDashboardData.
+  // Anda bisa menghapus definisi fungsi-fungsi ini jika tidak digunakan di tempat lain.
+
+  /*
+  // Contoh definisi fungsi fetchStudyTime yang sudah tidak terpakai:
+  const fetchStudyTime = async () => {
+    try {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/results/study-time`, {
           credentials: 'include',
         });
-        if (!res.ok) {
-          // Log the error but don't throw, so other fetches can proceed
+        if (res.ok) {
+          const data = await res.json();
+          const totalSeconds = data.totalTimeInSeconds || 0;
+          const hours = Math.floor(totalSeconds / 3600);
+          const minutes = Math.floor((totalSeconds % 3600) / 60);
+          setStudyTime({ hours, minutes });
+        } else {
           console.error(`Error fetching study time: ${res.status} ${res.statusText}`);
-          return;
         }
-        const data = await res.json();
-        const totalSeconds = data.totalTimeInSeconds || 0;
-        const hours = Math.floor(totalSeconds / 3600);
-        const minutes = Math.floor((totalSeconds % 3600) / 60);
-        setStudyTime({ hours, minutes });
       } catch (error) {
         console.error("Error fetching study time:", error);
       }
     };
+  */
 
-    const fetchAnalytics = async () => {
-      try {
-        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/results/analytics`, {
-          credentials: 'include',
-        });
-        if (!res.ok) {
-          // Log the error but don't throw
-          console.error(`Error fetching analytics: ${res.status} ${res.statusText}`);
-          return;
-        }
+  /*
+  // Contoh definisi fungsi fetchAnalytics yang sudah tidak terpakai:
+  const fetchAnalytics = async () => {
+    try {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/results/analytics`, {
+        credentials: 'include',
+      });
+      if (res.ok) {
         const data = await res.json();
         setAnalytics(prev => ({
           ...prev,
           averageScore: data.averageScore || 0,
           weakestTopic: data.weakestTopic || null,
         }));
-      } catch (error) {
-        console.error("Error fetching analytics:", error);
+      } else {
+        console.error(`Error fetching analytics: ${res.status} ${res.statusText}`);
       }
-    };
-
-    fetchModules();
-    fetchStudyTime();
-    fetchAnalytics();
-  }, []);
+    } catch (error) {
+      console.error("Error fetching analytics:", error);
+    }
+  };
+  */
 
   const personalizedModules = useMemo(() => {
     const categoryMap = { mudah: 'dasar', sedang: 'menengah', sulit: 'lanjut' };
@@ -171,18 +289,29 @@ export default function DashboardPage() {
     return personalizedModules.find(m => categoryMap[m.category as keyof typeof categoryMap] === userLevel && m.status === 'Belum Mulai');
   }, [personalizedModules, userLevel]);
 
+  // --- Inisialisasi hook untuk setiap kartu ---
+  const [progressCardRef, isProgressCardInView] = useInView({ threshold: 0.5, triggerOnce: true });
+  const [studyTimeCardRef, isStudyTimeCardInView] = useInView({ threshold: 0.5, triggerOnce: true });
+  const [analyticsCardRef, isAnalyticsCardInView] = useInView({ threshold: 0.5, triggerOnce: true });
+
+  // --- Gunakan hook animasi dengan pemicu dari useInView ---
+  const animatedOverallProgress = useCountUp(overallProgress, 1500, isProgressCardInView);
+  const animatedStudySeconds = useCountUp(studyTime.hours * 3600 + studyTime.minutes * 60, 1500, isStudyTimeCardInView);
+  const animatedHours = Math.floor(animatedStudySeconds / 3600);
+  const animatedMinutes = Math.floor((animatedStudySeconds % 3600) / 60);
+
   return (
     <>
       <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
-
         {/* Progres Belajar */}
-        <div className="bg-gradient-to-br from-blue-50 to-blue-100 dark:from-gray-900 dark:to-gray-800 p-4 sm:p-5 rounded-xl shadow flex items-center justify-between overflow-hidden">
+        <div
+          ref={progressCardRef}
+          className="bg-gradient-to-br from-blue-50 to-blue-100 dark:from-gray-900 dark:to-gray-800 p-4 sm:p-5 rounded-xl shadow flex items-center justify-between overflow-hidden"
+        >
           {/* Konten Teks */}
           <div className="flex flex-col justify-center flex-1 min-w-0">
             <div className="flex items-center gap-3 mb-3">
-              <div className="bg-blue-600 rounded-lg w-10 h-10 flex items-center justify-center">
-                <Image src="/progress1.png" width={40} height={40} className="w-full h-full object-contain p-1" alt="" />
-              </div>
+              <TrendingUp className="w-6 h-6 text-blue-600 dark:text-blue-400" />
               <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Progres Belajar</h2>
             </div>
 
@@ -190,7 +319,7 @@ export default function DashboardPage() {
               <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-3 overflow-hidden">
                 <div className="bg-blue-500 h-3 rounded-full" style={{ width: `${overallProgress}%` }}></div>
               </div>
-              <p className="text-sm font-medium text-blue-600 dark:text-blue-400 flex-shrink-0">{overallProgress}%</p>
+              <p className="text-sm font-medium text-blue-600 dark:text-blue-400 flex-shrink-0">{animatedOverallProgress}%</p>
             </div>
           </div>
 
@@ -207,15 +336,16 @@ export default function DashboardPage() {
         </div>
 
         {/* Jam Belajar */}
-        <div className="bg-gradient-to-br from-purple-50 to-purple-100 dark:from-gray-900 dark:to-gray-800 p-4 sm:p-5 rounded-xl shadow flex items-center justify-between overflow-hidden">
+        <div
+          ref={studyTimeCardRef}
+          className="bg-gradient-to-br from-purple-50 to-purple-100 dark:from-gray-900 dark:to-gray-800 p-4 sm:p-5 rounded-xl shadow flex items-center justify-between overflow-hidden"
+        >
           <div className="flex flex-col justify-center flex-1 min-w-0">
             <div className="flex items-center gap-3 mb-3">
-              <div className="bg-purple-600 rounded-lg w-10 h-10 flex items-center justify-center">
-                <Image src="/clock2.png" width={40} height={40} className="w-full h-full object-contain p-1" alt="" />
-              </div>
+              <Clock className="w-6 h-6 text-purple-600 dark:text-purple-400" />
               <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Jam Belajar</h2>
             </div>
-            <p className="text-2xl sm:text-3xl font-bold text-purple-700 dark:text-purple-400">{studyTime.hours} Jam {studyTime.minutes} Mnt</p>
+            <p className="text-2xl sm:text-3xl font-bold text-purple-700 dark:text-purple-400">{animatedHours} Jam {animatedMinutes} Mnt</p>
             <p className="text-sm text-gray-600 dark:text-gray-300">
               Total waktu belajar hingga saat ini
             </p>
@@ -236,9 +366,7 @@ export default function DashboardPage() {
         <div className="bg-gradient-to-br from-green-50 to-green-100 dark:from-gray-900 dark:to-gray-800 p-4 sm:p-5 rounded-xl shadow flex items-center justify-between md:col-span-2 lg:col-span-1 overflow-hidden">
           <div className="flex flex-col justify-center flex-1 min-w-0">
             <div className="flex items-center gap-3 mb-3">
-              <div className="bg-green-600 rounded-lg w-10 h-10 flex items-center justify-center">
-                <Image src="/target.png" width={40} height={40} className="w-full h-full object-contain p-1" alt="" />
-              </div>
+              <Target className="w-6 h-6 text-green-600 dark:text-green-400" />
               <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Rekomendasi</h2>
             </div>
 
@@ -276,7 +404,10 @@ export default function DashboardPage() {
         <div className="bg-gradient-to-r from-blue-50 via-indigo-100 to-indigo-200 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 p-4 sm:p-6 rounded-xl shadow flex flex-wrap items-center gap-4 sm:gap-6">
           {/* Teks */}
           <div className="flex-1 text-left">
-            <h2 className="text-lg sm:text-2xl font-semibold mb-3">Pre-Test Awal</h2>
+            <h2 className="text-lg sm:text-2xl font-semibold mb-3 flex items-center gap-2">
+              <ClipboardCheck className="w-7 h-7 text-blue-700 dark:text-blue-400" />
+              Pre-Test Awal
+            </h2>
             <p className="text-gray-600 dark:text-gray-300 mb-4 text-sm sm:text-base">
               Ikuti pre-test untuk memetakan level pengetahuanmu. <br />
               <span className="text-red-600 dark:text-red-400 font-medium">Hasil pre-test menentukan jalur belajar wajib.</span>
@@ -292,31 +423,41 @@ export default function DashboardPage() {
         </div>
 
         {/* Analitik */}
-        <div className="max-w-full bg-gradient-to-br from-indigo-200 via-purple-100 to-violet-300 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 p-6 rounded-xl shadow">
-          <h2 className="text-xl font-semibold mb-6">Analitik Belajar</h2>
+        {(() => {
+          const animatedCompletedModules = useCountUp(analytics.completedModulesCount ?? 0, 1500, isAnalyticsCardInView);
+          const animatedAverageScore = useCountUp(parseFloat((analytics.averageScore || 0).toFixed(2)), 1500, isAnalyticsCardInView);
+        return (
+          <div
+            ref={analyticsCardRef}
+            className="max-w-full bg-gradient-to-br from-indigo-200 via-purple-100 to-violet-300 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 p-6 rounded-xl shadow"
+          >
+          <h2 className="text-xl font-semibold mb-6 flex items-center gap-2">
+            <BarChart2 className="w-6 h-6 text-indigo-800 dark:text-indigo-300" />
+            Analitik Belajar
+          </h2>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 text-center">
             {/* Modul Selesai */}
-            <div className="p-4 rounded-lg shadow-lg bg-gradient-to-br from-blue-50 to-blue-100 dark:from-gray-700 dark:to-gray-800 shadow hover:shadow-md transition">
+            <div className="p-4 rounded-lg bg-gradient-to-br from-blue-50 to-blue-100 dark:from-gray-700 dark:to-gray-800 shadow-md hover:shadow-lg transition">
               <div className="flex flex-col items-center gap-2">
                 <div className="bg-blue-600 rounded-full w-10 h-10 flex items-center justify-center">
                   <Image src="/book.png" width={40} height={40} className="w-full h-full object-contain p-1" alt="" />
                 </div>
-                <p className="text-2xl font-bold text-blue-700 dark:text-blue-400">{analytics.completedModulesCount}</p>
+                <p className="text-2xl font-bold text-blue-700 dark:text-blue-400">{animatedCompletedModules ?? 0}</p>
                 <p className="text-sm text-gray-600 dark:text-gray-300">Modul Selesai</p>
               </div>
             </div>
             {/* Rata-rata Skor */}
-            <div className="p-4 shadow-lg rounded-lg bg-gradient-to-br from-green-50 to-green-100 dark:from-gray-700 dark:to-gray-800 shadow hover:shadow-md transition">
+            <div className="p-4 rounded-lg bg-gradient-to-br from-green-50 to-green-100 dark:from-gray-700 dark:to-gray-800 shadow-md hover:shadow-lg transition">
               <div className="flex flex-col items-center gap-2">
                 <div className="bg-green-600 rounded-full w-10 h-10 flex items-center justify-center">
                   <Image src="/score.png" width={40} height={40} className="w-full h-full object-contain p-1" alt="" />
                 </div>
-                <p className="text-2xl font-bold text-green-700 dark:text-green-400">{loading ? '...' : `${Math.round(analytics.averageScore)}%`}</p>
+                <p className="text-2xl font-bold text-green-700 dark:text-green-400">{loading ? '...' : `${animatedAverageScore ?? 0}%`}</p>
                 <p className="text-sm text-gray-600 dark:text-gray-300">Rata-rata Skor</p>
               </div>
             </div>
             {/* Topik Terlemah */}
-            <div className="max-w-full shadow-lg p-4 rounded-lg bg-gradient-to-br from-red-50 to-red-100 dark:from-gray-700 dark:to-gray-800 shadow hover:shadow-md transition">
+            <div className="max-w-full p-4 rounded-lg bg-gradient-to-br from-red-50 to-red-100 dark:from-gray-700 dark:to-gray-800 shadow-md hover:shadow-lg transition">
               <div className="flex flex-col items-center justify-center gap-2 break-words h-full">
                 <div className="bg-red-600 rounded-full w-10 h-10 flex items-center justify-center">
                   <Image src="/thunder.png" width={40} height={40} className="w-full h-full object-contain p-1" alt="" />
@@ -327,6 +468,7 @@ export default function DashboardPage() {
             </div>
           </div>
         </div>
+        )})()}
       </section>
 
       {/* Learning Path - Sekarang dengan data dinamis */}
@@ -334,7 +476,7 @@ export default function DashboardPage() {
         <div className="text-center p-8">Memuat modul...</div>
       ) : (
         // Gabungkan semua modul ke dalam satu section "Jalur Belajar"
-        <ModuleList title="Jalur Belajar" allModules={personalizedModules} filter={() => true} />
+        <ModuleList title="Jalur Pembelajaran" allModules={personalizedModules} filter={() => true} />
       )}
     </>
   )

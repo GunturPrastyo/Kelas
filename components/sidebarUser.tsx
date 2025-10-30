@@ -11,7 +11,7 @@ const navLinks = [
     { href: "/modul", label: "Modul", icon: "/modules.png", alt: "Modul Icon" },
     { href: "/pre-test", label: "Pre Tes & Post", icon: "/exam.png", alt: "Tes Icon" },
     { href: "/analitik-belajar", label: "Analitik Belajar", icon: "/analitik.png", alt: "Analitik Icon" },
-    { href: "/dashboard/profil", label: "Profil", icon: "/profile.png", alt: "Profil Icon" },
+    { href: "/profil", label: "Profil", icon: "/profile.png", alt: "Profil Icon" },
 ];
 
 export default function Sidebar() {
@@ -43,13 +43,13 @@ export default function Sidebar() {
   return (
     <aside
       id="sidebar"
-      className={`fixed top-0 left-0 z-50 h-screen bg-white dark:bg-gray-800 shadow-md transition-all duration-300 ease-in-out flex flex-col
+      className={`fixed top-0 left-0 z-50 h-screen bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 transition-all duration-300 ease-in-out flex flex-col
         ${isSidebarCollapsed ? 'w-20' : 'w-64'}
         ${isMobileDrawerOpen ? 'translate-x-0' : '-translate-x-full'}
         md:translate-x-0`}
     >
       {/* Sidebar Header */}
-      <div className={`px-4 py-5 flex items-center gap-3 flex-shrink-0 ${isSidebarCollapsed ? 'justify-center' : 'justify-start'}`}>
+      <div className={`px-4 h-20 flex items-center gap-3 flex-shrink-0 ${isSidebarCollapsed ? 'justify-center' : 'justify-start'}`}>
         <button
           id="sidebar-toggle"
           type="button"
@@ -63,7 +63,7 @@ export default function Sidebar() {
         </button>
         <div id="sidebar-title-container" className="flex-1 flex items-center gap-4 overflow-hidden" >
           {!isSidebarCollapsed && (
-            <Image id="sidebar-title" src="/logo.png" alt="KELAS Logo" width={150} height={40} className="h-10 w-auto transition-opacity duration-300" style={{ width: 'auto' }} />
+            <Image id="sidebar-title" src="/logo.png" alt="KELAS Logo" width={150} height={40} className="h-10 w-auto transition-opacity duration-300" style={{ width: 'auto' }} priority />
           )}
         </div>
       </div>
@@ -76,10 +76,10 @@ export default function Sidebar() {
             <Link
               key={link.href}
               href={link.href}
-              className={`nav-link flex items-center gap-4 p-2 rounded hover:bg-blue-100 dark:hover:bg-gray-700 ${active ? 'bg-blue-100 dark:bg-gray-700 font-semibold' : ''}`}
+              className={`nav-link flex items-center gap-4 p-3 rounded-lg transition-colors ${active ? 'bg-blue-50 dark:bg-gray-700' : 'hover:bg-gray-100 dark:hover:bg-gray-700'}`}
             >
               <Image src={link.icon} alt={link.alt} width={28} height={28} className="flex-shrink-0" />
-              <span className={`sidebar-text whitespace-nowrap transition-opacity duration-300 ${isSidebarCollapsed ? 'opacity-0 hidden' : 'opacity-100'} ${active ? 'text-blue-700 dark:text-blue-300' : ''}`}>
+              <span className={`sidebar-text whitespace-nowrap transition-opacity duration-300 ${isSidebarCollapsed ? 'opacity-0 hidden' : 'opacity-100'} ${active ? 'text-blue-600 dark:text-white font-semibold' : 'text-gray-600 dark:text-gray-300'}`}>
                 {link.label}
               </span>
             </Link>
@@ -88,10 +88,10 @@ export default function Sidebar() {
       </nav>
 
       {/* Tombol Logout */}
-      <div className="px-4 py-4 mt-auto border-t border-gray-200 dark:border-gray-700">
+      <div className="px-4 py-4 mt-auto">
         <button
           onClick={handleLogout}
-          className={`flex items-center gap-4 p-2 rounded w-full hover:bg-red-100 dark:hover:bg-red-900/50 text-red-600 dark:text-red-400 ${isSidebarCollapsed ? 'justify-center' : ''}`}
+          className={`flex items-center gap-4 p-3 rounded-lg w-full text-red-500 hover:bg-red-50 dark:hover:bg-red-900/30 dark:text-red-400 transition-colors ${isSidebarCollapsed ? 'justify-center' : ''}`}
         >
           <LogOut size={28} className="flex-shrink-0" />
           <span className={`sidebar-text whitespace-nowrap transition-opacity duration-300 ${isSidebarCollapsed ? 'opacity-0 hidden' : 'opacity-100'}`}>
