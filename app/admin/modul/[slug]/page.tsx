@@ -2,11 +2,10 @@
 
 import { useEffect, useState, use } from "react";
 import Link from "next/link";
-import { Button } from "@/components/ui/button";
-import { PlusCircle, FileEdit } from "lucide-react";
+import { Button } from "@/components/ui/button"; // Pastikan path ini benar
+import { PlusCircle, FileEdit, Home } from "lucide-react";
 import { useUI } from "@/context/UIContext";
 import TopicCard from "@/components/Topic";
-import Breadcrumb from "@/components/Breadcrumb";
 
 interface Modul {
   _id: string;
@@ -40,7 +39,7 @@ export default function ModulDetail({ params }: ModulDetailProps) {
       try {
         setLoading(true);
         setError(null);
-        const modulRes = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/modul/${slug}`);
+        const modulRes = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/modul/${slug}`, { credentials: 'include' });
         if (!modulRes.ok) throw new Error("Gagal memuat data modul");
         if (!modulRes.ok) {
           const errorData = await modulRes.json().catch(() => ({ message: "Gagal memuat data modul." }));
@@ -50,7 +49,7 @@ export default function ModulDetail({ params }: ModulDetailProps) {
         const modulData = await modulRes.json();
         setModul(modulData);
 
-        const topikRes = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/topik/modul/${modulData._id}`);
+        const topikRes = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/topik/modul/${modulData._id}`, { credentials: 'include' });
         if (!topikRes.ok) throw new Error("Gagal memuat data topik");
         if (!topikRes.ok) {
           const errorData = await topikRes.json().catch(() => ({ message: "Gagal memuat data topik." }));
@@ -115,13 +114,29 @@ export default function ModulDetail({ params }: ModulDetailProps) {
 
   return (
     <div className="p-5">
-      <Breadcrumb
-        paths={[
-          { name: "Modul", href: "/admin/modul" },
-          { name: modul.title, href: `/admin/modul/${slug}` },
-        ]}
-      />
-
+      {/* Breadcrumb */}
+      <nav className="flex" aria-label="Breadcrumb">
+        <ol className="inline-flex items-center space-x-1 md:space-x-2 rtl:space-x-reverse text-slate-700 dark:text-slate-300">
+          <li className="inline-flex items-center">
+            <Link href="/admin/dashboard" className="inline-flex items-center text-sm font-medium hover:text-blue-600 dark:hover:text-blue-400">
+              <Home className="w-4 h-4 me-2.5" />
+              Dashboard
+            </Link>
+          </li>
+          <li>
+            <div className="flex items-center">
+              <svg className="rtl:rotate-180 w-3 h-3 text-slate-400 mx-1" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 6 10"><path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="m1 9 4-4-4-4" /></svg>
+              <Link href="/admin/modul" className="ms-1 text-sm font-medium hover:text-blue-600 md:ms-2 dark:hover:text-blue-400">Modul</Link>
+            </div>
+          </li>
+          <li aria-current="page">
+            <div className="flex items-center">
+              <svg className="rtl:rotate-180 w-3 h-3 text-slate-400 mx-1" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 6 10"><path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="m1 9 4-4-4-4" /></svg>
+              <span className="ms-1 text-sm font-medium text-gray-800 dark:text-gray-200 md:ms-2">{modul.title}</span>
+            </div>
+          </li>
+        </ol>
+      </nav>
       <div className="flex justify-between items-center mt-4 mb-6">
         <h1 className="text-2xl font-bold">Topik di Modul: {modul.title}</h1>
 

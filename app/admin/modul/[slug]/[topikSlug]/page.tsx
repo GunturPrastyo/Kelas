@@ -2,7 +2,8 @@
 
 import dynamic from "next/dynamic";
 import Link from "next/link";
-import { useState, use, useEffect, useCallback } from "react";
+import { useState, use, useEffect } from "react";
+import toast, { Toaster } from "react-hot-toast";
 import { Modal } from "flowbite-react";
 
 const TiptapEditor = dynamic(() => import("@/components/TiptapEditor"), {
@@ -44,27 +45,31 @@ export default function MateriEditorPage({ params }: MateriEditorPageProps) {
   const [loading, setLoading] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [materiId, setMateriId] = useState<string | null>(null);
+  const [topikId, setTopikId] = useState<string | null>(null); // State untuk menyimpan ID topik
 
   useEffect(() => {
     const fetchMateri = async () => {
       try {
         const res = await fetch(
-          `${process.env.NEXT_PUBLIC_API_URL}/api/materi/modul/${slug}/topik/${topikSlug}`
+          `${process.env.NEXT_PUBLIC_API_URL}/api/materi/modul/${slug}/topik/${topikSlug}`,
+          { credentials: "include" } // Tambahkan credentials
         );
 
         if (!res.ok) {
-          // Jika 404, berarti materi belum ada. Biarkan state default.
-          if (res.status !== 404) throw new Error("Gagal memuat materi");
-          return;
-        }
-
-        const data = await res.json();
-        if (data) {
+          if (res.status === 404) {
+            // Materi belum ada, tapi backend mengirimkan topikId
+            const errorData = await res.json();
+            setTopikId(errorData.topikId); // Set topikId untuk pembuatan materi baru
+          } else {
+            throw new Error("Gagal memuat materi");
+          }
+        } else {
+          const data = await res.json();
           setContent(data.content || "");
-          // When loading existing data, set both input and embed URL
           setYoutubeInput(data.youtube || "");
-          setYoutubeEmbedUrl(data.youtube ? getEmbedUrl(data.youtube) : null); // Validate on load
+          setYoutubeEmbedUrl(data.youtube ? getEmbedUrl(data.youtube) : null);
           setMateriId(data._id);
+          setTopikId(data.topikId);
         }
       } catch (err) {
         console.error("❌ Error saat memuat materi:", err);
@@ -101,18 +106,15 @@ export default function MateriEditorPage({ params }: MateriEditorPageProps) {
     }
 
     try {
-      const isUpdate = !!materiId;
-      const url = isUpdate
-        ? `${process.env.NEXT_PUBLIC_API_URL}/api/materi/${materiId}`
-        : `${process.env.NEXT_PUBLIC_API_URL}/api/materi`;
-      const method = isUpdate ? "PUT" : "POST";
+      const url = `${process.env.NEXT_PUBLIC_API_URL}/api/materi/save`;
       const res = await fetch(url, {
-        method,
+        method: "POST", // Selalu POST untuk operasi upsert
         headers: { "Content-Type": "application/json" },
+        credentials: "include", // Tambahkan ini untuk mengirim cookie autentikasi
         body: JSON.stringify({
+          topikId: topikId, // Kirim topikId untuk identifikasi di backend
           content,
           youtube: youtubeInput, // Simpan URL asli yang diinput pengguna
-          ...(!isUpdate && { modulId: slug, topikId: topikSlug }),
         }),
       });
 
@@ -126,7 +128,7 @@ export default function MateriEditorPage({ params }: MateriEditorPageProps) {
       setTimeout(() => setSaved(false), 2000);
     } catch (err) {
       console.error("❌ Error saat menyimpan materi:", err);
-      alert("Terjadi kesalahan saat menyimpan materi. Periksa log console.");
+      toast.error("Terjadi kesalahan saat menyimpan materi. Periksa log console.");
     } finally {
       setLoading(false);
     }
@@ -134,6 +136,7 @@ export default function MateriEditorPage({ params }: MateriEditorPageProps) {
 
   return (
     <div className="p-6">
+      <Toaster position="top-center" reverseOrder={false} />
       {/* Breadcrumb */}
       <nav className="text-sm mb-6 text-gray-600 dark:text-gray-300">
         <Link href="/admin/modul" className="hover:underline text-blue-600">
