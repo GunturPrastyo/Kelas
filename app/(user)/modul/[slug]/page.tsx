@@ -152,16 +152,18 @@ export default function ModulDetailPage() {
     const logStudyDuration = useCallback((topicId: string, startTime: number) => {
         const durationInSeconds = Math.round((Date.now() - startTime) / 1000);
         // Kirim durasi ke backend jika lebih dari 10 detik (menghindari data tidak relevan)
-        if (durationInSeconds > 10) {
-            // Gunakan navigator.sendBeacon untuk pengiriman yang lebih andal saat halaman ditutup
-            const url = `${process.env.NEXT_PUBLIC_API_URL}/api/results/log-study-time`;
-            const headers = { type: 'application/json' };
-            const body = JSON.stringify({
+        if (durationInSeconds > 10 && process.env.NEXT_PUBLIC_API_URL) {
+            // Gunakan fetch dengan keepalive: true sebagai pengganti sendBeacon agar bisa mengirim credentials
+            fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/results/log-study-time`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
                 topikId: topicId,
                 durationInSeconds: durationInSeconds,
-            });
-            const blob = new Blob([body], headers);
-            navigator.sendBeacon(url, blob);
+                }),
+                credentials: 'include',
+                keepalive: true, // Ini penting agar request tetap berjalan saat halaman ditutup
+            }).catch(err => console.warn("Gagal mengirim log waktu belajar:", err));
         }
     }, []);
 
