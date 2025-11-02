@@ -41,7 +41,6 @@ interface RecommendationData {
     moduleTitle: string;
     moduleIcon: string;
     moduleScore: number;
-    moduleSlug: string;
     weakestTopic: {
       title: string;
     } | null;
@@ -107,8 +106,8 @@ const useInView = (options: InViewOptions = { threshold: 0.1, triggerOnce: true 
 // --- Custom Hook untuk Animasi Hitung (dengan pemicu) ---
 const useCountUp = (end: number, duration: number = 1500, start: boolean = true) => {
   const [count, setCount] = useState(0); // Memberikan nilai awal
-  const frameRef = useRef<number | undefined>(); // Mengizinkan undefined
-  const startTimeRef = useRef<number | undefined>(); // Mengizinkan undefined
+  const frameRef = useRef<number | null>(null); // Mengizinkan undefined
+  const startTimeRef = useRef<number | null>(null); // Mengizinkan undefined
 
   const easeOutExpo = (t: number) => (t === 1 ? 1 : 1 - Math.pow(2, -10 * t));
 
@@ -116,7 +115,7 @@ const useCountUp = (end: number, duration: number = 1500, start: boolean = true)
     if (!start || end === undefined || isNaN(end)) return;
 
     const animate = (timestamp: number) => {
-      if (startTimeRef.current === undefined) {
+      if (startTimeRef.current === null) {
         startTimeRef.current = timestamp;
       }
 
@@ -132,7 +131,7 @@ const useCountUp = (end: number, duration: number = 1500, start: boolean = true)
       }
     };
 
-    startTimeRef.current = undefined;
+    startTimeRef.current = null;
     frameRef.current = requestAnimationFrame(animate);
 
     return () => { if (frameRef.current) cancelAnimationFrame(frameRef.current) };
@@ -247,7 +246,7 @@ export default function AnalitikBelajarPage() {
   useEffect(() => {
     if (!chartAktivitasRef.current || weeklyActivity.length === 0 || !isChartAktivitasInView) return;
 
-    // label hari otomatis (Senin - Minggu)
+    // label hari otomatis (7 hari terakhir)
     const dayLabels = (() => {
       const days = ["Min", "Sen", "Sel", "Rab", "Kam", "Jum", "Sab"];
       const today = new Date().getDay(); // 0=Min, 6=Sab
@@ -311,7 +310,7 @@ export default function AnalitikBelajarPage() {
     });
 
     return () => chartAktivitasInstance.destroy();
-  }, [weeklyActivity, isChartAktivitasInView, chartAktivitasRef]); // ✅ hanya update kalau data & visibilitas terpenuhi
+  }, [weeklyActivity, isChartAktivitasInView]); // ✅ hanya update kalau data & visibilitas terpenuhi
 
 
   // --- 3️⃣ GRAFIK NILAI PER MODUL & PERBANDINGAN (tidak berubah dinamis) ---
@@ -349,7 +348,7 @@ export default function AnalitikBelajarPage() {
       });
       return () => chartNilaiInstance.destroy();
     }
-  }, [moduleScores, isChartNilaiInView, chartNilaiRef]);
+  }, [moduleScores, isChartNilaiInView]);
 
   useEffect(() => {
     if (chartPerbandinganRef.current && comparisonData && isChartPerbandinganInView) { // chartPerbandinganRef.current sudah pasti HTMLCanvasElement
@@ -393,7 +392,7 @@ export default function AnalitikBelajarPage() {
       });
       return () => chartPerbandinganInstance.destroy();
     }
-  }, [comparisonData, isChartPerbandinganInView, chartPerbandinganRef]);
+  }, [comparisonData, isChartPerbandinganInView]);
 
   // --- Gunakan hook animasi untuk ringkasan ---
   const animatedCompletedModules = useCountUp(summary?.completedModules || 0, 1500, isSummaryCardInView);
@@ -717,11 +716,11 @@ export default function AnalitikBelajarPage() {
                 </div>
                 <button
                   onClick={() => {
-                    const slug = recommendations.repeatModule.moduleSlug;
-                    if (recommendations.repeatModule.allTopicsMastered) {
+                    const slug = recommendations.repeatModule?.moduleSlug;
+                    if (recommendations.repeatModule?.allTopicsMastered) {
                       router.push(`/modul/${slug}/post-test`);
                     } else {
-                      const hash = recommendations.repeatModule.weakestTopicDetails ? '#' + recommendations.repeatModule.weakestTopicDetails._id : '';
+                      const hash = recommendations.repeatModule?.weakestTopicDetails ? '#' + recommendations.repeatModule.weakestTopicDetails._id : '';
                       router.push(`/modul/${slug}${hash}`);
                     }
                   }}
@@ -754,7 +753,7 @@ export default function AnalitikBelajarPage() {
                 </div>
                 <button
                   onClick={() =>
-                    recommendations.deepenTopic.modulSlug && recommendations.deepenTopic.topicSlug && router.push(
+                    recommendations.deepenTopic?.modulSlug && recommendations.deepenTopic?.topicSlug && router.push(
                       `/modul/${recommendations.deepenTopic.modulSlug}#${recommendations.deepenTopic.topicId}`
                     )
                   }
@@ -789,7 +788,7 @@ export default function AnalitikBelajarPage() {
                 </div>
                 <button
                   onClick={() =>
-                    router.push(`/modul/${recommendations.continueToModule.moduleSlug}${recommendations.continueToModule.nextTopic ? `#${recommendations.continueToModule.nextTopic.id}` : ''}`)
+                    router.push(`/modul/${recommendations.continueToModule?.moduleSlug}${recommendations.continueToModule?.nextTopic ? `#${recommendations.continueToModule.nextTopic.id}` : ''}`)
                   }
                   className="flex-shrink-0 flex items-center justify-center w-10 h-10 rounded-full bg-blue-500 hover:bg-blue-600 transition text-white shadow-md"
                 >

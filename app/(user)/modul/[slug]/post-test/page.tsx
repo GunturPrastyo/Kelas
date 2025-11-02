@@ -1,9 +1,8 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import { useParams, useRouter, redirect } from "next/navigation";
+import { useParams, redirect } from "next/navigation";
 import Link from "next/link";
-import Image from "next/image";
 import Breadcrumb from "@/components/Breadcrumb";
 
 interface Question {
@@ -24,11 +23,18 @@ interface User {
     _id: string;
 }
 
+interface TestResult {
+    score: number;
+    correct: number;
+    total: number;
+    timeTaken: number;
+    timestamp: string;
+}
+
 const TEST_DURATION = 15 * 60; // 15 menit dalam detik
 
 export default function PostTestPage() {
     const params = useParams();
-    const router = useRouter();
     const slug = params.slug as string;
 
     const [modul, setModul] = useState<Modul | null>(null);
@@ -36,9 +42,9 @@ export default function PostTestPage() {
     const [questions, setQuestions] = useState<Question[]>([]);
     const [answers, setAnswers] = useState<{ [key: string]: string }>({});
     const [idx, setIdx] = useState(0);
-    const [startTime, setStartTime] = useState(Date.now());
+    const [startTime] = useState(Date.now());
     const [timeLeft, setTimeLeft] = useState(TEST_DURATION);
-    const [result, setResult] = useState<any>(null);
+    const [result, setResult] = useState<TestResult | null>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
 
@@ -127,7 +133,7 @@ export default function PostTestPage() {
                         throw new Error("Gagal memuat soal post-test.");
                     }
                 } else {
-                    const questionsData = await questionsRes.json();
+                    const questionsData: { questions: Question[] } = await questionsRes.json();
                     if (questionsData.questions && questionsData.questions.length > 0) {
                         setQuestions(questionsData.questions);
                     } else {
