@@ -120,7 +120,7 @@ const ProfilePage = () => {
 
   return (
     <div className="w-full font-sans p-5">
-      <Breadcrumb paths={[{ name: "Dashboard", href: "/dashboard" }, { name: "Edit Profil" }]} />
+      <Breadcrumb paths={[{ name: "Dashboard", href: "/dashboard" }, { name: "Edit Profil", href: "#" }]} />
       <h1 className="text-3xl font-bold text-gray-800 dark:text-gray-100 mt-6 mb-6">
         Pengaturan Profil
       </h1>
