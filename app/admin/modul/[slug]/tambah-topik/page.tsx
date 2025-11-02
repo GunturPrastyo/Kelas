@@ -47,8 +47,12 @@ export default function TambahTopik({ params, searchParams, isSidebarCollapsed }
       // Kembali ke halaman detail modul setelah berhasil
       router.push(`/admin/modul/${modulSlug}`);
       router.refresh(); // Memuat ulang data di halaman sebelumnya
-    } catch (err: any) {
-      setError(err.message || "Terjadi kesalahan");
+    } catch (err) {
+      if (err instanceof Error) {
+        setError(err.message || "Terjadi kesalahan");
+      } else {
+        setError("Terjadi kesalahan yang tidak diketahui");
+      }
       setLoading(false);
     }
   };

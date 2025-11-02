@@ -53,6 +53,13 @@ interface Modul {
     hasCompletedModulPostTest?: boolean; // Tambahkan properti ini
 }
 
+interface TestResult {
+    score: number;
+    correct: number;
+    total: number;
+    // tambahkan properti lain jika ada
+}
+
 export default function ModulDetailPage() {
     const params = useParams();
     const { slug } = params;
@@ -70,7 +77,7 @@ export default function ModulDetailPage() {
     const [testIdx, setTestIdx] = useState(0);
     const [testStartTime, setTestStartTime] = useState(0);
     const [testTimeLeft, setTestTimeLeft] = useState(0);
-    const [testResult, setTestResult] = useState<any>(null);
+    const [testResult, setTestResult] = useState<TestResult | null>(null);
     const [isSubmitting, setIsSubmitting] = useState(false);
 
     const persistTimeoutRef = useRef<NodeJS.Timeout | null>(null);
@@ -242,9 +249,9 @@ export default function ModulDetailPage() {
             const progressRes = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/results/progress?testType=post-test-topik-progress&modulId=${modul?._id}&topikId=${topik._id}`, { credentials: 'include' });
             if (progressRes.ok) {
                 const progressData = await progressRes.json();
-                if (progressData && progressData.answers && Object.keys(progressData.answers).length > 0) {
+                if (progressData && progressData.answers && Array.isArray(progressData.answers) && progressData.answers.length > 0) {
                     // Jika ada progress pengerjaan, muat progress tersebut
-                    setTestAnswers(progressData.answers.reduce((acc: any, ans: any) => {
+                    setTestAnswers(progressData.answers.reduce((acc: { [key: string]: string }, ans: { questionId: string, selectedOption: string }) => {
                         acc[ans.questionId] = ans.selectedOption;
                         return acc;
                     }, {}) || {});
