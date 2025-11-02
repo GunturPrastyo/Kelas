@@ -99,7 +99,10 @@ export default function ModulDetail({ params }: ModulDetailProps) {
   const handleDelete = async (id: string) => {
     if (window.confirm("Apakah Anda yakin ingin menghapus topik ini?")) {
       try {
-        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/topik/${id}`, { method: "DELETE" });
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/topik/${id}`, {
+          method: "DELETE",
+          credentials: 'include'
+        });
         if (!res.ok) throw new Error("Gagal menghapus topik");
         setAllTopics(allTopics.filter((t) => t._id !== id));
       } catch (err) {
