@@ -28,14 +28,6 @@ const nextConfig = {
       },
     ],
   },
-
-  // ✅ Ini harus sejajar, bukan di dalam images
-  typescript: {
-    ignoreBuildErrors: true,
-  },
-  eslint: {
-    ignoreDuringBuilds: true,
-  },
 };
 
 export default nextConfig;
