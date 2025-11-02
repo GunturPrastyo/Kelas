@@ -1,17 +1,19 @@
 "use client";
-import { useState, use } from "react";
+import { useState, useContext } from "react"; // Menggunakan useContext
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+// Asumsi Anda memiliki SidebarContext untuk state isSidebarCollapsed
+// import { SidebarContext } from "@/context/SidebarContext";
 
 interface TambahTopikProps {
-  params: Promise<{ slug: string }>;
-  searchParams: { modulId: string };
+  params: { slug: string };
+  searchParams: { modulId?: string };
 }
 
-export default function TambahTopik({ params, searchParams, isSidebarCollapsed }: TambahTopikProps & { isSidebarCollapsed?: boolean }) {
+export default function TambahTopik({ params, searchParams }: TambahTopikProps) {
   const router = useRouter();
-  const { slug: modulSlug } = use(params);
-  const { modulId } = searchParams;
+  const { slug: modulSlug } = params;
+  const modulId = searchParams?.modulId;
 
   const [title, setTitle] = useState("");
   const [loading, setLoading] = useState(false);
@@ -58,7 +60,8 @@ export default function TambahTopik({ params, searchParams, isSidebarCollapsed }
   };
 
   return (
-    <div className={`p-6 mx-auto transition-all duration-300 ${isSidebarCollapsed ? 'max-w-full' : 'max-w-7xl'}`}>
+    // Anda perlu mendapatkan isSidebarCollapsed dari context di sini
+    <div className={`p-6 mx-auto transition-all duration-300 max-w-7xl`}>
       <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-8">
         <h1 className="text-2xl font-bold mb-6 text-gray-900 dark:text-white">Tambah Topik Baru</h1>
         {error && <p className="text-red-500 mb-4">{error}</p>}
