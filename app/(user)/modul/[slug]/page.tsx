@@ -59,7 +59,7 @@ interface TestResult {
     // tambahkan properti lain jika ada
 }
 
-export default function ModulDetailPage({ params }: any) {
+export default function ModulDetailPage({ params }: { params: { slug: string } }) {
     const { slug } = params;
 
     const [user, setUser] = useState<User | null>(null);

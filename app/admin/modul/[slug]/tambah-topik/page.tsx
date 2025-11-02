@@ -4,13 +4,14 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 // Asumsi Anda memiliki SidebarContext untuk state isSidebarCollapsed
 // import { SidebarContext } from "@/context/SidebarContext";
-
-interface TambahTopikProps {
+ 
+export default function TambahTopikPage({
+  params,
+  searchParams,
+}: {
   params: { slug: string };
   searchParams: { modulId?: string };
-}
-
-export default function TambahTopikPage({ params, searchParams }: TambahTopikProps) {
+}) {
   const router = useRouter();
   const { slug: modulSlug } = params;
   const modulId = searchParams?.modulId;
