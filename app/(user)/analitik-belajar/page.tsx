@@ -97,7 +97,7 @@ const useInView = (options: InViewOptions = { threshold: 0.1, triggerOnce: true 
     if (currentRef) {
       observer.observe(currentRef);
     }
-    return () => { if (currentRef) observer.unobserve(currentRef) };
+    return () => { if (currentRef) observer.unobserve(currentRef); };
   }, [options]);
 
   return [ref, isInView] as const;
@@ -396,8 +396,9 @@ export default function AnalitikBelajarPage() {
 
   // --- Gunakan hook animasi untuk ringkasan ---
   const animatedCompletedModules = useCountUp(summary?.completedModules || 0, 1500, isSummaryCardInView);
-  const animatedTotalModules = useCountUp(summary?.totalModules || 0, 1500, isSummaryCardInView);
-  const animatedAverageScore = useCountUp(parseFloat((summary?.averageScore || 0).toFixed(2)), 1500, isSummaryCardInView);
+  const animatedTotalModules = useCountUp(summary?.totalModules || 0, 1500, isSummaryCardInView);  
+  const averageScoreForAnimation = parseFloat((summary?.averageScore || 0).toFixed(2));
+  const animatedAverageScore = useCountUp(averageScoreForAnimation, 1500, isSummaryCardInView);
   const animatedStudyHours = useCountUp(summary?.studyHours || 0, 1500, isSummaryCardInView);
   const animatedDailyStreak = useCountUp(summary?.dailyStreak || 0, 1500, isSummaryCardInView);
 
