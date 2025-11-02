@@ -140,8 +140,10 @@ export default function PostTestPage() {
                         setError("Tidak ada soal post-test yang tersedia untuk modul ini.");
                     }
                 }
-            } catch (err: any) {
-                setError(err.message || "Terjadi kesalahan.");
+            } catch (err) {
+                if (err instanceof Error) {
+                    setError(err.message || "Terjadi kesalahan.");
+                }
             } finally {
                 setLoading(false);
             }
