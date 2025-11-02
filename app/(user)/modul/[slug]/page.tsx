@@ -234,7 +234,9 @@ export default function ModulDetailPage() {
 
         // Jika ini adalah retake, atau tes pertama kali, reset state dan mulai dari awal.
         try {
-            const progressRes = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/results/progress?testType=post-test-topik-progress&modulId=${modul?._id}&topikId=${topik._id}`, { credentials: 'include' });
+            const progressRes = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/results/progress?testType=post-test-topik-progress&modulId=${modul?._id}&topikId=${topik._id}`, {
+                credentials: 'include'
+            });
             if (progressRes.ok) {
                 const progressData = await progressRes.json();
                 if (progressData && progressData.answers && Array.isArray(progressData.answers) && progressData.answers.length > 0) {
@@ -292,7 +294,9 @@ export default function ModulDetailPage() {
         setActiveTest(topik);
         setTestResult(null);
         try {
-            const resultRes = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/results/latest-by-topic?modulId=${modul?._id}&topikId=${topik._id}`, { credentials: 'include' });
+            const resultRes = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/results/latest-by-topic?modulId=${modul?._id}&topikId=${topik._id}`, {
+                credentials: 'include'
+            });
             if (resultRes.ok) {
                 const latestResult = await resultRes.json();
                 setTestResult(latestResult);
@@ -383,17 +387,10 @@ export default function ModulDetailPage() {
             }
 
             // Hapus progress dari DB setelah berhasil submit
-            fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/results/progress`, {
-                method: 'POST',
+            const deleteUrl = `${process.env.NEXT_PUBLIC_API_URL}/api/results/progress?testType=post-test-topik-progress&modulId=${modul?._id}&topikId=${activeTest._id}`;
+            fetch(deleteUrl, {
+                method: 'DELETE', // Menggunakan DELETE untuk menghapus progress
                 credentials: 'include',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    testType: 'post-test-topik-progress',
-                    answers: {},
-                    currentIndex: 0,
-                    modulId: modul?._id,
-                    topikId: activeTest._id,
-                }),
             });
 
         } catch (error) {

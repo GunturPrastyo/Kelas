@@ -63,7 +63,9 @@ export default function ModulDetail({ params }: ModulDetailProps) {
         // Cek apakah modul ini punya post-test
         if (modulData._id) {
           try {
-            const postTestRes = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/questions/check/${modulData._id}`, { credentials: 'include' });
+            const postTestRes = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/questions/check/${modulData._id}`, {
+              credentials: 'include'
+            });
             if (postTestRes.ok) {
               const postTestData = await postTestRes.json();
               setHasModulPostTest(postTestData.exists);
