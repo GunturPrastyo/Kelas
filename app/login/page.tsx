@@ -1,6 +1,6 @@
 "use client";
 
-import { GoogleOAuthProvider, GoogleLogin } from "@react-oauth/google";
+import { GoogleOAuthProvider, GoogleLogin, CredentialResponse } from "@react-oauth/google";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useState, FormEvent } from "react";
@@ -12,7 +12,7 @@ export default function LoginPage() {
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
-  const handleSuccess = async (credentialResponse: any) => {
+  const handleSuccess = async (credentialResponse: CredentialResponse) => {
     setIsLoading(true);
 
     try {
@@ -36,8 +36,12 @@ export default function LoginPage() {
       } else {
         router.push("/dashboard");
       }
-    } catch (err: any) {
-      setError(err.message || "Login gagal");
+    } catch (err) {
+      if (err instanceof Error) {
+        setError(err.message || "Login gagal");
+      } else {
+        setError("Terjadi kesalahan yang tidak diketahui");
+      }
     } finally {
       setIsLoading(false);
     }
@@ -66,8 +70,12 @@ export default function LoginPage() {
       } else {
         router.push("/dashboard");
       }
-    } catch (err: any) {
-      setError(err.message || "Login gagal. Periksa kembali email dan password Anda.");
+    } catch (err) {
+      if (err instanceof Error) {
+        setError(err.message || "Login gagal. Periksa kembali email dan password Anda.");
+      } else {
+        setError("Terjadi kesalahan yang tidak diketahui saat login.");
+      }
     } finally {
       setIsLoading(false);
     }
