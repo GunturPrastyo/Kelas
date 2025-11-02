@@ -310,7 +310,7 @@ export default function AnalitikBelajarPage() {
     });
 
     return () => chartAktivitasInstance.destroy();
-  }, [weeklyActivity, isChartAktivitasInView]); // ✅ hanya update kalau data & visibilitas terpenuhi
+  }, [weeklyActivity, isChartAktivitasInView, chartAktivitasRef]); // ✅ hanya update kalau data & visibilitas terpenuhi
 
 
   // --- 3️⃣ GRAFIK NILAI PER MODUL & PERBANDINGAN (tidak berubah dinamis) ---
@@ -348,7 +348,7 @@ export default function AnalitikBelajarPage() {
       });
       return () => chartNilaiInstance.destroy();
     }
-  }, [moduleScores, isChartNilaiInView]);
+  }, [moduleScores, isChartNilaiInView, chartNilaiRef]);
 
   useEffect(() => {
     if (chartPerbandinganRef.current && comparisonData && isChartPerbandinganInView) { // chartPerbandinganRef.current sudah pasti HTMLCanvasElement
@@ -392,7 +392,7 @@ export default function AnalitikBelajarPage() {
       });
       return () => chartPerbandinganInstance.destroy();
     }
-  }, [comparisonData, isChartPerbandinganInView]);
+  }, [comparisonData, isChartPerbandinganInView, chartPerbandinganRef]);
 
   // --- Gunakan hook animasi untuk ringkasan ---
   const animatedCompletedModules = useCountUp(summary?.completedModules || 0, 1500, isSummaryCardInView);
