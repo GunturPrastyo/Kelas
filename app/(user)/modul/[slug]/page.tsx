@@ -5,8 +5,8 @@ import Link from 'next/link';
 import Image from 'next/image';
 // 1. Import highlight.js dan tema CSS-nya
 import hljs from 'highlight.js';
-// @ts-expect-error - CSS module import
-import 'highlight.js/styles/atom-one-dark.css';
+// @ts-ignore
+import 'highlight.js/styles/atom-one-dark.css'; 
 
 import TopicContent from '@/components/TopicContent';
 import { Home, CheckCircle2, Lock, Rocket, Award } from 'lucide-react';
