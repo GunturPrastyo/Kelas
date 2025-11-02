@@ -10,12 +10,11 @@ const nextConfig = {
         pathname: '/**',
       },
       // Izin untuk gambar yang di-upload dari backend
-      {
-        protocol: 'http',
-        hostname: 'localhost',
-        port: '5000',
-        pathname: '/uploads/**',
-      },
+     {
+    protocol: 'https',
+    hostname: 'srv1099948.hstgr.cloud',
+    pathname: '/uploads/**',
+},
       // Izin untuk avatar inisial dari ui-avatars.com
       {
         protocol: 'https',
