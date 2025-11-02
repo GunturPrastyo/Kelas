@@ -22,7 +22,7 @@ export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
 
         const user: User = JSON.parse(userRaw);
 
-        const newSocket = io(process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000', {
+        const newSocket = io(process.env.NEXT_PUBLIC_API_URL || 'https://31.97.107.17', {
             withCredentials: true,
         });
 
