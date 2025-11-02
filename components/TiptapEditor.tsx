@@ -148,9 +148,14 @@ const MenuBar = ({ editor }: { editor: Editor | null }) => {
       {/* Heading */}
       <select
         className="bg-transparent text-sm px-2 py-1 border-none outline-none rounded hover:bg-gray-100 dark:hover:bg-gray-800"
-        onChange={(e) =>
-          editor.chain().focus().toggleHeading({ level: Number(e.target.value) }).run()
-        }
+        onChange={(e) => {
+          const value = Number(e.target.value);
+          if (value === 0) {
+            editor.chain().focus().setParagraph().run();
+          } else {
+            editor.chain().focus().toggleHeading({ level: value as 1 | 2 | 3 }).run();
+          }
+        }}
       >
         <option value="0">P</option>
         <option value="1">H1</option>
@@ -215,8 +220,8 @@ export default function TiptapEditor({
         orderedList: {
           HTMLAttributes: { class: 'list-decimal pl-5' },
         },
-        codeBlock: true,
-        blockquote: true, // Aktifkan blockquote
+        codeBlock: {},
+        blockquote: {}, // Aktifkan blockquote
         horizontalRule: false,
       }),
       Highlight,
