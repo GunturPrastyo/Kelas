@@ -16,6 +16,11 @@ interface SummaryData {
   dailyStreak: number;
 }
 
+interface ModulProgress {
+  title: string;
+  progress: number;
+}
+
 interface ModuleScoreData {
   moduleTitle: string;
   score: number;
@@ -36,10 +41,10 @@ interface RecommendationData {
     moduleTitle: string;
     moduleIcon: string;
     moduleScore: number;
+    moduleSlug: string;
     weakestTopic: {
       title: string;
     } | null;
-    moduleSlug: string;
     weakestTopicDetails: {
       _id: string;
       slug: string;
@@ -48,7 +53,9 @@ interface RecommendationData {
   } | null;
   deepenTopic: {
     topicId: string;
-    [key: string]: any; // Allow other properties
+    topicTitle?: string;
+    modulSlug?: string;
+    topicSlug?: string;
   } | null;
   continueToModule: {
     moduleTitle: string;
@@ -181,7 +188,7 @@ export default function AnalitikBelajarPage() {
         const recommendationsData = await recommendationsRes.json();
         const weakTopicsData = await weakTopicsRes.json();
         
-        const completedModules = progressData.filter((m: any) => m.progress === 100).length;
+        const completedModules = progressData.filter((m: ModulProgress) => m.progress === 100).length;
         const totalModules = progressData.length;
         const averageScore = analyticsData.averageScore || 0;
         const totalSeconds = analyticsData.totalStudyTime || 0;
@@ -196,13 +203,13 @@ export default function AnalitikBelajarPage() {
         const comparisonClassAveragesMap = new Map(comparisonData.labels.map((label: string, index: number) => [label, comparisonData.classAverages[index]]));
         
         // 2. Gunakan `progressData` sebagai sumber kebenaran untuk semua judul modul
-        const allModuleScores = progressData.map((modul: any) => ({
+        const allModuleScores = progressData.map((modul: ModulProgress) => ({
           moduleTitle: modul.title,
           score: scoresMap.get(modul.title) || 0, // Beri nilai 0 jika tidak ada skor
         }));
 
         // 3. Buat ulang data perbandingan berdasarkan semua modul
-        const allModuleTitles = progressData.map((modul: any) => modul.title);
+        const allModuleTitles = progressData.map((modul: ModulProgress) => modul.title);
         const updatedComparisonData = {
           ...comparisonData,
           labels: allModuleTitles,

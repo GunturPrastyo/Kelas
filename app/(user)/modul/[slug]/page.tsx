@@ -67,7 +67,6 @@ export default function ModulDetailPage({ params }: { params: { slug: string } }
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [openTopicId, setOpenTopicId] = useState<string | null>(null);
-    const [hasModulPostTest, setHasModulPostTest] = useState(false);
 
     // --- State for Post-Test ---
     const [activeTest, setActiveTest] = useState<Topik | null>(null);
@@ -173,30 +172,7 @@ export default function ModulDetailPage({ params }: { params: { slug: string } }
                 logStudyDuration(openTopicIdOnMount, studyTimeTrackerOnMount[openTopicIdOnMount]);
             }
         };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [openTopicId, logStudyDuration]); // Menambahkan logStudyDuration sebagai dependency
-    // Cek apakah modul ini punya post-test
-    useEffect(() => {
-        if (!modul) return;
-        let isMounted = true;
-        const checkModulPostTest = async () => {
-            try {
-                const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/questions/check/modul/${modul._id}`, { credentials: 'include' });
-                if (res.ok) {
-                    const data = await res.json();
-                    if (isMounted) {
-                        setHasModulPostTest(data.exists);
-                    }
-                }
-            } catch (err) {
-                console.error("Gagal memeriksa post-test modul:", err);
-            }
-        };
-        checkModulPostTest();
-        return () => {
-            isMounted = false;
-        };
-    }, [modul]);
 
     // --- Post-Test Progress Persistence Logic ---
     const persistProgress = useCallback(async () => {
