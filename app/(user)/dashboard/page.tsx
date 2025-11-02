@@ -59,8 +59,8 @@ const useInView = (options: InViewOptions = { threshold: 0.1, triggerOnce: true 
 // --- Custom Hook untuk Animasi Hitung (dengan pemicu) ---
 const useCountUp = (end: number, duration: number = 1500, start: boolean = true) => {
   const [count, setCount] = useState(0); // Memberikan nilai awal
-  const frameRef = useRef<number | undefined>(); // Mengizinkan undefined
-  const startTimeRef = useRef<number | undefined>(); // Mengizinkan undefined
+  const frameRef = useRef<number | null>(null);
+  const startTimeRef = useRef<number | null>(null);
 
   const easeOutExpo = (t: number) => (t === 1 ? 1 : 1 - Math.pow(2, -10 * t));
 
@@ -68,7 +68,7 @@ const useCountUp = (end: number, duration: number = 1500, start: boolean = true)
     if (!start || end === undefined || isNaN(end)) return;
 
     const animate = (timestamp: number) => {
-      if (startTimeRef.current === undefined) {
+      if (startTimeRef.current === null) {
         startTimeRef.current = timestamp;
       }
 
@@ -84,10 +84,12 @@ const useCountUp = (end: number, duration: number = 1500, start: boolean = true)
       }
     };
 
-    startTimeRef.current = undefined;
+    startTimeRef.current = null;
     frameRef.current = requestAnimationFrame(animate);
 
-    return () => cancelAnimationFrame(frameRef.current!);
+    return () => {
+      if (frameRef.current) cancelAnimationFrame(frameRef.current);
+    };
   }, [end, duration, start]);
 
   return count;
