@@ -21,6 +21,7 @@ interface Question {
     questionText: string;
     options: string[];
     answer?: string; // Optional, as it's not sent to the client initially
+    durationPerQuestion?: number;
 }
 
 interface Materi {
@@ -52,8 +53,6 @@ interface Modul {
     hasCompletedModulPostTest?: boolean; // Tambahkan properti ini
 }
 
-const DURATION_PER_QUESTION = 2 * 60; // 2 menit per soal
-
 export default function ModulDetailPage() {
     const params = useParams();
     const { slug } = params;
@@ -80,6 +79,25 @@ export default function ModulDetailPage() {
     // Hooks untuk modal post-test dipindahkan ke top-level
     const questionModalRef = useRef<HTMLDivElement>(null);
     const currentQuestionForModal = activeTest ? activeTest.questions[testIdx] : null;
+
+    // --- Notification Helper ---
+    const createNotification = useCallback(async (message: string, link: string) => {
+        if (!user) return;
+        try {
+            await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/notifications`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                credentials: 'include',
+                body: JSON.stringify({
+                    userId: user._id,
+                    message,
+                    link,
+                }),
+            });
+        } catch (error) {
+            console.warn("Gagal membuat notifikasi:", error);
+        }
+    }, [user]);
 
     // --- Fetch User and Modul Data ---
     useEffect(() => {
@@ -316,6 +334,12 @@ export default function ModulDetailPage() {
             const finalResult = resultData.data; // Backend mengembalikan { message, data: newResult }
             setTestResult(finalResult);
 
+            // Buat notifikasi berdasarkan hasil tes topik
+            const notifMessage = finalResult.score >= 80
+                ? `Selamat! Anda lulus post-test "${activeTest.title}" dengan skor ${finalResult.score}%.`
+                : `Anda mendapatkan skor ${finalResult.score}% untuk post-test "${activeTest.title}". Coba lagi!`;
+            createNotification(notifMessage, `/modul/${modul?.slug}#${activeTest._id}`);
+
             // Tandai topik sebagai selesai di backend jika lulus
             if (finalResult.score >= 80) {
                 fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/users/complete-topic`, {
@@ -327,6 +351,7 @@ export default function ModulDetailPage() {
                     }),
                 }).catch(err => console.warn("Gagal menandai topik selesai di backend:", err));
             }
+
 
             // Jika lulus, update state modul secara lokal agar topik berikutnya terbuka & progress bar terupdate
             if (finalResult.score >= 80) {
@@ -343,6 +368,11 @@ export default function ModulDetailPage() {
                     // Buka topik selanjutnya secara otomatis
                     if (nextTopic) {
                         setOpenTopicId(nextTopic._id);
+                    }
+
+                    // Jika semua topik selesai, kirim notifikasi penyelesaian modul
+                    if (newProgress === 100) {
+                        createNotification(`Hebat! Anda telah menyelesaikan semua topik di modul "${prevModul.title}".`, `/modul/${prevModul.slug}`);
                     }
 
                     return { 
@@ -376,13 +406,16 @@ export default function ModulDetailPage() {
         } finally {
             setIsSubmitting(false);
         }
-    }, [testAnswers, testStartTime, user, activeTest, modul?._id]);
+    }, [testAnswers, testStartTime, user, activeTest, modul, createNotification]);
 
     // --- Timer Effect for Test ---
     useEffect(() => {
         if (!activeTest || testResult) return;
 
-        const DURATION = (activeTest.questions.length || 1) * DURATION_PER_QUESTION;
+        // Hitung total durasi dari semua soal di tes aktif
+        const DURATION = activeTest.questions.reduce(
+            (acc, q) => acc + (q.durationPerQuestion || 60), 0
+        );
         const end = testStartTime + DURATION * 1000;
 
         const timerInterval = setInterval(() => {
@@ -426,7 +459,6 @@ export default function ModulDetailPage() {
     if (activeTest) {
         const currentQuestion = activeTest.questions[testIdx];
         const totalQuestions = activeTest.questions.length;
-        const DURATION = totalQuestions * DURATION_PER_QUESTION;
 
         return (
             <div className="fixed inset-0 bg-black bg-opacity-60 z-50 flex justify-center items-center p-4">
