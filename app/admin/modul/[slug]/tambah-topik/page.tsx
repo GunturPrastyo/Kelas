@@ -10,7 +10,7 @@ interface TambahTopikProps {
   searchParams: { modulId?: string };
 }
 
-export default function TambahTopik({ params, searchParams }: TambahTopikProps) {
+export default function TambahTopikPage({ params, searchParams }: TambahTopikProps) {
   const router = useRouter();
   const { slug: modulSlug } = params;
   const modulId = searchParams?.modulId;
@@ -47,8 +47,7 @@ export default function TambahTopik({ params, searchParams }: TambahTopikProps) 
       }
 
       // Kembali ke halaman detail modul setelah berhasil
-      router.push(`/admin/modul/${modulSlug}`);
-      router.refresh(); // Memuat ulang data di halaman sebelumnya
+      router.replace(`/admin/modul/${modulSlug}`); // Menggunakan replace lebih baik setelah submit form
     } catch (err) {
       if (err instanceof Error) {
         setError(err.message || "Terjadi kesalahan");
