@@ -167,29 +167,38 @@ export default function ModulDetailPage() {
 
     useEffect(() => {
         // Cleanup function: akan berjalan saat komponen di-unmount (pengguna pindah halaman)
+        const openTopicIdOnMount = openTopicId;
+        const studyTimeTrackerOnMount = studyTimeTrackerRef.current;
+
         return () => {
-            if (openTopicId && studyTimeTrackerRef.current[openTopicId]) {
-                logStudyDuration(openTopicId, studyTimeTrackerRef.current[openTopicId]);
+            if (openTopicIdOnMount && studyTimeTrackerOnMount[openTopicIdOnMount]) {
+                logStudyDuration(openTopicIdOnMount, studyTimeTrackerOnMount[openTopicIdOnMount]);
             }
         };
-    }, [openTopicId, logStudyDuration]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [openTopicId]); // Hanya dijalankan saat openTopicId berubah
     // Cek apakah modul ini punya post-test
     useEffect(() => {
         if (!modul) return;
-
+        let isMounted = true;
         const checkModulPostTest = async () => {
             try {
                 const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/questions/check/modul/${modul._id}`, { credentials: 'include' });
                 if (res.ok) {
                     const data = await res.json();
-                    setHasModulPostTest(data.exists);
+                    if (isMounted) {
+                        setHasModulPostTest(data.exists);
+                    }
                 }
             } catch (err) {
                 console.error("Gagal memeriksa post-test modul:", err);
             }
         };
         checkModulPostTest();
-    }, [modul, user]);
+        return () => {
+            isMounted = false;
+        };
+    }, [modul]);
 
     // --- Post-Test Progress Persistence Logic ---
     const persistProgress = useCallback(async () => {
