@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useCallback, useRef, use } from 'react';
+import { useParams } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
 // 1. Import highlight.js dan tema CSS-nya
@@ -60,8 +61,9 @@ interface TestResult {
     // tambahkan properti lain jika ada
 }
 
-export default function ModulDetailPage({ params }: { params: { slug: string } }) {
-    const { slug } = params;
+export default function ModulDetailPage() {
+    const params = useParams();
+    const slug = Array.isArray(params.slug) ? params.slug[0] : params.slug;
 
     const [user, setUser] = useState<User | null>(null);
     const [modul, setModul] = useState<Modul | null>(null);
@@ -587,7 +589,7 @@ export default function ModulDetailPage({ params }: { params: { slug: string } }
     // --- RENDER MAIN PAGE ---
     return (
         <div className="max-w-full p-5 pt-0">
-            {/* Breadcrumb */}\
+            {/* Breadcrumb */}
             <nav className="flex mb-6" aria-label="Breadcrumb">
                 <ol className="inline-flex items-center space-x-1 md:space-x-2 rtl:space-x-reverse text-slate-700 dark:text-slate-300">
                     <li className="inline-flex items-center">
