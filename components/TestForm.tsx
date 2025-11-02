@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { Label } from "@/components/ui/label";
 import dynamic from "next/dynamic";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
@@ -22,6 +23,7 @@ interface Question {
   questionText: string;
   options: string[];
   answer: string;
+  durationPerQuestion?: number;
 }
 
 interface TestFormProps {
@@ -31,6 +33,7 @@ interface TestFormProps {
   topikSlug?: string;
   isEditing: boolean;
   initialQuestions?: Question[];
+  initialDuration?: number;
   testType: "pre-test-global" | "post-test-modul" | "post-test-topik";
 }
 
@@ -44,10 +47,12 @@ export default function TestForm({
   topikSlug,
   isEditing,
   initialQuestions = emptyInitialQuestions,
+  initialDuration = 60,
 }: TestFormProps) {
   const router = useRouter();
   const [questions, setQuestions] = useState<Question[]>([]);
   const [loading, setLoading] = useState(false);
+  const [durationPerQuestion, setDurationPerQuestion] = useState(initialDuration);
   const [fetching, setFetching] = useState(isEditing);
 
   // state untuk melacak editor opsi mana yang aktif
@@ -59,14 +64,15 @@ export default function TestForm({
   useEffect(() => {
     if (isEditing) {
       setQuestions(initialQuestions);
+      setDurationPerQuestion(initialDuration);
       setFetching(false);
     } else {
-      setQuestions([{ questionText: "", options: [""], answer: "" }]);
+      setQuestions([{ questionText: "", options: [""], answer: "", durationPerQuestion: 60 }]);
     }
-  }, [isEditing, initialQuestions]);
+  }, [isEditing, initialQuestions, initialDuration]);
 
   const handleAddQuestion = () => {
-    setQuestions([...questions, { questionText: "", options: [""], answer: "" }]);
+    setQuestions([...questions, { questionText: "", options: [""], answer: "", durationPerQuestion: 60 }]);
   };
 
   const handleRemoveQuestion = (index: number) => {
@@ -205,6 +211,26 @@ export default function TestForm({
               )}
             </div>
 
+            {/* Pengaturan Waktu per Soal */}
+            <div className="grid w-full max-w-xs items-center gap-1.5 mb-4">
+              <Label htmlFor={`duration-${qIndex}`}>Waktu Pengerjaan</Label>
+              <select
+                id={`duration-${qIndex}`}
+                value={q.durationPerQuestion || 60}
+                onChange={(e) => {
+                  const updated = [...questions];
+                  updated[qIndex].durationPerQuestion = Number(e.target.value);
+                  setQuestions(updated);
+                }}
+                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+              >
+                <option value={30}>30 Detik</option>
+                <option value={45}>45 Detik</option>
+                <option value={60}>1 Menit (Default)</option>
+                <option value={90}>1 Menit 30 Detik</option>
+                <option value={120}>2 Menit</option>
+              </select>
+            </div>
             {/* Editor untuk soal */}
             <div className="mb-4">
               <TiptapEditor

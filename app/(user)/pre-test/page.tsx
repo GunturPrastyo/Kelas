@@ -14,7 +14,7 @@ interface Question {
     questionText: string;
     options: string[];
     answer: string;
-    code?: string;
+    durationPerQuestion?: number;
 }
 
 interface Module {
@@ -23,7 +23,6 @@ interface Module {
     slug: string;
     icon: string;
     category: 'mudah' | 'sedang' | 'sulit';
-    code?: string;
 }
 
 interface User {
@@ -31,14 +30,13 @@ interface User {
     // tambahkan properti lain jika perlu
 }
 
-const DURATION = 10 * 60; // 10 menit dalam detik
-
 export default function PreTestPage() {
     const [questions, setQuestions] = useState<Question[]>([]);
     const [answers, setAnswers] = useState<{ [key: string]: string }>({});
     const [idx, setIdx] = useState(0);
     const [startTime, setStartTime] = useState(Date.now());
-    const [timeLeft, setTimeLeft] = useState(DURATION);
+    const [totalDuration, setTotalDuration] = useState(0);
+    const [timeLeft, setTimeLeft] = useState(0);
     const [result, setResult] = useState<any>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
@@ -47,6 +45,24 @@ export default function PreTestPage() {
 
     const total = questions.length;
 
+    // --- Notification Helper ---
+    const createNotification = useCallback(async (message: string, link: string) => {
+        if (!user) return;
+        try {
+            await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/notifications`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                credentials: 'include',
+                body: JSON.stringify({
+                    userId: user._id,
+                    message,
+                    link,
+                }),
+            });
+        } catch (error) {
+            console.warn("Gagal membuat notifikasi:", error);
+        }
+    }, [user]);
     const grade = useCallback(() => {
         if (!user) return; // Pastikan user sudah ada
         let correct = 0;
@@ -85,7 +101,13 @@ export default function PreTestPage() {
         };
 
         saveResultToDB();
-    }, [answers, startTime, total, questions, user]);
+
+        // Buat notifikasi setelah menyelesaikan pre-test
+        createNotification(
+            `Anda telah menyelesaikan Pre-Test dengan skor ${score}%.`,
+            '/profil' // Arahkan ke halaman profil/hasil
+        );
+    }, [answers, startTime, total, questions, user, createNotification]);
 
     useEffect(() => {
         const userRaw = localStorage.getItem('user');
@@ -142,7 +164,11 @@ export default function PreTestPage() {
                 });
                 if (!questionsRes.ok) throw new Error("Gagal memuat soal.");
                 const data = await questionsRes.json();
-                setQuestions(data.questions || []);
+                const fetchedQuestions = data.questions || [];
+                setQuestions(fetchedQuestions);
+                const duration = fetchedQuestions.reduce((acc: number, q: Question) => acc + (q.durationPerQuestion || 60), 0);
+                setTotalDuration(duration);
+                setTimeLeft(duration);
 
                 // Muat progress yang belum selesai dari localStorage jika ada
                 const stateKey = `pretest_state_${user._id}`;
@@ -187,7 +213,7 @@ export default function PreTestPage() {
         // Jangan jalankan timer jika hasil sudah ditampilkan
         if (result) return;
 
-        const end = startTime + DURATION * 1000;
+        const end = startTime + totalDuration * 1000;
         const timerInterval = setInterval(() => {
             const left = Math.max(0, Math.round((end - Date.now()) / 1000));
             setTimeLeft(left);
@@ -198,7 +224,7 @@ export default function PreTestPage() {
         }, 1000);
 
         return () => clearInterval(timerInterval);
-    }, [startTime, grade, result]);
+    }, [startTime, grade, result, totalDuration]);
 
     const persist = () => {
         if (!user) return;
