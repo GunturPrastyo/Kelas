@@ -6,7 +6,7 @@ import Image from 'next/image';
 import Breadcrumb from '@/components/Breadcrumb';
 // 1. Import highlight.js dan tema CSS-nya
 import hljs from 'highlight.js';
-import 'highlight.js/styles/atom-one-dark.css'; // Tema gelap mirip VS Code
+
 
 
 interface Question {
@@ -300,7 +300,7 @@ export default function PreTestPage() {
         const recommendedModules = allModules.filter(m => categoryMap[m.category] === level);
 
         return (
-            <div className="max-w-5xl mx-auto p-4 sm:p-5 my-4 sm:my-8 font-sans">
+            <div className="w-full font-sans">
                 <Breadcrumb paths={[
                     { name: "Dashboard", href: "/dashboard" },
                     { name: "Hasil Pre-test", href: "#" }
@@ -384,10 +384,10 @@ export default function PreTestPage() {
                     <Image src="/logo1.png" width={40} height={40} className="h-10 w-auto" alt="Logo" />
                     <h1 className="text-lg font-bold text-slate-800 dark:text-slate-200">Pre-test</h1>
                 </div>
-                <div className="flex gap-3 items-center justify-center text-slate-500 dark:text-slate-400 text-sm bg-slate-100 dark:bg-gray-800 px-3 py-1.5 rounded-lg border border-slate-200 dark:border-gray-700">
-                    <span>Soal: <span>{total}</span></span>
+                <div className="flex gap-2 sm:gap-3 items-center justify-center text-slate-500 dark:text-slate-400 text-xs sm:text-sm bg-slate-100 dark:bg-gray-800 px-2 sm:px-3 py-1.5 rounded-lg border border-slate-200 dark:border-gray-700">
+                    <span className="hidden sm:inline">Soal: </span><span>{idx + 1}/{total}</span>
                     <span className="text-slate-300">|</span>
-                    <span >Waktu: <span>{`${String(Math.floor(timeLeft / 60)).padStart(2, '0')}:${String(timeLeft % 60).padStart(2, '0')}`}</span></span>
+                    <span>Waktu: <span>{`${String(Math.floor(timeLeft / 60)).padStart(2, '0')}:${String(timeLeft % 60).padStart(2, '0')}`}</span></span>
                 </div>
             </header>
 
@@ -436,7 +436,7 @@ export default function PreTestPage() {
                             id="prevBtn"
                             onClick={() => setIdx(i => Math.max(0, i - 1))}
                             disabled={idx === 0}
-                            className="flex-1 bg-white dark:bg-gray-700 text-slate-700 dark:text-slate-300 border border-slate-300 dark:border-gray-600 px-4 py-2.5 rounded-lg cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed hover:bg-slate-50 dark:hover:bg-gray-600"
+                            className="flex-1 bg-white dark:bg-gray-700 text-slate-700 dark:text-slate-300 border border-slate-300 dark:border-gray-600 px-3 py-2 sm:px-4 sm:py-2.5 rounded-lg cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed hover:bg-slate-50 dark:hover:bg-gray-600 text-sm sm:text-base"
                         >
                             Sebelumnya
                         </button>
@@ -445,7 +445,7 @@ export default function PreTestPage() {
                                 id="nextBtn"
                                 onClick={() => setIdx(i => Math.min(total - 1, i + 1))}
                                 disabled={idx === total - 1}
-                                className="flex-1 bg-blue-600 text-white border-none px-4 py-2.5 rounded-lg cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed hover:bg-blue-700 transition"
+                                className="flex-1 bg-blue-600 text-white border-none px-3 py-2 sm:px-4 sm:py-2.5 rounded-lg cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed hover:bg-blue-700 transition text-sm sm:text-base"
                             >
                                 Berikutnya
                             </button>
@@ -455,7 +455,7 @@ export default function PreTestPage() {
                         <button
                             id="saveBtn"
                             onClick={persist}
-                            className="flex-1 sm:flex-none bg-blue-100 text-blue-700 dark:bg-blue-900/50 dark:text-blue-300 border-none px-4 py-2.5 rounded-lg cursor-pointer hover:bg-blue-200 dark:hover:bg-blue-900/80 transition"
+                            className="flex-1 sm:flex-none bg-blue-100 text-blue-700 dark:bg-blue-900/50 dark:text-blue-300 border-none px-3 py-2 sm:px-4 sm:py-2.5 rounded-lg cursor-pointer hover:bg-blue-200 dark:hover:bg-blue-900/80 transition text-sm sm:text-base"
                         >
                             Simpan
                         </button>
@@ -463,7 +463,7 @@ export default function PreTestPage() {
                             <button
                                 id="submitBtn"
                                 onClick={() => { if (confirm('Kirim jawaban dan lihat hasil?')) { grade(); } }}
-                                className="flex-1 sm:flex-none bg-green-600 text-white border-none px-4 py-2.5 rounded-lg cursor-pointer hover:bg-green-700 transition"
+                                className="flex-1 sm:flex-none bg-green-600 text-white border-none px-3 py-2 sm:px-4 sm:py-2.5 rounded-lg cursor-pointer hover:bg-green-700 transition text-sm sm:text-base"
                             >
                                 Kirim Jawaban
                             </button>
@@ -478,7 +478,7 @@ export default function PreTestPage() {
             </section>
 
             <footer className="bg-white dark:bg-gray-800 p-4 text-center text-gray-600 dark:text-gray-400 text-sm mt-8 shadow-inner font-poppins">
-                <p>&copy; 2025 KELAS. All rights reserved.</p>
+                <p>&copy; 2024 KELAS. All rights reserved.</p>
             </footer>
         </div>
     );
