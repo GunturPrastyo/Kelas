@@ -118,7 +118,7 @@ export default function DashboardPage() {
           fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/results/latest-by-type/pre-test-global`, {
             credentials: 'include',
           }),
-          fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/modul/progress`, {
+          fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/modul/progress`, { // Meskipun sudah ada, pastikan lagi
             credentials: 'include',
           }),
           fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/results/study-time`, {
