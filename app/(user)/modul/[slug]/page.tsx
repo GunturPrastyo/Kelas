@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback, useRef } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 // 1. Import highlight.js dan tema CSS-nya
 import hljs from 'highlight.js';
 import 'highlight.js/styles/atom-one-dark.css'; // Tema gelap mirip VS Code
@@ -177,7 +178,7 @@ export default function ModulDetailPage({
             }
         };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [openTopicId]); // Hanya dijalankan saat openTopicId berubah
+    }, [openTopicId, logStudyDuration]); // Menambahkan logStudyDuration sebagai dependency
     // Cek apakah modul ini punya post-test
     useEffect(() => {
         if (!modul) return;
@@ -455,7 +456,7 @@ export default function ModulDetailPage({
                 hljs.highlightElement(block as HTMLElement);
             });
         }
-    }, [currentQuestionForModal]); // Jalankan setiap kali soal di modal berubah
+    }, [activeTest, testIdx, currentQuestionForModal]); // Dependency lebih spesifik
 
 
 
@@ -640,14 +641,14 @@ export default function ModulDetailPage({
             {/* Header Modul */}
             <header className="bg-gradient-to-r from-indigo-500 to-blue-600 rounded-xl p-6 mt-6 shadow-md text-white flex flex-col items-start gap-2 mb-8 md:flex-row md:items-center md:gap-4">
                 {/* Ikon untuk desktop (di kiri) */}
-                <img src={`${process.env.NEXT_PUBLIC_API_URL}/uploads/${modul.icon}`} alt={modul.title} width={80} height={80} className="hidden md:block h-20 w-20 rounded-lg object-cover bg-white/20 p-1" />
+                <Image src={`${process.env.NEXT_PUBLIC_API_URL}/uploads/${modul.icon}`} alt={modul.title} width={80} height={80} className="hidden md:block h-20 w-20 rounded-lg object-cover bg-white/20 p-1" />
                 
                 <div className="flex-1 text-left w-full"> {/* Wrapper untuk teks dan ikon mobile */}
                     <span className="text-xs font-semibold uppercase tracking-wider text-blue-200">{modul.category}</span>
                     <h1 className="text-3xl font-bold text-white mt-1 mb-2">{modul.title}</h1>
                     
                     {/* Ikon untuk mobile (di bawah judul, di tengah) */}
-                    <img src={`${process.env.NEXT_PUBLIC_API_URL}/uploads/${modul.icon}`} alt={modul.title} width={80} height={80} className="hidden h-20 w-20 rounded-lg object-cover bg-white/20 p-1 mb-4 mx-auto" />
+                    <Image src={`${process.env.NEXT_PUBLIC_API_URL}/uploads/${modul.icon}`} alt={modul.title} width={80} height={80} className="hidden h-20 w-20 rounded-lg object-cover bg-white/20 p-1 mb-4 mx-auto" />
                     
                     <p className="text-sm text-white/90 mb-2">{modul.overview}</p>
                     <div className="w-full bg-white/30 rounded-full h-2.5">
@@ -738,7 +739,7 @@ export default function ModulDetailPage({
 
                             {/* Gambar (akan muncul di atas pada mobile, di kanan pada desktop) */}
                             <div className="flex w-full md:w-1/3 justify-center items-center mt-4 md:mt-0 order-first md:order-last">
-                                <img src={hasCompletedModulPostTest ? "/post-test-akhir.png" : "/post-test.png"} alt="Post Test" width={240} height={240} className="w-48 h-48 md:w-60 md:h-60 object-contain" />
+                                <Image src={hasCompletedModulPostTest ? "/post-test-akhir.png" : "/post-test.png"} alt="Post Test" width={240} height={240} className="w-48 h-48 md:w-60 md:h-60 object-contain" unoptimized />
                             </div>
                         </div>
                     </section>
