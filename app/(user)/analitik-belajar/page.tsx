@@ -75,7 +75,7 @@ interface InViewOptions extends IntersectionObserverInit {
 // --- Custom Hook untuk mendeteksi elemen di viewport ---
 const useInView = (options: InViewOptions = { threshold: 0.1, triggerOnce: true }) => {
   const [isInView, setIsInView] = useState(false);
-  const ref = useRef<HTMLDivElement | HTMLCanvasElement>(null);
+  const ref = useRef<HTMLDivElement | HTMLCanvasElement | HTMLHeadingElement>(null);
 
   useEffect(() => {
     const observer = new IntersectionObserver(([entry]) => {
@@ -87,8 +87,11 @@ const useInView = (options: InViewOptions = { threshold: 0.1, triggerOnce: true 
       }
     }, options);
 
-    if (ref.current) observer.observe(ref.current);
-    return () => { if (ref.current) observer.unobserve(ref.current) };
+    const currentRef = ref.current;
+    if (currentRef) {
+      observer.observe(currentRef);
+    }
+    return () => { if (currentRef) observer.unobserve(currentRef) };
   }, [options]);
 
   return [ref, isInView] as const;
@@ -133,10 +136,10 @@ const useCountUp = (end: number, duration: number = 1500, start: boolean = true)
 
 export default function AnalitikBelajarPage() {
   const router = useRouter();
-  const [summaryCardRef, isSummaryCardInView] = useInView({ threshold: 0.2, triggerOnce: true });
-  const [chartAktivitasRef, isChartAktivitasInView] = useInView({ threshold: 0.5, triggerOnce: true });
-  const [chartNilaiRef, isChartNilaiInView] = useInView({ threshold: 0.5, triggerOnce: true });
-  const [chartPerbandinganRef, isChartPerbandinganInView] = useInView({ threshold: 0.5, triggerOnce: true });
+  const [summaryCardRef, isSummaryCardInView] = useInView({ threshold: 0.2, triggerOnce: true }) as [React.RefObject<HTMLHeadingElement>, boolean];
+  const [chartAktivitasRef, isChartAktivitasInView] = useInView({ threshold: 0.5, triggerOnce: true }) as [React.RefObject<HTMLCanvasElement>, boolean];
+  const [chartNilaiRef, isChartNilaiInView] = useInView({ threshold: 0.5, triggerOnce: true }) as [React.RefObject<HTMLCanvasElement>, boolean];
+  const [chartPerbandinganRef, isChartPerbandinganInView] = useInView({ threshold: 0.5, triggerOnce: true }) as [React.RefObject<HTMLCanvasElement>, boolean];
   const [summary, setSummary] = useState<SummaryData | null>(null);
   const [weeklyActivity, setWeeklyActivity] = useState<number[]>([]);
   const [moduleScores, setModuleScores] = useState<ModuleScoreData[]>([]);
@@ -246,7 +249,7 @@ export default function AnalitikBelajarPage() {
       return rotated.slice(-7);
     })();
 
-    const chartAktivitasInstance = new Chart(chartAktivitasRef.current as HTMLCanvasElement, {
+    const chartAktivitasInstance = new Chart(chartAktivitasRef.current, {
       type: "line",
       data: {
         labels: dayLabels,
@@ -301,13 +304,13 @@ export default function AnalitikBelajarPage() {
     });
 
     return () => chartAktivitasInstance.destroy();
-  }, [weeklyActivity, isChartAktivitasInView]); // ✅ hanya update kalau data & visibilitas terpenuhi
+  }, [weeklyActivity, isChartAktivitasInView, chartAktivitasRef]); // ✅ hanya update kalau data & visibilitas terpenuhi
 
 
   // --- 3️⃣ GRAFIK NILAI PER MODUL & PERBANDINGAN (tidak berubah dinamis) ---
   useEffect(() => {
-    if (chartNilaiRef.current && moduleScores.length > 0 && isChartNilaiInView) {
-      const chartNilaiInstance = new Chart(chartNilaiRef.current as HTMLCanvasElement, {
+    if (chartNilaiRef.current && moduleScores.length > 0 && isChartNilaiInView) { // chartNilaiRef.current sudah pasti HTMLCanvasElement
+      const chartNilaiInstance = new Chart(chartNilaiRef.current, {
         type: "bar",
         data: {
           labels: moduleScores.map(m => m.moduleTitle),
@@ -339,11 +342,11 @@ export default function AnalitikBelajarPage() {
       });
       return () => chartNilaiInstance.destroy();
     }
-  }, [moduleScores, isChartNilaiInView]);
+  }, [moduleScores, isChartNilaiInView, chartNilaiRef]);
 
   useEffect(() => {
-    if (chartPerbandinganRef.current && comparisonData && isChartPerbandinganInView) {
-      const chartPerbandinganInstance = new Chart(chartPerbandinganRef.current as HTMLCanvasElement, {
+    if (chartPerbandinganRef.current && comparisonData && isChartPerbandinganInView) { // chartPerbandinganRef.current sudah pasti HTMLCanvasElement
+      const chartPerbandinganInstance = new Chart(chartPerbandinganRef.current, {
         type: "radar",
         data: {
           labels: comparisonData.labels,
@@ -383,7 +386,7 @@ export default function AnalitikBelajarPage() {
       });
       return () => chartPerbandinganInstance.destroy();
     }
-  }, [comparisonData, isChartPerbandinganInView]);
+  }, [comparisonData, isChartPerbandinganInView, chartPerbandinganRef]);
 
   // --- Gunakan hook animasi untuk ringkasan ---
   const animatedCompletedModules = useCountUp(summary?.completedModules || 0, 1500, isSummaryCardInView);
@@ -408,7 +411,7 @@ export default function AnalitikBelajarPage() {
     <div className="space-y-10">
       {/* RINGKASAN */}
       <section>
-        <h2 ref={summaryCardRef as React.RefObject<HTMLHeadingElement>} className="text-xl font-semibold text-gray-700 dark:text-gray-200 mb-3 flex items-center gap-2">
+        <h2 ref={summaryCardRef} className="text-xl font-semibold text-gray-700 dark:text-gray-200 mb-3 flex items-center gap-2">
           <LayoutDashboard className="w-6 h-6" />
           Ringkasan Kemajuan
         </h2>
@@ -508,7 +511,7 @@ export default function AnalitikBelajarPage() {
             <Activity className="w-5 h-5" />
             Aktivitas Mingguan
           </h3>
-          <canvas ref={chartAktivitasRef as React.RefObject<HTMLCanvasElement>}></canvas>
+          <canvas ref={chartAktivitasRef}></canvas>
         </div>
 
         <div className="bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-md">
@@ -516,7 +519,7 @@ export default function AnalitikBelajarPage() {
             <BarChartHorizontal className="w-5 h-5" />
             Nilai per Modul
           </h3>
-          <canvas ref={chartNilaiRef as React.RefObject<HTMLCanvasElement>}></canvas>
+          <canvas ref={chartNilaiRef}></canvas>
         </div>
       </section>
 
@@ -612,7 +615,7 @@ export default function AnalitikBelajarPage() {
         </h2>
         <div className="flex flex-col lg:flex-row gap-4 items-center mt-2">
           <div className="lg:w-3/5 w-full">
-            <canvas ref={chartPerbandinganRef as React.RefObject<HTMLCanvasElement>}></canvas>
+            <canvas ref={chartPerbandinganRef}></canvas>
           </div>
           <div className="lg:w-2/5 w-full space-y-4 text-gray-800 dark:text-gray-200">
             {loading || !comparisonData ? (
