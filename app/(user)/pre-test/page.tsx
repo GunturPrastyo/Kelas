@@ -198,7 +198,7 @@ export default function PreTestPage() {
 
         const fetchAllModules = async () => {
             try {
-                const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/modul`, { credentials: 'include' });
+                const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/modul`, { credentials: 'include' }); // Sudah benar, memastikan kembali
                 if (!res.ok) throw new Error("Gagal memuat data modul untuk rekomendasi.");
                 const data = await res.json();
                 setAllModules(data);
