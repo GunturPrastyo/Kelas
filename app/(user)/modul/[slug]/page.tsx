@@ -5,7 +5,8 @@ import Link from 'next/link';
 import Image from 'next/image';
 // 1. Import highlight.js dan tema CSS-nya
 import hljs from 'highlight.js';
-import 'highlight.js/styles/atom-one-dark.css'; // Tema gelap mirip VS Code
+// @ts-ignore
+import 'highlight.js/styles/atom-one-dark.css'; 
 
 import TopicContent from '@/components/TopicContent';
 import { Home, CheckCircle2, Lock, Rocket, Award } from 'lucide-react';
@@ -586,7 +587,7 @@ export default function ModulDetailPage({ params }: { params: { slug: string } }
     // --- RENDER MAIN PAGE ---
     return (
         <div className="max-w-full p-5 pt-0">
-            {/* Breadcrumb */}
+            {/* Breadcrumb */}\
             <nav className="flex mb-6" aria-label="Breadcrumb">
                 <ol className="inline-flex items-center space-x-1 md:space-x-2 rtl:space-x-reverse text-slate-700 dark:text-slate-300">
                     <li className="inline-flex items-center">
@@ -699,7 +700,7 @@ export default function ModulDetailPage({ params }: { params: { slug: string } }
                                     }`}
                                     aria-disabled={isPostTestLocked}
                                     onClick={(e) => {
-                                        if (isPostTestLocked) e.preventDefault();
+                                        if (isPostTestLocked) e.preventDefault()
                                     }}
                                 >
                                     <div className="flex items-center gap-2">
