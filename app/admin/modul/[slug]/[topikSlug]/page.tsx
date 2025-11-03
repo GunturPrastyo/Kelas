@@ -4,6 +4,7 @@ import dynamic from "next/dynamic";
 import Link from "next/link";
 import { useState, use, useEffect } from "react";
 import toast, { Toaster } from "react-hot-toast";
+import { authFetch } from "@/lib/authFetch";
 import { Modal } from "flowbite-react";
 
 const TiptapEditor = dynamic(() => import("@/components/TiptapEditor"), {
@@ -50,10 +51,7 @@ export default function MateriEditorPage({ params }: MateriEditorPageProps) {
   useEffect(() => {
     const fetchMateri = async () => {
       try {
-        const res = await fetch(
-          `${process.env.NEXT_PUBLIC_API_URL}/api/materi/modul/${slug}/topik/${topikSlug}`,
-          { credentials: "include" } // Tambahkan credentials
-        );
+        const res = await authFetch(`${process.env.NEXT_PUBLIC_API_URL}/api/materi/modul/${slug}/topik/${topikSlug}`);
 
         if (!res.ok) {
           if (res.status === 404) {
@@ -107,10 +105,9 @@ export default function MateriEditorPage({ params }: MateriEditorPageProps) {
 
     try {
       const url = `${process.env.NEXT_PUBLIC_API_URL}/api/materi/save`;
-      const res = await fetch(url, {
+      const res = await authFetch(url, {
         method: "POST", // Selalu POST untuk operasi upsert
         headers: { "Content-Type": "application/json" },
-        credentials: "include", // Tambahkan ini untuk mengirim cookie autentikasi
         body: JSON.stringify({
           topikId: topikId, // Kirim topikId untuk identifikasi di backend
           content,

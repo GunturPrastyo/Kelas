@@ -8,8 +8,6 @@ import Breadcrumb from '@/components/Breadcrumb';
 import { authFetch } from '@/lib/authFetch';
 import hljs from 'highlight.js';
 
-
-
 interface Question {
     _id: string;
     questionText: string;
@@ -472,7 +470,7 @@ export default function PreTestPage() {
             </section>
 
             <footer className="bg-white dark:bg-gray-800 p-4 text-center text-gray-600 dark:text-gray-400 text-sm mt-8 shadow-inner font-poppins">
-                <p>&copy; 2024 KELAS. All rights reserved.</p>
+                <p>&copy; 2025 KELAS. All rights reserved.</p>
             </footer>
         </div>
     );

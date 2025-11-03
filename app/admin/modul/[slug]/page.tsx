@@ -5,6 +5,7 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button"; // Pastikan path ini benar
 import { PlusCircle, FileEdit, Home } from "lucide-react";
 import { useUI } from "@/context/UIContext";
+import { authFetch } from "@/lib/authFetch";
 import TopicCard from "@/components/Topic";
 
 interface Modul {
@@ -39,23 +40,19 @@ export default function ModulDetail({ params }: ModulDetailProps) {
       try {
         setLoading(true);
         setError(null);
-        const modulRes = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/modul/${slug}`, { credentials: 'include' });
-        if (!modulRes.ok) throw new Error("Gagal memuat data modul");
+        const modulRes = await authFetch(`${process.env.NEXT_PUBLIC_API_URL}/api/modul/${slug}`);
         if (!modulRes.ok) {
           const errorData = await modulRes.json().catch(() => ({ message: "Gagal memuat data modul." }));
           throw new Error(errorData.message || "Gagal memuat data modul.");
         }
-
         const modulData = await modulRes.json();
         setModul(modulData);
 
-        const topikRes = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/topik/modul/${modulData._id}`, { credentials: 'include' });
-        if (!topikRes.ok) throw new Error("Gagal memuat data topik");
+        const topikRes = await authFetch(`${process.env.NEXT_PUBLIC_API_URL}/api/topik/modul/${modulData._id}`);
         if (!topikRes.ok) {
           const errorData = await topikRes.json().catch(() => ({ message: "Gagal memuat data topik." }));
           throw new Error(errorData.message || "Gagal memuat data topik.");
         }
-
         const topikData = await topikRes.json();
         setAllTopics(topikData);
         setFilteredTopics(topikData);
@@ -63,9 +60,7 @@ export default function ModulDetail({ params }: ModulDetailProps) {
         // Cek apakah modul ini punya post-test
         if (modulData._id) {
           try {
-            const postTestRes = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/questions/check/${modulData._id}`, {
-              credentials: 'include'
-            });
+            const postTestRes = await authFetch(`${process.env.NEXT_PUBLIC_API_URL}/api/questions/check/${modulData._id}`);
             if (postTestRes.ok) {
               const postTestData = await postTestRes.json();
               setHasModulPostTest(postTestData.exists);
@@ -101,7 +96,7 @@ export default function ModulDetail({ params }: ModulDetailProps) {
   const handleDelete = async (id: string) => {
     if (window.confirm("Apakah Anda yakin ingin menghapus topik ini?")) {
       try {
-        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/topik/${id}`, { method: "DELETE", credentials: 'include' });
+        const res = await authFetch(`${process.env.NEXT_PUBLIC_API_URL}/api/topik/${id}`, { method: "DELETE" });
         if (!res.ok) throw new Error("Gagal menghapus topik");
         setAllTopics(allTopics.filter((t) => t._id !== id));
       } catch (err) {
