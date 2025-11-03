@@ -45,7 +45,7 @@ export default function PostTestTopik({ questions, modulId, topikId, onTestCompl
     // Mulai timer saat komponen pertama kali dirender dalam mode 'testing'
     useEffect(() => {
         if (mode === 'testing') setStartTime(Date.now());
-    };
+    }, [mode]);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
