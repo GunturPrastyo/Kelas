@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import ModulCard from "@/components/ModulCard"; // Card untuk setiap modul
 import { Button } from "@/components/ui/button"; // Import Button
 import { Edit, PlusCircle } from "lucide-react"; // Import ikon
+import { authFetch } from "@/lib/authFetch";
 
 interface Modul {
   _id: string;
@@ -23,8 +24,8 @@ export default function ModulPage() {
   const [hasPreTest, setHasPreTest] = useState<boolean | null>(null);
 
   useEffect(() => {
-    fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/modul`)
-      .then((res) => res.json())
+    authFetch(`${process.env.NEXT_PUBLIC_API_URL}/api/modul`)
+      .then((res) => res.ok ? res.json() : Promise.reject(new Error('Gagal memuat modul')))
       .then((data) => {
         setModules(data);
         setLoading(false);
@@ -34,9 +35,7 @@ export default function ModulPage() {
     // Cek apakah pre-test global sudah ada
     const checkPreTest = async () => {
       try {
-        const res = await fetch(
-          `${process.env.NEXT_PUBLIC_API_URL}/api/questions/pre-test`
-        );
+        const res = await authFetch(`${process.env.NEXT_PUBLIC_API_URL}/api/questions/pre-test`);
         const data = await res.json();
         // Asumsikan endpoint mengembalikan { exists: boolean } atau array soal
         setHasPreTest(data.questions && data.questions.length > 0);
