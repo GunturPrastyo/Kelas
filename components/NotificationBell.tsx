@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { formatDistanceToNow } from 'date-fns';
 import { id } from 'date-fns/locale';
 import { useSocket } from '@/context/SocketContext';
+import { authFetch } from '@/lib/authFetch';
 
 interface Notification {
     _id: string;
@@ -24,7 +25,7 @@ const NotificationBell = () => {
 
     const fetchNotifications = async () => {
         try {
-            const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/notifications`, { credentials: 'include' });
+            const res = await authFetch(`${process.env.NEXT_PUBLIC_API_URL}/api/notifications`);
             if (res.ok) {
                 const data: Notification[] = await res.json();
                 setNotifications(data);
@@ -58,9 +59,8 @@ const NotificationBell = () => {
         if (!isOpen && unreadCount > 0) {
             // Tandai sudah dibaca di backend
             try {
-                await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/notifications/read`, {
+                await authFetch(`${process.env.NEXT_PUBLIC_API_URL}/api/notifications/read`, {
                     method: 'PUT',
-                    credentials: 'include'
                 });
                 // Update state secara optimis
                 setUnreadCount(0);
@@ -80,9 +80,8 @@ const NotificationBell = () => {
 
         // Kirim permintaan hapus ke backend
         try {
-            await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/notifications/${notificationId}`, {
+            await authFetch(`${process.env.NEXT_PUBLIC_API_URL}/api/notifications/${notificationId}`, {
                 method: 'DELETE',
-                credentials: 'include'
             });
         } catch (error) {
             console.error("Gagal menghapus notifikasi:", error);

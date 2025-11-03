@@ -4,6 +4,7 @@ import { useState, useEffect, useMemo, useRef } from "react";
 import { useUI } from "@/context/UIContext";
 import Image from "next/image"
 import Link from "next/link"
+import { authFetch } from "@/lib/authFetch";
 import ModuleList from "@/components/ModuleList"
 import { BarChart2, ClipboardCheck, Clock, TrendingUp, Target } from "lucide-react";
 
@@ -115,18 +116,10 @@ export default function DashboardPage() {
 
         // Mengambil semua data yang dibutuhkan secara paralel
         const [preTestRes, modulesRes, studyTimeRes, analyticsRes] = await Promise.all([
-          fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/results/latest-by-type/pre-test-global`, {
-            credentials: 'include',
-          }),
-          fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/modul/progress`, { // Meskipun sudah ada, pastikan lagi
-            credentials: 'include',
-          }),
-          fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/results/study-time`, {
-            credentials: 'include',
-          }),
-          fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/results/analytics`, {
-            credentials: 'include',
-          }),
+          authFetch(`${process.env.NEXT_PUBLIC_API_URL}/api/results/latest-by-type/pre-test-global`),
+          authFetch(`${process.env.NEXT_PUBLIC_API_URL}/api/modul/progress`),
+          authFetch(`${process.env.NEXT_PUBLIC_API_URL}/api/results/study-time`),
+          authFetch(`${process.env.NEXT_PUBLIC_API_URL}/api/results/analytics`),
         ]);
 
         // Memproses data pre-test

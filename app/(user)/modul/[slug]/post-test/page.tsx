@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { useParams, redirect } from "next/navigation";
+import { authFetch } from "@/lib/authFetch";
 import Link from "next/link";
 import Breadcrumb from "@/components/Breadcrumb";
 
@@ -75,10 +76,9 @@ export default function PostTestPage() {
         setResult(record);
 
         try {
-            await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/results`, {
+            await authFetch(`${process.env.NEXT_PUBLIC_API_URL}/api/results`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                credentials: "include",
                 body: JSON.stringify({
                     ...record,
                     testType: "post-test-modul",
@@ -108,7 +108,7 @@ export default function PostTestPage() {
             try {
                 setLoading(true);
                 // Ambil data modul dulu untuk mendapatkan ID
-                const modulRes = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/modul/${slug}`, { credentials: "include" });
+                const modulRes = await authFetch(`${process.env.NEXT_PUBLIC_API_URL}/api/modul/${slug}`);
                 if (!modulRes.ok) throw new Error("Gagal memuat data modul.");
                 const modulData: Modul = await modulRes.json();
                 setModul(modulData);
@@ -121,10 +121,7 @@ export default function PostTestPage() {
                     return;
                 }
 
-                const questionsRes = await fetch(
-                    `${process.env.NEXT_PUBLIC_API_URL}/api/questions/post-test-modul/${modulData._id}`,
-                    { credentials: "include" } // Tambahkan ini
-                );
+                const questionsRes = await authFetch(`${process.env.NEXT_PUBLIC_API_URL}/api/questions/post-test-modul/${modulData._id}`);
 
                 if (!questionsRes.ok) {
                     if (questionsRes.status === 404) {

@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Pencil, Trash2, PlusCircle, FileEdit } from "lucide-react";
+import { authFetch } from "@/lib/authFetch";
 import { Button } from "@/components/ui/button";
 
 interface Props {
@@ -21,10 +22,7 @@ export default function TopicCard({ topik, modulId, modulSlug, onDelete }: Props
   useEffect(() => {
     const checkPostTest = async () => {
       try {
-        const res = await fetch(
-          `${process.env.NEXT_PUBLIC_API_URL}/api/questions/check/${modulId}/${topik._id}`,
-          { credentials: "include" }
-        );
+        const res = await authFetch(`${process.env.NEXT_PUBLIC_API_URL}/api/questions/check/${modulId}/${topik._id}`);
 
         if (!res.ok) {
           console.error("Gagal memeriksa post test:", res.status);
