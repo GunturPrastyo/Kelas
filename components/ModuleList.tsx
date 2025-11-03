@@ -11,6 +11,7 @@ interface Module {
   slug: string;
   status: "Selesai" | "Berjalan" | "Terkunci" | "Belum Mulai";
   progress: number;
+  category: string; // Menambahkan category
   icon: string;
 }
 
@@ -47,6 +48,25 @@ const getStatusBadge = (status: Module["status"], progress: number | undefined) 
           <Lock size={14} /> Terkunci
         </span>
       );
+  }
+};
+
+const getCategoryBadge = (category: string) => {
+  const base = "inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-1 rounded-full shadow-sm";
+  switch (category) {
+    case "mudah":
+      return (
+        <span className={`${base} bg-green-100 text-green-700 dark:bg-green-900/40 dark:text-green-300`}>Dasar</span>
+      );
+    case "sedang":
+      return (
+        <span className={`${base} bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-300`}>Menengah</span>
+      );
+    case "sulit":
+      return (
+        <span className={`${base} bg-red-100 text-red-700 dark:bg-red-900/40 dark:text-red-300`}>Lanjut</span>
+      );
+    default: return null;
   }
 };
 
@@ -132,7 +152,7 @@ export default function ModuleList({ title, allModules, filter }: ModuleListProp
             </h3>
 
             {/* Progress Bar */}
-            <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2 mb-3 overflow-hidden">
+            <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2 mb-4 overflow-hidden">
               <div
                 className={`h-2 rounded-full transition-all duration-500 ease-out ${
                   modul.progress === 100 ? "bg-green-500" : "bg-blue-500"
@@ -141,8 +161,11 @@ export default function ModuleList({ title, allModules, filter }: ModuleListProp
               ></div>
             </div>
 
-            {/* Status Badge */}
-            {getStatusBadge(modul.status, modul.progress)}
+            {/* Group Badge */}
+            <div className="flex items-center gap-2">
+              {getStatusBadge(modul.status, modul.progress)}
+              {getCategoryBadge(modul.category)}
+            </div>
 
             {/* Glow efek ketika hover */}
             {modul.status !== "Terkunci" && (
