@@ -70,7 +70,7 @@ export default function PreTestPage() {
             const userAnswer = answers[q._id];
             if (userAnswer === q.answer) correct++;
         });
-        const score = Math.round((correct / total) * 100);
+        const score = total > 0 ? Math.round((correct / total) * 100) : 0;
         const record = { score, correct, total, timeTaken, timestamp: new Date().toISOString() };
 
         // 1. Simpan hasil ke localStorage untuk ditampilkan segera
