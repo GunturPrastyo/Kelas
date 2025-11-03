@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Pencil, PlusCircle, Trash2, Edit3 } from "lucide-react";
+import { authFetch } from "@/lib/authFetch";
 import { Button } from "@/components/ui/button";
 
 interface Props {
@@ -25,10 +26,7 @@ export default function ModulCard({ modul, onDelete }: Props) {
   useEffect(() => {
     const checkPostTest = async () => {
       try {
-        const res = await fetch(
-          `${process.env.NEXT_PUBLIC_API_URL}/api/questions/check/${modul._id}`,
-          { credentials: "include" }
-        );
+        const res = await authFetch(`${process.env.NEXT_PUBLIC_API_URL}/api/questions/check/${modul._id}`);
         const data = await res.json();
         setHasPostTest(data.exists);
       } catch (err) {

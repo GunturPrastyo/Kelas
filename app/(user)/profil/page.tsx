@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, ChangeEvent, FormEvent } from "react";
+import { authFetch } from "@/lib/authFetch";
 import Avatar from "@/components/Avatar"; // Ganti Image dengan komponen Avatar
 import Breadcrumb from "@/components/Breadcrumb";
 import { motion } from "framer-motion";
@@ -59,9 +60,8 @@ const ProfilePage = () => {
     if (avatarFile) formData.append("avatar", avatarFile);
 
     try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/users/profile`, {
+      const res = await authFetch(`${process.env.NEXT_PUBLIC_API_URL}/api/users/profile`, {
         method: "PUT",
-        credentials: "include",
         body: formData,
       });
 
@@ -93,10 +93,9 @@ const ProfilePage = () => {
     }
 
     try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/users/change-password`, {
+      const res = await authFetch(`${process.env.NEXT_PUBLIC_API_URL}/api/users/change-password`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
-        credentials: "include",
         body: JSON.stringify({ currentPassword, newPassword }),
       });
 

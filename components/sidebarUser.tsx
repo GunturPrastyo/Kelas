@@ -5,6 +5,7 @@ import Image from "next/image";
 import { usePathname, useRouter } from 'next/navigation';
 import { useUI } from "@/context/UIContext"
 import { LogOut } from "lucide-react";
+import { authFetch } from "@/lib/authFetch";
 
 const navLinks = [
     { href: "/dashboard", label: "Dashboard", icon: "/dashboard.png", alt: "Dashboard Icon" },
@@ -26,9 +27,8 @@ export default function Sidebar() {
 
   const handleLogout = async () => {
     try {
-      await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/users/logout`, {
+      await authFetch(`${process.env.NEXT_PUBLIC_API_URL}/api/users/logout`, {
         method: "POST",
-        credentials: "include", // Penting untuk mengirim cookie
       });
     } catch (error) {
       console.error("Gagal melakukan logout di server:", error);
