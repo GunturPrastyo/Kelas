@@ -38,8 +38,9 @@ import {
   Subscript as SubIcon,
   Superscript as SuperIcon,
   Minus,
-} from "lucide-react";
-import { useCallback, useRef } from "react";
+} from "lucide-react"; 
+import { useCallback, useRef } from "react"; 
+import { authFetch } from "@/lib/authFetch";
 
 const ToolButton = ({
   onClick,
@@ -108,11 +109,9 @@ const MenuBar = ({ editor }: { editor: Editor | null }) => {
 
       try {
         // Kirim ke backend upload route kamu
-        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/upload/image`, {
+        const res = await authFetch(`${process.env.NEXT_PUBLIC_API_URL}/api/upload/image`, {
           method: "POST",
-          // Tidak perlu header Authorization, cookie akan dikirim otomatis
-          credentials: 'include', // Penting: untuk mengirim cookie ke backend
-          body: formData,
+          body: formData, // Untuk FormData, jangan set 'Content-Type' secara manual
         });
 
         if (!res.ok) {

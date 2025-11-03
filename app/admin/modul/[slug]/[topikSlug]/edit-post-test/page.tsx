@@ -5,6 +5,7 @@ import { useParams } from "next/navigation";
 import TestForm from "@/components/TestForm";
 import Link from "next/link";
 import { Home, ChevronRight } from "lucide-react";
+import { authFetch } from "@/lib/authFetch";
 
 interface Question {
   _id?: string;
@@ -35,14 +36,14 @@ export default function EditPostTestTopikPage() {
       try {
         setLoading(true);
         // 1. Ambil data topik dulu untuk mendapatkan ID-nya (disamakan dengan halaman tambah-post-test)
-        const topikRes = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/topik/modul-slug/${slug}/topik-slug/${topikSlug}`, { credentials: 'include' });
+        const topikRes = await authFetch(`${process.env.NEXT_PUBLIC_API_URL}/api/topik/modul-slug/${slug}/topik-slug/${topikSlug}`);
         if (!topikRes.ok) throw new Error("Gagal memuat data topik.");
         const topikResponse = await topikRes.json();
         const topikData = topikResponse.data || topikResponse; // Menangani jika data ada di dalam properti 'data'
         setTopik(topikData);
 
         // 2. Ambil data soal menggunakan ID dari topik
-        const questionsRes = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/questions/post-test-topik/${topikData.modulId}/${topikData._id}`, { credentials: 'include' });
+        const questionsRes = await authFetch(`${process.env.NEXT_PUBLIC_API_URL}/api/questions/post-test-topik/${topikData.modulId}/${topikData._id}`);
         if (questionsRes.ok) {
           const questionsData = await questionsRes.json();
           setQuestions(questionsData.questions || []);

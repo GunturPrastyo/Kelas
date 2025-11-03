@@ -184,55 +184,6 @@ export default function DashboardPage() {
     fetchDashboardData();
   }, []);
 
-  // Fungsi fetchStudyTime dan fetchAnalytics yang asli tidak lagi diperlukan
-  // karena logikanya sudah diintegrasikan ke dalam fetchDashboardData.
-  // Anda bisa menghapus definisi fungsi-fungsi ini jika tidak digunakan di tempat lain.
-
-  /*
-  // Contoh definisi fungsi fetchStudyTime yang sudah tidak terpakai:
-  const fetchStudyTime = async () => {
-    try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/results/study-time`, {
-          credentials: 'include',
-        });
-        if (res.ok) {
-          const data = await res.json();
-          const totalSeconds = data.totalTimeInSeconds || 0;
-          const hours = Math.floor(totalSeconds / 3600);
-          const minutes = Math.floor((totalSeconds % 3600) / 60);
-          setStudyTime({ hours, minutes });
-        } else {
-          console.error(`Error fetching study time: ${res.status} ${res.statusText}`);
-        }
-      } catch (error) {
-        console.error("Error fetching study time:", error);
-      }
-    };
-  */
-
-  /*
-  // Contoh definisi fungsi fetchAnalytics yang sudah tidak terpakai:
-  const fetchAnalytics = async () => {
-    try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/results/analytics`, {
-        credentials: 'include',
-      });
-      if (res.ok) {
-        const data = await res.json();
-        setAnalytics(prev => ({
-          ...prev,
-          averageScore: data.averageScore || 0,
-          weakestTopic: data.weakestTopic || null,
-        }));
-      } else {
-        console.error(`Error fetching analytics: ${res.status} ${res.statusText}`);
-      }
-    } catch (error) {
-      console.error("Error fetching analytics:", error);
-    }
-  };
-  */
-
   const personalizedModules = useMemo(() => {
     const categoryMap = { mudah: 'dasar', sedang: 'menengah', sulit: 'lanjut' };
 

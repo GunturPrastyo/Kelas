@@ -1,8 +1,9 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useSearchParams, useParams } from "next/navigation";
+import { useParams, useSearchParams } from "next/navigation";
 import Breadcrumb from "@/components/Breadcrumb";
+import { authFetch } from "@/lib/authFetch";
 import TestForm from "@/components/TestForm";
 
 interface Modul {
@@ -29,10 +30,7 @@ export default function EditPostTestPage() {
 
         const fetchQuestions = async () => {
             try {
-                const res = await fetch(
-                    `${process.env.NEXT_PUBLIC_API_URL}/api/questions/post-test-modul/${modulId}`,
-                    { credentials: 'include' } // Tambahkan ini untuk otentikasi
-                );
+                const res = await authFetch(`${process.env.NEXT_PUBLIC_API_URL}/api/questions/post-test-modul/${modulId}`);
                 const data = await res.json();
                 if (res.ok) {
                     setQuestions(data.questions || []);
@@ -52,9 +50,7 @@ export default function EditPostTestPage() {
         const fetchModul = async () => {
             if (!slug) return;
             try {
-                const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/modul/${slug}`, {
-                    credentials: 'include' // Sebaiknya ditambahkan juga di sini
-                });
+                const res = await authFetch(`${process.env.NEXT_PUBLIC_API_URL}/api/modul/${slug}`);
                 const data = await res.json();
                 if (res.ok) setModul(data);
             } catch (error) {

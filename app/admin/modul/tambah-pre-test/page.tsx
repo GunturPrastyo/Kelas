@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { authFetch } from "@/lib/authFetch";
 import TestForm from "@/components/TestForm";
 import Breadcrumb from "@/components/Breadcrumb";
 
@@ -20,18 +21,15 @@ export default function TambahPreTestPage() {
   useEffect(() => {
     const fetchPreTestQuestions = async () => {
       try {
-        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/questions/pre-test`, {
-          // Tambahkan `credentials: 'include'` untuk mengirim cookie otentikasi
-          credentials: 'include',
-        });
+        const res = await authFetch(`${process.env.NEXT_PUBLIC_API_URL}/api/questions/pre-test`);
 
         if (!res.ok) {
           throw new Error("Gagal memuat soal pre-test.");
         }
 
         const data = await res.json();
-        if (data && data.length > 0) {
-          setInitialQuestions(data);
+        if (data && data.questions && data.questions.length > 0) {
+          setInitialQuestions(data.questions);
           setIsEditing(true);
         }
       } catch (err: any) {

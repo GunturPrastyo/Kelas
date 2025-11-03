@@ -1,11 +1,12 @@
 "use client";
 
 import { Editor } from "@tiptap/react";
+import { authFetch } from "@/lib/authFetch";
 import { useCallback, useRef } from "react";
 import {
     Bold, Italic, Underline as UnderlineIcon, Link as LinkIcon, List, ListOrdered, Quote,
     Code, SquareCode, AlignLeft, AlignCenter, AlignRight, Image as ImageIcon, Highlighter,
-    Subscript as SubIcon, Superscript as SuperIcon, Minus, Plus,
+    Subscript as SubIcon, Superscript as SuperIcon, Minus,
 } from "lucide-react";
 
 const ToolButton = ({
@@ -51,10 +52,8 @@ export const TiptapMenuBar = ({ editor }: { editor: Editor | null }) => {
             formData.append("image", file);
 
             try {
-                const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/upload/image`, {
+                const res = await authFetch(`${process.env.NEXT_PUBLIC_API_URL}/api/upload/image`, {
                     method: "POST",
-                    // Tidak perlu header Authorization, cookie akan dikirim otomatis
-                    credentials: 'include', // Penting: untuk mengirim cookie ke backend
                     body: formData
                 });
 
