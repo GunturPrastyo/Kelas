@@ -20,15 +20,17 @@ export default function LoginPage() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ token: credentialResponse.credential }),
-        credentials: "include", // Kirim cookie dengan request
       });
 
       const data = await res.json();
 
-      if (!res.ok || !data.user) throw new Error(data.message || "Data pengguna tidak ditemukan setelah login.");
+      if (!res.ok || !data.user || !data.token) {
+        throw new Error(data.message || "Login Google gagal, token tidak diterima.");
+      }
 
       // Simpan token dan data user
       localStorage.setItem("user", JSON.stringify(data.user));
+      localStorage.setItem("token", data.token);
 
       // Arahkan sesuai role
       if (data.user && data.user.role === "admin") {
@@ -57,13 +59,16 @@ export default function LoginPage() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),
-        credentials: "include", // Kirim cookie dengan request
       });
 
       const data = await res.json();
 
-      if (!res.ok || !data.user) throw new Error(data.message || "Data pengguna tidak ditemukan setelah login.");
+      if (!res.ok || !data.user || !data.token) {
+        throw new Error(data.message || "Login gagal, token tidak diterima.");
+      }
+
       localStorage.setItem("user", JSON.stringify(data.user));
+      localStorage.setItem("token", data.token);
 
       if (data.user && data.user.role === "admin") {
         router.push("/admin/dashboard");

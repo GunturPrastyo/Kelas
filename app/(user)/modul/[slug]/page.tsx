@@ -7,6 +7,7 @@ import Image from 'next/image';
 // 1. Import highlight.js dan tema CSS-nya
 import hljs from 'highlight.js';
 // @ts-ignore
+import { authFetch } from '@/lib/authFetch'; // <-- Import helper baru
 import 'highlight.js/styles/atom-one-dark.css'; 
 
 import TopicContent from '@/components/TopicContent';
@@ -91,10 +92,9 @@ export default function ModulDetailPage() {
     const createNotification = useCallback(async (message: string, link: string) => {
         if (!user) return;
         try {
-            await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/notifications`, {
+            await authFetch(`${process.env.NEXT_PUBLIC_API_URL}/api/notifications`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                credentials: 'include',
                 body: JSON.stringify({
                     userId: user._id,
                     message,
@@ -129,7 +129,7 @@ export default function ModulDetailPage() {
         if (!user || typeof slug !== 'string') return;
         setLoading(true);
         try {
-            const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/modul/user-view/${slug}`, { credentials: 'include' });
+            const res = await authFetch(`${process.env.NEXT_PUBLIC_API_URL}/api/modul/user-view/${slug}`);
             if (!res.ok) throw new Error("Gagal memuat data modul.");
             const data = await res.json();
             setModul(data);
@@ -166,15 +166,14 @@ export default function ModulDetailPage() {
         const durationInSeconds = Math.round((Date.now() - startTime) / 1000);
         // Kirim durasi ke backend jika lebih dari 10 detik (menghindari data tidak relevan)
         if (durationInSeconds > 10 && process.env.NEXT_PUBLIC_API_URL) {
-            // Gunakan fetch dengan keepalive: true sebagai pengganti sendBeacon agar bisa mengirim credentials
-            fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/results/log-study-time`, {
+            // Gunakan authFetch dengan keepalive: true
+            authFetch(`${process.env.NEXT_PUBLIC_API_URL}/api/results/log-study-time`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                 topikId: topicId,
                 durationInSeconds: durationInSeconds,
                 }),
-                credentials: 'include',
                 keepalive: true, // Ini penting agar request tetap berjalan saat halaman ditutup
             }).catch(err => console.warn("Gagal mengirim log waktu belajar:", err));
         }
@@ -196,10 +195,9 @@ export default function ModulDetailPage() {
     const persistProgress = useCallback(async () => {
         if (!user || !activeTest) return;
         try {
-            await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/results/progress`, {
+            await authFetch(`${process.env.NEXT_PUBLIC_API_URL}/api/results/progress`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                credentials: 'include',
                 body: JSON.stringify({
                     testType: 'post-test-topik-progress', // Use a dedicated type for progress
                     answers: testAnswers,
@@ -247,9 +245,7 @@ export default function ModulDetailPage() {
 
         // Jika ini adalah retake, atau tes pertama kali, reset state dan mulai dari awal.
         try {
-            const progressRes = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/results/progress?testType=post-test-topik-progress&modulId=${modul?._id}&topikId=${topik._id}`, {
-                credentials: 'include'
-            });
+            const progressRes = await authFetch(`${process.env.NEXT_PUBLIC_API_URL}/api/results/progress?testType=post-test-topik-progress&modulId=${modul?._id}&topikId=${topik._id}`);
             if (progressRes.ok) {
                 const progressData = await progressRes.json();
                 if (progressData && progressData.answers && Array.isArray(progressData.answers) && progressData.answers.length > 0) {
@@ -307,9 +303,7 @@ export default function ModulDetailPage() {
         setActiveTest(topik);
         setTestResult(null);
         try {
-            const resultRes = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/results/latest-by-topic?modulId=${modul?._id}&topikId=${topik._id}`, {
-                credentials: 'include'
-            });
+            const resultRes = await authFetch(`${process.env.NEXT_PUBLIC_API_URL}/api/results/latest-by-topic?modulId=${modul?._id}&topikId=${topik._id}`);
             if (resultRes.ok) {
                 const latestResult = await resultRes.json();
                 setTestResult(latestResult);
@@ -327,10 +321,9 @@ export default function ModulDetailPage() {
         setIsSubmitting(true);
 
         try {
-            const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/results/submit-test`, {
+            const response = await authFetch(`${process.env.NEXT_PUBLIC_API_URL}/api/results/submit-test`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                credentials: 'include',
                 body: JSON.stringify({
                     testType: 'post-test-topik',
                     answers: testAnswers,
@@ -354,9 +347,8 @@ export default function ModulDetailPage() {
 
             // Tandai topik sebagai selesai di backend jika lulus
             if (finalResult.score >= 80) {
-                fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/users/complete-topic`, {
+                authFetch(`${process.env.NEXT_PUBLIC_API_URL}/api/users/complete-topic`, {
                     method: 'POST',
-                    credentials: 'include',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
                         topikId: activeTest._id,
@@ -401,9 +393,8 @@ export default function ModulDetailPage() {
 
             // Hapus progress dari DB setelah berhasil submit
             const deleteUrl = `${process.env.NEXT_PUBLIC_API_URL}/api/results/progress?testType=post-test-topik-progress&modulId=${modul?._id}&topikId=${activeTest._id}`;
-            fetch(deleteUrl, {
+            authFetch(deleteUrl, {
                 method: 'DELETE', // Menggunakan DELETE untuk menghapus progress
-                credentials: 'include',
             });
 
         } catch (error) {

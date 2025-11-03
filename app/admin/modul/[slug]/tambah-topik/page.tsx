@@ -2,6 +2,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { authFetch } from "@/lib/authFetch";
 // Asumsi Anda memiliki SidebarContext untuk state isSidebarCollapsed
 // import { SidebarContext } from "@/context/SidebarContext";
  
@@ -36,7 +37,7 @@ export default function TambahTopikPage({
     }
 
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/topik`, {
+      const response = await authFetch(`${process.env.NEXT_PUBLIC_API_URL}/api/topik`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ title, slug: generateSlug(title), modulId }),

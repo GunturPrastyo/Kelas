@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import Image from "next/image"; 
+import { authFetch } from "@/lib/authFetch";
 import { useRouter } from "next/navigation";
 import { Award, TrendingUp, TrendingDown, LayoutDashboard, Activity, BarChartHorizontal, AlertTriangle, Users, Target, Play } from "lucide-react";
 import { Chart, registerables } from "chart.js";
@@ -165,13 +166,13 @@ export default function AnalitikBelajarPage() {
 
         const [progressRes, analyticsRes, weeklyActivityRes, moduleScoresRes, comparisonRes, recommendationsRes, weakTopicsRes] =
           await Promise.all([
-            fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/modul/progress`, { credentials: "include" }),
-            fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/results/analytics`, { credentials: "include" }),
-            fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/results/weekly-activity`, { credentials: "include" }),
-            fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/results/module-scores`, { credentials: "include" }),
-            fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/results/comparison-analytics`, { credentials: "include" }),
-            fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/results/recommendations`, { credentials: "include" }),
-            fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/results/topics-to-reinforce`, { credentials: "include" }),
+            authFetch(`${process.env.NEXT_PUBLIC_API_URL}/api/modul/progress`),
+            authFetch(`${process.env.NEXT_PUBLIC_API_URL}/api/results/analytics`),
+            authFetch(`${process.env.NEXT_PUBLIC_API_URL}/api/results/weekly-activity`),
+            authFetch(`${process.env.NEXT_PUBLIC_API_URL}/api/results/module-scores`),
+            authFetch(`${process.env.NEXT_PUBLIC_API_URL}/api/results/comparison-analytics`),
+            authFetch(`${process.env.NEXT_PUBLIC_API_URL}/api/results/recommendations`),
+            authFetch(`${process.env.NEXT_PUBLIC_API_URL}/api/results/topics-to-reinforce`),
           ]);
         
         // Handle potential errors from individual fetches
