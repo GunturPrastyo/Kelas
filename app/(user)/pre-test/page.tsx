@@ -5,6 +5,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import Breadcrumb from '@/components/Breadcrumb';
 // 1. Import highlight.js dan tema CSS-nya
+import { authFetch } from '@/lib/authFetch';
 import hljs from 'highlight.js';
 
 
@@ -49,10 +50,9 @@ export default function PreTestPage() {
     const createNotification = useCallback(async (message: string, link: string) => {
         if (!user) return;
         try {
-            await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/notifications`, {
+            await authFetch(`${process.env.NEXT_PUBLIC_API_URL}/api/notifications`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                credentials: 'include',
                 body: JSON.stringify({
                     userId: user._id,
                     message,
@@ -83,10 +83,9 @@ export default function PreTestPage() {
         // 2. Kirim hasil ke database
         const saveResultToDB = async () => {
             try {
-                const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/results`, { // Menggunakan endpoint baru
+                const response = await authFetch(`${process.env.NEXT_PUBLIC_API_URL}/api/results`, { // Menggunakan endpoint baru
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    credentials: 'include', // Penting untuk autentikasi via cookie
                     body: JSON.stringify({
                         ...record,
                         testType: 'pre-test-global',
@@ -121,9 +120,7 @@ export default function PreTestPage() {
             setLoading(true);
             try {
                 // Prioritas 1: Cek hasil pre-test dari database
-                const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/results/latest-by-type/pre-test-global`, {
-                    credentials: 'include',
-                });
+                const res = await authFetch(`${process.env.NEXT_PUBLIC_API_URL}/api/results/latest-by-type/pre-test-global`);
 
                 if (res.ok) {
                     const latestResult = await res.json();
@@ -146,10 +143,9 @@ export default function PreTestPage() {
                 if (resultRaw) {
                     const parsedResult = JSON.parse(resultRaw);
                     // Kirim hasil dari localStorage ke DB jika belum ada di sana
-                    fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/results`, {
+                    authFetch(`${process.env.NEXT_PUBLIC_API_URL}/api/results`, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
-                        credentials: 'include',
                         body: JSON.stringify({ ...parsedResult, testType: 'pre-test-global' }),
                     }).catch(err => console.warn("Gagal sinkronisasi hasil localStorage ke DB:", err));
 
@@ -159,9 +155,7 @@ export default function PreTestPage() {
                 }
 
                 // Prioritas 3: Jika tidak ada hasil sama sekali, muat soal untuk tes baru
-                const questionsRes = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/questions/pre-test`, {
-                    credentials: 'include',
-                });
+                const questionsRes = await authFetch(`${process.env.NEXT_PUBLIC_API_URL}/api/questions/pre-test`);
                 if (!questionsRes.ok) throw new Error("Gagal memuat soal.");
                 const data = await questionsRes.json();
                 const fetchedQuestions = data.questions || [];
@@ -198,7 +192,7 @@ export default function PreTestPage() {
 
         const fetchAllModules = async () => {
             try {
-                const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/modul`, { credentials: 'include' }); // Sudah benar, memastikan kembali
+                const res = await authFetch(`${process.env.NEXT_PUBLIC_API_URL}/api/modul`); // Sudah benar, memastikan kembali
                 if (!res.ok) throw new Error("Gagal memuat data modul untuk rekomendasi.");
                 const data = await res.json();
                 setAllModules(data);
