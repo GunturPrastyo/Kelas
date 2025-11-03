@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { PlusCircle, Trash2, CheckCircle2, Edit3, Save } from "lucide-react";
+import { authFetch } from "@/lib/authFetch";
 
 // Impor TiptapEditor secara dinamis
 const TiptapEditor = dynamic(() => import("@/components/TiptapEditor"), {
@@ -154,10 +155,9 @@ export default function TestForm({
     const url = `${baseUrl}${endpoint}`;
 
     try {
-      const response = await fetch(url, {
+      const response = await authFetch(url, {
         method,
         headers: { "Content-Type": "application/json" },
-        credentials: "include", // Kirim cookie untuk otentikasi
         body: JSON.stringify(body),
       });
 
