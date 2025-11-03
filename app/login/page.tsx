@@ -32,12 +32,16 @@ export default function LoginPage() {
       localStorage.setItem("user", JSON.stringify(data.user));
       localStorage.setItem("token", data.token);
 
+      console.log("Login berhasil, data user:", data.user);
+      console.log("Mencoba redirect berdasarkan role:", data.user.role);
+
       // Arahkan sesuai role
-      if (data.user && data.user.role === "admin") {
+      if (data.user.role === "admin") {
         router.push("/admin/dashboard");
       } else {
         router.push("/dashboard");
       }
+
     } catch (err) {
       if (err instanceof Error) {
         setError(err.message || "Login gagal");
@@ -70,11 +74,15 @@ export default function LoginPage() {
       localStorage.setItem("user", JSON.stringify(data.user));
       localStorage.setItem("token", data.token);
 
-      if (data.user && data.user.role === "admin") {
+      console.log("Login berhasil, data user:", data.user);
+      console.log("Mencoba redirect berdasarkan role:", data.user.role);
+
+      if (data.user.role === "admin") {
         router.push("/admin/dashboard");
       } else {
         router.push("/dashboard");
       }
+
     } catch (err) {
       if (err instanceof Error) {
         setError(err.message || "Login gagal. Periksa kembali email dan password Anda.");
