@@ -330,7 +330,7 @@ export default function DashboardPage() {
                 <h3 className="font-medium text-gray-700 dark:text-gray-400">
                   Semua modul rekomendasi telah dimulai!
                 </h3>
-                <p className="text-sm text-gray-600 dark:text-gray-400">Kerja bagus! Lanjutkan progres belajarmu. 👍</p>
+                <p className="text-sm text-gray-600 dark:text-gray-400">Kerja bagus! Lanjutkan progres belajarmu.</p>
               </div>
             )}
           </div>
@@ -364,7 +364,7 @@ export default function DashboardPage() {
           </div>
           {/* Ilustrasi */}
           <div className="flex-shrink-0 max-w-full">
-            <Image src="/pre-tes.png" alt="Quiz Illustration" width={160} height={160} className="w-20 h-20 sm:w-40 sm:h-40 object-contain" />
+            <Image src="/pre-tes.png" alt="Quiz Illustration" width={160} height={160} className="w-24 h-24 sm:w-40 sm:h-40 object-contain" />
           </div>
         </div>
 

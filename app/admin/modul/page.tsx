@@ -47,6 +47,27 @@ export default function ModulPage() {
     checkPreTest();
   }, []);
 
+  const handleDeleteModul = async (modulId: string) => {
+    if (confirm("Apakah Anda yakin ingin menghapus modul ini? Semua topik, materi, dan soal di dalamnya akan ikut terhapus secara permanen.")) {
+      try {
+        const response = await authFetch(`${process.env.NEXT_PUBLIC_API_URL}/api/modul/${modulId}`, {
+          method: 'DELETE',
+        });
+
+        if (response.ok) {
+          setModules(prevModules => prevModules.filter(m => m._id !== modulId));
+          alert("Modul berhasil dihapus.");
+        } else {
+          const errorData = await response.json();
+          alert(`Gagal menghapus modul: ${errorData.message}`);
+        }
+      } catch (error) {
+        console.error("Error saat menghapus modul:", error);
+        alert("Terjadi kesalahan pada jaringan.");
+      }
+    }
+  };
+
   const handleCardClick = (e: MouseEvent<HTMLDivElement>, slug: string) => {
     // Mencegah navigasi jika yang diklik adalah tombol atau link di dalam card
     if ((e.target as HTMLElement).closest('a, button')) {
@@ -112,7 +133,7 @@ export default function ModulPage() {
             onClick={(e) => handleCardClick(e, modul.slug)}
             className="cursor-pointer"
           >
-            <ModulCard modul={modul} />
+            <ModulCard modul={modul} onDelete={handleDeleteModul} />
           </div>
         ))}
       </div>
