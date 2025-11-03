@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, Fragment } from 'react';
+import { useState, Fragment, useEffect } from 'react';
+import { authFetch } from '@/lib/authFetch';
 import { useRouter } from 'next/navigation';
 
 interface Question {
@@ -34,10 +35,16 @@ export default function PostTestTopik({ questions, modulId, topikId, onTestCompl
     const [submitting, setSubmitting] = useState(false);
     const [mode, setMode] = useState<TestMode>('testing');
     const [reviewData, setReviewData] = useState<{ questions: ReviewQuestion[], result: TestResult } | null>(null);
+    const [startTime, setStartTime] = useState(0);
     const router = useRouter();
 
     const handleAnswerChange = (questionId: string, option: string) => {
         setAnswers(prev => ({ ...prev, [questionId]: option }));
+    };
+
+    // Mulai timer saat komponen pertama kali dirender dalam mode 'testing'
+    useEffect(() => {
+        if (mode === 'testing') setStartTime(Date.now());
     };
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -49,15 +56,16 @@ export default function PostTestTopik({ questions, modulId, topikId, onTestCompl
 
         setSubmitting(true);
         try {
-            const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/results/submit-test`, {
+            const timeTaken = Math.round((Date.now() - startTime) / 1000);
+            const response = await authFetch(`${process.env.NEXT_PUBLIC_API_URL}/api/results/submit-test`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                credentials: 'include',
                 body: JSON.stringify({
                     testType: 'post-test-topik',
                     modulId,
                     topikId,
                     answers,
+                    timeTaken,
                 }),
             });
 
@@ -67,8 +75,15 @@ export default function PostTestTopik({ questions, modulId, topikId, onTestCompl
             }
 
             setReviewData({
-                questions: result.data.review.questions,
-                result: result.data.result,
+                // Backend mengembalikan data hasil langsung di `result.data`
+                result: result.data,
+                // Kita bisa membuat data review dari pertanyaan yang ada dan jawaban yang dikirim
+                questions: questions.map(q => ({
+                    ...q,
+                    userAnswer: answers[q._id],
+                    // Backend harus mengembalikan jawaban yang benar untuk review
+                    correctAnswer: result.data.answers.find((a: any) => a.questionId === q._id)?.correctAnswer || ''
+                })),
             });
             setMode('reviewing');
             // onTestComplete akan dipanggil setelah user menekan tombol "Selesai" di halaman review
