@@ -6,6 +6,7 @@ import Image from 'next/image';
 import Breadcrumb from '@/components/Breadcrumb';
 // 1. Import highlight.js dan tema CSS-nya
 import { authFetch } from '@/lib/authFetch';
+import { useAlert } from '@/context/AlertContext';
 import hljs from 'highlight.js';
 
 interface Question {
@@ -42,6 +43,7 @@ export default function PreTestPage() {
     const [user, setUser] = useState<User | null>(null);
     const [allModules, setAllModules] = useState<Module[]>([]);
 
+    const { showAlert } = useAlert();
     const total = questions.length;
 
     // --- Notification Helper ---
@@ -210,7 +212,11 @@ export default function PreTestPage() {
             const left = Math.max(0, Math.round((end - Date.now()) / 1000));
             setTimeLeft(left);
             if (left === 0) {
-                alert('Waktu habis — jawaban akan dikirim otomatis.');
+                showAlert({
+                    title: 'Waktu Habis',
+                    message: 'Waktu pengerjaan telah berakhir. Jawaban Anda akan dikirim secara otomatis.',
+                    onConfirm: grade,
+                });
                 grade();
             }
         }, 1000);
@@ -223,18 +229,30 @@ export default function PreTestPage() {
         const stateKey = `pretest_state_${user._id}`;
         const snapshot = { answers, idx, timestamp: new Date().toISOString() };
         localStorage.setItem(stateKey, JSON.stringify(snapshot));
-        alert('Progress tersimpan secara lokal.');
+        showAlert({
+            title: 'Progress Tersimpan',
+            message: 'Jawaban Anda telah disimpan di perangkat ini. Anda dapat melanjutkannya nanti.',
+        });
     };
 
     const handleRetake = () => {
         if (!user) return;
-        if (confirm('Mulai ulang pre-test? Semua jawaban lokal akan dihapus.')) {
-            const stateKey = `pretest_state_${user._id}`;
-            const resultKey = `pretest_result_${user._id}`;
-            localStorage.removeItem(stateKey);
-            localStorage.removeItem(resultKey);
-            window.location.reload();
-        }
+        showAlert({
+            type: 'confirm',
+            title: 'Konfirmasi',
+            message: 'Apakah Anda yakin ingin memulai ulang pre-test? Semua progress dan hasil sebelumnya akan dihapus.',
+            confirmText: 'Ya, Ulangi',
+            cancelText: 'Batal',
+            onConfirm: () => {
+                const stateKey = `pretest_state_${user._id}`;
+                const resultKey = `pretest_result_${user._id}`;
+                localStorage.removeItem(stateKey);
+                localStorage.removeItem(resultKey);
+                // Hapus juga dari DB jika ada
+                authFetch(`${process.env.NEXT_PUBLIC_API_URL}/api/results/pre-test-global`, { method: 'DELETE' })
+                    .finally(() => window.location.reload());
+            },
+        });
     };
 
     const currentQuestion = questions[idx];
@@ -454,7 +472,15 @@ export default function PreTestPage() {
                         {idx === total - 1 ? (
                             <button
                                 id="submitBtn"
-                                onClick={() => { if (confirm('Kirim jawaban dan lihat hasil?')) { grade(); } }}
+                                onClick={() => showAlert({
+                                    type: 'confirm',
+                                    title: 'Kirim Jawaban?',
+                                    message: 'Apakah Anda yakin ingin mengirimkan jawaban dan melihat hasilnya?',
+                                    confirmText: 'Ya, Kirim',
+                                    cancelText: 'Batal',
+                                    onConfirm: grade,
+                                })
+                                }
                                 className="flex-1 sm:flex-none bg-green-600 text-white border-none px-3 py-2 sm:px-4 sm:py-2.5 rounded-lg cursor-pointer hover:bg-green-700 transition text-sm sm:text-base"
                             >
                                 Kirim Jawaban

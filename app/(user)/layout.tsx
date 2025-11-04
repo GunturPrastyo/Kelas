@@ -4,6 +4,8 @@ import AuthGuard from "@/components/AuthGuard";
 import NavbarUser from "@/components/navbarUser";
 import SidebarUser from "@/components/sidebarUser";
 import { UIProvider, useUI } from "@/context/UIContext";
+import { AlertProvider } from "@/context/AlertContext";
+import AlertDialog from "@/components/AlertDialog";
 
 function UserLayoutContent({ children }: { children: React.ReactNode }) {
   const { isSidebarCollapsed, isMobileDrawerOpen, toggleMobileDrawer } = useUI();
@@ -45,7 +47,10 @@ export default function UserLayout({ children }: { children: React.ReactNode }) 
   return (
     <AuthGuard>
       <UIProvider>
-        <UserLayoutContent>{children}</UserLayoutContent>
+        <AlertProvider>
+          <UserLayoutContent>{children}</UserLayoutContent>
+          <AlertDialog />
+        </AlertProvider>
       </UIProvider>
     </AuthGuard>
   );
