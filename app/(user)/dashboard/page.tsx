@@ -188,7 +188,7 @@ export default function DashboardPage() {
     const categoryMap = { mudah: 'dasar', sedang: 'menengah', sulit: 'lanjut' };
 
     return modules.map(modul => {
-      const mappedCategory = categoryMap[modul.category as keyof typeof categoryMap];
+            const mappedCategory = categoryMap[modul.category as keyof typeof categoryMap];
       let status: ModuleStatus;
       let isLocked = userLevel === null; // Kunci semua jika belum pre-test
 
