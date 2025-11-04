@@ -90,7 +90,7 @@ export default function ModulPage() {
         // Map 'mudah' -> 'dasar', 'sedang' -> 'menengah', 'sulit' -> 'lanjut'
         const categoryMap = { mudah: 'dasar', sedang: 'menengah', sulit: 'lanjut' };
 
-        return modules.map(modul => {
+        const updatedModules = modules.map(modul => {
             const mappedCategory = categoryMap[modul.category];
 
             let status: ModuleStatus;
@@ -124,12 +124,14 @@ export default function ModulPage() {
             }
 
             return { ...modul, status, isHighlighted };
-        }).filter(m => {
+        });
+
+        return updatedModules.filter(m => {
             const mappedCategory = categoryMap[m.category];
             const categoryMatch = selectedCategory ? mappedCategory === selectedCategory : true;
             const searchMatch = m.title.toLowerCase().includes(searchQuery.toLowerCase());
             return categoryMatch && searchMatch;
-        });
+        })
     }, [searchQuery, selectedCategory, userLevel, modules]);
 
     const getStatusBadge = (status: ModuleStatus, progress: number) => {
