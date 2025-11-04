@@ -300,9 +300,15 @@ export default function AnalitikBelajarPage() {
             ticks: { 
               display: true, // Tampilkan ticks untuk referensi
               callback: function(value) {
-                // Konversi detik ke jam untuk label sumbu Y
-                const hours = (value as number) / 3600;
-                return `${hours.toFixed(1)} jam`;
+                const totalSeconds = value as number;
+                if (totalSeconds < 3600) {
+                  const minutes = Math.round(totalSeconds / 60);
+                  return `${minutes} mnt`;
+                } else {
+                  const hours = totalSeconds / 3600;
+                  // Tampilkan 1.5 jam, tapi 1 jam (bukan 1.0 jam)
+                  return `${hours.toFixed(1).replace('.0', '')} jam`;
+                }
               }
             },
           },
