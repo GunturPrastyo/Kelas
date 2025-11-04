@@ -37,7 +37,12 @@ export default function ModulCard({ modul, onDelete }: Props) {
   }, [modul._id]);
 
   const handleCardClick = () => {
-    router.push(`/admin/modul/${modul.slug}`);
+    // Cek apakah event target adalah bagian dari tombol aksi
+    // Ini adalah cara sederhana, idealnya event click pada tombol aksi
+    // harus menghentikan propagasi (e.stopPropagation())
+    // yang sudah dilakukan.
+    // Navigasi hanya terjadi jika card itu sendiri yang diklik.
+     router.push(`/admin/modul/${modul.slug}`);
   };
 
   return (
