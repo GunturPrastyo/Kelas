@@ -19,6 +19,25 @@ type NotificationType = {
     message: string;
 };
 
+/**
+ * Helper function to determine the correct avatar URL.
+ * @param user - The user object.
+ * @returns A string representing the avatar URL.
+ */
+const getAvatarUrl = (user: User): string => {
+    // 1. If avatar is a full URL (e.g., from Google), use it directly.
+    if (user.avatar && user.avatar.startsWith('http')) {
+        return user.avatar;
+    }
+    // 2. If avatar is a filename, construct the URL to the backend.
+    if (user.avatar) {
+        return `${process.env.NEXT_PUBLIC_API_URL}/uploads/${user.avatar}`;
+    }
+    // 3. If no avatar, generate an initials-based avatar from ui-avatars.com.
+    const encodedName = encodeURIComponent(user.name);
+    return `https://ui-avatars.com/api/?name=${encodedName}&background=random&color=fff&rounded=true`;
+};
+
 export default function ManajemenPenggunaPage() {
     const [users, setUsers] = useState<User[]>([]);
     const [loading, setLoading] = useState(true);
@@ -258,11 +277,10 @@ export default function ManajemenPenggunaPage() {
                                                 <div className="flex-shrink-0 h-10 w-10">
                                                     <Image
                                                         className="h-10 w-10 rounded-full object-cover"
-                                                        src={user.avatar && user.avatar.startsWith('http') ? user.avatar : `${process.env.NEXT_PUBLIC_API_URL}/uploads/${user.avatar || 'default.png'}`}
+                                                        src={getAvatarUrl(user)}
                                                         alt={user.name}
                                                         width={40}
                                                         height={40}
-                                                        onError={(e) => { e.currentTarget.src = '/default.png'; }}
                                                     />
                                                 </div>
                                                 <div className="ml-4">
