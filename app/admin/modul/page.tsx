@@ -16,6 +16,7 @@ interface Modul {
   category: string;
   overview: string;
   slug: string;
+  order: number;
 }
 
 export default function ModulPage() {
@@ -147,7 +148,9 @@ export default function ModulPage() {
             </div>
           </div>
 
-          {modules.map((modul) => (
+          {[...modules]
+            .sort((a, b) => a.order - b.order)
+            .map((modul) => (
             <ModulCard
               key={modul._id}
               modul={modul}

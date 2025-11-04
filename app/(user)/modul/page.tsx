@@ -26,6 +26,7 @@ export interface Module {
     slug: string;
     status: ModuleStatus;
     isHighlighted?: boolean;
+    order: number;
 }
 
 
@@ -90,7 +91,11 @@ export default function ModulPage() {
         // Map 'mudah' -> 'dasar', 'sedang' -> 'menengah', 'sulit' -> 'lanjut'
         const categoryMap = { mudah: 'dasar', sedang: 'menengah', sulit: 'lanjut' };
 
-        const updatedModules = modules.map(modul => {
+        // Pastikan modul diurutkan berdasarkan 'order' sebelum diproses lebih lanjut
+        const sortedModules = [...modules].sort((a, b) => (a.order || 0) - (b.order || 0));
+
+
+        const updatedModules = sortedModules.map(modul => {
             const mappedCategory = categoryMap[modul.category];
 
             let status: ModuleStatus;
