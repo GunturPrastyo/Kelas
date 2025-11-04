@@ -7,7 +7,7 @@ import ModulCard from "@/components/ModulCard"; // Card untuk setiap modul
 import { Button } from "@/components/ui/button"; // Import Button
 import { Edit, PlusCircle, List, LayoutGrid } from "lucide-react"; // Import ikon
 import { authFetch } from "@/lib/authFetch";
-import ModulOrder from "@/components/Admin/ModulOrder";
+import ModulOrder from "@/components/ModulOrder";
 
 interface Modul {
   _id: string;
