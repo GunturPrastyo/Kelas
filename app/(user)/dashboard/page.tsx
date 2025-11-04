@@ -188,7 +188,9 @@ export default function DashboardPage() {
   const personalizedModules = useMemo(() => {
     const categoryMap = { mudah: 'dasar', sedang: 'menengah', sulit: 'lanjut' };
 
-    return modules.map(modul => {
+    // Pastikan modul diurutkan berdasarkan 'order' sebelum diproses lebih lanjut
+    const sortedModules = [...modules].sort((a, b) => (a.order || 0) - (b.order || 0));
+    return sortedModules.map(modul => {
             const mappedCategory = categoryMap[modul.category as keyof typeof categoryMap];
       let status: ModuleStatus;
       let isLocked = userLevel === null; // Kunci semua jika belum pre-test
