@@ -22,6 +22,7 @@ interface Module {
   category: 'mudah' | 'sedang' | 'sulit';
   isHighlighted?: boolean;
   firstTopicTitle?: string; // Menambahkan properti yang hilang
+  order: number;
 }
 
 interface AnalyticsData {
