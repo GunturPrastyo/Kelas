@@ -114,7 +114,7 @@ const NotificationBell = () => {
             </button>
 
             {isOpen && (
-                <div className="absolute right-0 sm:right-0 mt-2 w-80 max-w-[calc(100vw-2rem)] bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-xl z-20">
+                <div className="absolute right-0 sm:right-0 mt-2 w-72 max-w-[calc(100vw-2rem)] bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-xl z-20">
                     <div className="p-3 font-bold border-b border-gray-200 dark:border-gray-700">Notifikasi</div>
                     <div className="max-h-96 overflow-y-auto">
                         {notifications.length > 0 ? (
@@ -146,7 +146,7 @@ const NotificationBell = () => {
                                     </Link>
                                     <button
                                         onClick={(e) => dismissNotification(e, notif._id)}
-                                        className="absolute top-2 right-2 p-1.5 rounded-full text-gray-400 dark:text-gray-500 opacity-0 group-hover:opacity-100 bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 transition-opacity"
+                                        className="absolute top-2 right-2 p-1.5 rounded-full text-gray-400 dark:text-gray-500 bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 transition-colors"
                                     >
                                         <X size={14} />
                                         <span className="sr-only">Hapus notifikasi</span>
