@@ -63,6 +63,7 @@ body {
     padding-left: 1em; /* Jarak dari garis kiri */
     font-style: italic; /* Teks miring */
     color: #6b7280; /* Warna teks sedikit redup */
+    margin-bottom: 1em;
   }
 
   /* Mengatur jarak antar item pada list agar lebih rapat */
