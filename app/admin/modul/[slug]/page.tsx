@@ -2,23 +2,27 @@
 
 import { useEffect, useState, use } from "react";
 import Link from "next/link";
-import { Button } from "@/components/ui/button"; // Pastikan path ini benar
-import { PlusCircle, FileEdit, Home } from "lucide-react";
-import { useUI } from "@/context/UIContext";
+import { Button } from "@/components/ui/button";
+import { PlusCircle, FileEdit, Home, LayoutGrid, List } from "lucide-react";
+import { useUI } from "@/context/UIContext"; 
 import { authFetch } from "@/lib/authFetch";
 import TopicCard from "@/components/Topic";
+import TopikOrder from "@/components/TopikOrder";
 
 interface Modul {
   _id: string;
   title: string;
   slug: string;
+  order: number;
 }
 
 interface Topik {
   _id: string;
   title: string;
   slug: string;
+  order: number;
 }
+
 
 interface ModulDetailProps {
   params: Promise<{ slug: string }>;
@@ -27,6 +31,7 @@ interface ModulDetailProps {
 export default function ModulDetail({ params }: ModulDetailProps) {
   // Unwrap the params promise with React.use()
   const { slug } = use(params);
+
   const [modul, setModul] = useState<Modul | null>(null);
   const [allTopics, setAllTopics] = useState<Topik[]>([]);
   const [filteredTopics, setFilteredTopics] = useState<Topik[]>([]);
@@ -34,6 +39,8 @@ export default function ModulDetail({ params }: ModulDetailProps) {
   const [error, setError] = useState<string | null>(null);
   const [hasModulPostTest, setHasModulPostTest] = useState<boolean | null>(null);
   const { searchQuery } = useUI();
+  const [view, setView] = useState<"grid" | "order">("grid");
+
 
   useEffect(() => {
     const fetchModulAndTopics = async () => {
@@ -135,9 +142,35 @@ export default function ModulDetail({ params }: ModulDetailProps) {
         </ol>
       </nav>
       <div className="flex justify-between items-center mt-4 mb-6">
+
         <h1 className="text-2xl font-bold">Topik di Modul: {modul.title}</h1>
 
         <div className="flex items-center gap-2">
+          {/* Tombol Ganti Tampilan */}
+          <div className="flex items-center gap-1 bg-gray-100 dark:bg-gray-700 p-1 rounded-lg">
+            <button
+              onClick={() => setView("grid")}
+              title="Tampilan Grid"
+              className={`p-2 rounded-md transition-colors ${
+                view === "grid"
+                  ? "bg-white dark:bg-gray-800 shadow-sm text-blue-600"
+                  : "text-gray-500 hover:text-gray-800 dark:text-gray-400 dark:hover:text-white"
+              }`}
+            >
+              <LayoutGrid size={20} />
+            </button>
+            <button
+              onClick={() => setView("order")}
+              title="Urutkan Topik"
+              className={`p-2 rounded-md transition-colors ${
+                view === "order"
+                  ? "bg-white dark:bg-gray-800 shadow-sm text-blue-600"
+                  : "text-gray-500 hover:text-gray-800 dark:text-gray-400 dark:hover:text-white"
+              }`}
+            >
+              <List size={20} />
+            </button>
+          </div>
           {hasModulPostTest === null ? (
             <Button disabled className="animate-pulse">Memeriksa Tes...</Button>
           ) : hasModulPostTest ? (
@@ -162,15 +195,27 @@ export default function ModulDetail({ params }: ModulDetailProps) {
         </div>
       </div>
 
-      {filteredTopics.length === 0 && !loading ? (
-        <div className="text-center text-gray-500 py-10 col-span-full">
-          <p>{searchQuery ? `Tidak ada topik yang cocok dengan "${searchQuery}".` : "Belum ada topik pada modul ini."}</p>
-        </div>
+
+      {view === "grid" ? (
+        <>
+          {filteredTopics.length === 0 && !loading ? (
+            <div className="text-center text-gray-500 py-10 col-span-full">
+              <p>{searchQuery ? `Tidak ada topik yang cocok dengan "${searchQuery}".` : "Belum ada topik pada modul ini."}</p>
+            </div>
+          ) : (
+            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              {filteredTopics
+                .sort((a, b) => a.order - b.order)
+                .map((topik) => (
+                <TopicCard key={topik._id} topik={topik} modulId={modul._id} modulSlug={slug} onDelete={handleDelete} />
+              ))}
+            </div>
+          )}
+        </>
       ) : (
-        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {filteredTopics.map((topik) => (
-            <TopicCard key={topik._id} topik={topik} modulId={modul._id} modulSlug={slug} onDelete={handleDelete} />
-          ))}
+        <div className="max-w-2xl mx-auto">
+          <p className="text-center text-sm text-gray-500 dark:text-gray-400 mb-4">Tarik dan lepas topik untuk mengubah urutannya. Perubahan akan disimpan secara otomatis.</p>
+          <TopikOrder modulId={modul._id} />
         </div>
       )}
     </div>
