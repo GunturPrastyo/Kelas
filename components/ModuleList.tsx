@@ -11,6 +11,7 @@ interface Module {
   slug: string;
   status: "Selesai" | "Berjalan" | "Terkunci" | "Belum Mulai";
   progress: number;
+  order: number;
   category: string; // Menambahkan category
   icon: string;
 }
@@ -72,7 +73,13 @@ const getCategoryBadge = (category: string) => {
 
 export default function ModuleList({ title, allModules, filter }: ModuleListProps) {
   const scrollRef = useRef<HTMLDivElement>(null);
-  const modules = useMemo(() => allModules.filter(filter), [allModules, filter]);
+  const modules = useMemo(
+    () =>
+      allModules
+        .filter(filter)
+        .sort((a, b) => (a.order || 0) - (b.order || 0)), // <-- Urutkan berdasarkan order
+    [allModules, filter]
+  );
 
   const handleMouseDown = (e: React.MouseEvent) => {
     const slider = scrollRef.current;
