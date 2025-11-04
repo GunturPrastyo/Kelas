@@ -364,7 +364,7 @@ export default function DashboardPage() {
           </div>
           {/* Ilustrasi */}
           <div className="flex-shrink-0 max-w-full">
-            <Image src="/pre-tes.png" alt="Quiz Illustration" width={160} height={160} className="w-24 h-24 sm:w-40 sm:h-40 object-contain" />
+            <Image src="/pre-tes.png" alt="Quiz Illustration" width={160} height={160} className="w-28 h-28 sm:w-40 sm:h-40 object-contain" />
           </div>
         </div>
 
