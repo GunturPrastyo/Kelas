@@ -9,6 +9,7 @@ import hljs from 'highlight.js';
 // @ts-ignore
 import { authFetch } from '@/lib/authFetch'; // <-- Import helper baru
 import 'highlight.js/styles/atom-one-dark.css'; 
+import { useAlert } from '@/context/AlertContext';
 
 import TopicContent from '@/components/TopicContent';
 import { Home, CheckCircle2, Lock, Rocket, Award } from 'lucide-react';
@@ -81,6 +82,7 @@ export default function ModulDetailPage() {
     const [testResult, setTestResult] = useState<TestResult | null>(null);
     const [isSubmitting, setIsSubmitting] = useState(false);
 
+    const { showAlert } = useAlert();
     const persistTimeoutRef = useRef<NodeJS.Timeout | null>(null);
     const studyTimeTrackerRef = useRef<{ [topicId: string]: number }>({});
     
@@ -230,7 +232,10 @@ export default function ModulDetailPage() {
     // --- Post-Test Actions ---
     const startTest = async (topik: Topik, retake: boolean = false) => {
         if (topik.questions.length === 0) {
-            alert("Belum ada soal post-test untuk topik ini.");
+            showAlert({
+                title: 'Informasi',
+                message: 'Belum ada soal post-test untuk topik ini.',
+            });
             return;
         }
 
@@ -311,7 +316,10 @@ export default function ModulDetailPage() {
                 throw new Error('Gagal memuat hasil tes.');
             }
         } catch (err) {
-            alert(err instanceof Error ? err.message : 'Terjadi kesalahan saat memuat skor.');
+            showAlert({
+                title: 'Error',
+                message: err instanceof Error ? err.message : 'Terjadi kesalahan saat memuat skor.',
+            });
             setActiveTest(null);
         }
     };
@@ -398,7 +406,10 @@ export default function ModulDetailPage() {
             });
 
         } catch (error) {
-            alert(`Terjadi kesalahan: ${error instanceof Error ? error.message : 'Unknown error'}`);
+            showAlert({
+                title: 'Error',
+                message: `Terjadi kesalahan: ${error instanceof Error ? error.message : 'Unknown error'}`,
+            });
         } finally {
             setIsSubmitting(false);
         }
@@ -418,7 +429,11 @@ export default function ModulDetailPage() {
             const left = Math.max(0, Math.round((end - Date.now()) / 1000));
             setTestTimeLeft(left);
             if (left === 0) {
-                alert('Waktu habis — jawaban akan dikirim otomatis.');
+                showAlert({
+                    title: 'Waktu Habis',
+                    message: 'Waktu pengerjaan telah berakhir. Jawaban Anda akan dikirim secara otomatis.',
+                    onConfirm: submitTest,
+                });
                 submitTest();
             }
         }, 1000);
@@ -568,7 +583,14 @@ export default function ModulDetailPage() {
                                             </button>
                                         ) : (
                                             <button
-                                                onClick={() => { if (confirm('Kirim jawaban dan lihat hasil?')) { submitTest(); } }}
+                                                onClick={() => showAlert({
+                                                    type: 'confirm',
+                                                    title: 'Kirim Jawaban?',
+                                                    message: 'Apakah Anda yakin ingin mengirimkan jawaban dan melihat hasilnya?',
+                                                    confirmText: 'Ya, Kirim',
+                                                    cancelText: 'Batal',
+                                                    onConfirm: submitTest,
+                                                })}
                                                 disabled={isSubmitting}
                                                 className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50"
                                             >
