@@ -26,10 +26,10 @@ export default function ManajemenUserPage() {
     const [notification, setNotification] = useState<NotificationType | null>(null);
 
     // State untuk form tambah user
-    const [newName, setNewName] = useState('');
     const [newEmail, setNewEmail] = useState('');
     const [newRole, setNewRole] = useState<'user' | 'admin'>('user');
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [isStudentAccount, setIsStudentAccount] = useState(false);
 
     const fetchUsers = useCallback(async () => {
         try {
@@ -63,11 +63,15 @@ export default function ManajemenUserPage() {
         e.preventDefault();
         setIsSubmitting(true);
 
+        const studentDomain = "@si.ukdw.ac.id";
+        const finalEmail = isStudentAccount ? `${newEmail}${studentDomain}` : newEmail;
+        const finalName = finalEmail.split('@')[0]; // Ambil nama dari bagian email sebelum '@'
+
         try {
             const response = await authFetch(`${process.env.NEXT_PUBLIC_API_URL}/api/users`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ name: newName, email: newEmail, role: newRole }),
+                body: JSON.stringify({ name: finalName, email: finalEmail, role: newRole }),
             });
 
             const data = await response.json();
@@ -81,9 +85,9 @@ export default function ManajemenUserPage() {
             fetchUsers(); // Muat ulang daftar pengguna
 
             // Reset form
-            setNewName('');
             setNewEmail('');
             setNewRole('user');
+            setIsStudentAccount(false);
 
         } catch (error) {
             console.error(error);
@@ -147,26 +151,31 @@ export default function ManajemenUserPage() {
                         <h2 className="text-xl font-bold mb-4">Tambah Pengguna Baru</h2>
                         <form onSubmit={handleAddUser}>
                             <div className="mb-4">
-                                <label htmlFor="name" className="block text-sm font-medium text-gray-700 dark:text-gray-300">Nama Lengkap</label>
-                                <input
-                                    type="text"
-                                    id="name"
-                                    value={newName}
-                                    onChange={(e) => setNewName(e.target.value)}
-                                    className="mt-1 block w-full px-3 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-                                    required
-                                />
+                                <label htmlFor="email" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                                    {isStudentAccount ? 'NIM (Nomor Induk Mahasiswa)' : 'Alamat Email'}
+                                </label>
+                                <div className="mt-1 flex rounded-md shadow-sm">
+                                    <input
+                                        type={isStudentAccount ? 'text' : 'email'}
+                                        id="email"
+                                        value={newEmail}
+                                        onChange={(e) => setNewEmail(e.target.value)}
+                                        className={`block w-full px-3 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 focus:outline-none focus:ring-blue-500 focus:border-blue-500 ${isStudentAccount ? 'rounded-l-md' : 'rounded-md'}`}
+                                        placeholder={isStudentAccount ? 'Contoh: 71220000' : 'contoh@email.com'}
+                                        required
+                                    />
+                                    {isStudentAccount && (
+                                        <span className="inline-flex items-center px-3 rounded-r-md border border-l-0 border-gray-300 bg-gray-50 text-gray-500 dark:border-gray-600 dark:bg-gray-600 dark:text-gray-400 text-sm">
+                                            @si.ukdw.ac.id
+                                        </span>
+                                    )}
+                                </div>
                             </div>
                             <div className="mb-4">
-                                <label htmlFor="email" className="block text-sm font-medium text-gray-700 dark:text-gray-300">Alamat Email</label>
-                                <input
-                                    type="email"
-                                    id="email"
-                                    value={newEmail}
-                                    onChange={(e) => setNewEmail(e.target.value)}
-                                    className="mt-1 block w-full px-3 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-                                    required
-                                />
+                                <label className="flex items-center">
+                                    <input type="checkbox" className="rounded border-gray-300 text-blue-600 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50" checked={isStudentAccount} onChange={(e) => setIsStudentAccount(e.target.checked)} />
+                                    <span className="ml-2 text-sm text-gray-600 dark:text-gray-300">Daftarkan sebagai akun Mahasiswa</span>
+                                </label>
                             </div>
                             <div className="mb-6">
                                 <label htmlFor="role" className="block text-sm font-medium text-gray-700 dark:text-gray-300">Role</label>
@@ -179,7 +188,7 @@ export default function ManajemenUserPage() {
                                     <option value="user">User</option>
                                     <option value="admin">Admin</option>
                                 </select>
-                                <p className="text-xs text-gray-500 mt-2">Password akan diatur ke default `password123`. Pengguna dapat mengubahnya nanti.</p>
+                                <p className="text-xs text-gray-500 mt-2">Nama pengguna akan dibuat dari email. Password akan diatur ke default `password123`.</p>
                             </div>
                             <div className="flex justify-end gap-3">
                                 <button
