@@ -1,6 +1,6 @@
 "use client";
 
-import { UIProvider, useUI } from "@/context/UIContext";
+import { UIProvider, useUI } from "../../../context/UIContext";
 import Navbar from "@/components/navbarUser";
 import Sidebar from "@/components/SidebarAdmin";
 import AuthGuard from "@/components/AuthGuard";

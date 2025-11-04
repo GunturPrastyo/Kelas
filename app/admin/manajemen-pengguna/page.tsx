@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback, FormEvent } from 'react';
-import { authFetch } from '@/lib/authFetch';
+import { authFetch } from '../../../lib/authFetch';
 import { Trash2, UserPlus, Users, AlertCircle, CheckCircle } from 'lucide-react';
 import Image from 'next/image';
 
@@ -19,7 +19,7 @@ type NotificationType = {
     message: string;
 };
 
-export default function ManajemenUserPage() {
+export default function ManajemenPenggunaPage() {
     const [users, setUsers] = useState<User[]>([]);
     const [loading, setLoading] = useState(true);
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -133,7 +133,7 @@ export default function ManajemenUserPage() {
             <header className="flex justify-between items-center mb-6">
                 <h1 className="text-2xl font-bold text-gray-800 dark:text-white flex items-center gap-3">
                     <Users />
-                    Manajemen Pengguna
+                    Manajemen User
                 </h1>
                 <button
                     onClick={() => setIsModalOpen(true)}
