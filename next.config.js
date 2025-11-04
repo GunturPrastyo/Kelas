@@ -4,22 +4,19 @@ const nextConfig = {
     remotePatterns: [
       // Izin untuk avatar dari Google
       {
-        protocol: 'https',
-        hostname: 'lh3.googleusercontent.com',
-        port: '',
-        pathname: '/**',
+        protocol: "https",
+        hostname: "lh3.googleusercontent.com",
       },
       // Izin untuk gambar yang di-upload dari backend
       {
-        protocol: 'https',
-        hostname: 'srv1099948.hstgr.cloud',
+        protocol: "https",
+        hostname: "srv1099948.hstgr.cloud",
         pathname: '/uploads/**',
       },
       // Izin untuk avatar inisial dari ui-avatars.com
       {
-        protocol: 'https',
-        hostname: 'ui-avatars.com',
-        port: '',
+        protocol: "https",
+        hostname: "ui-avatars.com",
         pathname: '/api/**',
       },
       // Izin untuk avatar placeholder dari pravatar.cc
@@ -29,23 +26,8 @@ const nextConfig = {
       },
       // Izin untuk ikon dari icons8.com
       {
-        protocol: 'https',
-        hostname: 'img.icons8.com',
-        port: '',
-        pathname: '/**',
-      },
-    ],
-  },
-  images: {
-    remotePatterns: [
-      {
         protocol: "https",
         hostname: "img.icons8.com",
-      },
-      {
-        protocol: "https",
-        hostname: "srv1099948.hstgr.cloud",
-        pathname: "/uploads/**",
       },
     ],
   },
