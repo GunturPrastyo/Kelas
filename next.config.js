@@ -10,11 +10,11 @@ const nextConfig = {
         pathname: '/**',
       },
       // Izin untuk gambar yang di-upload dari backend
-     {
-    protocol: 'https',
-    hostname: 'srv1099948.hstgr.cloud',
-    pathname: '/uploads/**',
-},
+      {
+        protocol: 'https',
+        hostname: 'srv1099948.hstgr.cloud',
+        pathname: '/uploads/**',
+      },
       // Izin untuk avatar inisial dari ui-avatars.com
       {
         protocol: 'https',
@@ -33,6 +33,19 @@ const nextConfig = {
         hostname: 'img.icons8.com',
         port: '',
         pathname: '/**',
+      },
+    ],
+  },
+  images: {
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "img.icons8.com",
+      },
+      {
+        protocol: "https",
+        hostname: "srv1099948.hstgr.cloud",
+        pathname: "/uploads/**",
       },
     ],
   },
