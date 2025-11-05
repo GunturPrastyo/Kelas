@@ -383,7 +383,7 @@ export default function PreTestPage() {
     }
 
     return (
-        <div className="max-w-5xl mx-auto p-4 sm:p-5 my-4 sm:my-8 font-sans">
+        <div className="max-w-full mx-auto p-4 sm:p-5 my-4 sm:my-8 font-sans">
             <Breadcrumb paths={[
                 { name: "Dashboard", href: "/dashboard" },
                 { name: "Pre-test", href: "#" }
@@ -432,7 +432,7 @@ export default function PreTestPage() {
                                             checked={answers[currentQuestion._id] === option}
                                             onChange={() => setAnswers(prev => ({ ...prev, [currentQuestion._id]: option }))}
                                         />
-                                        <span className="break-words" dangerouslySetInnerHTML={{ __html: option }} />
+                                        <span className="break-words min-w-0" dangerouslySetInnerHTML={{ __html: option }} />
                                     </label>
                                 ))}
                             </div>
