@@ -415,10 +415,11 @@ export default function PreTestPage() {
                         <div className="py-6">
                             <div className="flex items-start font-semibold mb-4 text-base text-slate-800 dark:text-slate-200">
                                 <span className="mr-2">{idx + 1}.</span>
-                                <div
-                                    className="flex-1 prose dark:prose-invert max-w-none"
-                                    dangerouslySetInnerHTML={{ __html: currentQuestion.questionText }} 
-                                />
+                                <div className="flex-1 overflow-x-auto">
+                                    <div className="prose dark:prose-invert max-w-none"
+                                        dangerouslySetInnerHTML={{ __html: currentQuestion.questionText }}
+                                    />
+                                </div>
                             </div>
                             <div className="flex flex-col gap-3">
                                 {currentQuestion.options.map((option, oIndex) => (
