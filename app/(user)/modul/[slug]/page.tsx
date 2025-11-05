@@ -134,6 +134,19 @@ export default function ModulDetailPage() {
             const res = await authFetch(`${process.env.NEXT_PUBLIC_API_URL}/api/modul/user-view/${slug}`);
             if (!res.ok) throw new Error("Gagal memuat data modul.");
             const data = await res.json();
+
+            // Fallback: Jika backend tidak mengirim `hasCompletedModulPostTest`, cek manual.
+            if (data.hasCompletedModulPostTest === undefined) {
+                try {
+                    const postTestResultRes = await authFetch(`${process.env.NEXT_PUBLIC_API_URL}/api/results/latest-by-type/post-test-modul?modulId=${data._id}`);
+                    if (postTestResultRes.ok) {
+                        const latestResult = await postTestResultRes.json();
+                        data.hasCompletedModulPostTest = !!latestResult; // Set true jika ada hasil, false jika tidak
+                    }
+                } catch (e) {
+                    console.warn("Gagal memeriksa status post-test modul secara manual.");
+                }
+            }
             setModul(data);
         } catch (err) {
             setError(err instanceof Error ? err.message : "Terjadi kesalahan.");
