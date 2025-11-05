@@ -438,10 +438,11 @@ export default function PreTestPage() {
                                             }
                                         />
                                         <span
-                                            className="break-words overflow-hidden text-wrap flex-1"
+                                            className="whitespace-normal break-words flex-1"
                                             dangerouslySetInnerHTML={{ __html: option }}
                                         ></span>
                                     </label>
+
 
                                 ))}
                             </div>
