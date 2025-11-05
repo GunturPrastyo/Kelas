@@ -191,14 +191,43 @@ export default function PostTestPage() {
         }
     }, [testIdx]);
 
-    const handleRetake = () => {
+    const handleRetake = async () => {
         if (!user || !modul) return;
         showAlert({
             type: 'confirm',
             title: 'Ulangi Post-Test?',
             message: 'Apakah Anda yakin ingin mengulang post-test untuk modul ini? Hasil sebelumnya akan tetap tersimpan jika skor Anda saat ini lebih rendah.',
             confirmText: 'Ya, Ulangi',
-            onConfirm: () => router.push(`/modul/${slug}/post-test?retake=true`), // 4. Arahkan ke URL dengan param retake
+            onConfirm: async () => {
+                try {
+                    setLoading(true);
+                    setError(null);
+
+                    // 1. Reset state lokal untuk memulai tes baru
+                    setResult(null);
+                    setAnswers({});
+                    setTestIdx(0);
+                    
+                    // 2. Fetch ulang soal
+                    const questionsRes = await authFetch(`${process.env.NEXT_PUBLIC_API_URL}/api/questions/post-test-modul/${modul._id}`);
+                    if (!questionsRes.ok) {
+                        throw new Error("Gagal memuat ulang soal post-test.");
+                    }
+                    const questionsData: { questions: Question[] } = await questionsRes.json();
+                    setQuestions(questionsData.questions || []);
+
+                    // 3. Reset timer
+                    setStartTime(Date.now());
+                    
+                    // 4. Hapus query param 'retake' dari URL tanpa reload
+                    router.replace(`/modul/${slug}/post-test`, { scroll: false });
+
+                } catch (err) {
+                    setError(err instanceof Error ? err.message : "Terjadi kesalahan saat memulai ulang tes.");
+                } finally {
+                    setLoading(false);
+                }
+            },
         });
     };
 
