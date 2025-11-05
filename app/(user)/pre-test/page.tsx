@@ -438,10 +438,11 @@ export default function PreTestPage() {
                                             }
                                         />
                                         <span
-                                            className="whitespace-normal break-words flex-1"
+                                            className="overflow-x-auto whitespace-nowrap flex-1 scrollbar-thin scrollbar-thumb-gray-400 dark:scrollbar-thumb-gray-600"
                                             dangerouslySetInnerHTML={{ __html: option }}
                                         ></span>
                                     </label>
+
 
 
                                 ))}
