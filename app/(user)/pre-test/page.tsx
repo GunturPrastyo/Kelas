@@ -432,7 +432,7 @@ export default function PreTestPage() {
                                             checked={answers[currentQuestion._id] === option}
                                             onChange={() => setAnswers(prev => ({ ...prev, [currentQuestion._id]: option }))}
                                         />
-                                        <span className="break-words min-w-0" dangerouslySetInnerHTML={{ __html: option }} />
+                                        <span className="break-words min-w-0" dangerouslySetInnerHTML={{ __html: option }}></span>
                                     </label>
                                 ))}
                             </div>
