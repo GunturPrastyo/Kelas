@@ -1,17 +1,19 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
-import { useParams, redirect } from "next/navigation";
+import { useState, useEffect, useCallback, useRef } from "react";
+import { useParams, useRouter } from "next/navigation";
 import { authFetch } from "@/lib/authFetch";
 import Link from "next/link";
-import Breadcrumb from "@/components/Breadcrumb";
+import { Home, CheckCircle2, Lock, Rocket, Award } from 'lucide-react';
+import hljs from 'highlight.js';
+import 'highlight.js/styles/atom-one-dark.css';
+import { useAlert } from "@/context/AlertContext";
 
 interface Question {
     _id: string;
     questionText: string;
     options: string[];
-    answer: string;
-    code?: string;
+    durationPerQuestion?: number;
 }
 
 interface Modul {
@@ -32,115 +34,119 @@ interface TestResult {
     timestamp: string;
 }
 
-const TEST_DURATION = 15 * 60; // 15 menit dalam detik
-
 export default function PostTestPage() {
     const params = useParams();
+    const router = useRouter();
     const slug = params.slug as string;
 
     const [modul, setModul] = useState<Modul | null>(null);
     const [user, setUser] = useState<User | null>(null);
     const [questions, setQuestions] = useState<Question[]>([]);
     const [answers, setAnswers] = useState<{ [key: string]: string }>({});
-    const [idx, setIdx] = useState(0);
-    const [startTime] = useState(Date.now());
-    const [timeLeft, setTimeLeft] = useState(TEST_DURATION);
+    const [testIdx, setTestIdx] = useState(0);
+    const [startTime, setStartTime] = useState(0);
+    const [timeLeft, setTimeLeft] = useState(0);
     const [result, setResult] = useState<TestResult | null>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
+    const [isSubmitting, setIsSubmitting] = useState(false);
+
+    const { showAlert } = useAlert();
+    const questionModalRef = useRef<HTMLDivElement>(null);
 
     const total = questions.length;
 
     const gradeTest = useCallback(async () => {
         if (!user || !modul) return;
-        let correctAnswers = 0;
-        questions.forEach((q) => {
-            if (answers[q._id] === q.answer) {
-                correctAnswers++;
-            }
-        });
-
-        const finalScore = questions.length > 0 ? (correctAnswers / questions.length) * 100 : 0;
-        const timeTaken = Math.round((Date.now() - startTime) / 1000);
-
-        const record = {
-            score: finalScore,
-            correct: correctAnswers,
-            total: questions.length,
-            timeTaken,
-            timestamp: new Date().toISOString(),
-        };
-
-        const resultKey = `post_test_result_${user._id}_${modul._id}`;
-        localStorage.setItem(resultKey, JSON.stringify(record));
-        setResult(record);
-
+        setIsSubmitting(true);
         try {
-            await authFetch(`${process.env.NEXT_PUBLIC_API_URL}/api/results`, {
+            const response = await authFetch(`${process.env.NEXT_PUBLIC_API_URL}/api/results/submit-test`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
-                    ...record,
                     testType: "post-test-modul",
+                    answers: answers,
+                    timeTaken: Math.round((Date.now() - startTime) / 1000),
                     modulId: modul._id,
                 }),
             });
+
+            const resultData = await response.json();
+            if (!response.ok) throw new Error(resultData.message || "Gagal mengirimkan jawaban.");
+
+            setResult(resultData.data);
+
         } catch (err) {
-            console.error("Gagal menyimpan hasil tes:", err);
+            showAlert({
+                title: 'Error',
+                message: `Terjadi kesalahan: ${err instanceof Error ? err.message : 'Unknown error'}`,
+            });
+        } finally {
+            setIsSubmitting(false);
         }
-    }, [questions, answers, modul, user, startTime]);
+    }, [answers, startTime, user, modul, showAlert]);
 
     useEffect(() => {
         const userRaw = localStorage.getItem('user');
         if (userRaw) {
             setUser(JSON.parse(userRaw));
         } else {
-            // Jika tidak ada user, redirect ke login
-            redirect('/login');
+            router.push('/login');
         }
-    }, []);
+    }, [router]);
 
     useEffect(() => {
-        if (!slug) return;
-        if (!user) return;
+        if (!slug || !user) return;
 
         const fetchModulAndQuestions = async () => {
             try {
                 setLoading(true);
-                // Ambil data modul dulu untuk mendapatkan ID
                 const modulRes = await authFetch(`${process.env.NEXT_PUBLIC_API_URL}/api/modul/${slug}`);
                 if (!modulRes.ok) throw new Error("Gagal memuat data modul.");
                 const modulData: Modul = await modulRes.json();
                 setModul(modulData);
 
-                // Ambil soal post-test berdasarkan ID modul
-                const resultKey = `post_test_result_${user._id}_${modulData._id}`;
-                const resultRaw = localStorage.getItem(resultKey);
-                if (resultRaw) {
-                    setResult(JSON.parse(resultRaw));
-                    return;
+                // Cek apakah user sudah pernah menyelesaikan post-test ini
+                const resultRes = await authFetch(`${process.env.NEXT_PUBLIC_API_URL}/api/results/latest-by-type/post-test-modul?modulId=${modulData._id}`);
+                if (resultRes.ok) {
+                    const latestResult = await resultRes.json();
+                    if (latestResult) {
+                        setResult(latestResult);
+                        setLoading(false);
+                        return;
+                    }
+                }
+
+                // Cek progress jika belum ada hasil
+                const progressRes = await authFetch(`${process.env.NEXT_PUBLIC_API_URL}/api/results/progress?testType=post-test-modul-progress&modulId=${modulData._id}`);
+                if (progressRes.ok) {
+                    const progressData = await progressRes.json();
+                    if (progressData && progressData.answers && Array.isArray(progressData.answers) && progressData.answers.length > 0) {
+                        setAnswers(progressData.answers.reduce((acc: { [key: string]: string }, ans: { questionId: string, selectedOption: string }) => {
+                            acc[ans.questionId] = ans.selectedOption;
+                            return acc;
+                        }, {}) || {});
+                        setTestIdx(progressData.currentIndex || 0);
+                    }
                 }
 
                 const questionsRes = await authFetch(`${process.env.NEXT_PUBLIC_API_URL}/api/questions/post-test-modul/${modulData._id}`);
-
                 if (!questionsRes.ok) {
-                    if (questionsRes.status === 404) {
-                        setError("Tidak ada soal post-test yang tersedia untuk modul ini.");
-                    } else {
-                        throw new Error("Gagal memuat soal post-test.");
-                    }
+                    if (questionsRes.status === 404) setError("Tidak ada soal post-test yang tersedia untuk modul ini.");
+                    else throw new Error("Gagal memuat soal post-test.");
+                    return;
+                }
+
+                const questionsData: { questions: Question[] } = await questionsRes.json();
+                if (questionsData.questions && questionsData.questions.length > 0) {
+                    setQuestions(questionsData.questions);
+                    setStartTime(Date.now()); // Mulai timer setelah soal berhasil dimuat
                 } else {
-                    const questionsData: { questions: Question[] } = await questionsRes.json();
-                    if (questionsData.questions && questionsData.questions.length > 0) {
-                        setQuestions(questionsData.questions);
-                    } else {
-                        setError("Tidak ada soal post-test yang tersedia untuk modul ini.");
-                    }
+                    setError("Tidak ada soal post-test yang tersedia untuk modul ini.");
                 }
+
             } catch (err) {
-                if (err instanceof Error) {
-                    setError(err.message || "Terjadi kesalahan.");
-                }
+                setError(err instanceof Error ? err.message : "Terjadi kesalahan.");
             } finally {
                 setLoading(false);
             }
@@ -150,28 +156,44 @@ export default function PostTestPage() {
     }, [slug, user]);
 
     useEffect(() => {
-        if (result || loading || error) return;
+        if (result || loading || error || questions.length === 0) return;
 
-        if (timeLeft <= 0) {
-            alert('Waktu habis — jawaban akan dikirim otomatis.');
-            gradeTest();
-            return;
-        }
+        const DURATION = questions.reduce((acc, q) => acc + (q.durationPerQuestion || 60), 0);
+        const end = startTime + DURATION * 1000;
 
-        const timer = setInterval(() => {
-            setTimeLeft((prev) => prev - 1);
+        const timerInterval = setInterval(() => {
+            const left = Math.max(0, Math.round((end - Date.now()) / 1000));
+            setTimeLeft(left);
+            if (left === 0) {
+                showAlert({
+                    title: 'Waktu Habis',
+                    message: 'Waktu pengerjaan telah berakhir. Jawaban Anda akan dikirim secara otomatis.',
+                    onConfirm: gradeTest,
+                });
+                gradeTest();
+            }
         }, 1000);
 
-        return () => clearInterval(timer);
-    }, [result, loading, error, timeLeft, gradeTest]);
+        return () => clearInterval(timerInterval);
+    }, [result, loading, error, questions, startTime, gradeTest, showAlert]);
+
+    useEffect(() => {
+        if (questionModalRef.current) {
+            questionModalRef.current.querySelectorAll('pre code').forEach((block) => {
+                hljs.highlightElement(block as HTMLElement);
+            });
+        }
+    }, [testIdx]);
 
     const handleRetake = () => {
         if (!user || !modul) return;
-        if (confirm('Mulai ulang post-test? Semua jawaban lokal akan dihapus.')) {
-            const resultKey = `post_test_result_${user._id}_${modul._id}`;
-            localStorage.removeItem(resultKey);
-            window.location.reload();
-        }
+        showAlert({
+            type: 'confirm',
+            title: 'Ulangi Post-Test?',
+            message: 'Apakah Anda yakin ingin mengulang post-test untuk modul ini? Hasil sebelumnya akan tetap tersimpan jika skor Anda saat ini lebih rendah.',
+            confirmText: 'Ya, Ulangi',
+            onConfirm: () => window.location.reload(),
+        });
     };
 
     const formatTime = (seconds: number) => {
@@ -183,12 +205,17 @@ export default function PostTestPage() {
     if (loading) return <div className="flex justify-center items-center h-screen"><p>Memuat...</p></div>;
 
     if (error) return (
-        <div className="container mx-auto p-4 md:p-8">
-            <Breadcrumb paths={[
-                { name: "Modul", href: "/modul" },
-                { name: modul?.title || "...", href: `/modul/${slug}` },
-                { name: "Post Test", href: "#" }
-            ]} />
+        <div className="max-w-7xl mx-auto p-5">
+            <nav className="flex mb-6" aria-label="Breadcrumb">
+                <ol className="inline-flex items-center space-x-1 md:space-x-2 rtl:space-x-reverse">
+                    <li className="inline-flex items-center">
+                        <Link href="/dashboard" className="inline-flex items-center text-sm font-medium text-gray-700 hover:text-blue-600 dark:text-gray-400 dark:hover:text-white">
+                            <Home className="w-4 h-4 me-2.5" /> Dashboard
+                        </Link>
+                    </li>
+                    {/* Breadcrumb lainnya bisa ditambahkan di sini */}
+                </ol>
+            </nav>
             <div className="mt-6 text-center p-6 bg-red-50 dark:bg-red-900/20 rounded-lg">
                 <h2 className="text-xl font-bold text-red-700 dark:text-red-400">Terjadi Kesalahan</h2>
                 <p className="text-red-600 dark:text-red-300 mt-2">{error}</p>
@@ -204,18 +231,26 @@ export default function PostTestPage() {
     if (result) {
         const isPassed = result.score >= 80;
         return (
-            <div className="max-w-full p-5 font-sans">
-                <Breadcrumb paths={modul ? [
-                    { name: "Modul", href: "/modul" },
-                    { name: modul?.title || "...", href: `/modul/${slug}` },
-                    { name: "Hasil Post Test", href: "#" }
-                ] : []} />
+            <div className="max-w-7xl mx-auto p-5 font-sans">
+                <nav className="flex mb-6" aria-label="Breadcrumb">
+                    <ol className="inline-flex items-center space-x-1 md:space-x-2 rtl:space-x-reverse text-slate-700 dark:text-slate-300">
+                        <li className="inline-flex items-center">
+                            <Link href="/dashboard" className="inline-flex items-center text-sm font-medium hover:text-blue-600 dark:hover:text-blue-400">
+                                <Home className="w-4 h-4 me-2.5" /> Dashboard
+                            </Link>
+                        </li>
+                        <li><div className="flex items-center"><svg className="rtl:rotate-180 w-3 h-3 text-slate-400 mx-1" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 6 10"><path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="m1 9 4-4-4-4" /></svg><Link href="/modul" className="ms-1 text-sm font-medium hover:text-blue-600 md:ms-2 dark:hover:text-blue-400">Modul</Link></div></li>
+                        <li><div className="flex items-center"><svg className="rtl:rotate-180 w-3 h-3 text-slate-400 mx-1" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 6 10"><path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="m1 9 4-4-4-4" /></svg><Link href={`/modul/${slug}`} className="ms-1 text-sm font-medium hover:text-blue-600 md:ms-2 dark:hover:text-blue-400">{modul?.title || "..."}</Link></div></li>
+                        <li aria-current="page"><div className="flex items-center"><svg className="rtl:rotate-180 w-3 h-3 text-slate-400 mx-1" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 6 10"><path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="m1 9 4-4-4-4" /></svg><span className="ms-1 text-sm font-medium text-gray-800 dark:text-gray-200 md:ms-2">Hasil Post Test</span></div></li>
+                    </ol>
+                </nav>
+
                 <section className="bg-white dark:bg-gray-800 rounded-xl p-6 mt-6 shadow-lg">
                     <h2 className="text-2xl font-bold text-center text-gray-800 dark:text-white mb-4">Hasil Post Test: {modul?.title}</h2>
                     <div className="flex flex-col sm:flex-row items-center justify-between gap-4 sm:gap-2 bg-slate-50 dark:bg-gray-700/50 p-4 rounded-lg border border-slate-200 dark:border-gray-700">
                         <div className="text-center sm:text-left">
                             <p className="text-sm text-slate-500 dark:text-slate-400">Skor Kamu</p>
-                            <p className={`text-3xl font-bold ${isPassed ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>{result.score}%</p>
+                            <p className={`text-3xl font-bold ${isPassed ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>{result.score.toFixed(0)}%</p>
                         </div>
                         <div className="text-center sm:text-right">
                             <p className="text-base font-semibold text-slate-700 dark:text-slate-300">{Math.floor(result.timeTaken / 60)}m {result.timeTaken % 60}s</p>
@@ -246,30 +281,33 @@ export default function PostTestPage() {
         );
     }
 
-    const currentQuestion = questions[idx];
+    const currentQuestion = questions[testIdx];
 
     return (
-        <div className="max-w-full p-5 font-sans">
-            <Breadcrumb paths={modul ? [
-                { name: "Modul", href: "/modul" },
-                { name: modul?.title || "...", href: `/modul/${slug}` },
-                { name: "Post Test", href: "#" }
-            ] : []} />
+        <div className="max-w-7xl mx-auto p-5 font-sans">
+            <nav className="flex mb-6" aria-label="Breadcrumb">
+                <ol className="inline-flex items-center space-x-1 md:space-x-2 rtl:space-x-reverse text-slate-700 dark:text-slate-300">
+                    <li className="inline-flex items-center"><Link href="/dashboard" className="inline-flex items-center text-sm font-medium hover:text-blue-600 dark:hover:text-blue-400"><Home className="w-4 h-4 me-2.5" />Dashboard</Link></li>
+                    <li><div className="flex items-center"><svg className="rtl:rotate-180 w-3 h-3 text-slate-400 mx-1" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 6 10"><path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="m1 9 4-4-4-4" /></svg><Link href="/modul" className="ms-1 text-sm font-medium hover:text-blue-600 md:ms-2 dark:hover:text-blue-400">Modul</Link></div></li>
+                    <li><div className="flex items-center"><svg className="rtl:rotate-180 w-3 h-3 text-slate-400 mx-1" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 6 10"><path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="m1 9 4-4-4-4" /></svg><Link href={`/modul/${slug}`} className="ms-1 text-sm font-medium hover:text-blue-600 md:ms-2 dark:hover:text-blue-400">{modul?.title || "..."}</Link></div></li>
+                    <li aria-current="page"><div className="flex items-center"><svg className="rtl:rotate-180 w-3 h-3 text-slate-400 mx-1" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 6 10"><path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="m1 9 4-4-4-4" /></svg><span className="ms-1 text-sm font-medium text-gray-800 dark:text-gray-200 md:ms-2">Post Test</span></div></li>
+                </ol>
+            </nav>
 
             <header className="flex items-center justify-between gap-4 mt-6">
                 <h1 className="text-xl font-bold text-slate-800 dark:text-slate-200">Post Test: {modul?.title}</h1>
                 <div className="flex gap-3 items-center text-slate-500 dark:text-slate-400 text-sm bg-slate-100 dark:bg-gray-800 px-3 py-1.5 rounded-lg border border-slate-200 dark:border-gray-700">
-                    <span>Soal: <span>{total}</span></span>
+                    <span>Soal: {total}</span>
                     <span className="text-slate-300">|</span>
-                    <span>Waktu: <span>{formatTime(timeLeft)}</span></span>
+                    <span>Waktu: {formatTime(timeLeft)}</span>
                 </div>
             </header>
 
-            <section className="bg-white dark:bg-gray-800 rounded-xl p-6 mt-6 shadow-lg">
+            <section ref={questionModalRef} className="bg-white dark:bg-gray-800 rounded-xl p-6 mt-6 shadow-lg">
                 {currentQuestion && (
                     <div className="py-6">
                         <div className="flex items-start font-semibold mb-4 text-base text-slate-800 dark:text-slate-200">
-                            <span className="mr-2">{idx + 1}.</span>
+                            <span className="mr-2">{testIdx + 1}.</span>
                             <div className="flex-1 prose dark:prose-invert max-w-none" dangerouslySetInnerHTML={{ __html: currentQuestion.questionText }} />
                         </div>
 
@@ -293,29 +331,37 @@ export default function PostTestPage() {
 
                 <div className="flex flex-col sm:flex-row gap-3 sm:gap-2 items-center mt-6">
                     <div className="flex gap-2 w-full sm:w-auto">
-                        <button onClick={() => setIdx(i => Math.max(0, i - 1))} disabled={idx === 0} className="flex-1 bg-white dark:bg-gray-700 text-slate-700 dark:text-slate-300 border border-slate-300 dark:border-gray-600 px-4 py-2.5 rounded-lg cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed hover:bg-slate-50 dark:hover:bg-gray-600">
+                        <button onClick={() => setTestIdx(i => Math.max(0, i - 1))} disabled={testIdx === 0} className="flex-1 bg-white dark:bg-gray-700 text-slate-700 dark:text-slate-300 border border-slate-300 dark:border-gray-600 px-4 py-2.5 rounded-lg cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed hover:bg-slate-50 dark:hover:bg-gray-600">
                             Sebelumnya
                         </button>
-                        {idx < total - 1 && (
-                            <button onClick={() => setIdx(i => Math.min(total - 1, i + 1))} className="flex-1 bg-blue-600 text-white border-none px-4 py-2.5 rounded-lg cursor-pointer hover:bg-blue-700 transition">
+                        {testIdx < total - 1 ? (
+                            <button onClick={() => setTestIdx(i => Math.min(total - 1, i + 1))} className="flex-1 bg-blue-600 text-white border-none px-4 py-2.5 rounded-lg cursor-pointer hover:bg-blue-700 transition">
                                 Berikutnya
                             </button>
-                        )}
-                    </div>
-                    <div className="flex gap-2 w-full sm:w-auto sm:ml-auto">
-                        {idx === total - 1 && (
-                            <button onClick={() => { if (confirm('Kirim jawaban dan lihat hasil?')) { gradeTest(); } }} className="flex-1 sm:flex-none bg-green-600 text-white border-none px-4 py-2.5 rounded-lg cursor-pointer hover:bg-green-700 transition">
-                                Kirim Jawaban
+                        ) : (
+                            <button
+                                onClick={() => showAlert({
+                                    type: 'confirm',
+                                    title: 'Kirim Jawaban?',
+                                    message: 'Apakah Anda yakin ingin mengirimkan jawaban dan melihat hasilnya?',
+                                    confirmText: 'Ya, Kirim',
+                                    cancelText: 'Batal',
+                                    onConfirm: gradeTest,
+                                })}
+                                disabled={isSubmitting}
+                                className="flex-1 sm:flex-none bg-green-600 text-white border-none px-4 py-2.5 rounded-lg cursor-pointer hover:bg-green-700 transition disabled:opacity-50"
+                            >
+                                {isSubmitting ? 'Mengirim...' : 'Kirim Jawaban'}
                             </button>
                         )}
                     </div>
                 </div>
 
                 <div className="h-2.5 bg-indigo-100 dark:bg-gray-700 rounded-full overflow-hidden mt-4">
-                    <div className="block h-full bg-gradient-to-r from-blue-500 to-violet-500" style={{ width: `${((idx + 1) / total) * 100}%` }}></div>
+                    <div className="block h-full bg-gradient-to-r from-blue-500 to-violet-500" style={{ width: `${((testIdx + 1) / total) * 100}%` }}></div>
                 </div>
                 <div className="text-sm text-slate-500 dark:text-slate-400 mt-2">
-                    Pertanyaan ke <span>{idx + 1}</span> dari <span>{total}</span>
+                    Pertanyaan ke <span>{testIdx + 1}</span> dari <span>{total}</span>
                 </div>
             </section>
         </div>
