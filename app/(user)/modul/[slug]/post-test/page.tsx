@@ -101,7 +101,7 @@ export default function PostTestPage() {
         const fetchModulAndQuestions = async () => {
             try {
                 setLoading(true);
-                const modulRes = await authFetch(`${process.env.NEXT_PUBLIC_API_URL}/api/modul/${slug}`);
+                const modulRes = await authFetch(`${process.env.NEXT_PUBLIC_API_URL}/api/modul/user-view/${slug}`);
                 if (!modulRes.ok) throw new Error("Gagal memuat data modul.");
                 const modulData: Modul = await modulRes.json();
                 setModul(modulData);
