@@ -63,39 +63,50 @@ export default function PreTestPage() {
             console.warn("Gagal membuat notifikasi:", error);
         }
     }, [user]);
+    const grade = useCallback(() => {
+        if (!user) return; // Pastikan user sudah ada
+        let correct = 0;
+        const timeTaken = Math.round((Date.now() - startTime) / 1000);
+        questions.forEach(q => {
+            // Jawaban yang dipilih user untuk soal q._id
+            const userAnswer = answers[q._id];
+            if (userAnswer === q.answer) correct++;
+        });
+        const score = total > 0 ? Math.round((correct / total) * 100) : 0;
+        const record = { score, correct, total, timeTaken, timestamp: new Date().toISOString() };
 
-    const grade = useCallback(async () => {
-        if (!user) return;
+        // 1. Simpan hasil ke localStorage untuk ditampilkan segera
+        const resultKey = `pretest_result_${user._id}`;
+        localStorage.setItem(resultKey, JSON.stringify(record));
+        setResult(record);
 
-        try {
-            const response = await authFetch(`${process.env.NEXT_PUBLIC_API_URL}/api/results/submit-test`, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    testType: "pre-test-global",
-                    answers: answers,
-                    timeTaken: Math.round((Date.now() - startTime) / 1000),
-                }),
-            });
+        // 2. Kirim hasil ke database
+        const saveResultToDB = async () => {
+            try {
+                const response = await authFetch(`${process.env.NEXT_PUBLIC_API_URL}/api/results`, { // Menggunakan endpoint baru
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        ...record,
+                        testType: 'pre-test-global',
+                    }),
+                });
+                if (!response.ok) {
+                    console.error("Gagal menyimpan hasil pre-test ke database.");
+                }
+            } catch (error) {
+                console.error("Error saat mengirim hasil pre-test:", error);
+            }
+        };
 
-            const resultData = await response.json();
-            if (!response.ok) throw new Error(resultData.message || "Gagal mengirimkan jawaban pre-test.");
+        saveResultToDB();
 
-            setResult(resultData.data);
-
-            // Buat notifikasi setelah menyelesaikan pre-test
-            createNotification(
-                `Anda telah menyelesaikan Pre-Test dengan skor ${resultData.data.score.toFixed(0)}%.`,
-                '/analitik-belajar' // Arahkan ke halaman analitik
-            );
-
-        } catch (err) {
-            showAlert({
-                title: 'Error',
-                message: `Terjadi kesalahan: ${err instanceof Error ? err.message : 'Unknown error'}`,
-            });
-        }
-    }, [answers, startTime, user, showAlert, createNotification]);
+        // Buat notifikasi setelah menyelesaikan pre-test
+        createNotification(
+            `Anda telah menyelesaikan Pre-Test dengan skor ${score}%.`,
+            '/profil' // Arahkan ke halaman profil/hasil
+        );
+    }, [answers, startTime, total, questions, user, createNotification]);
 
     useEffect(() => {
         const userRaw = localStorage.getItem('user');
@@ -360,7 +371,7 @@ export default function PreTestPage() {
                     </div>
                     <div className="mt-6 flex gap-2">
                         <button onClick={handleRetake} className="bg-transparent text-blue-600 dark:text-blue-400 border border-blue-500/20 dark:border-blue-400/20 px-3.5 py-2.5 rounded-lg cursor-pointer hover:bg-blue-50 dark:hover:bg-blue-900/20 transition">Ulangi Pre-test</button>
-                        <Link href="/modul" className="bg-blue-600 hover:bg-blue-700 text-white border-none px-3.5 py-2.5 rounded-lg cursor-pointer">Lihat Semua Modul</Link>
+                        <Link href="/modul" className="bg-blue-600 hover:bg-blue-700 text-white border-none px-3.5 py-2.5 rounded-lg cursor-pointer">Lihat Rekomendasi Modul</Link>
                     </div>
                     <div className="text-sm text-slate-500 dark:text-slate-400 mt-3">Catatan: Hasil ini disimpan secara lokal untuk personalisasi pengalaman belajar.</div>
                 </section>

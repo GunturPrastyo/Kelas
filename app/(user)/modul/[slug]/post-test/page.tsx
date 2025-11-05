@@ -1,12 +1,12 @@
 "use client";
 
 import { useState, useEffect, useCallback, useRef } from "react";
-import { useParams, useRouter } from "next/navigation";
+import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { authFetch } from "@/lib/authFetch";
 import Link from "next/link";
 import { Home, CheckCircle2, Lock, Rocket, Award } from 'lucide-react';
 import hljs from 'highlight.js';
-import 'highlight.js/styles/atom-one-dark.css';
+
 import { useAlert } from "@/context/AlertContext";
 
 interface Question {
@@ -37,6 +37,7 @@ interface TestResult {
 export default function PostTestPage() {
     const params = useParams();
     const router = useRouter();
+    const searchParams = useSearchParams(); // 1. Dapatkan search params
     const slug = params.slug as string;
 
     const [modul, setModul] = useState<Modul | null>(null);
@@ -99,21 +100,26 @@ export default function PostTestPage() {
         if (!slug || !user) return;
 
         const fetchModulAndQuestions = async () => {
+            const isRetake = searchParams.get('retake') === 'true'; // 2. Cek apakah ini mode retake
+
             try {
                 setLoading(true);
                 const modulRes = await authFetch(`${process.env.NEXT_PUBLIC_API_URL}/api/modul/user-view/${slug}`);
                 if (!modulRes.ok) throw new Error("Gagal memuat data modul.");
                 const modulData: Modul = await modulRes.json();
                 setModul(modulData);
-
-                // Cek apakah user sudah pernah menyelesaikan post-test ini
-                const resultRes = await authFetch(`${process.env.NEXT_PUBLIC_API_URL}/api/results/latest-by-type/post-test-modul?modulId=${modulData._id}`);
-                if (resultRes.ok) {
-                    const latestResult = await resultRes.json();
-                    if (latestResult) {
-                        setResult(latestResult);
-                        setLoading(false);
-                        return;
+                
+                // 3. Lewati pengecekan hasil jika sedang retake
+                if (!isRetake) {
+                    // Cek apakah user sudah pernah menyelesaikan post-test ini
+                    const resultRes = await authFetch(`${process.env.NEXT_PUBLIC_API_URL}/api/results/latest-by-type/post-test-modul?modulId=${modulData._id}`);
+                    if (resultRes.ok) {
+                        const latestResult = await resultRes.json();
+                        if (latestResult) {
+                            setResult(latestResult);
+                            setLoading(false);
+                            return;
+                        }
                     }
                 }
 
@@ -153,7 +159,7 @@ export default function PostTestPage() {
         };
 
         fetchModulAndQuestions();
-    }, [slug, user]);
+    }, [slug, user, searchParams]); // Tambahkan searchParams sebagai dependency
 
     useEffect(() => {
         if (result || loading || error || questions.length === 0) return;
@@ -192,7 +198,7 @@ export default function PostTestPage() {
             title: 'Ulangi Post-Test?',
             message: 'Apakah Anda yakin ingin mengulang post-test untuk modul ini? Hasil sebelumnya akan tetap tersimpan jika skor Anda saat ini lebih rendah.',
             confirmText: 'Ya, Ulangi',
-            onConfirm: () => window.location.reload(),
+            onConfirm: () => router.push(`/modul/${slug}/post-test?retake=true`), // 4. Arahkan ke URL dengan param retake
         });
     };
 
