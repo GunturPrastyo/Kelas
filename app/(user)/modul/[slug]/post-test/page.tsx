@@ -268,9 +268,12 @@ export default function PostTestPage() {
         return (
             <div className="max-w-7xl mx-auto p-5 font-sans">
                 <nav className="flex mb-6" aria-label="Breadcrumb">
-                    <ol className="inline-flex items-center space-x-1 md:space-x-2 rtl:space-x-reverse text-slate-700 dark:text-slate-300">
+                    <ol className="inline-flex items-center md:space-x-2 rtl:space-x-reverse text-slate-700 dark:text-slate-300 gap-1">
                         <li className="inline-flex items-center">
-                            <Link href="/modul" className="inline-flex items-center text-sm font-medium hover:text-blue-600 dark:hover:text-blue-400">Modul</Link>
+                            <Link href="/modul" className="inline-flex items-center text-sm font-medium hover:text-blue-600 dark:hover:text-blue-400">
+                                <Home className="w-4 h-4 me-2" />
+                                Modul
+                            </Link>
                         </li>
                         <li><div className="flex items-center"><svg className="rtl:rotate-180 w-3 h-3 text-slate-400 mx-1" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 6 10"><path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="m1 9 4-4-4-4" /></svg><Link href={`/modul/${slug}`} className="ms-1 text-sm font-medium hover:text-blue-600 md:ms-2 dark:hover:text-blue-400">{modul?.title || "..."}</Link></div></li>
                         <li aria-current="page"><div className="flex items-center"><svg className="rtl:rotate-180 w-3 h-3 text-slate-400 mx-1" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 6 10"><path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="m1 9 4-4-4-4" /></svg><span className="ms-1 text-sm font-medium text-gray-800 dark:text-gray-200 md:ms-2">Hasil Post Test</span></div></li>
@@ -318,9 +321,12 @@ export default function PostTestPage() {
     return (
         <div className="max-w-7xl mx-auto p-5 font-sans">
             <nav className="flex mb-6" aria-label="Breadcrumb">
-                <ol className="inline-flex items-center space-x-1 md:space-x-2 rtl:space-x-reverse text-slate-700 dark:text-slate-300">
+                <ol className="inline-flex items-center md:space-x-2 rtl:space-x-reverse text-slate-700 dark:text-slate-300 gap-1">
                     <li className="inline-flex items-center">
-                        <Link href="/modul" className="inline-flex items-center text-sm font-medium hover:text-blue-600 dark:hover:text-blue-400">Modul</Link>
+                        <Link href="/modul" className="inline-flex items-center text-sm font-medium hover:text-blue-600 dark:hover:text-blue-400">
+                            <Home className="w-4 h-4 me-2" />
+                            Modul
+                        </Link>
                     </li>
                     <li><div className="flex items-center"><svg className="rtl:rotate-180 w-3 h-3 text-slate-400 mx-1" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 6 10"><path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="m1 9 4-4-4-4" /></svg><Link href={`/modul/${slug}`} className="ms-1 text-sm font-medium hover:text-blue-600 md:ms-2 dark:hover:text-blue-400">{modul?.title || "..."}</Link></div></li>
                     <li aria-current="page"><div className="flex items-center"><svg className="rtl:rotate-180 w-3 h-3 text-slate-400 mx-1" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 6 10"><path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="m1 9 4-4-4-4" /></svg><span className="ms-1 text-sm font-medium text-gray-800 dark:text-gray-200 md:ms-2">Post Test Akhir</span></div></li>
