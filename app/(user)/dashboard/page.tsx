@@ -6,7 +6,8 @@ import Image from "next/image";
 import Link from "next/link"
 import { authFetch } from "@/lib/authFetch";
 import ModuleList from "@/components/ModuleList"
-import { BarChart2, ClipboardCheck, Clock, TrendingUp, Target } from "lucide-react";
+import { BarChart2, ClipboardCheck, Clock, TrendingUp, Target, PlayCircle } from "lucide-react";
+
 
 type ModuleStatus = 'Selesai' | 'Berjalan' | 'Terkunci' | 'Belum Mulai';
 
@@ -83,7 +84,7 @@ const useCountUp = (end: number, duration: number = 1500, start: boolean = true)
       const elapsed = timestamp - startTimeRef.current;
       const progress = Math.min(elapsed / duration, 1);
       const easedProgress = easeOutExpo(progress);
-      
+
       const currentCount = Math.floor(easedProgress * end);
       setCount(currentCount);
 
@@ -197,7 +198,7 @@ export default function DashboardPage() {
     // Pastikan modul diurutkan berdasarkan 'order' sebelum diproses lebih lanjut
     const sortedModules = [...modules].sort((a, b) => (a.order || 0) - (b.order || 0));
     return sortedModules.map(modul => {
-            const mappedCategory = categoryMap[modul.category as keyof typeof categoryMap];
+      const mappedCategory = categoryMap[modul.category as keyof typeof categoryMap];
       let status: ModuleStatus;
       let isLocked = userLevel === null; // Kunci semua jika belum pre-test
 
@@ -326,10 +327,16 @@ export default function DashboardPage() {
             </div>
 
             {recommendedModule ? (
-              <Link href={`/modul/${recommendedModule.slug}`} className="block p-4 border border-green-200 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-900 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer transition">
-                <h3 className="font-medium text-green-700 dark:text-green-400">
-                  Mulai Modul: {recommendedModule.title}
-                </h3>
+              <Link
+                href={`/modul/${recommendedModule.slug}`}
+                className="block p-4 border border-green-200 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-900 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer transition"
+              >
+                <div className="flex items-center gap-2 mb-1">
+                  <PlayCircle className="w-5 h-5 text-green-600 dark:text-green-400" />
+                  <h3 className="font-bold text-green-700 dark:text-green-400">
+                    Mulai Modul: {recommendedModule.title}
+                  </h3>
+                </div>
                 <p className="text-sm text-gray-600 dark:text-gray-400">
                   Rekomendasi topik untuk dimulai: <b>{recommendedModule.firstTopicTitle || 'Topik pertama'}</b> 🚀
                 </p>
@@ -339,12 +346,14 @@ export default function DashboardPage() {
                 <h3 className="font-medium text-gray-700 dark:text-gray-400">
                   Semua modul rekomendasi telah dimulai!
                 </h3>
-                <p className="text-sm text-gray-600 dark:text-gray-400">Kerja bagus! Lanjutkan progres belajarmu.</p>
+                <p className="text-sm text-gray-600 dark:text-gray-400">
+                  Kerja bagus! Lanjutkan progres belajarmu.
+                </p>
               </div>
             )}
           </div>
 
-        
+
         </div>
       </section>
 
@@ -381,66 +390,65 @@ export default function DashboardPage() {
         {(() => {
           const animatedCompletedModules = useCountUp(analytics.completedModulesCount ?? 0, 1500, isAnalyticsCardInView);
           const animatedAverageScore = useCountUp(parseFloat((analytics.averageScore || 0).toFixed(2)), 1500, isAnalyticsCardInView);
-        return (
-          <div
-            ref={analyticsCardRef}
-            className="max-w-full bg-gradient-to-br from-indigo-200 via-purple-100 to-violet-300 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 p-6 rounded-xl shadow"
-          >
-          <h2 className="text-xl font-semibold mb-6 flex items-center gap-2">
-            <BarChart2 className="w-6 h-6 text-indigo-800 dark:text-indigo-300" />
-            Analitik Belajar
-          </h2>
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 text-center">
-            {/* Modul Selesai */}
-            <div className="p-4 rounded-lg bg-gradient-to-br from-blue-50 to-blue-100 dark:from-gray-700 dark:to-gray-800 shadow-md hover:shadow-lg transition">
-              <div className="flex flex-col items-center gap-2">
-                <div className="bg-blue-600 rounded-full w-10 h-10 flex items-center justify-center">
-                  <Image src="/book.png" width={40} height={40} className="w-full h-full object-contain p-1" alt="" />
-                </div>
-                <p className="text-2xl font-bold text-blue-700 dark:text-blue-400">{animatedCompletedModules ?? 0}</p>
-                <p className="text-sm text-gray-600 dark:text-gray-300">Modul Selesai</p>
-              </div>
-            </div>
-            {/* Rata-rata Skor */}
-            <div className="p-4 rounded-lg bg-gradient-to-br from-green-50 to-green-100 dark:from-gray-700 dark:to-gray-800 shadow-md hover:shadow-lg transition">
-              <div className="flex flex-col items-center gap-2">
-                <div className="bg-green-600 rounded-full w-10 h-10 flex items-center justify-center">
-                  <Image src="/score.png" width={40} height={40} className="w-full h-full object-contain p-1" alt="" />
-                </div>
-                <p className="text-2xl font-bold text-green-700 dark:text-green-400">{loading ? '...' : `${animatedAverageScore ?? 0}%`}</p>
-                <p className="text-sm text-gray-600 dark:text-gray-300">Rata-rata Skor</p>
-              </div>
-            </div>
-            {/* Topik Terlemah */}
-            <Link
-              href={
-                analytics.weakestTopic
-                  ? `/modul/${analytics.weakestTopic.modulSlug}#${analytics.weakestTopic.topicId}`
-                  : "#"
-              }
-              className={`max-w-full p-4 rounded-lg bg-gradient-to-br from-red-50 to-red-100 dark:from-gray-700 dark:to-gray-800 shadow-md transition ${
-                analytics.weakestTopic ? "hover:shadow-lg cursor-pointer" : "cursor-default"
-              }`}
+          return (
+            <div
+              ref={analyticsCardRef}
+              className="max-w-full bg-gradient-to-br from-indigo-200 via-purple-100 to-violet-300 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 p-6 rounded-xl shadow"
             >
-              <div className="flex flex-col items-center justify-center gap-2 break-words h-full text-center">
-                <div className="bg-red-600 rounded-full w-10 h-10 flex items-center justify-center flex-shrink-0">
-                  <Image src="/thunder.png" width={40} height={40} className="w-full h-full object-contain p-1" alt="Topik Terlemah" />
+              <h2 className="text-xl font-semibold mb-6 flex items-center gap-2">
+                <BarChart2 className="w-6 h-6 text-indigo-800 dark:text-indigo-300" />
+                Analitik Belajar
+              </h2>
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 text-center">
+                {/* Modul Selesai */}
+                <div className="p-4 rounded-lg bg-gradient-to-br from-blue-50 to-blue-100 dark:from-gray-700 dark:to-gray-800 shadow-md hover:shadow-lg transition">
+                  <div className="flex flex-col items-center gap-2">
+                    <div className="bg-blue-600 rounded-full w-10 h-10 flex items-center justify-center">
+                      <Image src="/book.png" width={40} height={40} className="w-full h-full object-contain p-1" alt="" />
+                    </div>
+                    <p className="text-2xl font-bold text-blue-700 dark:text-blue-400">{animatedCompletedModules ?? 0}</p>
+                    <p className="text-sm text-gray-600 dark:text-gray-300">Modul Selesai</p>
+                  </div>
                 </div>
-                <div className="min-w-0 w-11/12">
-                  <p
-                    className={`font-bold text-red-700 dark:text-red-400 w-full whitespace-normal ${
-                      (analytics.weakestTopic?.title?.length || 0) > 25 ? 'text-sm' : 'text-md'
+                {/* Rata-rata Skor */}
+                <div className="p-4 rounded-lg bg-gradient-to-br from-green-50 to-green-100 dark:from-gray-700 dark:to-gray-800 shadow-md hover:shadow-lg transition">
+                  <div className="flex flex-col items-center gap-2">
+                    <div className="bg-green-600 rounded-full w-10 h-10 flex items-center justify-center">
+                      <Image src="/score.png" width={40} height={40} className="w-full h-full object-contain p-1" alt="" />
+                    </div>
+                    <p className="text-2xl font-bold text-green-700 dark:text-green-400">{loading ? '...' : `${animatedAverageScore ?? 0}%`}</p>
+                    <p className="text-sm text-gray-600 dark:text-gray-300">Rata-rata Skor</p>
+                  </div>
+                </div>
+                {/* Topik Terlemah */}
+                <Link
+                  href={
+                    analytics.weakestTopic
+                      ? `/modul/${analytics.weakestTopic.modulSlug}#${analytics.weakestTopic.topicId}`
+                      : "#"
+                  }
+                  className={`max-w-full p-4 rounded-lg bg-gradient-to-br from-red-50 to-red-100 dark:from-gray-700 dark:to-gray-800 shadow-md transition ${analytics.weakestTopic ? "hover:shadow-lg cursor-pointer" : "cursor-default"
                     }`}
-                  >
-                    {analytics.weakestTopic?.title || 'Belum ada'}
-                  </p>
-                  <p className="text-sm text-gray-600 dark:text-gray-300">Topik Terlemah</p>
-                </div>
+                >
+                  <div className="flex flex-col items-center justify-center gap-2 break-words h-full text-center">
+                    <div className="bg-red-600 rounded-full w-10 h-10 flex items-center justify-center flex-shrink-0">
+                      <Image src="/thunder.png" width={40} height={40} className="w-full h-full object-contain p-1" alt="Topik Terlemah" />
+                    </div>
+                    <div className="min-w-0 w-11/12">
+                      <p
+                        className={`font-bold text-red-700 dark:text-red-400 w-full whitespace-normal ${(analytics.weakestTopic?.title?.length || 0) > 25 ? 'text-sm' : 'text-md'
+                          }`}
+                      >
+                        {analytics.weakestTopic?.title || 'Belum ada'}
+                      </p>
+                      <p className="text-sm text-gray-600 dark:text-gray-300">Topik Terlemah</p>
+                    </div>
+                  </div>
+                </Link>
               </div>
-            </Link>
-          </div>
-        </div>
-        )})()}
+            </div>
+          )
+        })()}
       </section>
 
       {/* Learning Path - Sekarang dengan data dinamis */}
