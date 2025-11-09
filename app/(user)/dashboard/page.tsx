@@ -262,7 +262,7 @@ export default function DashboardPage() {
         {/* Progres Belajar */}
         <div
           ref={progressCardRef}
-          className="bg-gradient-to-br from-blue-50 to-blue-100 dark:from-gray-900 dark:to-gray-800 p-4 sm:p-5 rounded-xl shadow flex items-center justify-between overflow-hidden"
+          className="bg-gradient-to-br from-blue-100 to-blue-200 dark:from-gray-900 dark:to-gray-800 p-4 sm:p-5 rounded-xl shadow flex items-center justify-between overflow-hidden"
         >
           {/* Konten Teks */}
           <div className="flex flex-col justify-center flex-1 min-w-0">
@@ -294,7 +294,7 @@ export default function DashboardPage() {
         {/* Jam Belajar */}
         <div
           ref={studyTimeCardRef}
-          className="bg-gradient-to-br from-purple-50 to-purple-100 dark:from-gray-900 dark:to-gray-800 p-4 sm:p-5 rounded-xl shadow flex items-center justify-between overflow-hidden"
+          className="bg-gradient-to-br from-purple-100 to-purple-200 dark:from-gray-900 dark:to-gray-800 p-4 sm:p-5 rounded-xl shadow flex items-center justify-between overflow-hidden"
         >
           <div className="flex flex-col justify-center flex-1 min-w-0">
             <div className="flex items-center gap-3 mb-3">
@@ -319,7 +319,7 @@ export default function DashboardPage() {
         </div>
 
         {/* Rekomendasi */}
-        <div className="bg-gradient-to-br from-green-50 to-green-100 dark:from-gray-900 dark:to-gray-800 p-4 sm:p-5 rounded-xl shadow flex items-center justify-between md:col-span-2 lg:col-span-1 overflow-hidden">
+        <div className="bg-gradient-to-br from-green-100 to-green-200 dark:from-gray-900 dark:to-gray-800 p-4 sm:p-5 rounded-xl shadow flex items-center justify-between md:col-span-2 lg:col-span-1 overflow-hidden">
           <div className="flex flex-col justify-center flex-1 min-w-0">
             <div className="flex items-center gap-3 mb-3">
               <Target className="w-6 h-6 text-green-600 dark:text-green-400" />
@@ -365,7 +365,7 @@ export default function DashboardPage() {
       <section className="grid grid-cols-1 lg:grid-cols-2 gap-6">
 
         {/* Pre-Test */}
-        <div className="bg-gradient-to-r from-blue-50 via-indigo-100 to-indigo-200 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 p-4 sm:p-6 rounded-xl shadow flex flex-wrap items-center gap-4 sm:gap-6">
+        <div className="bg-gradient-to-r from-blue-100 via-indigo-200 to-indigo-300 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 p-4 sm:p-6 rounded-xl shadow flex flex-wrap items-center gap-4 sm:gap-6">
           {/* Teks */}
           <div className="flex-1 text-left">
             <h2 className="text-lg sm:text-2xl font-semibold mb-3 flex items-center gap-2">
@@ -393,7 +393,7 @@ export default function DashboardPage() {
           return (
             <div
               ref={analyticsCardRef}
-              className="max-w-full bg-gradient-to-br from-indigo-200 via-purple-100 to-violet-300 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 p-6 rounded-xl shadow"
+              className="max-w-full bg-gradient-to-br from-indigo-200 via-purple-200 to-violet-300 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 p-6 rounded-xl shadow"
             >
               <h2 className="text-xl font-semibold mb-6 flex items-center gap-2">
                 <BarChart2 className="w-6 h-6 text-indigo-800 dark:text-indigo-300" />
@@ -401,7 +401,7 @@ export default function DashboardPage() {
               </h2>
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 text-center">
                 {/* Modul Selesai */}
-                <div className="p-4 rounded-lg bg-gradient-to-br from-blue-50 to-blue-100 dark:from-gray-700 dark:to-gray-800 shadow-md hover:shadow-lg transition">
+                <div className="p-4 rounded-lg bg-gradient-to-br from-blue-100 to-blue-200 dark:from-gray-700 dark:to-gray-800 shadow-md hover:shadow-lg transition">
                   <div className="flex flex-col items-center gap-2">
                     <div className="bg-blue-600 rounded-full w-10 h-10 flex items-center justify-center">
                       <Image src="/book.png" width={40} height={40} className="w-full h-full object-contain p-1" alt="" />
@@ -411,7 +411,7 @@ export default function DashboardPage() {
                   </div>
                 </div>
                 {/* Rata-rata Skor */}
-                <div className="p-4 rounded-lg bg-gradient-to-br from-green-50 to-green-100 dark:from-gray-700 dark:to-gray-800 shadow-md hover:shadow-lg transition">
+                <div className="p-4 rounded-lg bg-gradient-to-br from-green-100 to-green-200 dark:from-gray-700 dark:to-gray-800 shadow-md hover:shadow-lg transition">
                   <div className="flex flex-col items-center gap-2">
                     <div className="bg-green-600 rounded-full w-10 h-10 flex items-center justify-center">
                       <Image src="/score.png" width={40} height={40} className="w-full h-full object-contain p-1" alt="" />
@@ -427,7 +427,7 @@ export default function DashboardPage() {
                       ? `/modul/${analytics.weakestTopic.modulSlug}#${analytics.weakestTopic.topicId}`
                       : "#"
                   }
-                  className={`max-w-full p-4 rounded-lg bg-gradient-to-br from-red-50 to-red-100 dark:from-gray-700 dark:to-gray-800 shadow-md transition ${analytics.weakestTopic ? "hover:shadow-lg cursor-pointer" : "cursor-default"
+                  className={`max-w-full p-4 rounded-lg bg-gradient-to-br from-red-100 to-red-200 dark:from-gray-700 dark:to-gray-800 shadow-md transition ${analytics.weakestTopic ? "hover:shadow-lg cursor-pointer" : "cursor-default"
                     }`}
                 >
                   <div className="flex flex-col items-center justify-center gap-2 break-words h-full text-center">
