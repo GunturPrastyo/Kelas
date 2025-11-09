@@ -397,26 +397,40 @@ export default function DashboardPage() {
       <section className="grid grid-cols-1 lg:grid-cols-2 gap-6">
 
         {/* Pre-Test */}
-        <div className="bg-gradient-to-r from-blue-100 via-indigo-200 to-indigo-300 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 p-4 sm:p-6 rounded-xl shadow flex flex-wrap items-center gap-4 sm:gap-6">
+        <div className="bg-gradient-to-r from-blue-100 via-indigo-200 to-indigo-300 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 p-3 sm:p-6 rounded-xl shadow flex flex-wrap items-center gap-3 sm:gap-6">
           {/* Teks */}
-          <div className="flex-1 text-left">
-            <h2 className="text-lg sm:text-2xl font-semibold mb-3 flex items-center gap-2">
-              <ClipboardCheck className="w-7 h-7 text-blue-700 dark:text-blue-400" />
+          <div className="flex items-center gap-3 mb-3">
+            <div className="bg-blue-400 rounded-lg w-10 h-10 flex items-center justify-center">
+              <Image src="/test-pre-test.png" width={30} height={30} className="w-full h-full object-contain p-1" alt="" />
+            </div>
+            <h2 className="text-base sm:text-2xl font-semibold mb-2 sm:mb-3 flex items-center gap-2">
               Pre-Test Awal
             </h2>
-            <p className="text-gray-600 dark:text-gray-300 mb-4 text-sm sm:text-base">
+            <p className="text-gray-600 dark:text-gray-300 mb-3 text-xs sm:text-base leading-relaxed">
               Ikuti pre-test untuk memetakan level pengetahuanmu. <br />
               <span className="text-red-600 dark:text-red-400 font-medium">Hasil pre-test menentukan jalur belajar wajib.</span>
             </p>
-            <Link href="/pre-test" className="inline-block px-4 sm:px-5 py-2 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition">
+            <Link
+              href="/pre-test"
+              className="inline-block px-3 sm:px-5 py-1.5 sm:py-2 bg-blue-600 text-white text-xs sm:text-sm font-medium rounded-lg hover:bg-blue-700 transition"
+            >
               {hasTakenPreTest ? 'Lihat Hasil' : 'Mulai Pre-Test'}
             </Link>
           </div>
+
           {/* Ilustrasi */}
           <div className="flex-shrink-0 max-w-full">
-            <Image src="/pre-tes.png" alt="Quiz Illustration" width={160} height={160} className="w-24 h-24 sm:w-40 sm:h-40 object-contain" />
+            <Image
+              src="/pre-tes.png"
+              alt="Quiz Illustration"
+              width={160}
+              height={160}
+              className="w-24 h-24 sm:w-40 sm:h-40 object-contain"
+            />
           </div>
         </div>
+
+
 
         {/* Analitik */}
         {(() => {
