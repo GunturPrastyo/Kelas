@@ -349,14 +349,14 @@ export default function DashboardPage() {
                 href={`/modul/${recommendation.continueToModule.moduleSlug}`}
                 className="block p-5 border border-green-200 dark:border-gray-700 rounded-2xl bg-white dark:bg-gray-800 hover:bg-green-50/60 dark:hover:bg-gray-700 cursor-pointer transition-all group shadow-sm hover:shadow-md"
               >
-                <div className="flex items-start gap-4">
+                <div className="flex items-start gap-2">
                   <PlayCircle className="w-8 h-8 text-green-500/70 dark:text-green-500/70 group-hover:text-green-600 dark:group-hover:text-green-400 transition-colors flex-shrink-0 mt-1" />
                   <div className="flex-1 min-w-0">
                     <h3 className="font-semibold text-green-700 dark:text-green-400 group-hover:text-green-800 dark:group-hover:text-green-300 transition-colors">
                       Mulai: {recommendation.continueToModule.moduleTitle}
                     </h3>
 
-                    <p className="text-sm text-gray-600 dark:text-gray-400 mt-2 leading-relaxed">
+                    <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
                       Rekomendasi topik selanjutnya adalah{" "}
                       <span className="font-semibold text-green-700 dark:text-green-400">
                         {recommendation.continueToModule.nextTopic?.title || "Topik pertama"}
