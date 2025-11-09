@@ -454,7 +454,7 @@ export default function DashboardPage() {
               ref={analyticsCardRef}
               className="max-w-full bg-gradient-to-br from-indigo-200 via-purple-200 to-violet-300 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 p-6 rounded-xl shadow"
             >
-              <h2 className="text-xl font-semibold mb-6 flex items-center gap-2">
+              <h2 className="text-xl font-bold mb-6 flex items-center gap-2">
                 <BarChart2 className="w-6 h-6 text-indigo-800 dark:text-indigo-300" />
                 Analitik Belajar
               </h2>
