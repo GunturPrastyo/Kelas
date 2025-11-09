@@ -35,7 +35,7 @@ export default function ModulPage() {
     const [loading, setLoading] = useState(true);
     const [selectedCategory, setSelectedCategory] = useState('');
     const [userLevel, setUserLevel] = useState<UserLevel>(null); // State untuk level pengguna
-    const [recommendation, setRecommendation] = useState({ title: '', description: '', icon: '' });
+    const [recommendation, setRecommendation] = useState({ title: '', description: '', icon: '', bgClass: '', textClass: '' });
     const [user, setUser] = useState<User | null>(null);
     const { searchQuery, setSearchQuery } = useUI(); // Gunakan state global
 
@@ -53,13 +53,31 @@ export default function ModulPage() {
                     const parsedResult = JSON.parse(resultRaw);
                     if (parsedResult.score >= 75) {
                         setUserLevel('lanjut');
-                        setRecommendation({ title: 'Jalur Belajar: Lanjut', description: 'Pemahamanmu sudah kuat. Kamu siap untuk tantangan materi tingkat lanjut!', icon: '/target.png' });
+                        setRecommendation({
+                            title: 'Jalur Belajar: Lanjut',
+                            description: 'Pemahamanmu sudah kuat. Kamu siap untuk tantangan materi tingkat lanjut!',
+                            icon: '/lanjut.png',
+                            bgClass: 'from-green-100 to-emerald-200 dark:from-gray-800 dark:to-emerald-900',
+                            textClass: 'text-green-800 dark:text-green-300'
+                        });
                     } else if (parsedResult.score >= 40) {
                         setUserLevel('menengah');
-                        setRecommendation({ title: 'Jalur Belajar: Menengah', description: 'Dasar-dasarmu sudah cukup. Mari perdalam dengan manipulasi DOM dan event.', icon: '/target.png' });
+                        setRecommendation({
+                            title: 'Jalur Belajar: Menengah',
+                            description: 'Dasar-dasarmu sudah cukup. Mari perdalam dengan manipulasi DOM dan event.',
+                            icon: '/menengah.png',
+                            bgClass: 'from-blue-100 to-sky-200 dark:from-gray-800 dark:to-sky-900',
+                            textClass: 'text-blue-800 dark:text-blue-300'
+                        });
                     } else {
                         setUserLevel('dasar');
-                        setRecommendation({ title: 'Jalur Belajar: Dasar', description: 'Mari kita mulai dari awal untuk membangun fondasi JavaScript yang kokoh.', icon: '/target.png' });
+                        setRecommendation({
+                            title: 'Jalur Belajar: Dasar',
+                            description: 'Mari kita mulai dari awal untuk membangun fondasi JavaScript yang kokoh.',
+                            icon: '/dasar.png',
+                            bgClass: 'from-yellow-100 to-amber-200 dark:from-gray-800 dark:to-amber-900',
+                            textClass: 'text-yellow-800 dark:text-yellow-300'
+                        });
                     }
                 } catch (e) {
                     console.warn('Gagal memuat hasil pre-test untuk personalisasi.', e);
@@ -197,11 +215,11 @@ export default function ModulPage() {
             )}
 
             {userLevel && (
-                <section className="bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800 p-5 rounded-xl shadow-md flex items-center gap-4 mb-6">
-                    <Image src={recommendation.icon} alt="Rekomendasi" width={48} height={48} className="w-12 h-12" />
+                <section className={`bg-gradient-to-br ${recommendation.bgClass} p-5 rounded-xl shadow-md flex items-center gap-4 mb-6`}>
+                    <Image src={recommendation.icon} alt="Rekomendasi" width={64} height={64} className="w-16 h-16" />
                     <div>
-                        <h2 className="text-lg font-semibold text-blue-800 dark:text-blue-300">{recommendation.title}</h2>
-                        <p className="text-sm text-gray-600 dark:text-gray-400">{recommendation.description}</p>
+                        <h2 className={`text-lg font-semibold ${recommendation.textClass}`}>{recommendation.title}</h2>
+                        <p className="text-sm text-gray-700 dark:text-gray-300">{recommendation.description}</p>
                     </div>
                 </section>
             )}
