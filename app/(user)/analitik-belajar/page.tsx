@@ -761,12 +761,9 @@ export default function AnalitikBelajarPage() {
                 </div>
                 <button
                   onClick={() =>
-                    {
-                      const topicId = recommendations.deepenTopic?.topicId;
-                      if (recommendations.deepenTopic?.modulSlug && topicId) {
-                        router.push(`/modul/${recommendations.deepenTopic.modulSlug}#${topicId}`);
-                      }
-                    }
+                    recommendations.deepenTopic?.modulSlug && recommendations.deepenTopic?.topicSlug && router.push(
+                      `/modul/${recommendations.deepenTopic.modulSlug}#${recommendations.deepenTopic.topicId}`
+                    )
                   }
                   className="flex-shrink-0 flex items-center justify-center w-10 h-10 rounded-full bg-blue-500 hover:bg-blue-600 transition text-white shadow-md"
                 >

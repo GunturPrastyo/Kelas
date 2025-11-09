@@ -330,11 +330,11 @@ export default function DashboardPage() {
                 <div className="flex items-center gap-4">
                   <PlayCircle className="w-8 h-8 text-green-500/70 dark:text-green-500/70 group-hover:text-green-600 dark:group-hover:text-green-400 transition-colors flex-shrink-0" />
                   <div className="flex-1 min-w-0">
-                    <h3 className="font-medium text-green-700 dark:text-green-400 group-hover:text-green-800 dark:group-hover:text-green-300 transition-colors truncate">
+                    <h3 className="font-medium text-green-700 dark:text-green-400 group-hover:text-green-800 dark:group-hover:text-green-300 transition-colors">
                       Mulai: {recommendedModule.title}
                     </h3>
-                    <p className="text-sm text-gray-600 dark:text-gray-400 mt-1 truncate">
-                      Topik: <b>{recommendedModule.firstTopicTitle || 'Topik pertama'}</b> 🚀
+                    <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+                      <b>{recommendedModule.firstTopicTitle || 'Topik pertama'}</b> 🚀
                     </p>
                   </div>
                 </div>
