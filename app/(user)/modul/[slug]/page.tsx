@@ -626,7 +626,7 @@ export default function ModulDetailPage() {
 
     // --- RENDER MAIN PAGE ---
     return (
-        <div className="max-w-7xl mx-auto p-5 pt-0">
+        <div className="max-w-7xl mx-auto px-1.5 sm:px-5 pb-5 pt-0">
             {/* Breadcrumb */}
             <nav className="flex mb-6" aria-label="Breadcrumb">
                 <ol className="inline-flex items-center space-x-1 md:space-x-2 rtl:space-x-reverse text-slate-700 dark:text-slate-300">
