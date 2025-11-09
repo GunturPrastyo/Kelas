@@ -6,7 +6,7 @@ import Image from "next/image";
 import Link from "next/link"
 import { authFetch } from "@/lib/authFetch";
 import ModuleList from "@/components/ModuleList"
-import { BarChart2, ClipboardCheck, Clock, TrendingUp, Target, PlayCircle } from "lucide-react";
+import { BarChart2, ClipboardCheck, Clock, TrendingUp, Target, PlayCircle, Rocket} from "lucide-react";
 
 
 type ModuleStatus = 'Selesai' | 'Berjalan' | 'Terkunci' | 'Belum Mulai';
