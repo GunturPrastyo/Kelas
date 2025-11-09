@@ -397,19 +397,31 @@ export default function DashboardPage() {
       <section className="grid grid-cols-1 lg:grid-cols-2 gap-6">
 
         {/* Pre-Test */}
-        <div className="bg-gradient-to-r from-blue-100 via-indigo-200 to-indigo-300 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 p-3 sm:p-6 rounded-xl shadow flex flex-wrap items-center gap-3 sm:gap-6">
-          {/* Teks */}
-          <div className="flex items-center gap-3 mb-3">
-            <div className="bg-blue-400 rounded-lg w-10 h-10 flex items-center justify-center">
-              <Image src="/test-pre-test.png" width={30} height={30} className="w-full h-full object-contain p-1" alt="" />
+        <div className="bg-gradient-to-r from-blue-100 via-indigo-200 to-indigo-300 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 p-3 sm:p-6 rounded-xl shadow flex flex-wrap items-center justify-between gap-4 sm:gap-6">
+          {/* Bagian teks */}
+          <div className="flex-1 text-left">
+            <div className="flex items-center gap-3 mb-2">
+              <div className="bg-blue-500 rounded-lg w-10 h-10 flex items-center justify-center flex-shrink-0">
+                <Image
+                  src="/test-pre-test.png"
+                  width={30}
+                  height={30}
+                  className="w-full h-full object-contain p-1"
+                  alt="Ikon Pre-Test"
+                />
+              </div>
+              <h2 className="text-base sm:text-2xl font-semibold text-gray-900 dark:text-white">
+                Pre-Test Awal
+              </h2>
             </div>
-            <h2 className="text-base sm:text-2xl font-semibold mb-2 sm:mb-3 flex items-center gap-2">
-              Pre-Test Awal
-            </h2>
+
             <p className="text-gray-600 dark:text-gray-300 mb-3 text-xs sm:text-base leading-relaxed">
               Ikuti pre-test untuk memetakan level pengetahuanmu. <br />
-              <span className="text-red-600 dark:text-red-400 font-medium">Hasil pre-test menentukan jalur belajar wajib.</span>
+              <span className="text-red-600 dark:text-red-400 font-medium">
+                Hasil pre-test menentukan jalur belajar wajib.
+              </span>
             </p>
+
             <Link
               href="/pre-test"
               className="inline-block px-3 sm:px-5 py-1.5 sm:py-2 bg-blue-600 text-white text-xs sm:text-sm font-medium rounded-lg hover:bg-blue-700 transition"
@@ -419,7 +431,7 @@ export default function DashboardPage() {
           </div>
 
           {/* Ilustrasi */}
-          <div className="flex-shrink-0 max-w-full">
+          <div className="flex-shrink-0 w-full sm:w-auto flex justify-center sm:justify-end">
             <Image
               src="/pre-tes.png"
               alt="Quiz Illustration"
@@ -429,6 +441,7 @@ export default function DashboardPage() {
             />
           </div>
         </div>
+
 
 
 
