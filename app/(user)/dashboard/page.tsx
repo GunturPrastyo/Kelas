@@ -337,13 +337,18 @@ export default function DashboardPage() {
                     Mulai Modul: {recommendedModule.title}
                   </h3>
                 </div>
-                <p className="text-sm text-gray-600 dark:text-gray-400">
-                  Rekomendasi topik untuk dimulai: <b>{recommendedModule.firstTopicTitle || 'Topik pertama'}</b><Rocket className="w-4 h-4 text-green-500 dark:text-green-400" />
-                </p>
+
+                <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
+                  <span className="font-semibold">
+                    Rekomendasi topik untuk dimulai:
+                  </span>
+                  <span>{recommendedModule.firstTopicTitle || 'Topik pertama'}</span>
+                  <Rocket className="w-4 h-4 text-gray-500 dark:text-gray-400" />
+                </div>
               </Link>
             ) : (
               <div className="p-4 border border-gray-200 dark:border-gray-700 rounded-lg bg-white/50 dark:bg-gray-900/50">
-                <h3 className="font-medium text-gray-700 dark:text-gray-400">
+                <h3 className="font-bold text-gray-700 dark:text-gray-400">
                   Semua modul rekomendasi telah dimulai!
                 </h3>
                 <p className="text-sm text-gray-600 dark:text-gray-400">
@@ -352,13 +357,8 @@ export default function DashboardPage() {
               </div>
             )}
           </div>
-
-
         </div>
       </section>
-
-
-
 
 
       {/* Pre-Test + Analitik */}
