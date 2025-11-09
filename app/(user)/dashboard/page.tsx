@@ -426,7 +426,7 @@ export default function DashboardPage() {
                 <div className="bg-red-600 rounded-full w-10 h-10 flex items-center justify-center flex-shrink-0">
                   <Image src="/thunder.png" width={40} height={40} className="w-full h-full object-contain p-1" alt="Topik Terlemah" />
                 </div>
-                <div className="min-w-0 w-full">
+                <div className="min-w-0 w-11/12">
                   <p
                     className={`font-bold text-red-700 dark:text-red-400 w-full whitespace-normal ${
                       (analytics.weakestTopic?.title?.length || 0) > 25 ? 'text-sm' : 'text-md'
