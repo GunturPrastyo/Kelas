@@ -139,11 +139,11 @@ export default function DashboardPage() {
             </div>
             {/* Topik Terlemah */}
             <div className="max-w-full shadow-lg p-4 rounded-lg bg-gradient-to-br from-red-50 to-red-100 dark:from-gray-700 dark:to-gray-800 shadow hover:shadow-md transition">
-              <div className="flex flex-col items-center gap-2 break-words">
+              <div className="flex flex-col items-center justify-center gap-2 h-full">
                 <div className="bg-red-600 rounded-full w-10 h-10 flex items-center justify-center">
                   <Image src="/thunder.png" width={40} height={40} className="w-full h-full object-contain p-1" alt="" />
                 </div>
-                <p className="text-md font-bold text-red-700 dark:text-red-400">DOM Manipulation</p>
+                <p className="text-md font-bold text-red-700 dark:text-red-400 text-center break-words min-h-[2.5rem] flex items-center">DOM Manipulation</p>
                 <p className="text-sm text-gray-600 dark:text-gray-300">Topik Terlemah</p>
               </div>
             </div>

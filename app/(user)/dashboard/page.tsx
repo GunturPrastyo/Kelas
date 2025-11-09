@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useMemo, useRef } from "react";
 import { useUI } from "@/context/UIContext";
-import Image from "next/image"
+import Image from "next/image";
 import Link from "next/link"
 import { authFetch } from "@/lib/authFetch";
 import ModuleList from "@/components/ModuleList"
@@ -27,7 +27,13 @@ interface Module {
 
 interface AnalyticsData {
   averageScore: number;
-  weakestTopic: { title: string } | null;
+  weakestTopic: {
+    title: string;
+    topicId: string;
+    modulSlug: string;
+    topicSlug: string;
+    score: number;
+  } | null;
   completedModulesCount: number;
 }
 
@@ -406,15 +412,26 @@ export default function DashboardPage() {
               </div>
             </div>
             {/* Topik Terlemah */}
-            <div className="max-w-full p-4 rounded-lg bg-gradient-to-br from-red-50 to-red-100 dark:from-gray-700 dark:to-gray-800 shadow-md hover:shadow-lg transition">
-              <div className="flex flex-col items-center justify-center gap-2 break-words h-full">
-                <div className="bg-red-600 rounded-full w-10 h-10 flex items-center justify-center">
-                  <Image src="/thunder.png" width={40} height={40} className="w-full h-full object-contain p-1" alt="" />
+            <Link
+              href={
+                analytics.weakestTopic
+                  ? `/modul/${analytics.weakestTopic.modulSlug}#${analytics.weakestTopic.topicId}`
+                  : "#"
+              }
+              className={`max-w-full p-4 rounded-lg bg-gradient-to-br from-red-50 to-red-100 dark:from-gray-700 dark:to-gray-800 shadow-md transition ${
+                analytics.weakestTopic ? "hover:shadow-lg cursor-pointer" : "cursor-default"
+              }`}
+            >
+              <div className="flex flex-col items-center justify-center gap-2 break-words h-full text-center">
+                <div className="bg-red-600 rounded-full w-10 h-10 flex items-center justify-center flex-shrink-0">
+                  <Image src="/thunder.png" width={40} height={40} className="w-full h-full object-contain p-1" alt="Topik Terlemah" />
                 </div>
-                <p className="text-md font-bold text-red-700 dark:text-red-400 truncate w-full">{analytics.weakestTopic?.title || 'Belum ada'}</p>
-                <p className="text-sm text-gray-600 dark:text-gray-300">Topik Terlemah</p>
+                <div className="min-w-0">
+                  <p className="text-md font-bold text-red-700 dark:text-red-400 truncate w-full">{analytics.weakestTopic?.title || 'Belum ada'}</p>
+                  <p className="text-sm text-gray-600 dark:text-gray-300">Topik Terlemah</p>
+                </div>
               </div>
-            </div>
+            </Link>
           </div>
         </div>
         )})()}
