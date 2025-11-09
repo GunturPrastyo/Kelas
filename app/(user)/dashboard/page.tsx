@@ -38,6 +38,16 @@ interface AnalyticsData {
   completedModulesCount: number;
 }
 
+interface RecommendationData {
+  continueToModule: {
+    moduleTitle: string;
+    moduleSlug: string;
+    nextTopic: {
+      title: string;
+    } | null;
+  } | null;
+}
+
 // Opsi untuk useInView, termasuk properti kustom `triggerOnce`
 interface InViewOptions extends IntersectionObserverInit {
   triggerOnce?: boolean;
@@ -116,6 +126,10 @@ export default function DashboardPage() {
     weakestTopic: null,
     completedModulesCount: 0,
   });
+  const [recommendation, setRecommendation] = useState<RecommendationData>({
+    continueToModule: null,
+  });
+
 
   useEffect(() => {
     const fetchDashboardData = async () => {
@@ -123,11 +137,12 @@ export default function DashboardPage() {
         setLoading(true);
 
         // Mengambil semua data yang dibutuhkan secara paralel
-        const [preTestRes, modulesRes, studyTimeRes, analyticsRes] = await Promise.all([
+        const [preTestRes, modulesRes, studyTimeRes, analyticsRes, recommendationsRes] = await Promise.all([
           authFetch(`${process.env.NEXT_PUBLIC_API_URL}/api/results/latest-by-type/pre-test-global`),
           authFetch(`${process.env.NEXT_PUBLIC_API_URL}/api/modul/progress`),
           authFetch(`${process.env.NEXT_PUBLIC_API_URL}/api/results/study-time`),
           authFetch(`${process.env.NEXT_PUBLIC_API_URL}/api/results/analytics`),
+          authFetch(`${process.env.NEXT_PUBLIC_API_URL}/api/results/recommendations`), // <-- Fetch rekomendasi
         ]);
 
         // Memproses data pre-test
@@ -180,6 +195,14 @@ export default function DashboardPage() {
           }));
         } else {
           console.error(`Error fetching analytics: ${analyticsRes.status} ${analyticsRes.statusText}`);
+        }
+
+        // Memproses data rekomendasi
+        if (recommendationsRes.ok) {
+          const data = await recommendationsRes.json();
+          setRecommendation(data);
+        } else {
+          console.error(`Error fetching recommendations: ${recommendationsRes.status} ${recommendationsRes.statusText}`);
         }
 
       } catch (error) {
@@ -237,13 +260,6 @@ export default function DashboardPage() {
     if (totalAllTopics === 0) return 0;
     return Math.round((totalCompletedTopics / totalAllTopics) * 100);
   }, [modules]);
-
-  const recommendedModule = useMemo(() => {
-    if (!userLevel) return null;
-    const categoryMap = { mudah: 'dasar', sedang: 'menengah', sulit: 'lanjut' };
-    // Cari modul pertama yang sesuai level dan belum dimulai
-    return personalizedModules.find(m => categoryMap[m.category as keyof typeof categoryMap] === userLevel && m.status === 'Belum Mulai');
-  }, [personalizedModules, userLevel]);
 
   // --- Inisialisasi hook untuk setiap kartu ---
   const [progressCardRef, isProgressCardInView] = useInView({ threshold: 0.5, triggerOnce: true });
@@ -326,20 +342,22 @@ export default function DashboardPage() {
               <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Rekomendasi</h2>
             </div>
 
-            {recommendedModule ? (
+            {recommendation.continueToModule ? (
               <Link
-                href={`/modul/${recommendedModule.slug}`}
-                className="block p-4 border border-green-200 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-900 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer transition"
+                href={`/modul/${recommendation.continueToModule.moduleSlug}`}
+                className="block p-4 border border-green-200 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 cursor-pointer transition group"
               >
-                <div className="flex items-center gap-2 mb-1">
-                  <PlayCircle className="w-5 h-5 text-green-600 dark:text-green-400" />
-                  <h3 className="font-bold text-green-700 dark:text-green-400">
-                    Mulai Modul: {recommendedModule.title}
-                  </h3>
+                <div className="flex items-center gap-4">
+                  <PlayCircle className="w-8 h-8 text-green-500/70 dark:text-green-500/70 group-hover:text-green-600 dark:group-hover:text-green-400 transition-colors flex-shrink-0" />
+                  <div className="flex-1 min-w-0">
+                    <h3 className="font-medium text-green-700 dark:text-green-400 group-hover:text-green-800 dark:group-hover:text-green-300 transition-colors">
+                      Mulai: {recommendation.continueToModule.moduleTitle}
+                    </h3>
+                    <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+                      <b>{recommendation.continueToModule.nextTopic?.title || 'Topik pertama'}</b> 🚀
+                    </p>
+                  </div>
                 </div>
-                <p className="text-sm text-gray-600 dark:text-gray-400">
-                  Rekomendasi topik untuk dimulai: {recommendedModule.firstTopicTitle || 'Topik pertama'} 
-                </p>
               </Link>
             ) : (
               <div className="p-4 border border-gray-200 dark:border-gray-700 rounded-lg bg-white/50 dark:bg-gray-900/50">
