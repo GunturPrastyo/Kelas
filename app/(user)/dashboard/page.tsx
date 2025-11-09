@@ -339,37 +339,45 @@ export default function DashboardPage() {
           <div className="flex flex-col justify-center flex-1 min-w-0">
             <div className="flex items-center gap-3 mb-3">
               <Target className="w-6 h-6 text-green-600 dark:text-green-400" />
-              <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Rekomendasi</h2>
+              <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
+                Rekomendasi
+              </h2>
             </div>
 
             {recommendation.continueToModule ? (
               <Link
                 href={`/modul/${recommendation.continueToModule.moduleSlug}`}
-                className="block p-4 border border-green-200 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 cursor-pointer transition group"
+                className="block p-4 border border-green-200 dark:border-gray-700 rounded-2xl bg-white dark:bg-gray-800 hover:bg-green-50/60 dark:hover:bg-gray-700 cursor-pointer transition-all group shadow-sm hover:shadow-md"
               >
-                <div className="flex items-center gap-4">
-                  <PlayCircle className="w-8 h-8 text-green-500/70 dark:text-green-500/70 group-hover:text-green-600 dark:group-hover:text-green-400 transition-colors flex-shrink-0" />
+                <div className="flex items-start gap-4">
+                  <PlayCircle className="w-8 h-8 text-green-500/70 dark:text-green-500/70 group-hover:text-green-600 dark:group-hover:text-green-400 transition-colors flex-shrink-0 mt-1" />
                   <div className="flex-1 min-w-0">
-                    <h3 className="font-medium text-green-700 dark:text-green-400 group-hover:text-green-800 dark:group-hover:text-green-300 transition-colors">
+                    <h3 className="font-semibold text-green-700 dark:text-green-400 group-hover:text-green-800 dark:group-hover:text-green-300 transition-colors">
                       Mulai: {recommendation.continueToModule.moduleTitle}
                     </h3>
-                    <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
-                      <b>{recommendation.continueToModule.nextTopic?.title || 'Topik pertama'}</b> 🚀
+
+                    <p className="text-sm text-gray-600 dark:text-gray-400 mt-1 flex items-center flex-wrap gap-1">
+                      Rekomendasi topik selanjutnya adalah{" "}
+                      <span className="font-semibold text-green-700 dark:text-green-400">
+                        {recommendation.continueToModule.nextTopic?.title || "Topik pertama"}
+                      </span>
+                      <Rocket className="w-4 h-4 text-gray-500 dark:text-gray-400" />
                     </p>
                   </div>
                 </div>
               </Link>
             ) : (
-              <div className="p-4 border border-gray-200 dark:border-gray-700 rounded-lg bg-white/50 dark:bg-gray-900/50">
-                <h3 className="font-semibold text-gray-700 dark:text-gray-400">
-                  Semua modul rekomendasi telah dimulai!
+              <div className="p-4 border border-gray-200 dark:border-gray-700 rounded-2xl bg-white/60 dark:bg-gray-900/50 text-center shadow-sm">
+                <h3 className="font-semibold text-gray-700 dark:text-gray-300">
+                  Semua modul rekomendasi telah kamu mulai 🎉
                 </h3>
-                <p className="text-sm text-gray-600 dark:text-gray-400">
-                  Kerja bagus! Lanjutkan progres belajarmu.
+                <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+                  Mantap! Lanjutkan progres belajarmu dan eksplor topik-topik baru yang menantang.
                 </p>
               </div>
             )}
           </div>
+
 
 
         </div>
