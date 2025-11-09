@@ -404,8 +404,8 @@ export default function DashboardPage() {
               <div className="bg-blue-500 rounded-lg w-10 h-10 flex items-center justify-center flex-shrink-0">
                 <Image
                   src="/test-pre-test.png"
-                  width={24}
-                  height={24}
+                  width={28}
+                  height={28}
                   className="object-contain"
                   alt="Ikon Pre-Test"
                 />
@@ -415,7 +415,7 @@ export default function DashboardPage() {
               </h2>
             </div>
             <p className="text-gray-600 dark:text-gray-300 mb-3 text-xs sm:text-sm leading-relaxed">
-              Ikuti pre-test untuk memetakan level pengetahuanmu. Hasilnya akan menentukan jalur belajar yang paling sesuai untukmu.
+              Ikuti pre-test untuk memetakan level pengetahuanmu. <span className="font-medium text-red-600 dark:text-red-500">Hasilnya akan menentukan jalur belajar yang paling sesuai untukmu.</span>
             </p>
             <Link
               href="/pre-test"
@@ -432,7 +432,7 @@ export default function DashboardPage() {
               alt="Quiz Illustration"
               width={140}
               height={120}
-              className="w-24 h-24 sm:w-28 sm:h-28 object-contain"
+              className="w-28 h-28 sm:w-28 sm:h-28 object-contain"
             />
           </div>
         </div>
