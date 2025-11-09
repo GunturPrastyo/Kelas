@@ -622,7 +622,7 @@ export default function AnalitikBelajarPage() {
       </section>
 
       {/* PERBANDINGAN DENGAN KELAS */}
-      <section className="bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-md">
+      <section className="bg-white dark:bg-gray-800 p-4 sm:p-6 rounded-2xl shadow-md">
         <h2 className="font-semibold text-gray-700 dark:text-gray-200 flex items-center gap-2 -mb-5">
           <Users className="w-5 h-5" />
           Perbandingan dengan Rata-rata Kelas
