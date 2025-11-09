@@ -321,8 +321,8 @@ export default function DashboardPage() {
               </div>
               <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Jam Belajar</h2>
             </div>
-            <p className="text-2xl sm:text-3xl font-bold text-purple-700 dark:text-purple-400">{animatedHours} Jam {animatedMinutes} Mnt</p>
-            <p className="text-sm text-gray-600 dark:text-gray-300">
+            <p className="text-xl sm:text-3xl font-bold text-purple-700 dark:text-purple-400">{animatedHours} Jam {animatedMinutes} Mnt</p>
+            <p className="text-xs text-gray-600 dark:text-gray-300">
               Total waktu belajar hingga saat ini
             </p>
           </div>
@@ -358,7 +358,7 @@ export default function DashboardPage() {
                 <div className="flex items-start gap-2">
                   <PlayCircle className="w-8 h-8 text-green-500/70 dark:text-green-500/70 group-hover:text-green-600 dark:group-hover:text-green-400 transition-colors flex-shrink-0 mt-1" />
                   <div className="flex-1 min-w-0">
-                    <h3 className="font-semibold text-green-700 dark:text-green-400 group-hover:text-green-800 dark:group-hover:text-green-300 transition-colors">
+                    <h3 className="font-bold text-green-700 dark:text-green-400 group-hover:text-green-800 dark:group-hover:text-green-300 transition-colors">
                       Mulai: {recommendation.continueToModule.moduleTitle}
                     </h3>
 
