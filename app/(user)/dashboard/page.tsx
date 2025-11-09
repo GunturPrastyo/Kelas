@@ -6,7 +6,7 @@ import Image from "next/image";
 import Link from "next/link"
 import { authFetch } from "@/lib/authFetch";
 import ModuleList from "@/components/ModuleList"
-import { BarChart2, ClipboardCheck, Clock, TrendingUp, Target } from "lucide-react";
+import { BarChart2, ClipboardCheck, Clock, TrendingUp, Target, PlayCircle } from "lucide-react";
 
 type ModuleStatus = 'Selesai' | 'Berjalan' | 'Terkunci' | 'Belum Mulai';
 
@@ -326,11 +326,16 @@ export default function DashboardPage() {
             </div>
 
             {recommendedModule ? (
-              <Link href={`/modul/${recommendedModule.slug}`} className="block p-4 border border-green-200 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-900 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer transition">
-                <h3 className="font-medium text-green-700 dark:text-green-400">
-                  Mulai Modul: {recommendedModule.title}
-                </h3>
-                <p className="text-sm text-gray-600 dark:text-gray-400">
+              <Link href={`/modul/${recommendedModule.slug}`} className="block p-4 border border-green-200 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 cursor-pointer transition group">
+                <div className="flex justify-between items-start">
+                  <div className="flex-1">
+                    <h3 className="font-medium text-green-700 dark:text-green-400 group-hover:text-green-800 dark:group-hover:text-green-300 transition-colors">
+                      Mulai Modul: {recommendedModule.title}
+                    </h3>
+                  </div>
+                  <PlayCircle className="w-6 h-6 text-green-500/70 dark:text-green-500/70 group-hover:text-green-600 dark:group-hover:text-green-400 transition-colors ml-2" />
+                </div>
+                <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
                   Rekomendasi topik untuk dimulai: <b>{recommendedModule.firstTopicTitle || 'Topik pertama'}</b> 🚀
                 </p>
               </Link>
