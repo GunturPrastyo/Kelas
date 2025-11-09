@@ -6,7 +6,7 @@ import Image from "next/image";
 import Link from "next/link"
 import { authFetch } from "@/lib/authFetch";
 import ModuleList from "@/components/ModuleList"
-import { BarChart2, ClipboardCheck, Clock, TrendingUp, Target, PlayCircle, Rocket } from "lucide-react";
+import { BarChart2, ClipboardCheck, Clock, TrendingUp, Target, PlayCircle } from "lucide-react";
 
 
 type ModuleStatus = 'Selesai' | 'Berjalan' | 'Terkunci' | 'Belum Mulai';
@@ -337,16 +337,13 @@ export default function DashboardPage() {
                     Mulai Modul: {recommendedModule.title}
                   </h3>
                 </div>
-                <p className="text-sm text-gray-600 dark:text-gray-400 flex items-center gap-2">
-                  <span className="font-semibold">Rekomendasi topik untuk dimulai:</span>
-                  {recommendedModule.firstTopicTitle || 'Topik pertama'}
-                  <Rocket className="w-4 h-4 text-gray-500 dark:text-gray-400" />
+                <p className="text-sm text-gray-600 dark:text-gray-400">
+                  Rekomendasi topik untuk dimulai: {recommendedModule.firstTopicTitle || 'Topik pertama'} 
                 </p>
               </Link>
-
             ) : (
               <div className="p-4 border border-gray-200 dark:border-gray-700 rounded-lg bg-white/50 dark:bg-gray-900/50">
-                <h3 className="font-medium text-gray-700 dark:text-gray-400">
+                <h3 className="font-semibold text-gray-700 dark:text-gray-400">
                   Semua modul rekomendasi telah dimulai!
                 </h3>
                 <p className="text-sm text-gray-600 dark:text-gray-400">
