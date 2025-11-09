@@ -44,6 +44,7 @@ interface RecommendationData {
     moduleSlug: string;
     nextTopic: {
       title: string;
+      id: string;
     } | null;
   } | null;
 }
@@ -352,7 +353,11 @@ export default function DashboardPage() {
 
             {recommendation.continueToModule ? (
               <Link
-                href={`/modul/${recommendation.continueToModule.moduleSlug}`}
+                href={
+                  recommendation.continueToModule.nextTopic
+                    ? `/modul/${recommendation.continueToModule.moduleSlug}#${recommendation.continueToModule.nextTopic.id}`
+                    : `/modul/${recommendation.continueToModule.moduleSlug}`
+                }
                 className="block p-2 border border-green-200 dark:border-gray-700 rounded-2xl bg-white dark:bg-gray-800 hover:bg-green-50/60 dark:hover:bg-gray-700 cursor-pointer transition-all group shadow-sm hover:shadow-md"
               >
                 <div className="flex items-start gap-2">
@@ -453,29 +458,51 @@ export default function DashboardPage() {
                 <BarChart2 className="w-6 h-6 text-indigo-800 dark:text-indigo-300" />
                 Analitik Belajar
               </h2>
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 text-center">
-                {/* Modul Selesai */}
-                <div className="p-4 rounded-lg bg-gradient-to-br from-blue-100 to-blue-200 dark:from-gray-700 dark:to-gray-800 shadow-md hover:shadow-lg transition">
-                  <div className="flex flex-col items-center gap-2">
-                    <div className="bg-blue-600 rounded-full w-10 h-10 flex items-center justify-center">
-                      <Image src="/book.png" width={40} height={40} className="w-full h-full object-contain p-1" alt="" />
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-6 text-center">
+                {/* Wrapper untuk 2 kartu atas */}
+                <div className="col-span-2 grid grid-cols-2 gap-6">
+                  {/* Modul Selesai */}
+                  <div className="p-4 rounded-lg bg-gradient-to-br from-blue-100 to-blue-200 dark:from-gray-700 dark:to-gray-800 shadow-md hover:shadow-lg transition">
+                    <div className="flex flex-col items-center gap-2">
+                      <div className="bg-blue-600 rounded-full w-10 h-10 flex items-center justify-center">
+                        <Image src="/book.png" width={40} height={40} className="w-full h-full object-contain p-1" alt="" />
+                      </div>
+                      <p className="text-2xl font-bold text-blue-700 dark:text-blue-400">{animatedCompletedModules ?? 0}</p>
+                      <p className="text-sm text-gray-600 dark:text-gray-300">Modul Selesai</p>
                     </div>
-                    <p className="text-2xl font-bold text-blue-700 dark:text-blue-400">{animatedCompletedModules ?? 0}</p>
-                    <p className="text-sm text-gray-600 dark:text-gray-300">Modul Selesai</p>
+                  </div>
+                  {/* Rata-rata Skor */}
+                  <div className="p-4 rounded-lg bg-gradient-to-br from-green-100 to-green-200 dark:from-gray-700 dark:to-gray-800 shadow-md hover:shadow-lg transition">
+                    <div className="flex flex-col items-center gap-2">
+                      <div className="bg-green-600 rounded-full w-10 h-10 flex items-center justify-center">
+                        <Image src="/score.png" width={40} height={40} className="w-full h-full object-contain p-1" alt="" />
+                      </div>
+                      <p className="text-2xl font-bold text-green-700 dark:text-green-400">{loading ? '...' : `${animatedAverageScore ?? 0}%`}</p>
+                      <p className="text-sm text-gray-600 dark:text-gray-300">Rata-rata Skor</p>
+                    </div>
                   </div>
                 </div>
-                {/* Rata-rata Skor */}
-                <div className="p-4 rounded-lg bg-gradient-to-br from-green-100 to-green-200 dark:from-gray-700 dark:to-gray-800 shadow-md hover:shadow-lg transition">
-                  <div className="flex flex-col items-center gap-2">
-                    <div className="bg-green-600 rounded-full w-10 h-10 flex items-center justify-center">
-                      <Image src="/score.png" width={40} height={40} className="w-full h-full object-contain p-1" alt="" />
-                    </div>
-                    <p className="text-2xl font-bold text-green-700 dark:text-green-400">{loading ? '...' : `${animatedAverageScore ?? 0}%`}</p>
-                    <p className="text-sm text-gray-600 dark:text-gray-300">Rata-rata Skor</p>
-                  </div>
-                </div>
+
                 {/* Topik Terlemah */}
                 <Link
+                  href={analytics.weakestTopic ? `/modul/${analytics.weakestTopic.modulSlug}#${analytics.weakestTopic.topicId}` : "#"}
+                  className={`col-span-2 sm:col-span-1 max-w-full p-4 rounded-lg bg-gradient-to-br from-red-100 to-red-200 dark:from-gray-700 dark:to-gray-800 shadow-md transition ${analytics.weakestTopic ? "hover:shadow-lg cursor-pointer" : "cursor-default"}`}
+                >
+                  <div className="flex flex-col items-center justify-center gap-2 break-words h-full text-center">
+                    <div className="bg-red-600 rounded-full w-10 h-10 flex items-center justify-center flex-shrink-0">
+                      <Image src="/thunder.png" width={40} height={40} className="w-full h-full object-contain p-1" alt="Topik Terlemah" />
+                    </div>
+                    <div className="min-w-0 w-11/12">
+                      <p className={`font-bold text-red-700 dark:text-red-400 w-full whitespace-normal ${(analytics.weakestTopic?.title?.length || 0) > 25 ? 'text-sm' : 'text-md'}`}>
+                        {analytics.weakestTopic?.title || 'Belum ada'}
+                      </p>
+                      <p className="text-sm text-gray-600 dark:text-gray-300">Topik Terlemah</p>
+                    </div>
+                  </div>
+                </Link>
+
+                {/* Kartu Topik Terlemah yang lama (sekarang digabung) */}
+                {/* <Link
                   href={
                     analytics.weakestTopic
                       ? `/modul/${analytics.weakestTopic.modulSlug}#${analytics.weakestTopic.topicId}`
@@ -484,21 +511,7 @@ export default function DashboardPage() {
                   className={`max-w-full p-4 rounded-lg bg-gradient-to-br from-red-100 to-red-200 dark:from-gray-700 dark:to-gray-800 shadow-md transition ${analytics.weakestTopic ? "hover:shadow-lg cursor-pointer" : "cursor-default"
                     }`}
                 >
-                  <div className="flex flex-col items-center justify-center gap-2 break-words h-full text-center">
-                    <div className="bg-red-600 rounded-full w-10 h-10 flex items-center justify-center flex-shrink-0">
-                      <Image src="/thunder.png" width={40} height={40} className="w-full h-full object-contain p-1" alt="Topik Terlemah" />
-                    </div>
-                    <div className="min-w-0 w-11/12">
-                      <p
-                        className={`font-bold text-red-700 dark:text-red-400 w-full whitespace-normal ${(analytics.weakestTopic?.title?.length || 0) > 25 ? 'text-sm' : 'text-md'
-                          }`}
-                      >
-                        {analytics.weakestTopic?.title || 'Belum ada'}
-                      </p>
-                      <p className="text-sm text-gray-600 dark:text-gray-300">Topik Terlemah</p>
-                    </div>
-                  </div>
-                </Link>
+                </Link> */}
               </div>
             </div>
           )
