@@ -286,7 +286,7 @@ export default function DashboardPage() {
               <div className="bg-blue-600 rounded-lg w-10 h-10 flex items-center justify-center">
                 <Image src="/progress1.png" width={30} height={30} className="w-full h-full object-contain p-1" alt="" />
               </div>
-              <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Progres Belajar</h2>
+              <h2 className="text-lg font-bold text-gray-900 dark:text-white">Progres Belajar</h2>
             </div>
 
             <div className="flex items-center gap-3">
@@ -319,7 +319,7 @@ export default function DashboardPage() {
               <div className="bg-purple-600 rounded-lg w-10 h-10 flex items-center justify-center">
                 <Image src="/clock2.png" width={30} height={30} className="w-full h-full object-contain p-1" alt="" />
               </div>
-              <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Jam Belajar</h2>
+              <h2 className="text-lg font-bold text-gray-900 dark:text-white">Jam Belajar</h2>
             </div>
             <p className="text-xl sm:text-3xl font-bold text-purple-700 dark:text-purple-400">{animatedHours} Jam {animatedMinutes} Mnt</p>
             <p className="text-xs text-gray-600 dark:text-gray-300">
@@ -345,7 +345,7 @@ export default function DashboardPage() {
               <div className="bg-green-600 rounded-lg w-10 h-10 flex items-center justify-center">
                 <Image src="/target.png" width={30} height={30} className="w-full h-full object-contain p-1" alt="" />
               </div>
-              <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
+              <h2 className="text-lg font-bold text-gray-900 dark:text-white">
                 Rekomendasi
               </h2>
             </div>
@@ -410,7 +410,7 @@ export default function DashboardPage() {
                   alt="Ikon Pre-Test"
                 />
               </div>
-              <h2 className="text-base sm:text-lg font-semibold text-gray-900 dark:text-white">
+              <h2 className="text-base sm:text-lg font-bold text-gray-900 dark:text-white">
                 Pre-Test Awal 
               </h2>
             </div>
