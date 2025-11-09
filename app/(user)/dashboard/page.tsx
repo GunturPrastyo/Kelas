@@ -399,34 +399,30 @@ export default function DashboardPage() {
         {/* Pre-Test */}
         <div className="bg-gradient-to-r from-blue-100 via-indigo-200 to-indigo-300 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 p-4 sm:p-5 rounded-xl shadow flex items-center justify-between gap-4">
           {/* Kiri: teks dan tombol */}
-          <div className="flex items-center gap-3 flex-1">
-            <div className="bg-blue-500 rounded-lg w-12 h-12 sm:w-10 sm:h-10 flex items-center justify-center flex-shrink-0">
-              <Image
-                src="/test-pre-test.png"
-                width={30}
-                height={30}
-                className="w-full h-full object-contain p-1"
-                alt="Ikon Pre-Test"
-              />
-            </div>
-
-            <div className="flex-1">
-              <h2 className="text-base sm:text-lg font-semibold text-gray-900 dark:text-white mb-1">
-                Pre-Test Awal
+          <div className="flex-1">
+            <div className="flex items-center gap-3 mb-2">
+              <div className="bg-blue-500 rounded-lg w-10 h-10 flex items-center justify-center flex-shrink-0">
+                <Image
+                  src="/test-pre-test.png"
+                  width={24}
+                  height={24}
+                  className="object-contain"
+                  alt="Ikon Pre-Test"
+                />
+              </div>
+              <h2 className="text-base sm:text-lg font-semibold text-gray-900 dark:text-white">
+                Pre-Test Awal 
               </h2>
-              <p className="text-gray-600 dark:text-gray-300 mb-3 text-xs sm:text-sm leading-relaxed">
-                Ikuti pre-test untuk memetakan level pengetahuanmu. <br />
-                <span className="text-red-600 dark:text-red-400 font-medium">
-                  Hasil pre-test menentukan jalur belajar wajib.
-                </span>
-              </p>
-              <Link
-                href="/pre-test"
-                className="inline-block px-3 sm:px-5 py-1.5 sm:py-2 bg-blue-600 text-white text-xs sm:text-sm font-medium rounded-lg hover:bg-blue-700 transition"
-              >
-                {hasTakenPreTest ? 'Lihat Hasil' : 'Mulai Pre-Test'}
-              </Link>
             </div>
+            <p className="text-gray-600 dark:text-gray-300 mb-3 text-xs sm:text-sm leading-relaxed">
+              Ikuti pre-test untuk memetakan level pengetahuanmu. Hasilnya akan menentukan jalur belajar yang paling sesuai untukmu.
+            </p>
+            <Link
+              href="/pre-test"
+              className="inline-block px-4 py-2 bg-blue-600 text-white text-xs sm:text-sm font-medium rounded-lg hover:bg-blue-700 transition"
+            >
+              {hasTakenPreTest ? 'Lihat Hasil' : 'Mulai Pre-Test'}
+            </Link>
           </div>
 
           {/* Kanan: ilustrasi */}
