@@ -761,8 +761,8 @@ export default function AnalitikBelajarPage() {
                 </div>
                 <button
                   onClick={() =>
-                    recommendations.deepenTopic?.modulSlug && recommendations.deepenTopic?.topicSlug && router.push(
-                      `/modul/${recommendations.deepenTopic.modulSlug}#${recommendations.deepenTopic.topicId}`
+                    recommendations.deepenTopic?.modulSlug && recommendations.deepenTopic?.topicId && router.push(
+                      `/modul/${recommendations.deepenTopic.modulSlug}#${recommendations.deepenTopic.topicId}` // URL: /modul/{slugModul}#{idTopik}
                     )
                   }
                   className="flex-shrink-0 flex items-center justify-center w-10 h-10 rounded-full bg-blue-500 hover:bg-blue-600 transition text-white shadow-md"
