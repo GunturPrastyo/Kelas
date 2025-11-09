@@ -283,7 +283,9 @@ export default function DashboardPage() {
           {/* Konten Teks */}
           <div className="flex flex-col justify-center flex-1 min-w-0">
             <div className="flex items-center gap-3 mb-3">
-              <TrendingUp className="w-6 h-6 text-blue-600 dark:text-blue-400" />
+              <div className="bg-blue-600 rounded-lg w-10 h-10 flex items-center justify-center">
+                <Image src="/progress1.png" width={30} height={30} className="w-full h-full object-contain p-1" alt="" />
+              </div>
               <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Progres Belajar</h2>
             </div>
 
@@ -314,7 +316,9 @@ export default function DashboardPage() {
         >
           <div className="flex flex-col justify-center flex-1 min-w-0">
             <div className="flex items-center gap-3 mb-3">
-              <Clock className="w-6 h-6 text-purple-600 dark:text-purple-400" />
+              <div className="bg-purple-600 rounded-lg w-10 h-10 flex items-center justify-center">
+                <Image src="/clock2.png" width={30} height={30} className="w-full h-full object-contain p-1" alt="" />
+              </div>
               <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Jam Belajar</h2>
             </div>
             <p className="text-2xl sm:text-3xl font-bold text-purple-700 dark:text-purple-400">{animatedHours} Jam {animatedMinutes} Mnt</p>
@@ -338,7 +342,9 @@ export default function DashboardPage() {
         <div className="bg-gradient-to-br from-green-100 to-green-200 dark:from-gray-900 dark:to-gray-800 p-4 sm:p-5 rounded-xl shadow flex items-center justify-between md:col-span-2 lg:col-span-1 overflow-hidden">
           <div className="flex flex-col justify-center flex-1 min-w-0">
             <div className="flex items-center gap-3 mb-3">
-              <Target className="w-6 h-6 text-green-600 dark:text-green-400" />
+              <div className="bg-green-600 rounded-lg w-10 h-10 flex items-center justify-center">
+                <Image src="/target.png" width={30} height={30} className="w-full h-full object-contain p-1" alt="" />
+              </div>
               <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
                 Rekomendasi
               </h2>
@@ -408,7 +414,7 @@ export default function DashboardPage() {
           </div>
           {/* Ilustrasi */}
           <div className="flex-shrink-0 max-w-full">
-            <Image src="/pre-tes.png" alt="Quiz Illustration" width={160} height={160} className="w-28 h-28 sm:w-40 sm:h-40 object-contain" />
+            <Image src="/pre-tes.png" alt="Quiz Illustration" width={160} height={160} className="w-24 h-24 sm:w-40 sm:h-40 object-contain" />
           </div>
         </div>
 
