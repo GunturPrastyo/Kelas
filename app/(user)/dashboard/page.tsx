@@ -6,7 +6,7 @@ import Image from "next/image";
 import Link from "next/link"
 import { authFetch } from "@/lib/authFetch";
 import ModuleList from "@/components/ModuleList"
-import { BarChart2, ClipboardCheck, Clock, TrendingUp, Target, PlayCircle, Rocket} from "lucide-react";
+import { BarChart2, ClipboardCheck, Clock, TrendingUp, Target, PlayCircle, Rocket } from "lucide-react";
 
 
 type ModuleStatus = 'Selesai' | 'Berjalan' | 'Terkunci' | 'Belum Mulai';
@@ -347,7 +347,7 @@ export default function DashboardPage() {
             {recommendation.continueToModule ? (
               <Link
                 href={`/modul/${recommendation.continueToModule.moduleSlug}`}
-                className="block p-4 border border-green-200 dark:border-gray-700 rounded-2xl bg-white dark:bg-gray-800 hover:bg-green-50/60 dark:hover:bg-gray-700 cursor-pointer transition-all group shadow-sm hover:shadow-md"
+                className="block p-5 border border-green-200 dark:border-gray-700 rounded-2xl bg-white dark:bg-gray-800 hover:bg-green-50/60 dark:hover:bg-gray-700 cursor-pointer transition-all group shadow-sm hover:shadow-md"
               >
                 <div className="flex items-start gap-4">
                   <PlayCircle className="w-8 h-8 text-green-500/70 dark:text-green-500/70 group-hover:text-green-600 dark:group-hover:text-green-400 transition-colors flex-shrink-0 mt-1" />
@@ -356,12 +356,11 @@ export default function DashboardPage() {
                       Mulai: {recommendation.continueToModule.moduleTitle}
                     </h3>
 
-                    <p className="text-sm text-gray-600 dark:text-gray-400 mt-1 flex items-center flex-wrap gap-1">
+                    <p className="text-sm text-gray-600 dark:text-gray-400 mt-2 leading-relaxed">
                       Rekomendasi topik selanjutnya adalah{" "}
                       <span className="font-semibold text-green-700 dark:text-green-400">
                         {recommendation.continueToModule.nextTopic?.title || "Topik pertama"}
-                      </span>
-                      <Rocket className="w-4 h-4 text-gray-500 dark:text-gray-400" />
+                      </span>.
                     </p>
                   </div>
                 </div>
@@ -377,6 +376,7 @@ export default function DashboardPage() {
               </div>
             )}
           </div>
+
 
 
 
