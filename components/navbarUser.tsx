@@ -4,14 +4,9 @@ import { useState, useEffect } from "react"
 import { useTheme } from "next-themes"
 import { usePathname } from "next/navigation"
 import { useUI } from "@/context/UIContext"
-import Avatar from "./Avatar" // 1. Import komponen Avatar
 import Image from "next/image"
 import NotificationBell from "./NotificationBell" // Import komponen notifikasi
-
-interface User {
-  name: string;
-  avatar?: string;
-}
+import UserDropdown from "./UserDropdown" // Import komponen UserDropdown
 
 export default function Navbar() {
   const [mounted, setMounted] = useState(false)
@@ -19,11 +14,8 @@ export default function Navbar() {
   const { isSidebarCollapsed, toggleMobileDrawer, searchQuery, setSearchQuery } = useUI()
   const pathname = usePathname();
   const isAdminPage = pathname.startsWith('/admin');
-  const [user, setUser] = useState<User | null>(null);
 
   useEffect(() => {
-    const userData = localStorage.getItem("user");
-    if (userData) setUser(JSON.parse(userData));
     setMounted(true);
   }, []);
 
@@ -114,16 +106,7 @@ export default function Navbar() {
           <NotificationBell />
         </div>
 
-        {/* Nama user */}
-        {user ? (
-          <>
-            <span className="hidden lg:inline">Halo, <strong>{user.name.split(' ')[0]}</strong></span>
-            {/* 2. Ganti logika lama dengan komponen Avatar yang konsisten */}
-            <Avatar user={user} size={40} />
-          </>
-        ) : (
-          <div className="w-10 h-10 rounded-full bg-gray-200 dark:bg-gray-700 animate-pulse"></div>
-        )}
+        <UserDropdown />
       </div>
     </header>
   )
