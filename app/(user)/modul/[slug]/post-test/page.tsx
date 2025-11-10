@@ -9,7 +9,7 @@ import { authFetch } from '@/lib/authFetch';
 import { useAlert } from '@/context/AlertContext';
 import hljs from 'highlight.js';
 // Impor tema terang sebagai default
-import 'highlight.js/styles/github.css';
+import 'highlight.js/styles/stackoverflow-light.css';
 // Impor tema gelap, yang akan kita aktifkan hanya pada dark mode
 import 'highlight.js/styles/github-dark.css';
 
