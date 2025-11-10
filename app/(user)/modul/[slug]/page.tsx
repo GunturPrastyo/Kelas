@@ -5,6 +5,11 @@ import { useParams } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
 // 1. Import highlight.js dan tema CSS-nya
+import hljs from 'highlight.js';
+// Impor tema terang sebagai default
+import 'highlight.js/styles/stackoverflow-light.css';
+// Impor tema gelap, yang akan kita aktifkan hanya pada dark mode
+import 'highlight.js/styles/github-dark.css';
 import { authFetch } from '@/lib/authFetch'; // <-- Import helper baru
 import { useAlert } from '@/context/AlertContext';
 
@@ -451,6 +456,98 @@ export default function ModulDetailPage() {
         return () => clearInterval(timerInterval);
     }, [activeTest, testStartTime, testResult, submitTest]);
 
+    // useEffect untuk syntax highlighting di modal, sekarang di top-level
+    useEffect(() => {
+        if (questionModalRef.current && currentQuestionForModal) {
+            // Temukan semua blok <pre><code> di dalam area pertanyaan dan terapkan highlight
+            questionModalRef.current.querySelectorAll('pre code').forEach((block) => {
+                hljs.highlightElement(block as HTMLElement);
+            });
+        }
+    }, [activeTest, testIdx, currentQuestionForModal]); // Dependency lebih spesifik
+
+    // --- Add Copy Button to Code Blocks ---
+    useEffect(() => {
+        // Tentukan elemen container: modal tes atau kartu topik
+        const container = activeTest ? questionModalRef.current : (openTopicId ? document.getElementById(`topic-card-${openTopicId}`) : null);
+        if (!container) return;
+
+        const observers: ResizeObserver[] = [];
+
+        const timeoutId = setTimeout(() => {
+            // Cari 'pre' di dalam container yang sudah ditentukan
+            const codeBlocks = container.querySelectorAll('pre');
+
+            codeBlocks.forEach(preElement => {
+                // Cek jika wrapper sudah ada untuk menghindari duplikasi
+                if (preElement.parentElement?.classList.contains('code-block-wrapper')) return;
+
+                // 1. Terapkan Syntax Highlighting
+                const codeElement = preElement.querySelector('code');
+                if (codeElement) {
+                    hljs.highlightElement(codeElement as HTMLElement);
+                }
+
+                const copyButton = document.createElement('button');
+                copyButton.title = 'Salin kode';
+                copyButton.className = 'copy-button absolute top-2 right-2 p-2 bg-gray-700/50 dark:bg-gray-800/60 text-gray-300 rounded-md hover:bg-gray-600 dark:hover:bg-gray-700 transition-all duration-200';
+
+                const copyIcon = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>`;
+                const checkIcon = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>`;
+                copyButton.innerHTML = copyIcon;
+
+                copyButton.addEventListener('click', () => {
+                    const codeToCopy = codeElement ? codeElement.innerText : '';
+
+                    navigator.clipboard.writeText(codeToCopy).then(() => {
+                        copyButton.innerHTML = checkIcon;
+                        copyButton.classList.add('text-green-400');
+                        setTimeout(() => {
+                            copyButton.innerHTML = copyIcon;
+                            copyButton.classList.remove('text-green-400');
+                        }, 2000);
+                    }).catch(err => {
+                        console.error('Gagal menyalin kode:', err);
+                    });
+                });
+
+                // 2. Buat wrapper baru dengan posisi relatif
+                const wrapper = document.createElement('div');
+                wrapper.className = 'code-block-wrapper relative'; // Hapus 'group' karena tidak lagi diperlukan untuk hover
+
+                // 3. Tambahkan tombol salin ke dalam wrapper
+                wrapper.appendChild(copyButton);
+
+                // 4. Pindahkan <pre> ke dalam wrapper, setelah tombol
+                preElement.parentNode?.insertBefore(wrapper, preElement);
+                wrapper.appendChild(preElement);
+
+                // 5. Logika untuk font responsif
+                const observer = new ResizeObserver(entries => {
+                    for (let entry of entries) {
+                        const pre = entry.target as HTMLElement;
+                        // Jika konten lebih lebar dari kontainernya (ada scroll horizontal)
+                        if (pre.scrollWidth > pre.clientWidth) {
+                            pre.classList.add('code-overflow');
+                        } else {
+                            pre.classList.remove('code-overflow');
+                        }
+                    }
+                });
+
+                observer.observe(preElement);
+                observers.push(observer);
+            });
+        }, 500);
+
+        return () => {
+            clearTimeout(timeoutId);
+            observers.forEach(observer => observer.disconnect());
+        };
+ 
+    }, [openTopicId, activeTest, testIdx, currentQuestionForModal]); // Dependensi diperbarui
+
+
 
     // --- Render Logic ---
     if (loading) {
@@ -746,3 +843,13 @@ export default function ModulDetailPage() {
         </div>
     );
 }
+
+const globalStyles = `
+  @media (max-width: 768px) {
+    pre.code-overflow code {
+      font-size: 0.75rem; /* 12px */
+    }
+  }
+`;
+
+if (typeof window !== 'undefined') { const styleSheet = document.createElement("style"); styleSheet.type = "text/css"; styleSheet.innerText = globalStyles; document.head.appendChild(styleSheet); }
