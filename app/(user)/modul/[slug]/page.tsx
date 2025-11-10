@@ -6,8 +6,10 @@ import Link from 'next/link';
 import Image from 'next/image';
 // 1. Import highlight.js dan tema CSS-nya
 import hljs from 'highlight.js';
-import 'highlight.js/styles/github.css'; // Mengganti tema ke GitHub (terang)
-// @ts-ignore
+// Impor tema terang sebagai default
+import 'highlight.js/styles/github.css';
+// Impor tema gelap, yang akan kita aktifkan hanya pada dark mode
+import 'highlight.js/styles/github-dark.css';
 import { authFetch } from '@/lib/authFetch'; // <-- Import helper baru
 import { useAlert } from '@/context/AlertContext';
 
