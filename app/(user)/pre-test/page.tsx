@@ -7,7 +7,7 @@ import Breadcrumb from '@/components/Breadcrumb';
 // 1. Import highlight.js dan tema CSS-nya
 import { authFetch } from '@/lib/authFetch';
 import { useAlert } from '@/context/AlertContext';
-import hljs from 'highlight.js';
+import hljs from 'highlight.js'; 
 import 'highlight.js/styles/atom-one-dark.css'; // Tambahkan impor tema
 
 interface Question {
@@ -439,7 +439,7 @@ export default function PreTestPage() {
                                             }
                                         />
                                         <span
-                                            className="overflow-x-auto whitespace-nowrap flex-1 scrollbar-thin scrollbar-thumb-gray-400 dark:scrollbar-thumb-gray-600"
+                                            className="overflow-x-auto flex-1"
                                             dangerouslySetInnerHTML={{ __html: option }}
                                         ></span>
                                     </label>

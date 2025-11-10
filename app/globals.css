@@ -81,17 +81,17 @@ body {
 }
 
 
-/* --- Syntax Highlighting Customization --- */
-
-/* 1. Atur background untuk container <pre> */
+/* Global Styles for Tiptap/Prose Code Blocks */
 .prose pre {
-  @apply bg-gray-100 dark:bg-gray-800 p-4 rounded-lg my-4 overflow-x-auto;
+  @apply bg-gray-100 text-gray-800 dark:bg-gray-700  dark:text-white p-4 rounded-lg my-4 overflow-x-auto;
 }
 
-/* 2. Jadikan background dari highlight.js transparan */
-.prose pre code.hljs {
-  background: transparent !important; /* Gunakan !important untuk memastikan override */
-  @apply p-0; /* Hapus padding bawaan dari highlight.js */
+.dark .prose pre {
+  @apply bg-gray-400 text-gray-800 dark:bg-gray-700 dark:text-white;
+}
+
+.prose pre code {
+  @apply bg-transparent p-0;
 }
 
 /* Inline code style */
