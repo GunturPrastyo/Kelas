@@ -480,19 +480,9 @@ export default function ModulDetailPage() {
                 // Cek jika wrapper sudah ada untuk menghindari duplikasi
                 if (preElement.parentElement?.classList.contains('code-block-wrapper')) return;
 
-                // 1. Buat wrapper untuk <pre> dan tombol
-                const wrapper = document.createElement('div');
-                wrapper.className = 'code-block-wrapper relative';
-
-                // Pindahkan <pre> ke dalam wrapper
-                preElement.parentNode?.insertBefore(wrapper, preElement);
-                wrapper.appendChild(preElement);
-
-                // 2. Buat tombol salin dengan desain baru
                 const copyButton = document.createElement('button');
                 copyButton.title = 'Salin kode';
                 copyButton.className = 'copy-button absolute top-2 right-2 p-2 bg-gray-700/50 dark:bg-gray-800/60 text-gray-300 rounded-md hover:bg-gray-600 dark:hover:bg-gray-700 transition-all duration-200 opacity-0 group-hover:opacity-100';
-                wrapper.classList.add('group'); // Tambah class 'group' untuk efek hover
 
                 const copyIcon = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>`;
                 const checkIcon = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>`;
@@ -514,7 +504,16 @@ export default function ModulDetailPage() {
                     });
                 });
 
+                // 1. Buat wrapper baru dengan posisi relatif
+                const wrapper = document.createElement('div');
+                wrapper.className = 'code-block-wrapper relative group'; // Tambahkan 'group' untuk efek hover
+
+                // 2. Tambahkan tombol salin ke dalam wrapper
                 wrapper.appendChild(copyButton);
+
+                // 3. Pindahkan <pre> ke dalam wrapper, setelah tombol
+                preElement.parentNode?.insertBefore(wrapper, preElement);
+                wrapper.appendChild(preElement);
 
                 // 3. Logika untuk font responsif
                 const observer = new ResizeObserver(entries => {
