@@ -6,7 +6,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 // 1. Import highlight.js dan tema CSS-nya
 import hljs from 'highlight.js';
-import 'highlight.js/styles/atom-one-dark.css'; // Aktifkan impor tema
+import 'highlight.js/styles/github.css'; // Mengganti tema ke GitHub (terang)
 // @ts-ignore
 import { authFetch } from '@/lib/authFetch'; // <-- Import helper baru
 import { useAlert } from '@/context/AlertContext';
@@ -480,6 +480,12 @@ export default function ModulDetailPage() {
                 // Cek jika wrapper sudah ada untuk menghindari duplikasi
                 if (preElement.parentElement?.classList.contains('code-block-wrapper')) return;
 
+                // 1. Terapkan Syntax Highlighting
+                const codeElement = preElement.querySelector('code');
+                if (codeElement) {
+                    hljs.highlightElement(codeElement as HTMLElement);
+                }
+
                 const copyButton = document.createElement('button');
                 copyButton.title = 'Salin kode';
                 copyButton.className = 'copy-button absolute top-2 right-2 p-2 bg-gray-700/50 dark:bg-gray-800/60 text-gray-300 rounded-md hover:bg-gray-600 dark:hover:bg-gray-700 transition-all duration-200';
@@ -489,7 +495,6 @@ export default function ModulDetailPage() {
                 copyButton.innerHTML = copyIcon;
 
                 copyButton.addEventListener('click', () => {
-                    const codeElement = preElement.querySelector('code');
                     const codeToCopy = codeElement ? codeElement.innerText : '';
 
                     navigator.clipboard.writeText(codeToCopy).then(() => {
@@ -504,18 +509,18 @@ export default function ModulDetailPage() {
                     });
                 });
 
-                // 1. Buat wrapper baru dengan posisi relatif
+                // 2. Buat wrapper baru dengan posisi relatif
                 const wrapper = document.createElement('div');
                 wrapper.className = 'code-block-wrapper relative'; // Hapus 'group' karena tidak lagi diperlukan untuk hover
 
-                // 2. Tambahkan tombol salin ke dalam wrapper
+                // 3. Tambahkan tombol salin ke dalam wrapper
                 wrapper.appendChild(copyButton);
 
-                // 3. Pindahkan <pre> ke dalam wrapper, setelah tombol
+                // 4. Pindahkan <pre> ke dalam wrapper, setelah tombol
                 preElement.parentNode?.insertBefore(wrapper, preElement);
                 wrapper.appendChild(preElement);
 
-                // 3. Logika untuk font responsif
+                // 5. Logika untuk font responsif
                 const observer = new ResizeObserver(entries => {
                     for (let entry of entries) {
                         const pre = entry.target as HTMLElement;
@@ -537,8 +542,8 @@ export default function ModulDetailPage() {
             clearTimeout(timeoutId);
             observers.forEach(observer => observer.disconnect());
         };
-
-    }, [openTopicId, activeTest, testIdx]); // Tambahkan activeTest dan testIdx sebagai dependensi
+ 
+    }, [openTopicId, activeTest, testIdx, currentQuestionForModal]); // Dependensi diperbarui
 
 
 
