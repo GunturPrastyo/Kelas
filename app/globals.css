@@ -81,20 +81,21 @@ body {
 }
 
 
-/* Global Styles for Tiptap/Prose Code Blocks */
-.prose pre {
-  @apply bg-gray-100 text-gray-800 dark:bg-gray-700  dark:text-white p-4 rounded-lg my-4 overflow-x-auto;
-}
+/* === STYLING UNTUK BLOK KODE (PRE & CODE) === */
 
+/* 1. Wrapper <pre> untuk blok kode */
 pre {
   position: relative;
-  border-radius: 0.5rem; /* Sesuaikan dengan tema Anda */
-  overflow: hidden; /* Sembunyikan bagian tombol yang mungkin keluar */
+  @apply bg-gray-100 dark:bg-gray-800 rounded-lg my-4 shadow-inner;
+  /* Hapus overflow-x: auto dari sini agar tidak menyebabkan scroll */
 }
 
-/* 2. Atur code block di dalamnya */
-pre code.hljs {
-  padding: 1.5rem 1rem; /* Beri ruang lebih untuk tombol */
+/* 2. Elemen <code> di dalam <pre> */
+pre > code {
+  @apply block p-4 text-sm;
+  padding-top: 2.5rem; /* Beri ruang di atas untuk tombol "Salin" */
+  
+  /* Ini adalah kunci untuk wrapping dan mencegah overflow */
   white-space: pre-wrap;   /* Membuat baris kode yang panjang otomatis ke bawah */
   word-break: break-all;   /* Memaksa pemecahan kata jika sangat panjang */
   overflow-x: hidden;      /* Sembunyikan scroll horizontal */
@@ -104,7 +105,7 @@ pre code.hljs {
 .copy-code-button {
   position: absolute;
   top: 0.5rem;
-  right: 0.5rem;
+  right: 0.75rem;
   padding: 0.25rem 0.5rem;
   font-size: 0.75rem;
   color: #E5E7EB; /* Teks abu-abu muda */
@@ -129,15 +130,17 @@ pre:hover .copy-code-button {
     background-color: #1F2937;
 }
 
-.dark .prose pre {
-  @apply bg-gray-400 text-gray-800 dark:bg-gray-700 dark:text-white;
+/* 4. Penyesuaian untuk layar kecil (mobile) */
+@media (max-width: 640px) {
+  pre > code {
+    @apply text-xs; /* Perkecil ukuran font kode di mobile */
+  }
 }
 
-.prose pre code {
-  @apply bg-transparent p-0;
-}
-
-/* Inline code style */
+/* 5. Styling untuk kode inline (bukan di dalam blok <pre>) */
 .prose code:not(pre > code) {
   @apply bg-gray-200 dark:bg-gray-700 text-red-600 dark:text-red-400 font-mono text-sm px-1.5 py-0.5 rounded-md;
 }
+
+/* Pastikan Tiptap/Prose menggunakan style yang sama */
+.prose pre { @apply p-0; } /* Reset padding bawaan prose */
