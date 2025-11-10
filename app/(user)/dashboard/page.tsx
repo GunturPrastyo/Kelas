@@ -523,7 +523,9 @@ export default function DashboardPage() {
         <div className="text-center p-8">Memuat modul...</div>
       ) : (
         // Gabungkan semua modul ke dalam satu section "Jalur Belajar"
-        <ModuleList title="Jalur Pembelajaran" allModules={personalizedModules} filter={() => true} />
+        <section className="mt-6 p-4 sm:p-6 bg-gradient-to-b from-slate-50 to-slate-100 dark:from-gray-800 dark:to-gray-900 rounded-xl shadow">
+          <ModuleList title="Jalur Pembelajaran" allModules={personalizedModules} filter={() => true} />
+        </section>
       )}
     </>
   )
