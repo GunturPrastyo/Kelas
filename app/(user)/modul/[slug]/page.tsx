@@ -8,7 +8,7 @@ import Image from 'next/image';
 import hljs from 'highlight.js';
 // @ts-ignore
 import { authFetch } from '@/lib/authFetch'; // <-- Import helper baru
-import 'highlight.js/styles/atom-one-dark.css'; 
+// import 'highlight.js/styles/atom-one-dark.css';
 import { useAlert } from '@/context/AlertContext';
 
 import TopicContent from '@/components/TopicContent';
@@ -85,7 +85,7 @@ export default function ModulDetailPage() {
     const { showAlert } = useAlert();
     const persistTimeoutRef = useRef<NodeJS.Timeout | null>(null);
     const studyTimeTrackerRef = useRef<{ [topicId: string]: number }>({});
-    
+
     // Hooks untuk modal post-test dipindahkan ke top-level
     const questionModalRef = useRef<HTMLDivElement>(null);
     const currentQuestionForModal = activeTest ? activeTest.questions[testIdx] : null;
@@ -186,8 +186,8 @@ export default function ModulDetailPage() {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                topikId: topicId,
-                durationInSeconds: durationInSeconds,
+                    topikId: topicId,
+                    durationInSeconds: durationInSeconds,
                 }),
                 keepalive: true, // Ini penting agar request tetap berjalan saat halaman ditutup
             }).catch(err => console.warn("Gagal mengirim log waktu belajar:", err));
@@ -254,7 +254,7 @@ export default function ModulDetailPage() {
 
         setTestResult(null);
         setActiveTest(topik);
-        
+
         // Jika tidak mengulang (retake=false) DAN topik sudah selesai, langsung tampilkan skor.
         if (!retake && topik.isCompleted) {
             await viewScore(topik);
@@ -279,9 +279,9 @@ export default function ModulDetailPage() {
                     setTestIdx(0);
                 }
             } else {
-                 // Jika tidak ada progress (404) atau error lain, mulai dari awal
-                 setTestAnswers({});
-                 setTestIdx(0);
+                // Jika tidak ada progress (404) atau error lain, mulai dari awal
+                setTestAnswers({});
+                setTestIdx(0);
             }
         } catch (err) {
             console.warn('Gagal memuat progress post-test dari server', err);
@@ -386,10 +386,10 @@ export default function ModulDetailPage() {
                     const updatedTopics = prevModul.topics.map(t => t._id === activeTest._id ? { ...t, isCompleted: true } : t);
                     const currentTopicIndex = updatedTopics.findIndex(t => t._id === activeTest._id);
                     const nextTopic = updatedTopics[currentTopicIndex + 1];
-                    
+
                     const newCompletedCount = updatedTopics.filter(t => t.isCompleted).length;
                     const newProgress = Math.round((newCompletedCount / updatedTopics.length) * 100);
-                    
+
                     // Buka topik selanjutnya secara otomatis
                     if (nextTopic) {
                         setOpenTopicId(nextTopic._id);
@@ -400,8 +400,8 @@ export default function ModulDetailPage() {
                         createNotification(`Hebat! Anda telah menyelesaikan semua topik di modul "${prevModul.title}".`, `/modul/${prevModul.slug}`);
                     }
 
-                    return { 
-                        ...prevModul, 
+                    return {
+                        ...prevModul,
                         topics: updatedTopics,
                         completedTopics: newCompletedCount,
                         progress: newProgress
@@ -468,7 +468,8 @@ export default function ModulDetailPage() {
     useEffect(() => {
         if (!openTopicId) return;
 
-        // Beri sedikit waktu agar konten accordion dirender
+        const observers: ResizeObserver[] = [];
+
         const timeoutId = setTimeout(() => {
             const topicCard = document.getElementById(`topic-card-${openTopicId}`);
             if (!topicCard) return;
@@ -476,37 +477,69 @@ export default function ModulDetailPage() {
             const codeBlocks = topicCard.querySelectorAll('pre');
 
             codeBlocks.forEach(preElement => {
-                // Hindari menambahkan tombol jika sudah ada
-                if (preElement.querySelector('.copy-button')) return;
+                // Cek jika wrapper sudah ada untuk menghindari duplikasi
+                if (preElement.parentElement?.classList.contains('code-block-wrapper')) return;
 
-                preElement.style.position = 'relative'; // Diperlukan untuk positioning tombol
+                // 1. Buat wrapper untuk <pre> dan tombol
+                const wrapper = document.createElement('div');
+                wrapper.className = 'code-block-wrapper relative';
 
+                // Pindahkan <pre> ke dalam wrapper
+                preElement.parentNode?.insertBefore(wrapper, preElement);
+                wrapper.appendChild(preElement);
+
+                // 2. Buat tombol salin dengan desain baru
                 const copyButton = document.createElement('button');
-                copyButton.innerText = 'Salin';
-                copyButton.className = 'copy-button absolute top-2 right-2 px-2 py-1 text-xs bg-gray-600 text-white rounded hover:bg-gray-700 transition-colors';
+                copyButton.title = 'Salin kode';
+                copyButton.className = 'copy-button absolute top-2 right-2 p-2 bg-gray-700/50 dark:bg-gray-800/60 text-gray-300 rounded-md hover:bg-gray-600 dark:hover:bg-gray-700 transition-all duration-200 opacity-0 group-hover:opacity-100';
+                wrapper.classList.add('group'); // Tambah class 'group' untuk efek hover
+
+                const copyIcon = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>`;
+                const checkIcon = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>`;
+                copyButton.innerHTML = copyIcon;
 
                 copyButton.addEventListener('click', () => {
                     const codeElement = preElement.querySelector('code');
                     const codeToCopy = codeElement ? codeElement.innerText : '';
 
                     navigator.clipboard.writeText(codeToCopy).then(() => {
-                        copyButton.innerText = 'Tersalin!';
+                        copyButton.innerHTML = checkIcon;
+                        copyButton.classList.add('text-green-400');
                         setTimeout(() => {
-                            copyButton.innerText = 'Salin';
+                            copyButton.innerHTML = copyIcon;
+                            copyButton.classList.remove('text-green-400');
                         }, 2000);
                     }).catch(err => {
                         console.error('Gagal menyalin kode:', err);
-                        copyButton.innerText = 'Gagal';
                     });
                 });
 
-                preElement.appendChild(copyButton);
+                wrapper.appendChild(copyButton);
+
+                // 3. Logika untuk font responsif
+                const observer = new ResizeObserver(entries => {
+                    for (let entry of entries) {
+                        const pre = entry.target as HTMLElement;
+                        // Jika konten lebih lebar dari kontainernya (ada scroll horizontal)
+                        if (pre.scrollWidth > pre.clientWidth) {
+                            pre.classList.add('code-overflow');
+                        } else {
+                            pre.classList.remove('code-overflow');
+                        }
+                    }
+                });
+
+                observer.observe(preElement);
+                observers.push(observer);
             });
-        }, 500); // Delay 500ms untuk memastikan transisi accordion selesai
+        }, 500);
 
-        return () => clearTimeout(timeoutId);
+        return () => {
+            clearTimeout(timeoutId);
+            observers.forEach(observer => observer.disconnect());
+        };
 
-    }, [openTopicId]); // Jalankan setiap kali topik yang dibuka berubah
+    }, [openTopicId]);
 
 
 
@@ -601,11 +634,11 @@ export default function ModulDetailPage() {
                                         Ulangi Tes
                                     </button>
                                 )}
-                                <button 
-                                    onClick={() => { 
+                                <button
+                                    onClick={() => {
                                         setActiveTest(null);
                                         // Tidak perlu fetch ulang, state sudah diupdate secara lokal di submitTest
-                                    }} 
+                                    }}
                                     className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
                                     Tutup
                                 </button>
@@ -699,14 +732,14 @@ export default function ModulDetailPage() {
             <header className="bg-gradient-to-r from-indigo-500 to-blue-600 rounded-xl p-6 mt-6 shadow-md text-white flex flex-col items-start gap-2 mb-8 md:flex-row md:items-center md:gap-4">
                 {/* Ikon untuk desktop (di kiri) */}
                 <Image src={`${process.env.NEXT_PUBLIC_API_URL}/uploads/${modul.icon}`} alt={modul.title} width={80} height={80} className="hidden md:block h-20 w-20 rounded-lg object-cover bg-white/20 p-1" />
-                
+
                 <div className="flex-1 text-left w-full"> {/* Wrapper untuk teks dan ikon mobile */}
                     <span className="text-xs font-semibold uppercase tracking-wider text-blue-200">{modul.category}</span>
                     <h1 className="text-3xl font-bold text-white mt-1 mb-2">{modul.title}</h1>
-                    
+
                     {/* Ikon untuk mobile (di bawah judul, di tengah) */}
                     <Image src={`${process.env.NEXT_PUBLIC_API_URL}/uploads/${modul.icon}`} alt={modul.title} width={80} height={80} className="hidden h-20 w-20 rounded-lg object-cover bg-white/20 p-1 mb-4 mx-auto" />
-                    
+
                     <p className="text-sm text-white/90 mb-2">{modul.overview}</p>
                     <div className="w-full bg-white/30 rounded-full h-2.5">
                         <div className="bg-yellow-400 h-2.5 rounded-full" style={{ width: `${modul.progress}%` }}></div>
@@ -777,11 +810,10 @@ export default function ModulDetailPage() {
                                 <Link
                                     href={!isPostTestLocked ? `/modul/${slug}/post-test` : '#'}
                                     passHref
-                                    className={`inline-block px-6 py-3 font-semibold rounded-xl shadow-md transition-all ${
-                                        isPostTestLocked
+                                    className={`inline-block px-6 py-3 font-semibold rounded-xl shadow-md transition-all ${isPostTestLocked
                                             ? 'bg-gray-300 text-gray-500 cursor-not-allowed dark:bg-gray-600 dark:text-gray-400'
                                             : 'bg-yellow-400 hover:bg-yellow-300 text-black transform hover:scale-105'
-                                    }`}
+                                        }`}
                                     aria-disabled={isPostTestLocked}
                                     onClick={(e) => {
                                         if (isPostTestLocked) e.preventDefault()
@@ -805,3 +837,13 @@ export default function ModulDetailPage() {
         </div>
     );
 }
+
+const globalStyles = `
+  @media (max-width: 768px) {
+    pre.code-overflow code {
+      font-size: 0.75rem; /* 12px */
+    }
+  }
+`;
+
+if (typeof window !== 'undefined') { const styleSheet = document.createElement("style"); styleSheet.type = "text/css"; styleSheet.innerText = globalStyles; document.head.appendChild(styleSheet); }
