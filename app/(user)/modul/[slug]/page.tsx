@@ -8,7 +8,7 @@ import Image from 'next/image';
 import hljs from 'highlight.js';
 // @ts-ignore
 import { authFetch } from '@/lib/authFetch'; // <-- Import helper baru
-import 'highlight.js/styles/atom-one-dark.css'; 
+// import 'highlight.js/styles/atom-one-dark.css'; 
 import { useAlert } from '@/context/AlertContext';
 
 import TopicContent from '@/components/TopicContent';
@@ -463,6 +463,41 @@ export default function ModulDetailPage() {
             });
         }
     }, [activeTest, testIdx, currentQuestionForModal]); // Dependency lebih spesifik
+
+    // --- useEffect untuk menambahkan tombol copy pada blok kode di materi ---
+    useEffect(() => {
+        if (!openTopicId) return;
+
+        // Beri sedikit waktu agar konten accordion terbuka dan dirender
+        const timer = setTimeout(() => {
+            const topicContent = document.getElementById(`topic-card-${openTopicId}`);
+            if (!topicContent) return;
+
+            const codeBlocks = topicContent.querySelectorAll('pre code.hljs');
+            codeBlocks.forEach(block => {
+                const pre = block.parentElement as HTMLPreElement;
+                if (pre.querySelector('.copy-code-button')) return; // Tombol sudah ada
+
+                const button = document.createElement('button');
+                button.innerText = 'Salin';
+                button.className = 'copy-code-button';
+
+                button.addEventListener('click', () => {
+                    const codeToCopy = (block as HTMLElement).innerText;
+                    navigator.clipboard.writeText(codeToCopy).then(() => {
+                        button.innerText = 'Disalin!';
+                        setTimeout(() => {
+                            button.innerText = 'Salin';
+                        }, 2000);
+                    });
+                });
+
+                pre.appendChild(button);
+            });
+        }, 500); // Delay 500ms setelah accordion dibuka
+
+        return () => clearTimeout(timer);
+    }, [openTopicId]); // Jalankan setiap kali topik berbeda dibuka
 
 
 
