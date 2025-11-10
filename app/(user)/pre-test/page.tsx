@@ -270,6 +270,73 @@ export default function PreTestPage() {
         }
     }, [idx, questions]); // Jalankan setiap kali soal berubah
 
+    // --- Add Copy Button to Code Blocks ---
+    useEffect(() => {
+        if (!questionAreaRef.current) return;
+
+        const observers: ResizeObserver[] = [];
+
+        // Timeout untuk memastikan DOM sudah dirender setelah soal berganti
+        const timeoutId = setTimeout(() => {
+            const codeBlocks = questionAreaRef.current!.querySelectorAll('pre');
+
+            codeBlocks.forEach(preElement => {
+                if (preElement.parentElement?.classList.contains('code-block-wrapper')) return;
+
+                const copyButton = document.createElement('button');
+                copyButton.title = 'Salin kode';
+                copyButton.className = 'copy-button absolute top-2 right-2 p-2 bg-gray-700/50 dark:bg-gray-800/60 text-gray-300 rounded-md hover:bg-gray-600 dark:hover:bg-gray-700 transition-all duration-200';
+
+                const copyIcon = `&lt;svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"&gt;&lt;rect x="9" y="9" width="13" height="13" rx="2" ry="2"&gt;&lt;/rect&gt;&lt;path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"&gt;&lt;/path&gt;&lt;/svg&gt;`;
+                const checkIcon = `&lt;svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"&gt;&lt;polyline points="20 6 9 17 4 12"&gt;&lt;/polyline&gt;&lt;/svg&gt;`;
+                copyButton.innerHTML = copyIcon;
+
+                copyButton.addEventListener('click', () => {
+                    const codeElement = preElement.querySelector('code');
+                    const codeToCopy = codeElement ? codeElement.innerText : '';
+
+                    navigator.clipboard.writeText(codeToCopy).then(() => {
+                        copyButton.innerHTML = checkIcon;
+                        copyButton.classList.add('text-green-400');
+                        setTimeout(() => {
+                            copyButton.innerHTML = copyIcon;
+                            copyButton.classList.remove('text-green-400');
+                        }, 2000);
+                    }).catch(err => {
+                        console.error('Gagal menyalin kode:', err);
+                    });
+                });
+
+                const wrapper = document.createElement('div');
+                wrapper.className = 'code-block-wrapper relative';
+
+                wrapper.appendChild(copyButton);
+
+                preElement.parentNode?.insertBefore(wrapper, preElement);
+                wrapper.appendChild(preElement);
+
+                const observer = new ResizeObserver(entries => {
+                    for (let entry of entries) {
+                        const pre = entry.target as HTMLElement;
+                        if (pre.scrollWidth > pre.clientWidth) {
+                            pre.classList.add('code-overflow');
+                        } else {
+                            pre.classList.remove('code-overflow');
+                        }
+                    }
+                });
+
+                observer.observe(preElement);
+                observers.push(observer);
+            });
+        }, 500);
+
+        return () => {
+            clearTimeout(timeoutId);
+            observers.forEach(observer => observer.disconnect());
+        };
+    }, [idx, questions]); // Jalankan setiap kali soal berubah
+
     if (loading && !result) {
         return (
             <div className="flex justify-center items-center min-h-screen">
@@ -415,6 +482,7 @@ export default function PreTestPage() {
                         <div className="py-6">
                             <div className="flex items-start font-semibold mb-4 text-base text-slate-800 dark:text-slate-200">
                                 <span className="mr-2">{idx + 1}.</span>
+                                <span className="mr-2 mt-1">{idx + 1}.</span>
                                 <div className="flex-1 overflow-x-auto">
                                     <div className="prose dark:prose-invert max-w-none"
                                         dangerouslySetInnerHTML={{ __html: currentQuestion.questionText }}
@@ -513,3 +581,13 @@ export default function PreTestPage() {
         </div>
     );
 }
+
+const globalStyles = `
+  @media (max-width: 768px) {
+    pre.code-overflow code {
+      font-size: 0.75rem; /* 12px */
+    }
+  }
+`;
+
+if (typeof window !== 'undefined') { const styleSheet = document.createElement("style"); styleSheet.type = "text/css"; styleSheet.innerText = globalStyles; document.head.appendChild(styleSheet); }
