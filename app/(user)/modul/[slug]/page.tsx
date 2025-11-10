@@ -466,15 +466,15 @@ export default function ModulDetailPage() {
 
     // --- Add Copy Button to Code Blocks ---
     useEffect(() => {
-        if (!openTopicId) return;
+        // Tentukan elemen container: modal tes atau kartu topik
+        const container = activeTest ? questionModalRef.current : (openTopicId ? document.getElementById(`topic-card-${openTopicId}`) : null);
+        if (!container) return;
 
         const observers: ResizeObserver[] = [];
 
         const timeoutId = setTimeout(() => {
-            const topicCard = document.getElementById(`topic-card-${openTopicId}`);
-            if (!topicCard) return;
-
-            const codeBlocks = topicCard.querySelectorAll('pre');
+            // Cari 'pre' di dalam container yang sudah ditentukan
+            const codeBlocks = container.querySelectorAll('pre');
 
             codeBlocks.forEach(preElement => {
                 // Cek jika wrapper sudah ada untuk menghindari duplikasi
@@ -538,7 +538,7 @@ export default function ModulDetailPage() {
             observers.forEach(observer => observer.disconnect());
         };
 
-    }, [openTopicId]);
+    }, [openTopicId, activeTest, testIdx]); // Tambahkan activeTest dan testIdx sebagai dependensi
 
 
 
