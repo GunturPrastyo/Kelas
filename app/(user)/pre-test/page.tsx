@@ -8,7 +8,10 @@ import Breadcrumb from '@/components/Breadcrumb';
 import { authFetch } from '@/lib/authFetch';
 import { useAlert } from '@/context/AlertContext';
 import hljs from 'highlight.js'; 
-import 'highlight.js/styles/atom-one-dark.css'; // Tambahkan impor tema
+// Impor tema terang sebagai default
+import 'highlight.js/styles/github.css';
+// Impor tema gelap, yang akan kita aktifkan hanya pada dark mode
+import 'highlight.js/styles/github-dark.css';
 
 interface Question {
     _id: string;
