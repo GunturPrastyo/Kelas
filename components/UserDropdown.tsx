@@ -57,7 +57,7 @@ export default function UserDropdown() {
                     alt="User Avatar"
                     width={40}
                     height={40}
-                    className="rounded-full object-cover border-2 border-gray-300 dark:border-gray-600 hover:border-blue-500 transition"
+                    className="rounded-full object-cover transition"
                 />
             </button>
 
