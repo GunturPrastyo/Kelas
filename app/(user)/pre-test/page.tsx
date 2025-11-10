@@ -5,13 +5,8 @@ import Link from 'next/link';
 import Image from 'next/image';
 import Breadcrumb from '@/components/Breadcrumb';
 // 1. Import highlight.js dan tema CSS-nya
-import { authFetch } from '@/lib/authFetch';
-import { useAlert } from '@/context/AlertContext';
-import hljs from 'highlight.js'; 
-// Impor tema terang sebagai default
-import 'highlight.js/styles/stackoverflow-light.css';
-// Impor tema gelap, yang akan kita aktifkan hanya pada dark mode
-import 'highlight.js/styles/github-dark.css';
+import { authFetch } from "@/lib/authFetch";
+import { useAlert } from "@/context/AlertContext";
 
 interface Question {
     _id: string;
@@ -261,19 +256,6 @@ export default function PreTestPage() {
 
     const currentQuestion = questions[idx];
 
-    // 2. Ref untuk menargetkan area pertanyaan
-    const questionAreaRef = useRef<HTMLDivElement>(null);
-
-    // 3. useEffect untuk menerapkan syntax highlighting
-    useEffect(() => {
-        if (questionAreaRef.current) {
-            // Temukan semua blok <pre><code> di dalam area pertanyaan dan terapkan highlight
-            questionAreaRef.current.querySelectorAll('pre code').forEach((block) => {
-                hljs.highlightElement(block as HTMLElement);
-            });
-        }
-    }, [idx, questions]); // Jalankan setiap kali soal berubah
-
     if (loading && !result) {
         return (
             <div className="flex justify-center items-center min-h-screen">
@@ -414,7 +396,7 @@ export default function PreTestPage() {
             </section>
 
             <section className="bg-white dark:bg-gray-800 rounded-xl p-6 mt-6 shadow-lg" id="pretestCard">
-                <div id="questionArea" ref={questionAreaRef}> {/* Tambahkan ref di sini */}
+                <div id="questionArea"> {/* Tambahkan ref di sini */}
                     {currentQuestion && (
                         <div className="py-6">
                             <div className="flex items-start font-semibold mb-4 text-base text-slate-800 dark:text-slate-200">
