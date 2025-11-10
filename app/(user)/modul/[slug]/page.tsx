@@ -8,7 +8,7 @@ import Image from 'next/image';
 import hljs from 'highlight.js';
 // @ts-ignore
 import { authFetch } from '@/lib/authFetch'; // <-- Import helper baru
-// import 'highlight.js/styles/atom-one-dark.css'; 
+import 'highlight.js/styles/atom-one-dark.css'; 
 import { useAlert } from '@/context/AlertContext';
 
 import TopicContent from '@/components/TopicContent';
@@ -464,40 +464,49 @@ export default function ModulDetailPage() {
         }
     }, [activeTest, testIdx, currentQuestionForModal]); // Dependency lebih spesifik
 
-    // --- useEffect untuk menambahkan tombol copy pada blok kode di materi ---
+    // --- Add Copy Button to Code Blocks ---
     useEffect(() => {
         if (!openTopicId) return;
 
-        // Beri sedikit waktu agar konten accordion terbuka dan dirender
-        const timer = setTimeout(() => {
-            const topicContent = document.getElementById(`topic-card-${openTopicId}`);
-            if (!topicContent) return;
+        // Beri sedikit waktu agar konten accordion dirender
+        const timeoutId = setTimeout(() => {
+            const topicCard = document.getElementById(`topic-card-${openTopicId}`);
+            if (!topicCard) return;
 
-            const codeBlocks = topicContent.querySelectorAll('pre code.hljs');
-            codeBlocks.forEach(block => {
-                const pre = block.parentElement as HTMLPreElement;
-                if (pre.querySelector('.copy-code-button')) return; // Tombol sudah ada
+            const codeBlocks = topicCard.querySelectorAll('pre');
 
-                const button = document.createElement('button');
-                button.innerText = 'Salin';
-                button.className = 'copy-code-button';
+            codeBlocks.forEach(preElement => {
+                // Hindari menambahkan tombol jika sudah ada
+                if (preElement.querySelector('.copy-button')) return;
 
-                button.addEventListener('click', () => {
-                    const codeToCopy = (block as HTMLElement).innerText;
+                preElement.style.position = 'relative'; // Diperlukan untuk positioning tombol
+
+                const copyButton = document.createElement('button');
+                copyButton.innerText = 'Salin';
+                copyButton.className = 'copy-button absolute top-2 right-2 px-2 py-1 text-xs bg-gray-600 text-white rounded hover:bg-gray-700 transition-colors';
+
+                copyButton.addEventListener('click', () => {
+                    const codeElement = preElement.querySelector('code');
+                    const codeToCopy = codeElement ? codeElement.innerText : '';
+
                     navigator.clipboard.writeText(codeToCopy).then(() => {
-                        button.innerText = 'Disalin!';
+                        copyButton.innerText = 'Tersalin!';
                         setTimeout(() => {
-                            button.innerText = 'Salin';
+                            copyButton.innerText = 'Salin';
                         }, 2000);
+                    }).catch(err => {
+                        console.error('Gagal menyalin kode:', err);
+                        copyButton.innerText = 'Gagal';
                     });
                 });
 
-                pre.appendChild(button);
+                preElement.appendChild(copyButton);
             });
-        }, 500); // Delay 500ms setelah accordion dibuka
+        }, 500); // Delay 500ms untuk memastikan transisi accordion selesai
 
-        return () => clearTimeout(timer);
-    }, [openTopicId]); // Jalankan setiap kali topik berbeda dibuka
+        return () => clearTimeout(timeoutId);
+
+    }, [openTopicId]); // Jalankan setiap kali topik yang dibuka berubah
 
 
 
