@@ -6,9 +6,9 @@ import Link from 'next/link';
 import Image from 'next/image';
 // 1. Import highlight.js dan tema CSS-nya
 import hljs from 'highlight.js';
+import 'highlight.js/styles/atom-one-dark.css'; // Aktifkan impor tema
 // @ts-ignore
 import { authFetch } from '@/lib/authFetch'; // <-- Import helper baru
-// import 'highlight.js/styles/atom-one-dark.css';
 import { useAlert } from '@/context/AlertContext';
 
 import TopicContent from '@/components/TopicContent';
