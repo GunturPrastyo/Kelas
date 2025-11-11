@@ -399,7 +399,16 @@ export default function AnalitikBelajarPage() {
             }
           },
           scales: {
-            r: { beginAtZero: true, max: 100, ticks: { display: false } },
+            r: {
+              beginAtZero: true,
+              max: 100,
+              ticks: { display: false },
+              // Opsi untuk label modul di sekeliling chart
+              pointLabels: {
+                font: { size: 11 }, // Sedikit perkecil font label
+                // autoSkip: false, // Tidak diperlukan jika menggunakan wrapping
+              }
+            },
           },
         },
       });
