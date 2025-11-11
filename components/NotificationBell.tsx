@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from 'react';
-import { Bell, X, CheckCircle } from 'lucide-react';
+import { Bell, X, CheckCircle, Award, Star, Rocket } from 'lucide-react';
 import Link from 'next/link';
 import { formatDistanceToNow } from 'date-fns';
 import { id } from 'date-fns/locale';
@@ -15,6 +15,21 @@ interface Notification {
     isRead: boolean;
     createdAt: string;
 }
+
+const getNotificationIcon = (message: string) => {
+    const lowerCaseMessage = message.toLowerCase();
+    if (lowerCaseMessage.includes('lulus') || lowerCaseMessage.includes('selamat') || lowerCaseMessage.includes('menyelesaikan')) {
+        return <Award className="w-5 h-5 text-yellow-500" />;
+    }
+    if (lowerCaseMessage.includes('skor')) {
+        return <Star className="w-5 h-5 text-blue-500" />;
+    }
+    if (lowerCaseMessage.includes('hebat')) {
+        return <Rocket className="w-5 h-5 text-green-500" />;
+    }
+    // Default icon
+    return <Bell className="w-5 h-5 text-gray-500" />;
+};
 
 const NotificationBell = () => {
     const [isOpen, setIsOpen] = useState(false);
@@ -114,8 +129,8 @@ const NotificationBell = () => {
             </button>
 
             {isOpen && (
-                <div className="absolute right-0 sm:right-0 mt-2 w-72 max-w-[calc(100vw-2rem)] bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-xl z-20">
-                    <div className="p-3 font-bold border-b border-gray-200 dark:border-gray-700">Notifikasi</div>
+                <div className="absolute right-0 sm:right-0 mt-2 w-80 max-w-[calc(100vw-2rem)] bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-xl z-20">
+                    <div className="p-3 font-semibold text-base border-b border-gray-200 dark:border-gray-700 text-gray-800 dark:text-gray-100">Notifikasi</div>
                     <div className="max-h-96 overflow-y-auto">
                         {notifications.length > 0 ? (
                             notifications.map(notif => (
@@ -123,40 +138,42 @@ const NotificationBell = () => {
                                     <Link
                                         href={notif.link}
                                         onClick={() => setIsOpen(false)}
-                                        className={`block p-3 hover:bg-gray-50 dark:hover:bg-gray-700 ${!notif.isRead ? 'bg-blue-50 dark:bg-blue-900/30' : ''
+                                        className={`block p-3.5 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors ${!notif.isRead ? 'bg-blue-50 dark:bg-blue-900/30' : ''
                                             }`}
                                     >
                                         <div className="flex items-start gap-3">
-                                            <div
-                                                className={`mt-1 flex-shrink-0 w-2 h-2 rounded-full ${!notif.isRead ? 'bg-blue-500' : 'bg-transparent'
-                                                    }`}
-                                            ></div>
+                                            <div className="flex-shrink-0 mt-0.5">
+                                                {getNotificationIcon(notif.message)}
+                                            </div>
                                             <div className="flex-1">
-                                                <p className="text-sm text-gray-800 dark:text-gray-200">
+                                                <p className="text-sm leading-snug text-gray-700 dark:text-gray-200">
                                                     {notif.message}
                                                 </p>
                                                 <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
                                                     {formatDistanceToNow(new Date(notif.createdAt), {
                                                         addSuffix: true,
                                                         locale: id,
-                                                    })}
+                                                    }).replace('sekitar ', '')}
                                                 </p>
                                             </div>
                                         </div>
                                     </Link>
                                     <button
                                         onClick={(e) => dismissNotification(e, notif._id)}
-                                        className="absolute top-2 right-2 p-1.5 rounded-full text-gray-400 dark:text-gray-500 bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 transition-colors"
+                                        className="absolute top-2 right-2 p-1 rounded-full text-gray-400 dark:text-gray-500 bg-transparent hover:bg-gray-200 dark:hover:bg-gray-600 opacity-0 group-hover:opacity-100 transition-opacity"
+                                        aria-label="Hapus notifikasi"
                                     >
                                         <X size={14} />
-                                        <span className="sr-only">Hapus notifikasi</span>
                                     </button>
                                 </div>
                             ))
                         ) : (
-                            <div className="p-4 text-center text-sm text-gray-500">
-                                <CheckCircle className="mx-auto h-8 w-8 text-green-400 mb-2" />
-                                <p>Semua sudah terbaca!</p>
+                            <div className="p-6 text-center text-sm text-gray-500 dark:text-gray-400">
+                                <div className="flex items-center justify-center w-12 h-12 mx-auto mb-3 bg-green-100 dark:bg-green-900/50 rounded-full">
+                                    <CheckCircle className="h-6 w-6 text-green-500" />
+                                </div>
+                                <p className="font-semibold text-gray-700 dark:text-gray-300">Tidak ada notifikasi baru</p>
+                                <p className="text-xs mt-1">Semua sudah terbaca!</p>
                             </div>
                         )}
 
