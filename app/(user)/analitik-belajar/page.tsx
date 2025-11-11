@@ -709,7 +709,7 @@ export default function AnalitikBelajarPage() {
           <ul className="space-y-3">
             {/* REPEAT MODULE */}
             {recommendations.repeatModule && (
-              <li className="flex items-center justify-between gap-4 p-4 bg-white/60 dark:bg-gray-700/40 rounded-xl hover:bg-white/80 dark:hover:bg-gray-600/50 transition-all shadow-sm">
+              <li className="flex items-center justify-between gap-4 p-4 bg-white/60 dark:bg-gray-700/40 rounded-xl hover:bg-white/80 dark:hover:bg-gray-600/50 transition-all shadow-sm" key="repeat-module">
                 <div className="flex items-center gap-4">
                   <Image
                     src={`${process.env.NEXT_PUBLIC_API_URL}/uploads/${recommendations.repeatModule.moduleIcon}`}
@@ -723,7 +723,7 @@ export default function AnalitikBelajarPage() {
                       Ulangi <b>{recommendations.repeatModule.moduleTitle}</b>
                     </p>
                     <p className="text-sm opacity-80">
-                      Nilai post-test akhirmu masih {recommendations.repeatModule.moduleScore}%.
+                      Nilai post-test akhirmu masih {recommendations.repeatModule.moduleScore}.
                       {recommendations.repeatModule.allTopicsMastered ? (
                         " Semua topik sudah bagus, coba kerjakan ulang post-test akhir dengan lebih teliti."
                       ) : recommendations.repeatModule.weakestTopic ? (
@@ -751,7 +751,7 @@ export default function AnalitikBelajarPage() {
 
             {/* DEEPEN TOPIC */}
             {recommendations.deepenTopic && (
-              <li className="flex items-center justify-between gap-4 p-4 bg-white/60 dark:bg-gray-700/40 rounded-xl hover:bg-white/80 dark:hover:bg-gray-600/50 transition-all shadow-sm">
+              <li className="flex items-center justify-between gap-4 p-4 bg-white/60 dark:bg-gray-700/40 rounded-xl hover:bg-white/80 dark:hover:bg-gray-600/50 transition-all shadow-sm" key="deepen-topic">
                 <div className="flex items-center gap-4">
                   <Image
                     src="https://img.icons8.com/fluency/96/books.png"
@@ -784,7 +784,7 @@ export default function AnalitikBelajarPage() {
 
             {/* CONTINUE MODULE */}
             {recommendations.continueToModule ? (
-              <li className="flex items-center justify-between gap-4 p-4 bg-white/60 dark:bg-gray-700/40 rounded-xl hover:bg-white/80 dark:hover:bg-gray-600/50 transition-all shadow-sm">
+              <li className="flex items-center justify-between gap-4 p-4 bg-white/60 dark:bg-gray-700/40 rounded-xl hover:bg-white/80 dark:hover:bg-gray-600/50 transition-all shadow-sm" key="continue-module">
                 <div className="flex items-center gap-4">
                   <Image
                     src={`${process.env.NEXT_PUBLIC_API_URL}/uploads/${recommendations.continueToModule.moduleIcon}`}
