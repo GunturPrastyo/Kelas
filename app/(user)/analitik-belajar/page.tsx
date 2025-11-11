@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import Image from "next/image"; 
+import Image from "next/image";
 import { authFetch } from "@/lib/authFetch";
 import { useRouter } from "next/navigation";
 import { Award, TrendingUp, TrendingDown, LayoutDashboard, Activity, BarChartHorizontal, AlertTriangle, Users, Target, Play } from "lucide-react";
@@ -174,7 +174,7 @@ export default function AnalitikBelajarPage() {
             authFetch(`${process.env.NEXT_PUBLIC_API_URL}/api/results/recommendations`),
             authFetch(`${process.env.NEXT_PUBLIC_API_URL}/api/results/topics-to-reinforce`),
           ]);
-        
+
         // Handle potential errors from individual fetches
         if (!progressRes.ok || !analyticsRes.ok || !weeklyActivityRes.ok || !moduleScoresRes.ok || !comparisonRes.ok || !recommendationsRes.ok || !weakTopicsRes.ok) {
           throw new Error("Satu atau lebih permintaan data gagal.");
@@ -187,7 +187,7 @@ export default function AnalitikBelajarPage() {
         const comparisonData = await comparisonRes.json();
         const recommendationsData = await recommendationsRes.json();
         const weakTopicsData = await weakTopicsRes.json();
-        
+
         const completedModules = progressData.filter((m: ModulProgress) => m.progress === 100).length;
         const totalModules = progressData.length;
         const averageScore = analyticsData.averageScore || 0;
@@ -198,10 +198,10 @@ export default function AnalitikBelajarPage() {
 
         // Konversi detik ke jam untuk data grafik, tapi simpan data asli untuk tooltip
         // 1. Buat peta skor untuk pencarian cepat
-        const scoresMap = new Map(moduleScoresData.map((s: ModuleScoreData) => [s.moduleTitle, s.score]));        
+        const scoresMap = new Map(moduleScoresData.map((s: ModuleScoreData) => [s.moduleTitle, s.score]));
         const comparisonUserScoresMap = new Map(comparisonData.labels.map((label: string, index: number) => [label, comparisonData.userScores[index]]));
         const comparisonClassAveragesMap = new Map(comparisonData.labels.map((label: string, index: number) => [label, comparisonData.classAverages[index]]));
-        
+
         // 2. Gunakan `progressData` sebagai sumber kebenaran untuk semua judul modul
         const allModuleScores = progressData.map((modul: ModulProgress) => ({
           moduleTitle: modul.title,
@@ -215,7 +215,7 @@ export default function AnalitikBelajarPage() {
           labels: allModuleTitles,
           userScores: allModuleTitles.map((title: string) => comparisonUserScoresMap.get(title) || 0),
           classAverages: allModuleTitles.map((title: string) => comparisonClassAveragesMap.get(title) || 0),
-        };        
+        };
 
         const weeklySeconds = weeklyActivityData.weeklySeconds || Array(7).fill(0);
         setWeeklyActivity(weeklySeconds); // Simpan dalam detik, konversi akan dilakukan di chart options
@@ -282,10 +282,10 @@ export default function AnalitikBelajarPage() {
                 let label = context.dataset.label || '';
                 if (label) {
                   label += ': ';
-                } 
+                }
                 if (context.parsed.y !== null) {
                   const totalSeconds = context.raw as number; // Gunakan data mentah (dalam detik)
-                  const hours = Math.floor(totalSeconds / 3600); 
+                  const hours = Math.floor(totalSeconds / 3600);
                   const minutes = Math.floor((totalSeconds % 3600) / 60);
                   label += `${hours > 0 ? hours + ' jam ' : ''}${minutes} menit`;
                 }
@@ -297,9 +297,9 @@ export default function AnalitikBelajarPage() {
         scales: {
           y: {
             beginAtZero: true,
-            ticks: { 
+            ticks: {
               display: true, // Tampilkan ticks untuk referensi
-              callback: function(value) {
+              callback: function (value) {
                 const totalSeconds = value as number;
                 if (totalSeconds < 3600) {
                   const minutes = Math.round(totalSeconds / 60);
@@ -358,7 +358,7 @@ export default function AnalitikBelajarPage() {
   }, [moduleScores, isChartNilaiInView, chartNilaiRef]);
 
   useEffect(() => {
-    if (chartPerbandinganRef.current && comparisonData && isChartPerbandinganInView) { // chartPerbandinganRef.current sudah pasti HTMLCanvasElement
+    if (chartPerbandinganRef.current && comparisonData && isChartPerbandinganInView) {
       const chartPerbandinganInstance = new Chart(chartPerbandinganRef.current, {
         type: "radar",
         data: {
@@ -383,42 +383,64 @@ export default function AnalitikBelajarPage() {
           ],
         },
         options: {
+          responsive: true,
+          maintainAspectRatio: false, // agar chart bisa fleksibel di layar kecil
+          layout: {
+            padding: {
+              top: 30,
+              bottom: 40,
+              left: 20,
+              right: 20,
+            },
+          },
           elements: {
             line: {
-              borderWidth: 2, // Atur ketebalan garis
-              tension: 0.1    // Sedikit melengkungkan garis antar titik
-            }
+              borderWidth: 2,
+              tension: 0.1,
+            },
           },
           plugins: {
             legend: {
-              position: 'bottom', // Pindahkan legenda ke bawah
-              align: 'center',    // Pusatkan legenda
+              position: "bottom",
+              align: "center",
               labels: {
-                padding: 15,      // Mengurangi jarak antara legenda dan grafik
-              }
-            }
+                padding: 15,
+              },
+            },
+            tooltip: {
+              bodyFont: { size: 12 },
+            },
           },
           scales: {
             r: {
               beginAtZero: true,
               max: 100,
               ticks: { display: false },
-              // Opsi untuk label modul di sekeliling chart
               pointLabels: {
-                font: { size: 11 }, // Sedikit perkecil font label
-                // autoSkip: false, // Tidak diperlukan jika menggunakan wrapping
-              }
+                font: {
+                  size: window.innerWidth < 500 ? 10 : 12, // label mengecil di HP
+                },
+                callback: function (label) {
+                  // biar kalau label panjang bisa dibungkus ke bawah
+                  const words = label.split(" ");
+                  return words.length > 2
+                    ? words.slice(0, 2).join(" ") + "\n" + words.slice(2).join(" ")
+                    : label;
+                },
+              },
             },
           },
         },
       });
+
       return () => chartPerbandinganInstance.destroy();
     }
   }, [comparisonData, isChartPerbandinganInView, chartPerbandinganRef]);
 
+
   // --- Gunakan hook animasi untuk ringkasan ---
   const animatedCompletedModules = useCountUp(summary?.completedModules || 0, 1500, isSummaryCardInView);
-  const animatedTotalModules = useCountUp(summary?.totalModules || 0, 1500, isSummaryCardInView);  
+  const animatedTotalModules = useCountUp(summary?.totalModules || 0, 1500, isSummaryCardInView);
   const averageScoreForAnimation = parseFloat((summary?.averageScore || 0).toFixed(2));
   const animatedAverageScore = useCountUp(averageScoreForAnimation, 1500, isSummaryCardInView);
   const animatedStudyHours = useCountUp(summary?.studyHours || 0, 1500, isSummaryCardInView);
