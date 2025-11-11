@@ -711,6 +711,13 @@ export default function ModulDetailPage() {
     return (
         <div className="max-w-7xl mx-auto px-1.5 sm:px-5 pb-5 pt-0">
             {/* 
+              Menambahkan style global untuk menangani overflow pada code block di dalam .prose.
+              Ini memastikan hanya code block yang bisa di-scroll horizontal, bukan seluruh kontainer soal.
+            */}
+            <style jsx global>{`
+                .prose pre { white-space: pre; overflow-x: auto; }
+            `}</style>
+            {/* 
               Menambahkan style global untuk menangani font-size pada code block yang overflow.
               Kelas .code-overflow ditambahkan secara dinamis oleh ResizeObserver di dalam useEffect.
             */}
