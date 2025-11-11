@@ -395,13 +395,13 @@ export default function AnalitikBelajarPage() {
           },
           plugins: {
             legend: {
-              position: 'bottom', // Pindahkan legenda ke bawah
+              position: 'bottom',
               align: 'center',    // Pusatkan legenda
               labels: {
                 padding: 15,      // Mengurangi jarak antara legenda dan grafik
               }
             }
-          },
+        },
           scales: {
             r: { beginAtZero: true, max: 100, ticks: { display: false } },
           },
