@@ -363,13 +363,13 @@ export default function ModulDetailPage() {
             setTestResult(finalResult);
 
             // Buat notifikasi berdasarkan hasil tes topik
-            const notifMessage = finalResult.score >= 80
-                ? `Selamat! Anda lulus post-test "${activeTest.title}" dengan skor ${finalResult.score}%.`
+            const notifMessage = finalResult.score >= 70
+                ? `Selamat! Anda lulus post-test "${activeTest.title}" dengan skor ${finalResult.score}.`
                 : `Anda mendapatkan skor ${finalResult.score}% untuk post-test "${activeTest.title}". Coba lagi!`;
             createNotification(notifMessage, `/modul/${modul?.slug}#${activeTest._id}`);
 
             // Tandai topik sebagai selesai di backend jika lulus
-            if (finalResult.score >= 80) {
+            if (finalResult.score >= 70) {
                 authFetch(`${process.env.NEXT_PUBLIC_API_URL}/api/users/complete-topic`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -381,7 +381,7 @@ export default function ModulDetailPage() {
 
 
             // Jika lulus, update state modul secara lokal agar topik berikutnya terbuka & progress bar terupdate
-            if (finalResult.score >= 80) {
+            if (finalResult.score >= 70) {
                 setModul(prevModul => {
                     if (!prevModul) return null;
 
@@ -595,7 +595,7 @@ export default function ModulDetailPage() {
                                     <p className="text-5xl font-bold text-blue-600 dark:text-blue-400 my-2">{testResult.score}%</p>
                                     <p className="text-base text-slate-700 dark:text-slate-300">{testResult.correct} / {testResult.total} Jawaban Benar</p>
                                 </div>
-                                {testResult.score >= 80 ? (
+                                {testResult.score >= 70 ? (
                                     <p className="mt-4 text-green-600 dark:text-green-400">Selamat! Kamu telah menguasai topik ini. Lanjutkan ke topik berikutnya!</p>
                                 ) : (
                                     <p className="mt-4 text-yellow-600 dark:text-yellow-500">Skor kamu belum mencapai 80%. Coba pelajari lagi materinya dan ulangi tes.</p>
@@ -635,7 +635,7 @@ export default function ModulDetailPage() {
                         {testResult ? (
                             // --- Tombol setelah hasil keluar ---
                             <div className="flex justify-end gap-3">
-                                {testResult.score < 80 && (
+                                {testResult.score < 70 && (
                                     <button onClick={() => startTest(activeTest, true)} className="px-4 py-2 bg-yellow-500 text-white rounded-lg hover:bg-yellow-600">
                                         Ulangi Tes
                                     </button>
