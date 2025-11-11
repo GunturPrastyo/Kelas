@@ -383,6 +383,12 @@ export default function AnalitikBelajarPage() {
           ],
         },
         options: {
+          elements: {
+            line: {
+              borderWidth: 2, // Atur ketebalan garis
+              tension: 0.1    // Sedikit melengkungkan garis antar titik
+            }
+          },
           plugins: {
             legend: {
               position: 'bottom', // Pindahkan legenda ke bawah
