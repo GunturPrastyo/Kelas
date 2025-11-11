@@ -228,7 +228,7 @@ export default function PostTestPage() {
     };
 
     if (loading) return <div className="flex justify-center items-center h-screen"><p>Memuat...</p></div>;
-
+    
     if (error) return (
         <div className="max-w-7xl mx-auto p-5">
             <nav className="flex mb-6" aria-label="Breadcrumb">
@@ -256,7 +256,7 @@ export default function PostTestPage() {
     if (result) {
         const isPassed = result.score >= 80;
         return (
-            <div className="max-w-7xl mx-auto p-5 font-sans">
+            <div className="max-w-full mx-auto px-4 sm:px-6 lg:px-8 py-5 font-sans">
                 <nav className="flex mb-6" aria-label="Breadcrumb">
                     <ol className="inline-flex items-center md:space-x-2 rtl:space-x-reverse text-slate-700 dark:text-slate-300 gap-1">
                         <li className="inline-flex items-center">
@@ -309,7 +309,7 @@ export default function PostTestPage() {
     const currentQuestion = questions[testIdx];
 
     return (
-        <div className="max-w-7xl mx-auto p-5 font-sans">
+        <div className="max-w-full mx-auto px-4 sm:px-6 lg:px-8 py-5 font-sans">
             <nav className="flex mb-6" aria-label="Breadcrumb">
                 <ol className="inline-flex items-center md:space-x-2 rtl:space-x-reverse text-slate-700 dark:text-slate-300 gap-1">
                     <li className="inline-flex items-center">
