@@ -714,16 +714,6 @@ export default function ModulDetailPage() {
               Menambahkan style global untuk menangani font-size pada code block yang overflow.
               Kelas .code-overflow ditambahkan secara dinamis oleh ResizeObserver di dalam useEffect.
             */}
-            <style jsx global>{`
-              /* 
-                Membuat selector lebih spesifik untuk mengalahkan style dari highlight.js.
-                Menggunakan !important untuk memastikan gaya ini diterapkan.
-              */
-              pre.code-overflow code.hljs {
-                font-size: 0.8rem !important; /* Perkecil font */
-                line-height: 1.3rem !important; /* Sesuaikan jarak antar baris agar tetap terbaca */
-              }
-            `}</style>
 
             {/* Breadcrumb */}
             <nav className="flex mb-6" aria-label="Breadcrumb">
