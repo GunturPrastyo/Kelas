@@ -710,6 +710,20 @@ export default function ModulDetailPage() {
     // --- RENDER MAIN PAGE ---
     return (
         <div className="max-w-7xl mx-auto px-1.5 sm:px-5 pb-5 pt-0">
+            {/* 
+              Menambahkan style global untuk menangani font-size pada code block yang overflow.
+              Kelas .code-overflow ditambahkan secara dinamis oleh ResizeObserver di dalam useEffect.
+            */}
+            <style jsx global>{`
+              pre.code-overflow {
+                font-size: 0.8rem; /* Perkecil font */
+                line-height: 1.2rem; /* Sesuaikan jarak antar baris */
+              }
+              pre.code-overflow code {
+                font-size: 0.8rem; /* Pastikan elemen code di dalamnya juga ikut mengecil */
+              }
+            `}</style>
+
             {/* Breadcrumb */}
             <nav className="flex mb-6" aria-label="Breadcrumb">
                 <ol className="inline-flex items-center space-x-1 md:space-x-2 rtl:space-x-reverse text-slate-700 dark:text-slate-300">
