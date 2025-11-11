@@ -109,7 +109,7 @@ export default function PostTestTopik({ questions, modulId, topikId, onTestCompl
                         Skor Anda: {reviewData.result.score}
                     </p>
                     <p className={`text-sm ${isSuccess ? 'text-green-700 dark:text-green-400' : 'text-red-700 dark:text-red-400'}`}>
-                        {isSuccess ? "Selamat! Anda berhasil dan materi berikutnya terbuka." : "Anda belum mencapai skor minimal (80). Silakan pelajari kembali materi ini."}
+                        {isSuccess ? "Selamat! Anda berhasil dan materi berikutnya terbuka." : "Anda belum mencapai skor minimal (70). Silakan pelajari kembali materi ini."}
                     </p>
                 </div>
 
