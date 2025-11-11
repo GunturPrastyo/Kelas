@@ -715,12 +715,13 @@ export default function ModulDetailPage() {
               Kelas .code-overflow ditambahkan secara dinamis oleh ResizeObserver di dalam useEffect.
             */}
             <style jsx global>{`
-              pre.code-overflow {
-                font-size: 0.8rem; /* Perkecil font */
-                line-height: 1.2rem; /* Sesuaikan jarak antar baris */
-              }
-              pre.code-overflow code {
-                font-size: 0.8rem; /* Pastikan elemen code di dalamnya juga ikut mengecil */
+              /* 
+                Membuat selector lebih spesifik untuk mengalahkan style dari highlight.js.
+                Menggunakan !important untuk memastikan gaya ini diterapkan.
+              */
+              pre.code-overflow code.hljs {
+                font-size: 0.8rem !important; /* Perkecil font */
+                line-height: 1.3rem !important; /* Sesuaikan jarak antar baris agar tetap terbaca */
               }
             `}</style>
 
