@@ -472,7 +472,7 @@ export default function ModulDetailPage() {
         const container = activeTest ? questionModalRef.current : (openTopicId ? document.getElementById(`topic-card-${openTopicId}`) : null);
         if (!container) return;
 
-        const observers: ResizeObserver[] = [];
+        const observers: ResizeObserver[] = []; // Simpan semua observer untuk di-disconnect
 
         const timeoutId = setTimeout(() => {
             // Cari 'pre' di dalam container yang sudah ditentukan
@@ -583,8 +583,8 @@ export default function ModulDetailPage() {
                         </div>
                     </header>
 
-                    {/* Body */}
-                    <main className="p-6 overflow-y-auto" ref={questionModalRef}> {/* Tambahkan ref di sini */}
+                    {/* Body */} 
+                    <main className="p-6 overflow-y-auto" ref={questionModalRef}>
                         {testResult ? (
                             // --- HASIL TEST ---
                             <div className="text-center">
@@ -843,13 +843,3 @@ export default function ModulDetailPage() {
         </div>
     );
 }
-
-const globalStyles = `
-  @media (max-width: 768px) {
-    pre.code-overflow code {
-      font-size: 0.75rem; /* 12px */
-    }
-  }
-`;
-
-if (typeof window !== 'undefined') { const styleSheet = document.createElement("style"); styleSheet.type = "text/css"; styleSheet.innerText = globalStyles; document.head.appendChild(styleSheet); }
