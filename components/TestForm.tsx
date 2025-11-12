@@ -145,7 +145,7 @@ export default function TestForm({
       subMateriId: q.subMateriId || null
     }));
     let body: any = { questions: questionsWithDetails };
-    
+
     if (testType === "pre-test-global") {
       endpoint = isEditing ? `/api/questions/pre-test` : `/api/questions`;
       method = isEditing ? "PUT" : "POST"; // Pre-test bisa jadi dibuat pertama kali
@@ -181,7 +181,7 @@ export default function TestForm({
 
       if (response.ok) {
         alert(`Post test berhasil ${isEditing ? "diperbarui" : "disimpan"}!`);
-        
+
         if (testType === "pre-test-global") {
           router.push(`/admin/modul`);
         } else if (topikSlug) {
@@ -264,7 +264,9 @@ export default function TestForm({
                 >
                   <option value="">-- Pilih Sub Topik --</option>
                   {subMateris.map((sub) => (
-                    <option key={sub._id} value={sub._id}>{sub.title}</option>
+                    <option key={sub._id} value={sub._id}>
+                      {sub.title.replace(/^\d+\.\s*/, "")}
+                    </option>
                   ))}
                 </select>
               </div>
@@ -299,7 +301,7 @@ export default function TestForm({
                     </div>
                     <div className="flex gap-2">
                       {activeOption.qIndex === qIndex &&
-                      activeOption.oIndex === oIndex ? (
+                        activeOption.oIndex === oIndex ? (
                         <button
                           onClick={() =>
                             setActiveOption({ qIndex: -1, oIndex: null })
@@ -331,7 +333,7 @@ export default function TestForm({
 
                   {/* Jika opsi sedang diedit → tampilkan editor */}
                   {activeOption.qIndex === qIndex &&
-                  activeOption.oIndex === oIndex ? (
+                    activeOption.oIndex === oIndex ? (
                     <TiptapEditor
                       content={option}
                       onChange={(value) =>
@@ -394,8 +396,8 @@ export default function TestForm({
           {loading
             ? "Menyimpan..."
             : isEditing
-            ? "Simpan Perubahan"
-            : "Simpan Semua"}
+              ? "Simpan Perubahan"
+              : "Simpan Semua"}
         </Button>
       </div>
     </>

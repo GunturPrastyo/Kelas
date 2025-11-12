@@ -46,7 +46,7 @@ interface Topik {
     materi?: Materi | null;
     questions: Question[];
     isCompleted: boolean;
-    hasAttempted: boolean; 
+    hasAttempted: boolean;
 }
 
 interface Modul {
@@ -189,19 +189,37 @@ export default function ModulDetailPage() {
     }, [user, slug, fetchModulData]);
 
     // --- Auto-open and scroll to topic from URL hash ---
-    useEffect(() => {
-        if (modul && window.location.hash) {
-            const topicIdFromHash = window.location.hash.substring(1);
-            const topicExists = modul.topics.some(t => t._id === topicIdFromHash);
+    const handleHashChange = useCallback(() => {
+        if (!modul) return;
+        const hash = window.location.hash;
+        if (hash) {
+            const hashId = hash.substring(1);
 
-            if (topicExists) {
-                setOpenTopicId(topicIdFromHash);
-                setTimeout(() => {
-                    document.getElementById(`topic-card-${topicIdFromHash}`)?.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                }, 300); // Delay to allow accordion to open
+            // Coba cari sebagai sub-materi terlebih dahulu
+            for (const topic of modul.topics) {
+                if (topic.materi?.subMateris.some(sub => sub._id === hashId)) {
+                    setOpenTopicId(topic._id);
+                    setTimeout(() => {
+                        document.getElementById(hashId)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    }, 500); // Delay untuk animasi accordion
+                    return;
+                }
+            }
+
+            // Fallback: jika hash adalah ID topik
+            if (modul.topics.some(t => t._id === hashId)) {
+                setOpenTopicId(hashId);
             }
         }
     }, [modul]);
+
+    useEffect(() => {
+        handleHashChange(); // Jalankan saat modul pertama kali dimuat
+        window.addEventListener('hashchange', handleHashChange);
+        return () => {
+            window.removeEventListener('hashchange', handleHashChange);
+        };
+    }, [handleHashChange]);
 
     // --- Study Time Tracking Logic ---
     const logStudyDuration = useCallback((topicId: string, startTime: number) => {
@@ -384,7 +402,7 @@ export default function ModulDetailPage() {
             });
 
             const resultData = await response.json();
-            if (!response.ok) throw new Error(resultData.message || "Gagal mengirimkan jawaban."); 
+            if (!response.ok) throw new Error(resultData.message || "Gagal mengirimkan jawaban.");
 
             const finalResult = resultData.data; // Backend mengembalikan { message, data: newResult }
             setTestResult(finalResult);
@@ -559,8 +577,9 @@ export default function ModulDetailPage() {
         return () => {
             clearTimeout(timeoutId);
             observers.forEach(observer => observer.disconnect());
+            // Tidak perlu disconnect observer lagi
         };
- 
+
     }, [openTopicId, activeTest, testIdx, currentQuestionForModal]); // Dependensi diperbarui
 
 
@@ -599,44 +618,94 @@ export default function ModulDetailPage() {
                         </div>
                     </header>
 
-                    {/* Body */} 
+                    {/* Body */}
                     <main className="p-6 overflow-y-auto" ref={questionModalRef}>
                         {testResult ? (
-                            // --- HASIL TEST ---
                             <div className="text-center">
-                                <h3 className="text-2xl font-bold text-blue-600 dark:text-blue-400 mb-2">Tes Selesai!</h3>
-                                <p className="text-gray-600 dark:text-gray-300 mb-4">Berikut adalah hasilmu.</p>
-                                <div className="bg-slate-50 dark:bg-gray-700/50 p-6 rounded-lg inline-block">
-                                    <p className="text-sm text-slate-500 dark:text-slate-400">Skor Kamu</p>
-                                    <p className="text-5xl font-bold text-blue-600 dark:text-blue-400 my-2">{testResult.score}%</p>
-                                    <p className="text-base text-slate-700 dark:text-slate-300">{testResult.correct} / {testResult.total} Jawaban Benar</p>
+                                {/* --- HASIL TES --- */}
+                                <h3 className="text-2xl font-bold text-blue-700 dark:text-blue-400 mb-1">Tes Selesai!</h3>
+                                <p className="text-gray-600 dark:text-gray-300 mb-5">Berikut hasil penilaian kamu.</p>
+
+                                {/* --- KOTAK SKOR --- */}
+                                <div className="relative inline-block p-[2px] rounded-2xl bg-gradient-to-r from-blue-500 via-indigo-500 to-purple-500 shadow-lg">
+                                    <div className="bg-white dark:bg-gray-800 p-6 rounded-2xl">
+                                        <p className="text-sm text-slate-500 dark:text-slate-400">Skor Kamu</p>
+                                        <p className="text-6xl font-extrabold bg-gradient-to-r from-blue-600 to-purple-500 text-transparent bg-clip-text my-2 drop-shadow-sm">
+                                            {testResult.score}%
+                                        </p>
+                                        <p className="text-base text-slate-700 dark:text-slate-300 font-medium">
+                                            {testResult.correct} / {testResult.total} Jawaban Benar
+                                        </p>
+                                    </div>
                                 </div>
 
-                                {/* --- REKOMENDASI SUB TOPIK LEMAH --- */}
+                                {/* --- PESAN PENUTUP --- */}
+                                {testResult.score >= 70 ? (
+                                    <p className="mt-5 text-green-600 dark:text-green-400 font-medium text-sm sm:text-base">
+                                        🎉 Keren! Kamu sudah menguasai topik ini, lanjut ke materi berikutnya yuk!
+                                    </p>
+                                ) : (
+                                    <p className="mt-5 text-yellow-600 dark:text-yellow-400 font-medium text-sm sm:text-base">
+                                        ⚡ Skor kamu belum mencapai 70%. Coba pelajari lagi bagian yang masih kurang ya
+                                    </p>
+                                )}
+
+                                {/* --- MATERI YANG PERLU DIPERKUAT --- */}
                                 {testResult.weakSubTopics && testResult.weakSubTopics.length > 0 && (
-                                    <div className="mt-6 text-left bg-yellow-50 dark:bg-yellow-900/30 p-4 rounded-lg border border-yellow-200 dark:border-yellow-800/50">
-                                        <h4 className="font-semibold text-yellow-800 dark:text-yellow-300">Rekomendasi Review</h4>
-                                        <p className="text-sm text-yellow-700 dark:text-yellow-400 mb-3">Sepertinya kamu masih kurang paham pada beberapa sub-topik berikut. Coba pelajari lagi ya!</p>
-                                        <ul className="list-disc list-inside space-y-1">
+                                    <div className="mt-10 text-left bg-gradient-to-br from-yellow-50 via-amber-100 to-yellow-50 dark:from-yellow-900/30 dark:via-yellow-900/40 dark:to-yellow-800/20 p-6 rounded-2xl border border-yellow-200 dark:border-yellow-800/50 shadow-md transition-all duration-300 hover:shadow-lg hover:-translate-y-1">
+                                        <h4 className="font-semibold text-yellow-800 dark:text-yellow-300 text-lg flex items-center gap-2 mb-2">
+
+                                            Materi yang Perlu Kamu Perkuat
+                                        </h4>
+
+                                        <p className="text-sm text-yellow-700 dark:text-yellow-400 mb-4 leading-relaxed">
+                                            💡 Yuk, pelajari kembali beberapa materi berikut agar pemahamanmu makin matang!
+                                        </p>
+
+                                        <ul className="space-y-3">
                                             {testResult.weakSubTopics.map(sub => (
-                                                <li key={sub.subMateriId} className="flex justify-between items-center text-sm text-yellow-800 dark:text-yellow-300 font-medium">
-                                                    <span>{sub.title}</span>
-                                                    <span className="font-bold text-red-600 dark:text-red-400 bg-red-100 dark:bg-red-900/50 px-2 py-0.5 rounded">
-                                                        Skor: {sub.score}%
-                                                    </span>
+                                                <li
+                                                    key={sub.subMateriId}
+                                                    className="flex flex-col sm:flex-row sm:justify-between sm:items-center text-sm text-yellow-800 dark:text-yellow-200 font-medium bg-yellow-50 dark:bg-yellow-900/30 px-4 py-3 rounded-lg border border-yellow-200 dark:border-yellow-800/50 hover:bg-yellow-100 dark:hover:bg-yellow-800/50 transition-all duration-300"
+                                                >
+                                                    <div className="flex items-center gap-2 mb-2 sm:mb-0">
+                                                        <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4 text-yellow-600 dark:text-yellow-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4" />
+                                                        </svg>
+                                                        <span>{sub.title}</span>
+                                                    </div>
+
+                                                    <div className="flex items-center gap-3">
+                                                        <span className="font-bold text-white bg-gradient-to-r from-red-500 to-pink-500 px-2.5 py-0.5 rounded-lg shadow-sm">
+                                                            Skor: {sub.score}%
+                                                        </span>
+                                                        <a
+                                                            href={`/modul/${modul.slug}#${sub.subMateriId}`}
+                                                            onClick={(e) => {
+                                                                e.preventDefault(); // Mencegah navigasi default
+                                                                setActiveTest(null); // Tutup modal
+                                                                // Gunakan router.push untuk navigasi client-side yang akan memicu 'hashchange'
+                                                                router.push(`/modul/${modul.slug}#${sub.subMateriId}`);
+                                                            }}
+                                                            className="flex items-center gap-1 text-xs font-semibold text-blue-700 dark:text-blue-300 bg-blue-100 dark:bg-blue-900/40 px-3 py-1.5 rounded-lg hover:bg-blue-200 dark:hover:bg-blue-800/60 transition-all duration-300"
+                                                        >
+                                                            Pelajari
+                                                            <svg xmlns="http://www.w3.org/2000/svg" className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                                                            </svg>
+                                                        </a>
+                                                    </div>
                                                 </li>
                                             ))}
                                         </ul>
                                     </div>
                                 )}
-                                {testResult.score >= 70 ? (
-                                    <p className="mt-4 text-green-600 dark:text-green-400">Selamat! Kamu telah menguasai topik ini. Lanjutkan ke topik berikutnya!</p>
-                                ) : (
-                                    <p className="mt-4 text-yellow-600 dark:text-yellow-500">Skor kamu belum mencapai 70%. Coba pelajari lagi materinya dan ulangi tes.</p>
-                                )}
 
-                                {/* --- REKOMENDASI SUB TOPIK LEMAH --- */}
                             </div>
+
+
+
+
                         ) : currentQuestion ? (
                             // --- PENGERJAAN TEST ---
                             <div>
@@ -749,6 +818,9 @@ export default function ModulDetailPage() {
               Ini memastikan hanya code block yang bisa di-scroll horizontal, bukan seluruh kontainer soal.
             */}
             <style jsx global>{`
+                html {
+                    scroll-behavior: smooth;
+                }
                 .prose pre { white-space: pre; overflow-x: auto; }
             `}</style>
             {/* 
@@ -863,8 +935,8 @@ export default function ModulDetailPage() {
                                     href={!isPostTestLocked ? `/modul/${slug}/post-test` : '#'}
                                     passHref
                                     className={`inline-block px-6 py-3 font-semibold rounded-xl shadow-md transition-all ${isPostTestLocked
-                                            ? 'bg-gray-300 text-gray-500 cursor-not-allowed dark:bg-gray-600 dark:text-gray-400'
-                                            : 'bg-yellow-400 hover:bg-yellow-300 text-black transform hover:scale-105'
+                                        ? 'bg-gray-300 text-gray-500 cursor-not-allowed dark:bg-gray-600 dark:text-gray-400'
+                                        : 'bg-yellow-400 hover:bg-yellow-300 text-black transform hover:scale-105'
                                         }`}
                                     aria-disabled={isPostTestLocked}
                                     onClick={(e) => {
