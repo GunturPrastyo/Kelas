@@ -309,26 +309,28 @@ export default function ModulDetailPage() {
         // Jika ini adalah retake, atau tes pertama kali, atau belum selesai,
         // coba muat progress yang ada. Jika tidak, mulai dari awal.
         try {
-            // Hanya muat progress jika ini bukan retake eksplisit
-            const progressRes = retake ? { ok: false } : await authFetch(`${process.env.NEXT_PUBLIC_API_URL}/api/results/progress?testType=post-test-topik-progress&modulId=${modul?._id}&topikId=${topik._id}`);
-            if (progressRes.ok) {
-                const progressData = await progressRes.json();
-                if (progressData && progressData.answers && Array.isArray(progressData.answers) && progressData.answers.length > 0) {
-                    // Jika ada progress pengerjaan, muat progress tersebut
-                    setTestAnswers(progressData.answers.reduce((acc: { [key: string]: string }, ans: { questionId: string, selectedOption: string }) => {
-                        acc[ans.questionId] = ans.selectedOption;
-                        return acc;
-                    }, {}) || {});
-                    setTestIdx(progressData.currentIndex || 0);
-                } else {
-                    // Jika tidak ada progress, reset ke awal
-                    setTestAnswers({});
-                    setTestIdx(0);
-                }
-            } else {
-                // Jika tidak ada progress (404) atau error lain, mulai dari awal
+            if (retake) {
+                // Jika retake, selalu mulai dari awal
                 setTestAnswers({});
                 setTestIdx(0);
+            } else {
+                // Jika bukan retake, coba muat progress
+                const progressRes = await authFetch(`${process.env.NEXT_PUBLIC_API_URL}/api/results/progress?testType=post-test-topik-progress&modulId=${modul?._id}&topikId=${topik._id}`);
+                if (progressRes.ok) {
+                    const progressData = await progressRes.json();
+                    if (progressData && progressData.answers && Array.isArray(progressData.answers) && progressData.answers.length > 0) {
+                        // Jika ada progress pengerjaan, muat progress tersebut
+                        setTestAnswers(progressData.answers.reduce((acc: { [key: string]: string }, ans: { questionId: string, selectedOption: string }) => {
+                            acc[ans.questionId] = ans.selectedOption;
+                            return acc;
+                        }, {}) || {});
+                        setTestIdx(progressData.currentIndex || 0);
+                    } else {
+                        // Jika tidak ada progress, reset ke awal
+                        setTestAnswers({});
+                        setTestIdx(0);
+                    }
+                }
             }
         } catch (err) {
             console.warn('Gagal memuat progress post-test dari server', err);
