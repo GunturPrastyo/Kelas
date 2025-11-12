@@ -72,7 +72,7 @@ export default function PreTestPage() {
             if (userAnswer === q.answer) correct++;
         });
         const score = total > 0 ? Math.round((correct / total) * 100) : 0;
-        const record = { score, correct, total, timeTaken, timestamp: new Date().toISOString() };
+        const record = { score, correct, total, timeTaken, totalDuration, timestamp: new Date().toISOString() };
 
         // 1. Simpan hasil ke localStorage untuk ditampilkan segera
         const resultKey = `pretest_result_${user._id}`;
@@ -105,7 +105,7 @@ export default function PreTestPage() {
             `Anda telah menyelesaikan Pre-Test dengan skor ${score}%.`,
             '/profil' // Arahkan ke halaman profil/hasil
         );
-    }, [answers, startTime, total, questions, user, createNotification]);
+    }, [answers, startTime, total, questions, user, createNotification, totalDuration]);
 
     useEffect(() => {
         const userRaw = localStorage.getItem('user');

@@ -72,6 +72,12 @@ interface TestResult {
         title: string;
         score: number;
     }[];
+    scoreDetails?: {
+        accuracy: number;
+        time: number;
+        stability: number;
+        focus: number;
+    };
 }
 
 export default function ModulDetailPage() {
@@ -93,6 +99,8 @@ export default function ModulDetailPage() {
     const [testTimeLeft, setTestTimeLeft] = useState(0);
     const [testResult, setTestResult] = useState<TestResult | null>(null);
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [answerChangesCount, setAnswerChangesCount] = useState(0);
+    const [tabExitCount, setTabExitCount] = useState(0);
 
     const { showAlert } = useAlert();
     const persistTimeoutRef = useRef<NodeJS.Timeout | null>(null);
@@ -313,6 +321,8 @@ export default function ModulDetailPage() {
                 // Jika retake, selalu mulai dari awal
                 setTestAnswers({});
                 setTestIdx(0);
+                setAnswerChangesCount(0);
+                setTabExitCount(0);
             } else {
                 // Jika bukan retake, coba muat progress
                 const progressRes = await authFetch(`${process.env.NEXT_PUBLIC_API_URL}/api/results/progress?testType=post-test-topik-progress&modulId=${modul?._id}&topikId=${topik._id}`);
@@ -325,10 +335,14 @@ export default function ModulDetailPage() {
                             return acc;
                         }, {}) || {});
                         setTestIdx(progressData.currentIndex || 0);
+                        setAnswerChangesCount(progressData.answerChangesCount || 0);
+                        setTabExitCount(progressData.tabExitCount || 0);
                     } else {
                         // Jika tidak ada progress, reset ke awal
                         setTestAnswers({});
                         setTestIdx(0);
+                        setAnswerChangesCount(0);
+                        setTabExitCount(0);
                     }
                 }
             }
@@ -341,6 +355,23 @@ export default function ModulDetailPage() {
 
         setTestStartTime(Date.now());
     };
+
+    const handleAnswerChange = (questionId: string, option: string) => {
+        setTestAnswers(prev => {
+            // Cek apakah sudah ada jawaban sebelumnya untuk pertanyaan ini
+            if (prev[questionId] && prev[questionId] !== option) {
+                setAnswerChangesCount(currentCount => currentCount + 1);
+            }
+            return { ...prev, [questionId]: option };
+        });
+    };
+
+    // --- Test Focus Tracking (Tab Exits) ---
+    useEffect(() => {
+        const handleVisibilityChange = () => document.visibilityState === 'hidden' && setTabExitCount(c => c + 1);
+        if (activeTest && !testResult) document.addEventListener('visibilitychange', handleVisibilityChange);
+        return () => document.removeEventListener('visibilitychange', handleVisibilityChange);
+    }, [activeTest, testResult]);
 
     const handleTopicToggle = (topicId: string) => {
         const tracker = studyTimeTrackerRef.current;
@@ -400,6 +431,8 @@ export default function ModulDetailPage() {
                     timeTaken: Math.round((Date.now() - testStartTime) / 1000),
                     modulId: modul?._id,
                     topikId: activeTest._id,
+                    answerChanges: answerChangesCount,
+                    tabExits: tabExitCount,
                 }),
             });
 
@@ -464,7 +497,7 @@ export default function ModulDetailPage() {
         } finally {
             setIsSubmitting(false);
         }
-    }, [testAnswers, testStartTime, user, activeTest, modul, createNotification]);
+    }, [testAnswers, testStartTime, user, activeTest, modul, createNotification, answerChangesCount, tabExitCount]);
 
     // --- Timer Effect for Test ---
     useEffect(() => {
@@ -628,18 +661,44 @@ export default function ModulDetailPage() {
                                 <h3 className="text-2xl font-bold text-blue-700 dark:text-blue-400 mb-1">Tes Selesai!</h3>
                                 <p className="text-gray-600 dark:text-gray-300 mb-5">Berikut hasil penilaian kamu.</p>
 
-                                {/* --- KOTAK SKOR --- */}
+                                {/* --- KOTAK SKOR UTAMA --- */}
                                 <div className="relative inline-block p-[2px] rounded-2xl bg-gradient-to-r from-blue-500 via-indigo-500 to-purple-500 shadow-lg">
                                     <div className="bg-white dark:bg-gray-800 p-6 rounded-2xl">
                                         <p className="text-sm text-slate-500 dark:text-slate-400">Skor Kamu</p>
                                         <p className="text-6xl font-extrabold bg-gradient-to-r from-blue-600 to-purple-500 text-transparent bg-clip-text my-2 drop-shadow-sm">
-                                            {testResult.score}%
+                                            {Math.round(testResult.score)}%
                                         </p>
                                         <p className="text-base text-slate-700 dark:text-slate-300 font-medium">
                                             {testResult.correct} / {testResult.total} Jawaban Benar
                                         </p>
                                     </div>
                                 </div>
+
+                                {/* --- Rincian Skor --- */}
+                                {testResult.scoreDetails && (
+                                    <div className="mt-8 grid grid-cols-2 md:grid-cols-4 gap-3 text-left">
+                                        <div className="bg-slate-50 dark:bg-gray-700/50 p-3 rounded-lg">
+                                            <p className="text-xs text-slate-500 dark:text-slate-400">Ketepatan</p>
+                                            <p className="font-bold text-lg text-slate-800 dark:text-slate-200">{testResult.scoreDetails.accuracy}%</p>
+                                        </div>
+                                        <div className="bg-slate-50 dark:bg-gray-700/50 p-3 rounded-lg">
+                                            <p className="text-xs text-slate-500 dark:text-slate-400">Waktu</p>
+                                            <p className="font-bold text-lg text-slate-800 dark:text-slate-200">{testResult.scoreDetails.time}%</p>
+                                        </div>
+                                        <div className="bg-slate-50 dark:bg-gray-700/50 p-3 rounded-lg">
+                                            <p className="text-xs text-slate-500 dark:text-slate-400">Stabilitas</p>
+                                            <p className="font-bold text-lg text-slate-800 dark:text-slate-200">{testResult.scoreDetails.stability}%</p>
+                                        </div>
+                                        <div className="bg-slate-50 dark:bg-gray-700/50 p-3 rounded-lg">
+                                            <p className="text-xs text-slate-500 dark:text-slate-400">Fokus</p>
+                                            <p className="font-bold text-lg text-slate-800 dark:text-slate-200">{testResult.scoreDetails.focus}%</p>
+                                        </div>
+                                    </div>
+                                )}
+
+
+
+
 
                                 {/* --- PESAN PENUTUP --- */}
                                 {testResult.score >= 70 ? (
@@ -727,7 +786,7 @@ export default function ModulDetailPage() {
                                                 name={`q${currentQuestion._id}`}
                                                 value={option}
                                                 checked={testAnswers[currentQuestion._id] === option}
-                                                onChange={() => setTestAnswers(prev => ({ ...prev, [currentQuestion._id]: option }))}
+                                                onChange={() => handleAnswerChange(currentQuestion._id, option)}
                                             />
                                             <span className="break-words" dangerouslySetInnerHTML={{ __html: option }} />
                                         </label>
