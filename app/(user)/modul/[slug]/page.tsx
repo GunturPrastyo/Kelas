@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback, useRef, use } from 'react';
-import { useParams } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
 // 1. Import highlight.js dan tema CSS-nya
@@ -31,7 +31,11 @@ interface Question {
 
 interface Materi {
     _id: string;
-    content: string;
+    subMateris: {
+        _id: string;
+        title: string;
+        content: string;
+    }[];
     youtube?: string;
 }
 
@@ -42,6 +46,7 @@ interface Topik {
     materi?: Materi | null;
     questions: Question[];
     isCompleted: boolean;
+    hasAttempted: boolean; 
 }
 
 interface Modul {
@@ -62,12 +67,17 @@ interface TestResult {
     score: number;
     correct: number;
     total: number;
-    // tambahkan properti lain jika ada
+    weakSubTopics?: {
+        subMateriId: string;
+        title: string;
+        score: number;
+    }[];
 }
 
 export default function ModulDetailPage() {
     const params = useParams();
     const slug = Array.isArray(params.slug) ? params.slug[0] : params.slug;
+    const router = useRouter();
 
     const [user, setUser] = useState<User | null>(null);
     const [modul, setModul] = useState<Modul | null>(null);
@@ -140,10 +150,12 @@ export default function ModulDetailPage() {
             // Fallback: Jika backend tidak mengirim `hasCompletedModulPostTest`, cek manual.
             if (data.hasCompletedModulPostTest === undefined) {
                 try {
-                    const postTestResultRes = await authFetch(`${process.env.NEXT_PUBLIC_API_URL}/api/results/latest-by-type/post-test-modul?modulId=${data._id}`);
-                    if (postTestResultRes.ok) {
+                    const postTestResultRes = await authFetch(`${process.env.NEXT_PUBLIC_API_URL}/api/results/latest-by-type/post-test-modul?modulId=${data._id}`); // Perbaikan di sini
+                    if (postTestResultRes.ok) { // Jika respons OK (2xx)
                         const latestResult = await postTestResultRes.json();
-                        data.hasCompletedModulPostTest = !!latestResult; // Set true jika ada hasil, false jika tidak
+                        data.hasCompletedModulPostTest = !!latestResult;
+                    } else {
+                        data.hasCompletedModulPostTest = false; // Anggap belum selesai jika ada error atau hasil tidak ditemukan (404)
                     }
                 } catch (e) {
                     console.warn("Gagal memeriksa status post-test modul secara manual.");
@@ -151,7 +163,20 @@ export default function ModulDetailPage() {
             }
             setModul(data);
         } catch (err) {
-            setError(err instanceof Error ? err.message : "Terjadi kesalahan.");
+            if (err instanceof Error && err.message.includes("401")) {
+                showAlert({
+                    title: "Sesi Habis",
+                    message: "Sesi Anda telah berakhir. Silakan login kembali.",
+                    onConfirm: () => {
+                        // Hapus data user dan redirect ke login
+                        localStorage.removeItem('user');
+                        localStorage.removeItem('token');
+                        router.push('/login');
+                    }
+                });
+            } else {
+                setError(err instanceof Error ? err.message : "Terjadi kesalahan.");
+            }
         } finally {
             setLoading(false);
         }
@@ -258,14 +283,16 @@ export default function ModulDetailPage() {
         setActiveTest(topik);
 
         // Jika tidak mengulang (retake=false) DAN topik sudah selesai, langsung tampilkan skor.
-        if (!retake && topik.isCompleted) {
+        if (!retake && (topik.isCompleted || topik.hasAttempted)) {
             await viewScore(topik);
             return;
         }
 
-        // Jika ini adalah retake, atau tes pertama kali, reset state dan mulai dari awal.
+        // Jika ini adalah retake, atau tes pertama kali, atau belum selesai,
+        // coba muat progress yang ada. Jika tidak, mulai dari awal.
         try {
-            const progressRes = await authFetch(`${process.env.NEXT_PUBLIC_API_URL}/api/results/progress?testType=post-test-topik-progress&modulId=${modul?._id}&topikId=${topik._id}`);
+            // Hanya muat progress jika ini bukan retake eksplisit
+            const progressRes = retake ? { ok: false } : await authFetch(`${process.env.NEXT_PUBLIC_API_URL}/api/results/progress?testType=post-test-topik-progress&modulId=${modul?._id}&topikId=${topik._id}`);
             if (progressRes.ok) {
                 const progressData = await progressRes.json();
                 if (progressData && progressData.answers && Array.isArray(progressData.answers) && progressData.answers.length > 0) {
@@ -357,7 +384,7 @@ export default function ModulDetailPage() {
             });
 
             const resultData = await response.json();
-            if (!response.ok) throw new Error(resultData.message || "Gagal mengirimkan jawaban.");
+            if (!response.ok) throw new Error(resultData.message || "Gagal mengirimkan jawaban."); 
 
             const finalResult = resultData.data; // Backend mengembalikan { message, data: newResult }
             setTestResult(finalResult);
@@ -367,17 +394,6 @@ export default function ModulDetailPage() {
                 ? `Selamat! Anda lulus post-test "${activeTest.title}" dengan skor ${finalResult.score}.`
                 : `Anda mendapatkan skor ${finalResult.score}% untuk post-test "${activeTest.title}". Coba lagi!`;
             createNotification(notifMessage, `/modul/${modul?.slug}#${activeTest._id}`);
-
-            // Tandai topik sebagai selesai di backend jika lulus
-            if (finalResult.score >= 70) {
-                authFetch(`${process.env.NEXT_PUBLIC_API_URL}/api/users/complete-topic`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        topikId: activeTest._id,
-                    }),
-                }).catch(err => console.warn("Gagal menandai topik selesai di backend:", err));
-            }
 
 
             // Jika lulus, update state modul secara lokal agar topik berikutnya terbuka & progress bar terupdate
@@ -595,11 +611,31 @@ export default function ModulDetailPage() {
                                     <p className="text-5xl font-bold text-blue-600 dark:text-blue-400 my-2">{testResult.score}%</p>
                                     <p className="text-base text-slate-700 dark:text-slate-300">{testResult.correct} / {testResult.total} Jawaban Benar</p>
                                 </div>
+
+                                {/* --- REKOMENDASI SUB TOPIK LEMAH --- */}
+                                {testResult.weakSubTopics && testResult.weakSubTopics.length > 0 && (
+                                    <div className="mt-6 text-left bg-yellow-50 dark:bg-yellow-900/30 p-4 rounded-lg border border-yellow-200 dark:border-yellow-800/50">
+                                        <h4 className="font-semibold text-yellow-800 dark:text-yellow-300">Rekomendasi Review</h4>
+                                        <p className="text-sm text-yellow-700 dark:text-yellow-400 mb-3">Sepertinya kamu masih kurang paham pada beberapa sub-topik berikut. Coba pelajari lagi ya!</p>
+                                        <ul className="list-disc list-inside space-y-1">
+                                            {testResult.weakSubTopics.map(sub => (
+                                                <li key={sub.subMateriId} className="flex justify-between items-center text-sm text-yellow-800 dark:text-yellow-300 font-medium">
+                                                    <span>{sub.title}</span>
+                                                    <span className="font-bold text-red-600 dark:text-red-400 bg-red-100 dark:bg-red-900/50 px-2 py-0.5 rounded">
+                                                        Skor: {sub.score}%
+                                                    </span>
+                                                </li>
+                                            ))}
+                                        </ul>
+                                    </div>
+                                )}
                                 {testResult.score >= 70 ? (
                                     <p className="mt-4 text-green-600 dark:text-green-400">Selamat! Kamu telah menguasai topik ini. Lanjutkan ke topik berikutnya!</p>
                                 ) : (
-                                    <p className="mt-4 text-yellow-600 dark:text-yellow-500">Skor kamu belum mencapai 80%. Coba pelajari lagi materinya dan ulangi tes.</p>
+                                    <p className="mt-4 text-yellow-600 dark:text-yellow-500">Skor kamu belum mencapai 70%. Coba pelajari lagi materinya dan ulangi tes.</p>
                                 )}
+
+                                {/* --- REKOMENDASI SUB TOPIK LEMAH --- */}
                             </div>
                         ) : currentQuestion ? (
                             // --- PENGERJAAN TEST ---
@@ -634,16 +670,14 @@ export default function ModulDetailPage() {
                     <footer className="p-4 border-t border-gray-200 dark:border-gray-700">
                         {testResult ? (
                             // --- Tombol setelah hasil keluar ---
-                            <div className="flex justify-end gap-3">
-                                {testResult.score < 70 && (
-                                    <button onClick={() => startTest(activeTest, true)} className="px-4 py-2 bg-yellow-500 text-white rounded-lg hover:bg-yellow-600">
-                                        Ulangi Tes
-                                    </button>
-                                )}
+                            <div className="flex justify-between items-center">
+                                <button onClick={() => startTest(activeTest, true)} className="px-4 py-2 bg-yellow-500 text-white rounded-lg hover:bg-yellow-600">
+                                    Ulangi Tes
+                                </button>
                                 <button
                                     onClick={() => {
                                         setActiveTest(null);
-                                        // Tidak perlu fetch ulang, state sudah diupdate secara lokal di submitTest
+                                        fetchModulData(); // Panggil fetchModulData untuk sinkronisasi status
                                     }}
                                     className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
                                     Tutup
@@ -793,7 +827,7 @@ export default function ModulDetailPage() {
                                 </div>
                                 {/* Accordion Content */}
                                 <div className={`transition-all duration-500 ease-in-out overflow-hidden ${isOpen && !isLocked ? 'max-h-[2000px]' : 'max-h-0'}`}>
-                                    <TopicContent topik={topik} onStartTest={startTest} onViewScore={viewScore} />
+                                    <TopicContent topik={topik} onStartTest={startTest} onViewScore={viewScore} hasAttempted={topik.isCompleted || topik.hasAttempted} />
                                 </div>
                             </div>
                         );

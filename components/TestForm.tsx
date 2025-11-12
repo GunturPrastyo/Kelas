@@ -25,6 +25,12 @@ interface Question {
   options: string[];
   answer: string;
   durationPerQuestion?: number;
+  subMateriId?: string;
+}
+
+interface SubMateri {
+  _id: string;
+  title: string;
 }
 
 interface TestFormProps {
@@ -35,6 +41,7 @@ interface TestFormProps {
   isEditing: boolean;
   initialQuestions?: Question[];
   initialDuration?: number;
+  subMateris?: SubMateri[];
   testType: "pre-test-global" | "post-test-modul" | "post-test-topik";
 }
 
@@ -49,6 +56,7 @@ export default function TestForm({
   isEditing,
   initialQuestions = emptyInitialQuestions,
   initialDuration = 60,
+  subMateris = [],
 }: TestFormProps) {
   const router = useRouter();
   const [questions, setQuestions] = useState<Question[]>([]);
@@ -68,12 +76,12 @@ export default function TestForm({
       setDurationPerQuestion(initialDuration);
       setFetching(false);
     } else {
-      setQuestions([{ questionText: "", options: [""], answer: "", durationPerQuestion: 60 }]);
+      setQuestions([{ questionText: "", options: [""], answer: "", durationPerQuestion: 60, subMateriId: "" }]);
     }
   }, [isEditing, initialQuestions, initialDuration]);
 
   const handleAddQuestion = () => {
-    setQuestions([...questions, { questionText: "", options: [""], answer: "", durationPerQuestion: 60 }]);
+    setQuestions([...questions, { questionText: "", options: [""], answer: "", durationPerQuestion: 60, subMateriId: "" }]);
   };
 
   const handleRemoveQuestion = (index: number) => {
@@ -128,7 +136,15 @@ export default function TestForm({
     const baseUrl = process.env.NEXT_PUBLIC_API_URL;
     let endpoint = "";
     let method = "";
-    let body: any = { questions };
+    // Pastikan setiap pertanyaan menyertakan semua field yang relevan
+    const questionsWithDetails = questions.map(q => ({
+      questionText: q.questionText,
+      options: q.options,
+      answer: q.answer,
+      durationPerQuestion: q.durationPerQuestion || 60,
+      subMateriId: q.subMateriId || null
+    }));
+    let body: any = { questions: questionsWithDetails };
     
     if (testType === "pre-test-global") {
       endpoint = isEditing ? `/api/questions/pre-test` : `/api/questions`;
@@ -231,6 +247,28 @@ export default function TestForm({
                 <option value={120}>2 Menit</option>
               </select>
             </div>
+
+            {/* Dropdown untuk Sub Topik */}
+            {subMateris && subMateris.length > 0 && (
+              <div className="grid w-full max-w-xs items-center gap-1.5 mb-4">
+                <Label htmlFor={`submateri-${qIndex}`}>Sub Topik Terkait</Label>
+                <select
+                  id={`submateri-${qIndex}`}
+                  value={q.subMateriId || ""}
+                  onChange={(e) => {
+                    const updated = [...questions];
+                    updated[qIndex].subMateriId = e.target.value;
+                    setQuestions(updated);
+                  }}
+                  className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                >
+                  <option value="">-- Pilih Sub Topik --</option>
+                  {subMateris.map((sub) => (
+                    <option key={sub._id} value={sub._id}>{sub.title}</option>
+                  ))}
+                </select>
+              </div>
+            )}
             {/* Editor untuk soal */}
             <div className="mb-4">
               <TiptapEditor
