@@ -62,7 +62,11 @@ export default function TopicContent({ topik, onStartTest, onViewScore, hasAttem
             <div className="prose dark:prose-invert max-w-none space-y-4">
                 {subMateris.length > 0 ? (
                     subMateris.map((sub, index) => (
-                        <div key={sub._id || index}>
+                        <div
+                            key={sub._id || index}
+                            id={sub._id} // ID unik untuk target scroll
+                            className="scroll-mt-24" // Margin atas saat scroll agar tidak tertutup header
+                        >
                             <h4 className="font-bold text-lg !mb-2">{sub.title}</h4>
                             <div dangerouslySetInnerHTML={{ __html: sub.content }} />
                         </div>
