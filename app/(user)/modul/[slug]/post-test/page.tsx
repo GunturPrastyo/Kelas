@@ -49,6 +49,8 @@ export default function PostTestPage() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [answerChangesCount, setAnswerChangesCount] = useState(0);
+    const [tabExitCount, setTabExitCount] = useState(0);
 
     const { showAlert } = useAlert();
     const questionAreaRef = useRef<HTMLDivElement>(null);
@@ -67,6 +69,8 @@ export default function PostTestPage() {
                     answers: answers,
                     timeTaken: Math.round((Date.now() - startTime) / 1000),
                     modulId: modul._id,
+                    answerChanges: answerChangesCount,
+                    tabExits: tabExitCount,
                 }),
             });
 
@@ -83,7 +87,23 @@ export default function PostTestPage() {
         } finally {
             setIsSubmitting(false);
         }
-    }, [answers, startTime, user, modul, showAlert]);
+    }, [answers, startTime, user, modul, showAlert, answerChangesCount, tabExitCount]);
+    const handleAnswerChange = (questionId: string, option: string) => {
+        setAnswers(prev => {
+            // Cek apakah sudah ada jawaban sebelumnya untuk pertanyaan ini
+            if (prev[questionId] && prev[questionId] !== option) {
+                setAnswerChangesCount(currentCount => currentCount + 1);
+            }
+            return { ...prev, [questionId]: option };
+        });
+    };
+
+    // --- Test Focus Tracking (Tab Exits) ---
+    useEffect(() => {
+        const handleVisibilityChange = () => document.visibilityState === 'hidden' && setTabExitCount(c => c + 1);
+        if (!result && !loading && total > 0) document.addEventListener('visibilitychange', handleVisibilityChange);
+        return () => document.removeEventListener('visibilitychange', handleVisibilityChange);
+    }, [result, loading, total]);
 
     useEffect(() => {
         const userRaw = localStorage.getItem('user');
@@ -197,6 +217,8 @@ export default function PostTestPage() {
                     setResult(null);
                     setAnswers({});
                     setTestIdx(0);
+                    setAnswerChangesCount(0);
+                    setTabExitCount(0);
                     
                     // 2. Fetch ulang soal
                     const questionsRes = await authFetch(`${process.env.NEXT_PUBLIC_API_URL}/api/questions/post-test-modul/${modul._id}`);
@@ -275,7 +297,7 @@ export default function PostTestPage() {
                     <div className="flex flex-col sm:flex-row items-center justify-between gap-4 sm:gap-2 bg-slate-50 dark:bg-gray-700/50 p-4 rounded-lg border border-slate-200 dark:border-gray-700">
                         <div className="text-center sm:text-left">
                             <p className="text-sm text-slate-500 dark:text-slate-400">Skor Kamu</p>
-                            <p className={`text-3xl font-bold ${isPassed ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>{result.score.toFixed(0)}%</p>
+                            <p className={`text-3xl font-bold ${isPassed ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>{Math.round(result.score)}%</p>
                         </div>
                         <div className="text-center sm:text-right">
                             <p className="text-base font-semibold text-slate-700 dark:text-slate-300">{Math.floor(result.timeTaken / 60)}m {result.timeTaken % 60}s</p>
@@ -351,8 +373,7 @@ export default function PostTestPage() {
                                         name={`q${currentQuestion._id}`}
                                         value={option}
                                         checked={answers[currentQuestion._id] === option}
-                                        onChange={() => setAnswers(prev => ({ ...prev, [currentQuestion._id]: option }))}
-                                    />
+                                        onChange={() => handleAnswerChange(currentQuestion._id, option)} />
                                     <span className="break-words" dangerouslySetInnerHTML={{ __html: option }} />
                                 </label>
                             ))}
