@@ -39,6 +39,7 @@ const SubMateriItem: React.FC<SubMateriItemProps> = ({
   onRemove,
 }) => {
   const ref = useRef<HTMLDivElement>(null);
+  const dragRef = useRef<HTMLDivElement>(null);
 
   const [, drop] = useDrop<DragItem>({
     accept: ItemType,
@@ -80,11 +81,12 @@ const SubMateriItem: React.FC<SubMateriItemProps> = ({
   });
 
   const opacity = isDragging ? 0 : 1;
-  preview(drop(ref)); // Gabungkan ref untuk drag, drop, dan preview
+  drag(dragRef);
+  preview(drop(ref));
 
   return (
     <div ref={ref} style={{ opacity }} className="bg-white dark:bg-gray-800 rounded-xl shadow-md border p-5 relative">
-      <div ref={drag} className="absolute top-5 left-2 cursor-move text-gray-400 hover:text-gray-600 dark:hover:text-gray-200" title="Geser untuk mengurutkan">
+      <div ref={dragRef} className="absolute top-5 left-2 cursor-move text-gray-400 hover:text-gray-600 dark:hover:text-gray-200" title="Geser untuk mengurutkan">
         <GripVertical size={20} />
       </div>
       <button
