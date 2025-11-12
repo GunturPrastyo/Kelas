@@ -13,6 +13,12 @@ const nextConfig = {
         hostname: "srv1099948.hstgr.cloud",
         pathname: '/uploads/**',
       },
+      {
+        protocol: 'http',
+        hostname: 'localhost',
+        port: '5000',
+        pathname: '/uploads/**',
+      },
       // Izin untuk avatar inisial dari ui-avatars.com
       {
         protocol: "https",

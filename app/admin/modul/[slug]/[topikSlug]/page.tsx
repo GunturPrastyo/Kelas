@@ -1,15 +1,25 @@
 "use client";
 
 import dynamic from "next/dynamic";
+import { DndProvider } from 'react-dnd';
+import { HTML5Backend } from 'react-dnd-html5-backend';
 import Link from "next/link";
-import { useState, use, useEffect } from "react";
+import { useState, use, useEffect, useCallback } from "react";
 import toast, { Toaster } from "react-hot-toast";
 import { authFetch } from "@/lib/authFetch";
 import { Modal } from "flowbite-react";
+import { PlusCircle, Save } from "lucide-react";
+import SubMateriItem from "@/components/SubMateriItem";
 
 const TiptapEditor = dynamic(() => import("@/components/TiptapEditor"), {
   ssr: false,
 });
+
+interface SubMateri {
+  _id?: string; // Akan ada saat fetch, tidak ada saat baru dibuat
+  title: string;
+  content: string;
+}
 
 interface MateriEditorPageProps {
   params: Promise<{ slug: string; topikSlug: string }>;
@@ -38,14 +48,12 @@ const getEmbedUrl = (url: string): string | null => {
 export default function MateriEditorPage({ params }: MateriEditorPageProps) {
   const { slug, topikSlug } = use(params);
 
-  const [content, setContent] = useState("");
+  const [subMateris, setSubMateris] = useState<SubMateri[]>([]);
   const [youtubeInput, setYoutubeInput] = useState("");
   const [youtubeEmbedUrl, setYoutubeEmbedUrl] = useState<string | null>(null);
   const [youtubeError, setYoutubeError] = useState<string | null>(null);
-  const [saved, setSaved] = useState(false);
   const [loading, setLoading] = useState(false);
   const [showModal, setShowModal] = useState(false);
-  const [materiId, setMateriId] = useState<string | null>(null);
   const [topikId, setTopikId] = useState<string | null>(null); // State untuk menyimpan ID topik
 
   useEffect(() => {
@@ -63,10 +71,9 @@ export default function MateriEditorPage({ params }: MateriEditorPageProps) {
           }
         } else {
           const data = await res.json();
-          setContent(data.content || "");
+          setSubMateris(data.subMateris || []);
           setYoutubeInput(data.youtube || "");
           setYoutubeEmbedUrl(data.youtube ? getEmbedUrl(data.youtube) : null);
-          setMateriId(data._id);
           setTopikId(data.topikId);
         }
       } catch (err) {
@@ -91,6 +98,32 @@ export default function MateriEditorPage({ params }: MateriEditorPageProps) {
     }
   }, [youtubeInput]);
 
+  const handleAddSubMateri = () => {
+    setSubMateris([...subMateris, { title: "", content: "" }]);
+  };
+
+  const handleRemoveSubMateri = (index: number) => {
+    const newSubMateris = [...subMateris];
+    newSubMateris.splice(index, 1);
+    setSubMateris(newSubMateris);
+  };
+
+  const handleSubMateriChange = (index: number, field: 'title' | 'content', value: string) => {
+    const newSubMateris = [...subMateris];
+    newSubMateris[index] = { ...newSubMateris[index], [field]: value };
+    setSubMateris(newSubMateris);
+  };
+
+  const moveSubMateri = useCallback((dragIndex: number, hoverIndex: number) => {
+    const draggedItem = subMateris[dragIndex];
+    setSubMateris(current => {
+      const updated = [...current];
+      updated.splice(dragIndex, 1);
+      updated.splice(hoverIndex, 0, draggedItem);
+      return updated;
+    });
+  }, [subMateris]);
+
   const handleSave = async () => {
     setLoading(true);
     setYoutubeError(null); // Clear previous errors
@@ -110,19 +143,15 @@ export default function MateriEditorPage({ params }: MateriEditorPageProps) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           topikId: topikId, // Kirim topikId untuk identifikasi di backend
-          content,
+          subMateris,
           youtube: youtubeInput, // Simpan URL asli yang diinput pengguna
         }),
       });
 
       if (!res.ok) throw new Error("Gagal menyimpan materi");
-      const data = await res.json();
+      
+      toast.success("Materi berhasil disimpan!");
 
-      // Update state setelah berhasil menyimpan
-      setSaved(true);
-      // Pastikan kita mendapatkan _id dari data yang dikembalikan
-      setMateriId(data.data?._id || data._id);
-      setTimeout(() => setSaved(false), 2000);
     } catch (err) {
       console.error("❌ Error saat menyimpan materi:", err);
       toast.error("Terjadi kesalahan saat menyimpan materi. Periksa log console.");
@@ -132,7 +161,8 @@ export default function MateriEditorPage({ params }: MateriEditorPageProps) {
   };
 
   return (
-    <div className="p-6">
+    <DndProvider backend={HTML5Backend}>
+      <div className="p-6">
       <Toaster position="top-center" reverseOrder={false} />
       {/* Breadcrumb */}
       <nav className="text-sm mb-6 text-gray-600 dark:text-gray-300">
@@ -148,6 +178,20 @@ export default function MateriEditorPage({ params }: MateriEditorPageProps) {
           {topikSlug.replace(/-/g, " ")}
         </span>
       </nav>
+
+      <div className="flex justify-between items-center mb-6">
+        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Editor Materi</h1>
+        <button
+          onClick={handleSave}
+          disabled={loading || !!youtubeError}
+          className="bg-blue-700 text-white px-5 py-2.5 rounded-lg hover:bg-blue-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+        >
+          <Save size={18} />
+          {loading ? "Menyimpan..." : "Simpan Materi"}
+        </button>
+      </div>
+
+      <div className="bg-white dark:bg-gray-800 rounded-xl shadow-md border p-6 mb-6">
 
       {/* Input YouTube */}
       <div className="mb-5 flex items-center space-x-2">
@@ -177,24 +221,31 @@ export default function MateriEditorPage({ params }: MateriEditorPageProps) {
       <p className="text-sm text-gray-500 dark:text-gray-300 mb-5">
         Masukkan URL video YouTube (bukan link embed). Kami akan mengkonversinya secara otomatis.
       </p>
-
-      {/* Editor */}
-      <div className="bg-white dark:bg-gray-800 rounded-xl shadow-md border p-5 mb-5">
-        <TiptapEditor 
-          key={materiId}
-          content={content}
-          onChange={setContent}
-          placeholder="Mulai menulis materi di sini..." />
       </div>
 
-      {/* Tombol simpan */}
-      <button
-        onClick={handleSave}
-        disabled={loading || !!youtubeError} // Disable if there's a YouTube error
-        className="bg-blue-700 text-white px-6 py-2 rounded-lg hover:bg-blue-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-      >
-        {loading ? "Menyimpan..." : saved ? "✅ Tersimpan!" : "💾 Simpan Materi"}
-      </button>
+      {/* Sub-Materi Editor */}
+      <div className="space-y-6">
+        {subMateris.map((sub, index) => (
+          <SubMateriItem
+            key={sub._id || index} // Gunakan ID jika ada, atau index sebagai fallback
+            index={index}
+            subMateri={sub}
+            onMove={moveSubMateri}
+            onChange={handleSubMateriChange}
+            onRemove={handleRemoveSubMateri}
+          />
+        ))}
+      </div>
+
+      {/* Tombol Tambah Sub Materi */}
+      <div className="mt-6">
+        <button
+          onClick={handleAddSubMateri}
+          className="w-full flex items-center justify-center gap-2 py-3 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition"
+        >
+          <PlusCircle size={18} /> Tambah Bagian Materi
+        </button>
+      </div>
 
       {/* Preview Video */}
       {youtubeEmbedUrl && ( // Use youtubeEmbedUrl for preview
@@ -238,5 +289,6 @@ export default function MateriEditorPage({ params }: MateriEditorPageProps) {
         </Modal>
       )}
     </div>
+    </DndProvider>
   );
 }

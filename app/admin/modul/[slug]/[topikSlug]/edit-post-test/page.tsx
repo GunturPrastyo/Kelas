@@ -12,6 +12,7 @@ interface Question {
   questionText: string;
   options: string[];
   answer: string;
+  subMateriId?: string;
 }
 
 interface Topik {
@@ -20,11 +21,18 @@ interface Topik {
   modulId: string;
 }
 
+interface SubMateri {
+  _id: string;
+  title: string;
+  content: string;
+}
+
 export default function EditPostTestTopikPage() {
   const params = useParams();
   const { slug, topikSlug } = params;
 
   const [topik, setTopik] = useState<Topik | null>(null);
+  const [subMateris, setSubMateris] = useState<SubMateri[]>([]);
   const [questions, setQuestions] = useState<Question[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -41,6 +49,13 @@ export default function EditPostTestTopikPage() {
         const topikResponse = await topikRes.json();
         const topikData = topikResponse.data || topikResponse; // Menangani jika data ada di dalam properti 'data'
         setTopik(topikData);
+
+        // Ambil data materi untuk mendapatkan sub-topik
+        const materiRes = await authFetch(`${process.env.NEXT_PUBLIC_API_URL}/api/materi/modul/${slug}/topik/${topikSlug}`);
+        if (materiRes.ok) {
+          const materiData = await materiRes.json();
+          setSubMateris(materiData.subMateris || []);
+        }
 
         // 2. Ambil data soal menggunakan ID dari topik
         const questionsRes = await authFetch(`${process.env.NEXT_PUBLIC_API_URL}/api/questions/post-test-topik/${topikData.modulId}/${topikData._id}`);
@@ -97,6 +112,7 @@ export default function EditPostTestTopikPage() {
         topikSlug={topikSlug as string}
         isEditing={questions.length > 0}
         initialQuestions={questions}
+        subMateris={subMateris}
       />
     </div>
   );
