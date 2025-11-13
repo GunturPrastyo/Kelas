@@ -112,9 +112,9 @@ export default function ModulPage() {
       </div>
 
       {view === "grid" ? (
-        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
+        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5 grid-auto-rows-fr">
           {/* Card Khusus untuk Pre-Test Global */}
-          <div className="relative bg-white dark:bg-gray-800 rounded-xl shadow-md hover:shadow-lg border border-blue-300 dark:border-blue-700 transition-all flex flex-col h-full p-5">
+          <div className="relative bg-white dark:bg-gray-800 rounded-xl shadow-md hover:shadow-lg border border-blue-300 dark:border-blue-700 transition-all flex flex-col p-5">
             <div className="flex items-start space-x-4 flex-grow">
               <div className="w-12 h-12 flex-shrink-0 flex items-center justify-center bg-blue-100 dark:bg-blue-900 rounded-lg">
                 <span className="text-2xl">📝</span>

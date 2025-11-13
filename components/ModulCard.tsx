@@ -47,7 +47,7 @@ export default function ModulCard({ modul, onDelete }: Props) {
 
   return (
     <div
-      className="relative bg-white dark:bg-gray-800 rounded-xl shadow-md hover:shadow-lg border border-gray-200 dark:border-gray-700 transition-all flex flex-col h-full cursor-pointer"
+      className="relative bg-white dark:bg-gray-800 rounded-xl shadow-md hover:shadow-lg border border-gray-200 dark:border-gray-700 transition-all flex flex-col cursor-pointer"
       onClick={handleCardClick}
     >
       {/* Tombol Aksi di Kanan Atas */}
@@ -83,8 +83,8 @@ export default function ModulCard({ modul, onDelete }: Props) {
       </div>
 
       {/* Konten utama yang bisa diklik */}
-      <div className="flex flex-col flex-grow p-5">
-        <div className="flex items-start space-x-4 flex-grow">
+      <div className="flex flex-col flex-grow p-5 pt-12 flex-1">
+        <div className="flex items-start space-x-4">
           <div className="w-12 h-12 flex-shrink-0 flex items-center justify-center bg-blue-100 dark:bg-blue-900 rounded-lg overflow-hidden">
             {modul.icon ? (
               <img
@@ -99,7 +99,7 @@ export default function ModulCard({ modul, onDelete }: Props) {
             )}
           </div>
 
-          <div className="pr-16">
+          <div className="flex-1">
             <h3 className="text-lg font-semibold dark:text-white">
               {modul.title}
             </h3>

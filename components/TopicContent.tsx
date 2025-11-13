@@ -77,24 +77,48 @@ export default function TopicContent({ topik, onStartTest, onViewScore, hasAttem
             </div>
 
             <div className="mt-8 pt-6 border-t border-gray-200 dark:border-gray-700">
-                <div className="bg-slate-50 dark:bg-gray-900/50 rounded-xl p-5 flex flex-col md:flex-row items-center gap-5 flex-wrap">
-                    <Image src="/post-test-topik.png" alt="Post Test" width={100} height={100} className="w-20 h-20 sm:w-24 sm:h-24 object-contain" />
-                    <div className="flex-1 text-center md:text-left">
-                        <h4 className="text-lg font-bold text-gray-800 dark:text-gray-100">Waktunya Uji Pemahaman!</h4>
-                        <p className="text-sm text-gray-600 dark:text-gray-400 mt-1 mb-4">Setelah mempelajari materi, uji pemahamanmu dengan mengerjakan post-test singkat ini.</p>
-                        <div className="flex items-center gap-3 justify-center md:justify-start">
-                            <button onClick={() => onStartTest(topik, hasAttempted)} className="px-6 py-2.5 bg-yellow-400 hover:bg-yellow-300 text-black font-semibold rounded-xl shadow-md transition transform hover:scale-105">
-                                🚀 {hasAttempted ? "Ulangi Post-Test" : "Mulai Post-Test"}
-                            </button>
-                            {hasAttempted && (
-                                <button onClick={() => onViewScore(topik)} className="px-6 py-2.5 bg-blue-500 hover:bg-blue-600 text-white font-semibold rounded-xl shadow-md transition transform hover:scale-105">
-                                    Lihat Skor
-                                </button>
-                            )}
+                <div className="bg-gradient-to-br from-slate-50 to-slate-100 dark:from-gray-900 dark:to-gray-800 rounded-2xl p-5 sm:p-6 flex flex-col gap-5 shadow-sm transition-all duration-300 hover:shadow-lg hover:-translate-y-1">
+
+                    {/* Gambar + Deskripsi sejajar */}
+                    <div className="flex flex-row items-center gap-4">
+                        <Image
+                            src="/post-test-topik.png"
+                            alt="Post Test"
+                            width={100}
+                            height={100}
+                            className="w-24 h-24 sm:w-28 sm:h-28 object-contain flex-shrink-0"
+                        />
+                        <div className="text-left flex-1">
+                            <h4 className="text-base sm:text-xl font-bold text-gray-800 dark:text-gray-100">
+                                Waktunya Uji Pemahaman!
+                            </h4>
+                            <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 mt-1 leading-relaxed">
+                                Setelah mempelajari materi, uji pemahamanmu dengan mengerjakan post-test singkat ini.
+                            </p>
                         </div>
+                    </div>
+
+                    {/* Tombol sejajar */}
+                    <div className="flex flex-row justify-start gap-3 w-full flex-wrap">
+                        <button
+                            onClick={() => onStartTest(topik, hasAttempted)}
+                            className="text-sm px-4 py-2 bg-yellow-400 hover:bg-yellow-300 text-black font-semibold rounded-xl shadow-md transition transform hover:scale-105 active:scale-95 focus:ring-2 focus:ring-yellow-200 sm:px-5 sm:py-2"
+                        >
+                            {hasAttempted ? "Ulangi Post-Test" : "Mulai Post-Test"}
+                        </button>
+
+                        {hasAttempted && (
+                            <button
+                                onClick={() => onViewScore(topik)}
+                                className="text-sm px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white font-semibold rounded-xl shadow-md transition transform hover:scale-105 active:scale-95 focus:ring-2 focus:ring-blue-300 sm:px-5 sm:py-2"
+                            >
+                                Lihat Skor
+                            </button>
+                        )}
                     </div>
                 </div>
             </div>
+
         </div>
     );
 }

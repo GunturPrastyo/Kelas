@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback, useRef } from "react";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { authFetch } from "@/lib/authFetch";
 import Link from "next/link";
-import { Home, CheckCircle2, Lock, Rocket, Award } from 'lucide-react';
+import { Home, Target, Clock3, Activity, Eye } from 'lucide-react';
 import { useAlert } from "@/context/AlertContext";
 
 interface Question {
@@ -30,6 +30,12 @@ interface TestResult {
     total: number;
     timeTaken: number;
     timestamp: string;
+    scoreDetails?: {
+        accuracy: number;
+        time: number;
+        stability: number;
+        focus: number;
+    };
 }
 
 export default function PostTestPage() {
@@ -37,7 +43,6 @@ export default function PostTestPage() {
     const router = useRouter();
     const searchParams = useSearchParams(); // 1. Dapatkan search params
     const slug = params.slug as string;
-
     const [modul, setModul] = useState<Modul | null>(null);
     const [user, setUser] = useState<User | null>(null);
     const [questions, setQuestions] = useState<Question[]>([]);
@@ -48,8 +53,8 @@ export default function PostTestPage() {
     const [result, setResult] = useState<TestResult | null>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
-    const [isSubmitting, setIsSubmitting] = useState(false);
-    const [answerChangesCount, setAnswerChangesCount] = useState(0);
+    const [isSubmitting, setIsSubmitting] = useState(false); // State baru untuk melacak ID unik
+    const [changedQuestionIds, setChangedQuestionIds] = useState<Set<string>>(new Set());
     const [tabExitCount, setTabExitCount] = useState(0);
 
     const { showAlert } = useAlert();
@@ -69,7 +74,7 @@ export default function PostTestPage() {
                     answers: answers,
                     timeTaken: Math.round((Date.now() - startTime) / 1000),
                     modulId: modul._id,
-                    answerChanges: answerChangesCount,
+                    answerChanges: changedQuestionIds.size,
                     tabExits: tabExitCount,
                 }),
             });
@@ -87,12 +92,12 @@ export default function PostTestPage() {
         } finally {
             setIsSubmitting(false);
         }
-    }, [answers, startTime, user, modul, showAlert, answerChangesCount, tabExitCount]);
+    }, [answers, startTime, user, modul, showAlert, changedQuestionIds, tabExitCount]);
     const handleAnswerChange = (questionId: string, option: string) => {
         setAnswers(prev => {
             // Cek apakah sudah ada jawaban sebelumnya untuk pertanyaan ini
             if (prev[questionId] && prev[questionId] !== option) {
-                setAnswerChangesCount(currentCount => currentCount + 1);
+                setChangedQuestionIds(currentSet => new Set(currentSet).add(questionId));
             }
             return { ...prev, [questionId]: option };
         });
@@ -118,7 +123,7 @@ export default function PostTestPage() {
         if (!slug || !user) return;
 
         const fetchModulAndQuestions = async () => {
-            const isRetake = searchParams.get('retake') === 'true'; // 2. Cek apakah ini mode retake
+            const isRetake = searchParams.get('retake') === 'true';
 
             try {
                 setLoading(true);
@@ -126,8 +131,7 @@ export default function PostTestPage() {
                 if (!modulRes.ok) throw new Error("Gagal memuat data modul.");
                 const modulData: Modul = await modulRes.json();
                 setModul(modulData);
-                
-                // 3. Lewati pengecekan hasil jika sedang retake
+
                 if (!isRetake) {
                     // Cek apakah user sudah pernah menyelesaikan post-test ini
                     const resultRes = await authFetch(`${process.env.NEXT_PUBLIC_API_URL}/api/results/latest-by-type/post-test-modul?modulId=${modulData._id}`);
@@ -141,16 +145,20 @@ export default function PostTestPage() {
                     }
                 }
 
-                // Cek progress jika belum ada hasil
-                const progressRes = await authFetch(`${process.env.NEXT_PUBLIC_API_URL}/api/results/progress?testType=post-test-modul-progress&modulId=${modulData._id}`);
-                if (progressRes.ok) {
-                    const progressData = await progressRes.json();
-                    if (progressData && progressData.answers && Array.isArray(progressData.answers) && progressData.answers.length > 0) {
-                        setAnswers(progressData.answers.reduce((acc: { [key: string]: string }, ans: { questionId: string, selectedOption: string }) => {
-                            acc[ans.questionId] = ans.selectedOption;
-                            return acc;
-                        }, {}) || {});
-                        setTestIdx(progressData.currentIndex || 0);
+                if (isRetake) {
+                    setResult(null);
+                    setAnswers({});
+                    setTestIdx(0);
+                    setChangedQuestionIds(new Set());
+                    setTabExitCount(0);
+                } else {
+                    const progressRes = await authFetch(`${process.env.NEXT_PUBLIC_API_URL}/api/results/progress?testType=post-test-modul-progress&modulId=${modulData._id}`);
+                    if (progressRes.ok) {
+                        const progressData = await progressRes.json();
+                        if (progressData && progressData.answers && Array.isArray(progressData.answers) && progressData.answers.length > 0) {
+                            setAnswers(progressData.answers.reduce((acc: { [key: string]: string }, ans: { questionId: string, selectedOption: string }) => { acc[ans.questionId] = ans.selectedOption; return acc; }, {}) || {});
+                            setTestIdx(progressData.currentIndex || 0);
+                        }
                     }
                 }
 
@@ -177,7 +185,7 @@ export default function PostTestPage() {
         };
 
         fetchModulAndQuestions();
-    }, [slug, user, searchParams]); // Tambahkan searchParams sebagai dependency
+    }, [slug, user, router, searchParams]);
 
     useEffect(() => {
         if (result || loading || error || questions.length === 0) return;
@@ -210,29 +218,13 @@ export default function PostTestPage() {
             confirmText: 'Ya, Ulangi',
             onConfirm: async () => {
                 try {
-                    setLoading(true);
-                    setError(null);
+                    // Hapus hasil dari DB
+                    await authFetch(`${process.env.NEXT_PUBLIC_API_URL}/api/results/by-type/post-test-modul?modulId=${modul._id}`, {
+                        method: 'DELETE'
+                    });
 
-                    // 1. Reset state lokal untuk memulai tes baru
-                    setResult(null);
-                    setAnswers({});
-                    setTestIdx(0);
-                    setAnswerChangesCount(0);
-                    setTabExitCount(0);
-                    
-                    // 2. Fetch ulang soal
-                    const questionsRes = await authFetch(`${process.env.NEXT_PUBLIC_API_URL}/api/questions/post-test-modul/${modul._id}`);
-                    if (!questionsRes.ok) {
-                        throw new Error("Gagal memuat ulang soal post-test.");
-                    }
-                    const questionsData: { questions: Question[] } = await questionsRes.json();
-                    setQuestions(questionsData.questions || []);
-
-                    // 3. Reset timer
-                    setStartTime(Date.now());
-                    
-                    // 4. Hapus query param 'retake' dari URL tanpa reload
-                    router.replace(`/modul/${slug}/post-test`, { scroll: false });
+                    // Reload halaman dengan parameter retake
+                    router.push(`/modul/${slug}/post-test?retake=true`);
 
                 } catch (err) {
                     setError(err instanceof Error ? err.message : "Terjadi kesalahan saat memulai ulang tes.");
@@ -276,7 +268,7 @@ export default function PostTestPage() {
     );
 
     if (result) {
-        const isPassed = result.score >= 80;
+        const isPassed = result.score >= 70;
         return (
             <div className="max-w-full mx-auto px-1.5 sm:px-3 lg:px-5 py-5 font-sans">
                 <nav className="flex mb-6" aria-label="Breadcrumb">
@@ -310,11 +302,59 @@ export default function PostTestPage() {
                     </div>
                     <div className="text-center mt-6">
                         {isPassed ? (
-                            <p className="text-green-600 dark:text-green-400">Selamat! Anda telah berhasil menyelesaikan modul ini.</p>
+                            <p className="text-green-600 dark:text-green-400 font-medium">Selamat! Anda telah berhasil menyelesaikan modul ini.</p>
                         ) : (
-                            <p className="text-yellow-600 dark:text-yellow-500">Skor Anda belum mencapai 80%. Silakan pelajari kembali materi modul ini.</p>
+                            <p className="text-yellow-600 dark:text-yellow-500 font-medium">Skor Anda belum mencapai 70%. Silakan pelajari kembali materi modul ini.</p>
                         )}
                     </div>
+
+                    {/* --- RINCIAN SKOR --- */}
+                    {result.scoreDetails && (
+                        <div
+                            className="mt-8 grid grid-cols-2 lg:grid-cols-4 gap-4"
+                        >
+                            {[
+                                {
+                                    label: "Ketepatan",
+                                    val: result.scoreDetails.accuracy,
+                                    desc: "Persentase jawaban benar.",
+                                    icon: <Target className="w-5 h-5 text-blue-600" />,
+                                    gradient: "from-blue-500/10 to-blue-400/5 border-blue-300/30",
+                                },
+                                {
+                                    label: "Kecepatan",
+                                    val: result.scoreDetails.time,
+                                    desc: "Efisiensi waktu pengerjaan.",
+                                    icon: <Clock3 className="w-5 h-5 text-emerald-600" />,
+                                    gradient: "from-emerald-500/10 to-emerald-400/5 border-emerald-300/30",
+                                },
+                                {
+                                    label: "Konsistensi",
+                                    val: result.scoreDetails.stability,
+                                    desc: "Stabilitas dalam menjawab.",
+                                    icon: <Activity className="w-5 h-5 text-indigo-600" />,
+                                    gradient: "from-indigo-500/10 to-indigo-400/5 border-indigo-300/30",
+                                },
+                                {
+                                    label: "Fokus",
+                                    val: result.scoreDetails.focus,
+                                    desc: "Tingkat konsentrasi selama tes.",
+                                    icon: <Eye className="w-5 h-5 text-amber-600" />,
+                                    gradient: "from-amber-500/10 to-amber-400/5 border-amber-300/30",
+                                },
+                            ].map((item, i) => (
+                                <div key={i} className={`relative bg-gradient-to-br ${item.gradient} rounded-xl p-4 border shadow-sm`}>
+                                    <div className="flex items-center gap-2 mb-1">
+                                        {item.icon}
+                                        <h4 className="text-sm font-semibold text-slate-800 dark:text-slate-100">{item.label}</h4>
+                                    </div>
+                                    <div className="text-2xl font-bold text-slate-800 dark:text-slate-200 mb-1">{item.val}%</div>
+                                    <p className="text-xs text-slate-600 dark:text-slate-400 leading-snug">{item.desc}</p>
+                                </div>
+                            ))}
+                        </div>
+                    )}
+
                     <div className="mt-6 flex justify-center gap-4">
                         <button onClick={handleRetake} className="bg-transparent text-blue-600 dark:text-blue-400 border border-blue-500/20 dark:border-blue-400/20 px-4 py-2 rounded-lg hover:bg-blue-50 dark:hover:bg-blue-900/20 transition">
                             Ulangi Tes
