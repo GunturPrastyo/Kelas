@@ -248,7 +248,7 @@ export default function PreTestPage() {
                 localStorage.removeItem(stateKey);
                 localStorage.removeItem(resultKey);
                 // Hapus juga dari DB jika ada
-                authFetch(`${process.env.NEXT_PUBLIC_API_URL}/api/results/pre-test-global`, { method: 'DELETE' })
+                authFetch(`${process.env.NEXT_PUBLIC_API_URL}/api/results/by-type/pre-test-global`, { method: 'DELETE' })
                     .finally(() => window.location.reload());
             },
         });
@@ -470,15 +470,25 @@ export default function PreTestPage() {
                         {idx === total - 1 ? (
                             <button
                                 id="submitBtn"
-                                onClick={() => showAlert({
-                                    type: 'confirm',
-                                    title: 'Kirim Jawaban?',
-                                    message: 'Apakah Anda yakin ingin mengirimkan jawaban dan melihat hasilnya?',
-                                    confirmText: 'Ya, Kirim',
-                                    cancelText: 'Batal',
-                                    onConfirm: grade,
-                                })
-                                }
+                                onClick={() => {
+                                    // Cek apakah semua soal sudah dijawab
+                                    if (Object.keys(answers).length < total) {
+                                        showAlert({
+                                            title: 'Jawaban Belum Lengkap',
+                                            message: `Anda baru menjawab ${Object.keys(answers).length} dari ${total} soal. Silakan lengkapi semua jawaban sebelum mengirim.`,
+                                        });
+                                    } else {
+                                        // Jika sudah lengkap, tampilkan konfirmasi
+                                        showAlert({
+                                            type: 'confirm',
+                                            title: 'Kirim Jawaban?',
+                                            message: 'Apakah Anda yakin ingin mengirimkan jawaban dan melihat hasilnya?',
+                                            confirmText: 'Ya, Kirim',
+                                            cancelText: 'Batal',
+                                            onConfirm: grade,
+                                        });
+                                    }
+                                }}
                                 className="flex-1 sm:flex-none bg-green-600 text-white border-none px-3 py-2 sm:px-4 sm:py-2.5 rounded-lg cursor-pointer hover:bg-green-700 transition text-sm sm:text-base"
                             >
                                 Kirim Jawaban

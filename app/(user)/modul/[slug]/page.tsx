@@ -14,7 +14,9 @@ import { authFetch } from '@/lib/authFetch'; // <-- Import helper baru
 import { useAlert } from '@/context/AlertContext';
 
 import TopicContent from '@/components/TopicContent';
-import { Home, CheckCircle2, Lock, Rocket, Award } from 'lucide-react';
+import { Home, CheckCircle2, Lock, Rocket, Award, AlertTriangle, Star, Lightbulb, Target, Clock3, Activity, Eye } from 'lucide-react';
+import { motion } from "framer-motion";
+
 
 // --- Interface Definitions ---
 interface User {
@@ -78,6 +80,7 @@ interface TestResult {
         stability: number;
         focus: number;
     };
+    bestScore?: number; // Tambahkan properti opsional untuk skor terbaik
 }
 
 export default function ModulDetailPage() {
@@ -99,11 +102,13 @@ export default function ModulDetailPage() {
     const [testTimeLeft, setTestTimeLeft] = useState(0);
     const [testResult, setTestResult] = useState<TestResult | null>(null);
     const [isSubmitting, setIsSubmitting] = useState(false);
-    const [answerChangesCount, setAnswerChangesCount] = useState(0);
+    const [answerChangesCount, setAnswerChangesCount] = useState(0); // Tetap gunakan nama ini untuk konsistensi, tapi ubah cara kerjanya
+    const [changedQuestionIds, setChangedQuestionIds] = useState<Set<string>>(new Set()); // State baru untuk melacak ID unik
     const [tabExitCount, setTabExitCount] = useState(0);
 
     const { showAlert } = useAlert();
     const persistTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+    const questionStartTimeRef = useRef<number>(0);
     const studyTimeTrackerRef = useRef<{ [topicId: string]: number }>({});
 
     // Hooks untuk modal post-test dipindahkan ke top-level
@@ -272,14 +277,17 @@ export default function ModulDetailPage() {
                     currentIndex: testIdx,
                     modulId: modul?._id,
                     topikId: activeTest._id,
+                    answerChangesCount: answerChangesCount,
+                    changedQuestionIds: Array.from(changedQuestionIds),
+                    tabExitCount: tabExitCount,
                 }),
             });
         } catch (error) {
             console.warn("Gagal menyimpan progres post-test:", error);
         }
-    }, [user, activeTest, testAnswers, testIdx, modul?._id]);
+    }, [user, activeTest, testAnswers, testIdx, modul?._id, answerChangesCount, changedQuestionIds, tabExitCount]);
 
-    useEffect(() => {
+    useEffect(() => { // Efek untuk menyimpan progres secara otomatis
         if (!activeTest || isSubmitting) return;
 
         if (persistTimeoutRef.current) {
@@ -321,7 +329,8 @@ export default function ModulDetailPage() {
                 // Jika retake, selalu mulai dari awal
                 setTestAnswers({});
                 setTestIdx(0);
-                setAnswerChangesCount(0);
+                setAnswerChangesCount(0); // Reset counter lama
+                setChangedQuestionIds(new Set()); // Reset set baru
                 setTabExitCount(0);
             } else {
                 // Jika bukan retake, coba muat progress
@@ -336,12 +345,14 @@ export default function ModulDetailPage() {
                         }, {}) || {});
                         setTestIdx(progressData.currentIndex || 0);
                         setAnswerChangesCount(progressData.answerChangesCount || 0);
+                        setChangedQuestionIds(new Set(progressData.changedQuestionIds || [])); // Muat progress untuk Set
                         setTabExitCount(progressData.tabExitCount || 0);
                     } else {
                         // Jika tidak ada progress, reset ke awal
                         setTestAnswers({});
                         setTestIdx(0);
                         setAnswerChangesCount(0);
+                        setChangedQuestionIds(new Set());
                         setTabExitCount(0);
                     }
                 }
@@ -354,13 +365,16 @@ export default function ModulDetailPage() {
         }
 
         setTestStartTime(Date.now());
+        questionStartTimeRef.current = Date.now(); // Mulai timer untuk soal pertama
     };
 
     const handleAnswerChange = (questionId: string, option: string) => {
         setTestAnswers(prev => {
             // Cek apakah sudah ada jawaban sebelumnya untuk pertanyaan ini
+            // Jika ya, tambahkan ID soal ini ke dalam Set. Set akan otomatis menangani duplikat.
             if (prev[questionId] && prev[questionId] !== option) {
-                setAnswerChangesCount(currentCount => currentCount + 1);
+                setAnswerChangesCount(currentCount => currentCount + 1); // Tetap hitung total perubahan jika diperlukan untuk analisis lain
+                setChangedQuestionIds(currentSet => new Set(currentSet).add(questionId));
             }
             return { ...prev, [questionId]: option };
         });
@@ -431,7 +445,8 @@ export default function ModulDetailPage() {
                     timeTaken: Math.round((Date.now() - testStartTime) / 1000),
                     modulId: modul?._id,
                     topikId: activeTest._id,
-                    answerChanges: answerChangesCount,
+                    // Kirim jumlah soal unik yang diubah (changedQuestionIds.size) sebagai 'answerChanges'
+                    answerChanges: changedQuestionIds.size, 
                     tabExits: tabExitCount,
                 }),
             });
@@ -497,7 +512,7 @@ export default function ModulDetailPage() {
         } finally {
             setIsSubmitting(false);
         }
-    }, [testAnswers, testStartTime, user, activeTest, modul, createNotification, answerChangesCount, tabExitCount]);
+    }, [testAnswers, testStartTime, user, activeTest, modul, createNotification, changedQuestionIds, tabExitCount]);
 
     // --- Timer Effect for Test ---
     useEffect(() => {
@@ -656,83 +671,153 @@ export default function ModulDetailPage() {
                     {/* Body */}
                     <main className="p-6 overflow-y-auto" ref={questionModalRef}>
                         {testResult ? (
-                            <div className="text-center">
-                                {/* --- HASIL TES --- */}
-                                <h3 className="text-2xl font-bold text-blue-700 dark:text-blue-400 mb-1">Tes Selesai!</h3>
-                                <p className="text-gray-600 dark:text-gray-300 mb-5">Berikut hasil penilaian kamu.</p>
+                            <div className="text-center py-8">
+                                {/* --- JUDUL --- */}
+                                <motion.div
+                                    initial={{ opacity: 0, y: -15 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    transition={{ duration: 0.6 }}
+                                >
+                                    <h3 className="text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-purple-500 mb-2">
+                                        Tes Selesai!
+                                    </h3>
+                                    <p className="text-gray-600 dark:text-gray-300 mb-6">
+                                        Berikut hasil penilaian kamu.
+                                    </p>
+                                </motion.div>
 
                                 {/* --- KOTAK SKOR UTAMA --- */}
-                                <div className="relative inline-block p-[2px] rounded-2xl bg-gradient-to-r from-blue-500 via-indigo-500 to-purple-500 shadow-lg">
-                                    <div className="bg-white dark:bg-gray-800 p-6 rounded-2xl">
-                                        <p className="text-sm text-slate-500 dark:text-slate-400">Skor Kamu</p>
-                                        <p className="text-6xl font-extrabold bg-gradient-to-r from-blue-600 to-purple-500 text-transparent bg-clip-text my-2 drop-shadow-sm">
-                                            {Math.round(testResult.score)}%
+                                <motion.div
+                                    initial={{ scale: 0.9, opacity: 0 }}
+                                    animate={{ scale: 1, opacity: 1 }}
+                                    transition={{ duration: 0.5 }}
+                                    className="relative inline-block p-[3px] rounded-3xl bg-gradient-to-r from-blue-500 via-indigo-500 to-purple-600 shadow-2xl"
+                                >
+                                    <div className="bg-white dark:bg-gray-900 p-8 rounded-3xl">
+                                        <p className="text-sm text-slate-500 dark:text-slate-400">
+                                            Skor Kamu
                                         </p>
-                                        <p className="text-base text-slate-700 dark:text-slate-300 font-medium">
-                                            {testResult.correct} / {testResult.total} Jawaban Benar
+                                        <p className="text-7xl font-extrabold bg-gradient-to-r from-blue-600 to-purple-500 text-transparent bg-clip-text my-3 drop-shadow-md">
+                                            {Math.round(testResult.score)}% 
+                                        </p>
+                                        <p className="text-base text-slate-700 dark:text-slate-300 font-semibold">
+                                            {testResult.correct} / {activeTest.questions.length} Jawaban Benar
                                         </p>
                                     </div>
-                                </div>
-
-                                {/* --- Rincian Skor --- */}
-                                {testResult.scoreDetails && (
-                                    <div className="mt-8 grid grid-cols-2 md:grid-cols-4 gap-3 text-left">
-                                        <div className="bg-slate-50 dark:bg-gray-700/50 p-3 rounded-lg">
-                                            <p className="text-xs text-slate-500 dark:text-slate-400">Ketepatan</p>
-                                            <p className="font-bold text-lg text-slate-800 dark:text-slate-200">{testResult.scoreDetails.accuracy}%</p>
-                                        </div>
-                                        <div className="bg-slate-50 dark:bg-gray-700/50 p-3 rounded-lg">
-                                            <p className="text-xs text-slate-500 dark:text-slate-400">Waktu</p>
-                                            <p className="font-bold text-lg text-slate-800 dark:text-slate-200">{testResult.scoreDetails.time}%</p>
-                                        </div>
-                                        <div className="bg-slate-50 dark:bg-gray-700/50 p-3 rounded-lg">
-                                            <p className="text-xs text-slate-500 dark:text-slate-400">Stabilitas</p>
-                                            <p className="font-bold text-lg text-slate-800 dark:text-slate-200">{testResult.scoreDetails.stability}%</p>
-                                        </div>
-                                        <div className="bg-slate-50 dark:bg-gray-700/50 p-3 rounded-lg">
-                                            <p className="text-xs text-slate-500 dark:text-slate-400">Fokus</p>
-                                            <p className="font-bold text-lg text-slate-800 dark:text-slate-200">{testResult.scoreDetails.focus}%</p>
-                                        </div>
-                                    </div>
-                                )}
-
-
-
+                                </motion.div>
 
 
                                 {/* --- PESAN PENUTUP --- */}
-                                {testResult.score >= 70 ? (
-                                    <p className="mt-5 text-green-600 dark:text-green-400 font-medium text-sm sm:text-base">
-                                        🎉 Keren! Kamu sudah menguasai topik ini, lanjut ke materi berikutnya yuk!
-                                    </p>
-                                ) : (
-                                    <p className="mt-5 text-yellow-600 dark:text-yellow-400 font-medium text-sm sm:text-base">
-                                        ⚡ Skor kamu belum mencapai 70%. Coba pelajari lagi bagian yang masih kurang ya
-                                    </p>
+                                <motion.div
+                                    initial={{ opacity: 0 }}
+                                    animate={{ opacity: 1 }}
+                                    transition={{ delay: 0.5 }}
+                                >
+                                    {testResult.score >= 70 ? (
+                                        <p className="mt-6 flex text-center items-center justify-center text-green-600 dark:text-green-400 font-medium text-base">
+                                            Keren! Kamu sudah menguasai topik ini, lanjut ke materi berikutnya yuk!
+                                        </p>
+                                    ) : (
+                                        <p className="mt-6 flex  text-yellow-600 dark:text-yellow-400 font-medium text-sm sm:text-base">
+                                            <AlertTriangle className="w-8 sm:w-4 h-8 sm:h-4" />
+                                            Skor kamu belum mencapai 70%. Coba pelajari lagi bagian yang masih kurang ya!
+                                        </p>
+
+                                    )}
+                                </motion.div>
+
+                                {/* --- RINCIAN SKOR --- */}
+                                {testResult.scoreDetails && (
+                                    <motion.div
+                                        className="mt-10 grid grid-cols-2 lg:grid-cols-4 gap-5"
+                                        initial={{ opacity: 0, y: 20 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        transition={{ delay: 0.3, duration: 0.6, staggerChildren: 0.1 }}
+                                    >
+                                        {[
+                                            {
+                                                label: "Ketepatan",
+                                                val: testResult.scoreDetails.accuracy,
+                                                desc: "Persentase jawaban benar dari total soal.",
+                                                icon: <Target className="w-5 h-5 text-blue-600" />,
+                                                gradient: "from-blue-500/10 to-blue-400/5 border-blue-300/30",
+                                            },
+                                            {
+                                                label: "Kecepatan ",
+                                                val: testResult.scoreDetails.time,
+                                                desc: "Efisiensi waktu pengerjaan dibanding durasi total.",
+                                                icon: <Clock3 className="w-5 h-5 text-emerald-600" />,
+                                                gradient: "from-emerald-500/10 to-emerald-400/5 border-emerald-300/30",
+                                            },
+                                            {
+                                                label: "Konsistensi ",
+                                                val: testResult.scoreDetails.stability,
+                                                desc: "Stabilitas dalam menjawab tanpa sering mengubah pilihan.",
+                                                icon: <Activity className="w-5 h-5 text-indigo-600" />,
+                                                gradient: "from-indigo-500/10 to-indigo-400/5 border-indigo-300/30",
+                                            },
+                                            {
+                                                label: "Fokus Tes",
+                                                val: testResult.scoreDetails.focus,
+                                                desc: "Tingkat konsentrasi selama tes (minim keluar halaman).",
+                                                icon: <Eye className="w-5 h-5 text-amber-600" />,
+                                                gradient: "from-amber-500/10 to-amber-400/5 border-amber-300/30",
+                                            },
+                                        ].map((item, i) => (
+                                            <motion.div
+                                                key={i}
+                                                whileHover={{ scale: 1.04 }}
+                                                transition={{ type: "spring", stiffness: 250 }}
+                                                className={`relative bg-gradient-to-br ${item.gradient} rounded-2xl p-4 border shadow-sm hover:shadow-lg transition-all duration-300 backdrop-blur-sm`}
+                                            >
+                                                <div className="flex items-center justify-center gap-3 mb-2">
+                                                    {item.icon}
+                                                    <h4 className="text-sm font-semibold text-slate-800 dark:text-slate-100">
+                                                        {item.label}
+                                                    </h4>
+                                                </div>
+                                                <div className="text-sm text-slate-700 dark:text-slate-300 mb-2">
+                                                    Skor :{" "}
+                                                    <span className={`font-bold ${item.val >= 80 ? "text-emerald-600" : item.val >= 60 ? "text-amber-600" : "text-rose-600"}`}>
+                                                        {item.val}%
+                                                    </span>
+                                                </div>
+                                                <p className="text-xs text-slate-600 dark:text-slate-400 leading-snug">
+                                                    {item.desc}
+                                                </p>
+
+                                            </motion.div>
+                                        ))}
+                                    </motion.div>
+
                                 )}
+
 
                                 {/* --- MATERI YANG PERLU DIPERKUAT --- */}
                                 {testResult.weakSubTopics && testResult.weakSubTopics.length > 0 && (
-                                    <div className="mt-10 text-left bg-gradient-to-br from-yellow-50 via-amber-100 to-yellow-50 dark:from-yellow-900/30 dark:via-yellow-900/40 dark:to-yellow-800/20 p-6 rounded-2xl border border-yellow-200 dark:border-yellow-800/50 shadow-md transition-all duration-300 hover:shadow-lg hover:-translate-y-1">
-                                        <h4 className="font-semibold text-yellow-800 dark:text-yellow-300 text-lg flex items-center gap-2 mb-2">
-
+                                    <motion.div
+                                        className="mt-10 text-left bg-gradient-to-br from-yellow-50 via-amber-100 to-yellow-50 dark:from-yellow-900/30 dark:via-yellow-900/40 dark:to-yellow-800/20 p-6 rounded-2xl border border-yellow-200 dark:border-yellow-800/50 shadow-lg hover:shadow-xl hover:-translate-y-1 transition-all duration-500"
+                                        initial={{ opacity: 0, y: 30 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                    >
+                                        <h4 className="font-semibold text-yellow-800 dark:text-yellow-300 text-lg flex items-center gap-2 mb-3">
+                                            <Lightbulb className="w-5 h-5 text-yellow-500" />
                                             Materi yang Perlu Kamu Perkuat
                                         </h4>
 
-                                        <p className="text-sm text-yellow-700 dark:text-yellow-400 mb-4 leading-relaxed">
-                                            💡 Yuk, pelajari kembali beberapa materi berikut agar pemahamanmu makin matang!
+                                        <p className="text-xs text-yellow-700 dark:text-yellow-400 mb-5 leading-relaxed">
+                                            Yuk, pelajari kembali beberapa materi berikut agar pemahamanmu makin matang!
                                         </p>
 
                                         <ul className="space-y-3">
-                                            {testResult.weakSubTopics.map(sub => (
-                                                <li
+                                            {testResult.weakSubTopics.map((sub) => (
+                                                <motion.li
                                                     key={sub.subMateriId}
-                                                    className="flex flex-col sm:flex-row sm:justify-between sm:items-center text-sm text-yellow-800 dark:text-yellow-200 font-medium bg-yellow-50 dark:bg-yellow-900/30 px-4 py-3 rounded-lg border border-yellow-200 dark:border-yellow-800/50 hover:bg-yellow-100 dark:hover:bg-yellow-800/50 transition-all duration-300"
+                                                    whileHover={{ scale: 1.02 }}
+                                                    className="flex flex-col sm:flex-row sm:justify-between sm:items-center text-sm text-yellow-800 dark:text-yellow-200 font-medium bg-yellow-50 dark:bg-yellow-900/30 px-4 py-3 rounded-xl border border-yellow-200 dark:border-yellow-800/50 transition-all duration-300"
                                                 >
                                                     <div className="flex items-center gap-2 mb-2 sm:mb-0">
-                                                        <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4 text-yellow-600 dark:text-yellow-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4" />
-                                                        </svg>
+                                                        <Star className="w-4 h-4 text-yellow-600 dark:text-yellow-400" />
                                                         <span>{sub.title}</span>
                                                     </div>
 
@@ -743,26 +828,36 @@ export default function ModulDetailPage() {
                                                         <a
                                                             href={`/modul/${modul.slug}#${sub.subMateriId}`}
                                                             onClick={(e) => {
-                                                                e.preventDefault(); // Mencegah navigasi default
-                                                                setActiveTest(null); // Tutup modal
-                                                                // Gunakan router.push untuk navigasi client-side yang akan memicu 'hashchange'
+                                                                e.preventDefault();
+                                                                setActiveTest(null);
                                                                 router.push(`/modul/${modul.slug}#${sub.subMateriId}`);
                                                             }}
                                                             className="flex items-center gap-1 text-xs font-semibold text-blue-700 dark:text-blue-300 bg-blue-100 dark:bg-blue-900/40 px-3 py-1.5 rounded-lg hover:bg-blue-200 dark:hover:bg-blue-800/60 transition-all duration-300"
                                                         >
                                                             Pelajari
-                                                            <svg xmlns="http://www.w3.org/2000/svg" className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                                                            <svg
+                                                                xmlns="http://www.w3.org/2000/svg"
+                                                                className="w-3.5 h-3.5"
+                                                                fill="none"
+                                                                viewBox="0 0 24 24"
+                                                                stroke="currentColor"
+                                                            >
+                                                                <path
+                                                                    strokeLinecap="round"
+                                                                    strokeLinejoin="round"
+                                                                    strokeWidth={2}
+                                                                    d="M9 5l7 7-7 7"
+                                                                />
                                                             </svg>
                                                         </a>
                                                     </div>
-                                                </li>
+                                                </motion.li>
                                             ))}
                                         </ul>
-                                    </div>
+                                    </motion.div>
                                 )}
-
                             </div>
+
 
 
 
@@ -837,7 +932,7 @@ export default function ModulDetailPage() {
                                         {testIdx < totalQuestions - 1 ? (
                                             <button
                                                 onClick={() => setTestIdx(i => Math.min(totalQuestions - 1, i + 1))}
-                                                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+                                                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
                                             >
                                                 Berikutnya
                                             </button>
@@ -873,7 +968,7 @@ export default function ModulDetailPage() {
 
     // --- RENDER MAIN PAGE ---
     return (
-        <div className="max-w-7xl mx-auto px-1.5 sm:px-5 pb-5 pt-0">
+        <div className="max-w-full mx-auto px-1.5 sm:px-5 pb-5 pt-0">
             {/* 
               Menambahkan style global untuk menangani overflow pada code block di dalam .prose.
               Ini memastikan hanya code block yang bisa di-scroll horizontal, bukan seluruh kontainer soal.
@@ -946,7 +1041,7 @@ export default function ModulDetailPage() {
                             <div key={topik._id} id={`topic-card-${topik._id}`} className={`bg-white dark:bg-gray-800 rounded-lg shadow-md transition-all duration-300 ${isLocked ? 'opacity-60 cursor-not-allowed' : 'cursor-pointer'}`}>
                                 <div className="p-5 flex justify-between items-center" onClick={() => !isLocked && handleTopicToggle(topik._id)}>
                                     <div className="flex items-center gap-4">
-                                        <div className={`w-10 h-10 rounded-full flex items-center justify-center font-bold text-lg ${topik.isCompleted ? 'bg-green-100 dark:bg-green-900 text-green-600 dark:text-green-300' : 'bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400'}`}>
+                                        <div className={`w-10 h-10 rounded-full flex-shrink-0 flex items-center justify-center font-bold text-lg ${topik.isCompleted ? 'bg-green-100 dark:bg-green-900 text-green-600 dark:text-green-300' : 'bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400'}`}>
                                             {topik.isCompleted ? <CheckCircle2 size={20} /> : isLocked ? <Lock size={18} /> : index + 1}
                                         </div>
                                         <div>
@@ -973,7 +1068,7 @@ export default function ModulDetailPage() {
                 const isPostTestLocked = modul.progress < 100;
                 const hasCompletedModulPostTest = modul.hasCompletedModulPostTest;
                 return ( // Kartu ini akan muncul jika `hasModulPostTest` bernilai true
-                    <section className={`bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-lg mt-12 transition-all ${isPostTestLocked ? 'opacity-60 cursor-not-allowed' : ''}`}>
+                    <section className={`bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-lg mt-5 transition-all ${isPostTestLocked ? 'opacity-60 cursor-not-allowed' : ''}`}>
                         <div className="flex flex-col md:flex-row items-center md:items-start gap-6 lg:p-2">
                             {/* Konten Teks */}
                             <div className="flex-1 text-center md:text-left">

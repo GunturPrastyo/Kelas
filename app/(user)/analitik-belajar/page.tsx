@@ -71,6 +71,10 @@ interface RecommendationData {
 interface WeakTopicData {
   topicTitle: string;
   score: number;
+  weakSubTopics: {
+    title: string;
+    subMateriId: string;
+  }[];
   status: "Perlu review" | "Butuh latihan" | "Sudah bagus";
 }
 
@@ -301,13 +305,13 @@ export default function AnalitikBelajarPage() {
               display: true, // Tampilkan ticks untuk referensi
               callback: function(value) {
                 const totalSeconds = value as number;
+                if (totalSeconds === 0) return '0 mnt';
                 if (totalSeconds < 3600) {
                   const minutes = Math.round(totalSeconds / 60);
                   return `${minutes} mnt`;
                 } else {
-                  const hours = totalSeconds / 3600;
-                  // Tampilkan 1.5 jam, tapi 1 jam (bukan 1.0 jam)
-                  return `${hours.toFixed(1).replace('.0', '')} jam`;
+                  const hours = Math.round(totalSeconds / 3600);
+                  return `${hours} jam`;
                 }
               }
             },
@@ -359,14 +363,17 @@ export default function AnalitikBelajarPage() {
 
   useEffect(() => {
     if (chartPerbandinganRef.current && comparisonData && isChartPerbandinganInView) { // chartPerbandinganRef.current sudah pasti HTMLCanvasElement
-      // Ubah label string menjadi array of strings untuk wrapping (multi-line)
-      const wrappedLabels = comparisonData.labels.map(label => label.split(' '));
+      // Tentukan label berdasarkan ukuran layar
+      const isMobile = window.innerWidth < 768; // md breakpoint
+      const chartLabels = isMobile
+        ? comparisonData.labels.map(label => label.split(' ')) // Wrap label di mobile
+        : comparisonData.labels; // Tampilkan satu baris di desktop
 
       const chartPerbandinganInstance = new Chart(chartPerbandinganRef.current, {
         type: "radar",
         data: {
           // Gunakan label yang sudah di-wrap
-          labels: wrappedLabels,
+          labels: chartLabels as any,
           datasets: [
             {
               label: "Kamu",
@@ -575,6 +582,7 @@ export default function AnalitikBelajarPage() {
                 <th className="p-3 font-medium">Topik</th>
                 <th className="p-3 font-medium">Nilai Terakhir</th>
                 <th className="p-3 font-medium">Status</th>
+                <th className="p-3 font-medium">Rekomendasi Perbaikan</th>
               </tr>
             </thead>
             <tbody>
@@ -584,6 +592,7 @@ export default function AnalitikBelajarPage() {
                     <td className="p-3"><div className="h-5 w-3/4 bg-gray-200 dark:bg-gray-700 rounded animate-pulse"></div></td>
                     <td className="p-3"><div className="h-5 w-1/4 bg-gray-200 dark:bg-gray-700 rounded animate-pulse"></div></td>
                     <td className="p-3"><div className="h-5 w-1/2 bg-gray-200 dark:bg-gray-700 rounded animate-pulse"></div></td>
+                    <td className="p-3"><div className="h-5 w-2/3 bg-gray-200 dark:bg-gray-700 rounded animate-pulse"></div></td>
                   </tr>
                 ))
               ) : paginatedWeakTopics.length > 0 ? (
@@ -595,11 +604,22 @@ export default function AnalitikBelajarPage() {
                       {topic.status === "Perlu review" && <span className="bg-red-100 text-red-700 text-xs px-2 py-1 rounded-full">Perlu review</span>}
                       {topic.status === "Butuh latihan" && <span className="bg-yellow-100 text-yellow-700 text-xs px-2 py-1 rounded-full">Butuh latihan</span>}
                     </td>
+                    <td className="p-3 text-sm text-gray-600 dark:text-gray-400">
+                      {topic.weakSubTopics && topic.weakSubTopics.length > 0 ? (
+                        <ul className="list-disc list-inside">
+                          {topic.weakSubTopics.map((sub, subIndex) => (
+                            <li key={subIndex}>{sub.title}</li>
+                          ))}
+                        </ul>
+                      ) : (
+                        "-"
+                      )}
+                    </td>
                   </tr>
                 ))
               ) : (
                 <tr className="border-b dark:border-gray-700">
-                  <td colSpan={3} className="p-4 text-center text-gray-500 dark:text-gray-400">
+                  <td colSpan={4} className="p-4 text-center text-gray-500 dark:text-gray-400">
                     {weakTopicSearch ? "Tidak ada topik yang cocok dengan pencarian." : "Kerja bagus! Tidak ada topik yang perlu diperkuat saat ini. 🎉"}
                   </td>
                 </tr>
@@ -638,7 +658,7 @@ export default function AnalitikBelajarPage() {
           Perbandingan dengan Rata-rata Kelas
         </h2>
         <div className="flex flex-col lg:flex-row gap-4 items-center mt-2">
-          <div className="lg:w-3/5 w-full">
+          <div className="lg:w-3/5 w-full flex justify-center">
             <canvas ref={chartPerbandinganRef}></canvas>
           </div>
           <div className="lg:w-2/5 w-full space-y-4 text-gray-800 dark:text-gray-200">
