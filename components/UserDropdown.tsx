@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from 'react';
-import Image from 'next/image';
+import Avatar from './Avatar'; // Import the Avatar component
 import { useRouter } from 'next/navigation';
 import { LogOut, User as UserIcon, Mail } from 'lucide-react';
 
@@ -51,13 +51,11 @@ export default function UserDropdown() {
 
     return (
         <div className="relative" ref={dropdownRef}>
-            <button onClick={() => setIsOpen(!isOpen)} className="focus:outline-none">
-                <Image
-                    src={user.avatar || '/default-avatar.png'} // Sediakan gambar avatar default
-                    alt="User Avatar"
-                    width={40}
-                    height={40}
-                    className="rounded-full object-cover transition"
+            <button onClick={() => setIsOpen(!isOpen)} className="ml-4 lg:-ml-2 focus:outline-none">
+                <Avatar
+                    user={user}
+                    size={256}
+                    className="transition rounded-full w-10 h-10"
                 />
             </button>
 

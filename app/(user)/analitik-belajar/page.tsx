@@ -453,9 +453,9 @@ export default function AnalitikBelajarPage() {
               <Image
                 src="/modules2.png"
                 alt="Modul Icon"
-                width={64}
-                height={64}
-                className="w-16 h-16 rounded-xl bg-blue-100 dark:bg-gray-700 p-2"
+                width={256}
+                height={256}
+                className="w-20 h-20 rounded-xl bg-blue-100 dark:bg-gray-700 p-2"
               />
             </div>
             <div>
@@ -476,7 +476,7 @@ export default function AnalitikBelajarPage() {
           {/* Card 2 */}
           <div className="flex items-center gap-4 bg-gradient-to-br from-green-50 to-green-100 dark:from-gray-800 dark:to-gray-900 text-gray-800 dark:text-gray-100 rounded-2xl p-5 shadow-md hover:scale-[1.02] transition-transform dark:shadow-lg dark:shadow-gray-800/40">
             <div className="flex-shrink-0">
-              <Image src="/star.png" alt="Score Icon" width={64} height={64} className="w-16 h-16 rounded-xl bg-green-100 dark:bg-gray-700 p-2" />
+              <Image src="/star.png" alt="Score Icon" width={256} height={256} className="w-20 h-20 rounded-xl bg-green-100 dark:bg-gray-700 p-2" />
             </div>
             <div>
               <p className="text-sm text-gray-600 dark:text-gray-400">Rata-rata Nilai</p>
@@ -495,11 +495,12 @@ export default function AnalitikBelajarPage() {
           <div className="flex items-center gap-4 bg-gradient-to-br from-purple-50 to-purple-100 dark:from-gray-800 dark:to-gray-900 text-gray-800 dark:text-gray-100 rounded-2xl p-5 shadow-md hover:scale-[1.02] transition-transform dark:shadow-lg dark:shadow-gray-800/40">
             <div className="flex-shrink-0">
               <Image
-                src="https://img.icons8.com/fluency/96/time.png"
+              
+                src="/study.png"
                 alt="Time Icon"
-                width={64}
-                height={64}
-                className="w-16 h-16 rounded-xl bg-purple-100 dark:bg-gray-700 p-2"
+                width={256}
+                height={256}
+                className="w-20 h-20 rounded-xl bg-purple-100 dark:bg-gray-700 p-2"
               />
             </div>
             <div>
@@ -518,7 +519,7 @@ export default function AnalitikBelajarPage() {
           {/* Card 4 */}
           <div className="flex items-center gap-4 bg-gradient-to-br from-orange-50 to-orange-100 dark:from-gray-800 dark:to-gray-900 text-gray-800 dark:text-gray-100 rounded-2xl p-5 shadow-md hover:scale-[1.02] transition-transform dark:shadow-lg dark:shadow-gray-800/40">
             <div className="flex-shrink-0">
-              <Image src="/streak.png" alt="Streak Icon" width={64} height={64} className="w-16 h-16 rounded-xl bg-orange-100 dark:bg-gray-700 p-2" />
+              <Image src="/streak.png" alt="Streak Icon" width={256} height={256} className="w-20 h-20 rounded-xl bg-orange-100 dark:bg-gray-700 p-2" />
             </div>
             <div>
               <p className="text-sm text-gray-600 dark:text-gray-400">Streak Harian</p>
@@ -575,7 +576,7 @@ export default function AnalitikBelajarPage() {
           </div>
         </div>
 
-        <div className="overflow-x-auto min-h-[250px]">
+        <div className="overflow-x-auto min-h-auto">
           <table className="w-full text-left border-collapse">
             <thead className="bg-gray-100 dark:bg-gray-700 text-sm text-gray-600 dark:text-gray-400 whitespace-nowrap">
               <tr>
@@ -620,7 +621,7 @@ export default function AnalitikBelajarPage() {
               ) : (
                 <tr className="border-b dark:border-gray-700">
                   <td colSpan={4} className="p-4 text-center text-gray-500 dark:text-gray-400">
-                    {weakTopicSearch ? "Tidak ada topik yang cocok dengan pencarian." : "Kerja bagus! Tidak ada topik yang perlu diperkuat saat ini. 🎉"}
+                    {weakTopicSearch ? "Tidak ada topik yang cocok dengan pencarian." : "Kerja bagus! Tidak ada topik yang perlu diperkuat saat ini."}
                   </td>
                 </tr>
               )}
@@ -693,7 +694,7 @@ export default function AnalitikBelajarPage() {
                   </div>
                 </div>
                 <p className="text-sm text-center md:text-left text-gray-600 dark:text-gray-400 pt-2">
-                  {comparisonData.scoreDifference > 0 ? '🏆 Kerja bagus, terus pertahankan performa belajarmu!' : '💡 Terus tingkatkan pemahamanmu di setiap modul untuk hasil yang lebih baik.'}
+                  {comparisonData.scoreDifference > 0 ? 'Kerja bagus, terus pertahankan performa belajarmu!' : '💡 Terus tingkatkan pemahamanmu di setiap modul untuk hasil yang lebih baik.'}
                 </p>
               </>
             )}
@@ -705,10 +706,10 @@ export default function AnalitikBelajarPage() {
       <section className="bg-gradient-to-br from-blue-50 via-blue-100 to-gray-100 dark:from-gray-800 dark:via-gray-800 dark:to-gray-900 text-gray-800 dark:text-gray-100 p-6 rounded-2xl shadow-md">
         <div className="flex items-center justify-between mb-4">
           <h3 className="text-xl font-bold tracking-wide flex items-center gap-2">
-            <Target className="w-6 h-6" />
+           
             Rekomendasi Pembelajaran
           </h3>
-          <span className="text-sm bg-blue-200/60 dark:bg-gray-700/50 px-3 py-1 rounded-full text-gray-700 dark:text-gray-300">
+          <span className="text-xs sm:text-sm bg-blue-200/60 dark:bg-gray-700/50 px-3 py-1 rounded-full text-gray-700 dark:text-gray-300">
             Diperbarui hari ini
           </span>
         </div>
@@ -733,8 +734,8 @@ export default function AnalitikBelajarPage() {
                 <div className="flex items-center gap-4">
                   <Image
                     src={`${process.env.NEXT_PUBLIC_API_URL}/uploads/${recommendations.repeatModule.moduleIcon}`}
-                    width={64}
-                    height={64}
+                    width={256}
+                    height={256}
                     className="w-16 h-16 rounded-lg object-contain bg-white/30 dark:bg-gray-700/40 p-1"
                     alt="gambar modul"
                   />
@@ -774,11 +775,11 @@ export default function AnalitikBelajarPage() {
               <li className="flex items-center justify-between gap-4 p-4 bg-white/60 dark:bg-gray-700/40 rounded-xl hover:bg-white/80 dark:hover:bg-gray-600/50 transition-all shadow-sm" key="deepen-topic">
                 <div className="flex items-center gap-4">
                   <Image
-                    src="https://img.icons8.com/fluency/96/books.png"
-                    width={64}
-                    height={64}
+                    src="/reading-book.png"
+                    width={256}
+                    height={256}
                     className="w-16 h-16 rounded-lg object-contain bg-white/30 dark:bg-gray-700/40 p-1"
-                    alt="gambar modul"
+                    alt="Perdalam Topik"
                   />
                   <div>
                     <p className="font-semibold">
@@ -808,8 +809,8 @@ export default function AnalitikBelajarPage() {
                 <div className="flex items-center gap-4">
                   <Image
                     src={`${process.env.NEXT_PUBLIC_API_URL}/uploads/${recommendations.continueToModule.moduleIcon}`}
-                    width={64}
-                    height={64}
+                    width={256}
+                    height={256}
                     className="w-16 h-16 rounded-lg object-contain bg-white/30 dark:bg-gray-700/40 p-1"
                     alt="gambar modul"
                   />
@@ -835,7 +836,7 @@ export default function AnalitikBelajarPage() {
               </li>
             ) : (
               <p className="p-4 text-center text-gray-700 dark:text-gray-300">
-                Selamat 🎉 Semua modul telah kamu selesaikan dengan baik!
+                Selamat Semua modul telah kamu selesaikan dengan baik!
               </p>
             )}
           </ul>

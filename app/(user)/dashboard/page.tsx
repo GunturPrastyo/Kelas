@@ -379,7 +379,7 @@ export default function DashboardPage() {
             ) : (
               <div className="p-4 border border-gray-200 dark:border-gray-700 rounded-2xl bg-white/60 dark:bg-gray-900/50 text-center shadow-sm">
                 <h3 className="font-semibold text-gray-700 dark:text-gray-300">
-                  Semua modul rekomendasi telah kamu mulai 🎉
+                  Semua modul rekomendasi telah kamu mulai 
                 </h3>
                 <p className="text-xs text-gray-600 dark:text-gray-400 mt-1">
                   Mantap! Lanjutkan progres belajarmu dan eksplor topik-topik baru yang menantang.
@@ -465,7 +465,7 @@ export default function DashboardPage() {
                   <div className="p-4 rounded-lg bg-gradient-to-br from-blue-100 to-blue-200 dark:from-gray-700 dark:to-gray-800 shadow-md hover:shadow-lg transition">
                     <div className="flex flex-col items-center gap-2">
                       <div className="bg-blue-600 rounded-full w-10 h-10 flex items-center justify-center">
-                        <Image src="/book.png" width={40} height={40} className="w-full h-full object-contain p-1" alt="" />
+                        <Image src="/book.png" width={256} height={256} className="w-full h-full object-contain p-1" alt="" />
                       </div>
                       <p className="text-2xl font-bold text-blue-700 dark:text-blue-400">{animatedCompletedModules ?? 0}</p>
                       <p className="text-sm text-gray-600 dark:text-gray-300">Modul Selesai</p>
@@ -475,7 +475,7 @@ export default function DashboardPage() {
                   <div className="p-4 rounded-lg bg-gradient-to-br from-green-100 to-green-200 dark:from-gray-700 dark:to-gray-800 shadow-md hover:shadow-lg transition">
                     <div className="flex flex-col items-center gap-2">
                       <div className="bg-green-600 rounded-full w-10 h-10 flex items-center justify-center">
-                        <Image src="/score.png" width={40} height={40} className="w-full h-full object-contain p-1" alt="" />
+                        <Image src="/score.png" width={256} height={256} className="w-full h-full object-contain p-1" alt="" />
                       </div>
                       <p className="text-2xl font-bold text-green-700 dark:text-green-400">{loading ? '...' : `${animatedAverageScore ?? 0}%`}</p>
                       <p className="text-sm text-gray-600 dark:text-gray-300">Rata-rata Skor</p>
@@ -490,7 +490,7 @@ export default function DashboardPage() {
                 >
                   <div className="flex flex-col items-center justify-center gap-2 break-words h-full text-center">
                     <div className="bg-red-600 rounded-full w-10 h-10 flex items-center justify-center flex-shrink-0">
-                      <Image src="/thunder.png" width={40} height={40} className="w-full h-full object-contain p-1" alt="Topik Terlemah" />
+                      <Image src="/thunder.png" width={256} height={256} className="w-full h-full object-contain p-1" alt="Topik Terlemah" />
                     </div>
                     <div className="min-w-0 w-11/12">
                       <p

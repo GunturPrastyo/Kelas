@@ -205,7 +205,7 @@ export default function ModulPage() {
             )}
 
             {!loading && !userLevel && (
-                <section className="bg-gradient-to-br from-yellow-50 to-orange-100 dark:from-gray-900 dark:to-gray-800 p-5 rounded-xl shadow-sm flex items-center gap-4 mb-6">
+                <section className="bg-gradient-to-br from-yellow-50 to-orange-100 dark:from-gray-900 dark:to-gray-800 p-4 rounded-xl shadow-sm flex items-center gap-4 mb-6">
                     <Image src="/warning-test.png" alt="Pre-test" width={480} height={480} className="w-20 h-20" />
                     <div>
                         <h2 className="text-lg font-semibold text-yellow-800 dark:text-yellow-300">Tentukan Jalur Belajarmu!</h2>
@@ -282,7 +282,7 @@ export default function ModulPage() {
                             <div className="flex items-start justify-between mb-3">
                                 <div className="flex items-center gap-3">
                                     <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${modul.isHighlighted ? 'bg-blue-100 dark:bg-blue-900/50' : 'bg-gray-100 dark:bg-gray-700'}`}>
-                                        <Image src={modul.icon.startsWith('http') ? modul.icon : `${process.env.NEXT_PUBLIC_API_URL}/uploads/${modul.icon}`} alt={modul.title} width={24} height={24} />
+                                        <Image className="w-6 h-6 object-cover" src={modul.icon.startsWith('http') ? modul.icon : `${process.env.NEXT_PUBLIC_API_URL}/uploads/${modul.icon}`} alt={modul.title} width={128} height={128} />
                                     </div>
                                 <div>
                                     {/* Nomor urut untuk tampilan desktop/tablet */}

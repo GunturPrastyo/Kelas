@@ -5,7 +5,8 @@ import { authFetch } from "@/lib/authFetch";
 import Avatar from "@/components/Avatar"; // Ganti Image dengan komponen Avatar
 import Breadcrumb from "@/components/Breadcrumb";
 import { motion } from "framer-motion";
-import { Award, Download, Star } from "lucide-react";
+import { Award, Download, Star, Info } from "lucide-react";
+import { useAlert } from "@/context/AlertContext";
 
 interface ModuleProgress {
   _id: string;
@@ -25,11 +26,12 @@ interface User {
   _id: string;
   name: string;
   email: string;
-  avatar: string;
+  avatar?: string; // Make avatar optional
   hasPassword?: boolean; // Tambahkan properti ini, buat opsional untuk kompatibilitas
 }
 
 const ProfilePage = () => {
+  const { showAlert } = useAlert();
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const [progressData, setProgressData] = useState<ProgressData | null>(null);
@@ -38,11 +40,13 @@ const ProfilePage = () => {
   const [email, setEmail] = useState("");
   const [avatarFile, setAvatarFile] = useState<File | null>(null);
   const [avatarPreview, setAvatarPreview] = useState<string>("/user-placeholder.png");
+  const [certificateName, setCertificateName] = useState(""); // New state for certificate name
 
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
 
+  const [activeTab, setActiveTab] = useState("info");
   const [message, setMessage] = useState<{ type: "success" | "error"; text: string } | null>(null);
 
   useEffect(() => {
@@ -53,6 +57,7 @@ const ProfilePage = () => {
       setUser(userData);
       setName(displayUserName);
       setEmail(userData.email);
+      setCertificateName(displayUserName); // Initialize certificateName
       // Logika avatar sekarang ditangani oleh komponen Avatar dan state avatarPreview
     }
     setLoading(false);
@@ -148,6 +153,15 @@ const ProfilePage = () => {
     }
   };
 
+  const handleEditCertificateName = () => {
+    showAlert({
+      type: "confirm",
+      title: "Info Nama Sertifikat",
+      message: `Nama yang akan tercetak pada sertifikat adalah <strong>${name}</strong>. Anda dapat mengubahnya pada form 'Informasi Akun'.`,
+      confirmText: "Mengerti",
+    });
+  };
+
   const handleDownloadCertificate = async () => {
     if (!user) {
       setMessage({ type: "error", text: "Pengguna belum login." });
@@ -160,11 +174,12 @@ const ProfilePage = () => {
 
     try {
       setMessage(null);
-      const res = await authFetch(`${process.env.NEXT_PUBLIC_API_URL}/api/results/certificate`, {
+      // Encode nama untuk memastikan karakter seperti spasi aman untuk URL
+      const encodedName = encodeURIComponent(name);
+      const res = await authFetch(`${process.env.NEXT_PUBLIC_API_URL}/api/results/certificate?name=${encodedName}`, {
         method: "GET",
-        // Penting: responseType 'blob' untuk mengunduh file
         headers: {
-          'Content-Type': 'application/json', // Tetap kirim header ini jika diperlukan oleh authFetch
+          'Content-Type': 'application/json',
         },
       });
 
@@ -176,8 +191,8 @@ const ProfilePage = () => {
       const blob = await res.blob();
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement('a');
-      a.href = url;
-      a.download = `Sertifikat_${user.name.replace(/\s+/g, '_')}.pdf`; // Nama file dengan nama pengguna
+      a.href = url; // Use certificateName for filename
+      a.download = `Sertifikat_${name.replace(/\s+/g, '_')}.pdf`;
       document.body.appendChild(a);
       a.click();
       a.remove();
@@ -202,10 +217,10 @@ const ProfilePage = () => {
   if (!user) return <div className="p-6 text-center text-gray-500">Silakan login untuk melihat profil.</div>;
 
   return (
-    <div className="w-full font-sans p-5">
-      <Breadcrumb paths={[{ name: "Dashboard", href: "/dashboard" }, { name: "Edit Profil", href: "#" }]} />
+    <div className="w-full font-sans p-2">
+      <Breadcrumb paths={[{ name: "Dashboard", href: "/dashboard" }, { name: "Profil", href: "#" }]} />
       <h1 className="text-3xl font-bold text-gray-800 dark:text-gray-100 mt-6 mb-6">
-        Pengaturan Profil
+    
       </h1>
 
       {message && (
@@ -237,12 +252,13 @@ const ProfilePage = () => {
                 <Award className="text-blue-600 dark:text-blue-400" size={26} />
               </div>
               <div>
-                <h2 className="text-xl font-bold text-gray-800 dark:text-gray-100">
-                  Sertifikat Belajar
+                <div className="flex items-center gap-2">
+                <h2 className="text-lg font-bold text-gray-800 dark:text-gray-100">
+                  Sertifikat Apresiasi
                 </h2>
-                <p className="text-sm text-gray-500 dark:text-gray-400">
-                  Kumpulkan XP dan selesaikan modul untuk membuka sertifikat.
-                </p>
+                 <Info onClick={handleEditCertificateName} size={16} className="cursor-pointer text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300"/>
+                 </div>
+                 <p className="text-sm text-gray-500 dark:text-gray-400">Selesaikan semua modul untuk membuka sertifikat.</p>
               </div>
             </div>
 
@@ -250,12 +266,8 @@ const ProfilePage = () => {
             <div className="mt-4 flex items-center gap-4">
               <div className="flex items-center gap-2 bg-blue-600/10 text-blue-700 dark:text-blue-300 px-3 py-1.5 rounded-full">
                 <Star className="w-4 h-4 text-yellow-400" />
-                <span className="font-bold text-sm">{progressData?.completedTopics || 0} XP</span>
+                <span className="font-bold text-sm">{overallProgress} XP</span>
               </div>
-
-              <span className="text-sm font-medium text-gray-700 dark:text-gray-200">
-                {overallProgress}% Selesai
-              </span>
             </div>
 
             {/* Progress Bar */}
@@ -268,165 +280,126 @@ const ProfilePage = () => {
           </div>
 
           {/* === RIGHT SIDE ACTION BUTTON === */}
-          <button
-            onClick={overallProgress === 100 ? handleDownloadCertificate : undefined}
-            disabled={overallProgress < 100}
-            className={`
-        flex items-center gap-2 px-5 py-3 rounded-xl font-semibold shadow-md transition-all
-        ${overallProgress < 100
-                ? "bg-gray-300 dark:bg-gray-700 text-gray-600 dark:text-gray-400 cursor-not-allowed"
-                : "bg-blue-600 hover:bg-blue-700 text-white transform hover:scale-[1.03]"
-              }
-      `}
-          >
-            <Download size={18} />
-            {overallProgress < 100 ? "Selesaikan Semua Modul" : "Unduh Sertifikat"}
-          </button>
-
+          <div className="flex items-center gap-2">
+            <button
+              onClick={overallProgress === 100 ? handleDownloadCertificate : undefined}
+              disabled={overallProgress < 100}
+              className={`
+          flex items-center gap-2 px-5 py-3 rounded-2xl text-sm font-semibold shadow-md transition-all
+          ${overallProgress < 100
+                  ? "bg-gray-300 dark:bg-gray-700 text-gray-600 dark:text-gray-400 cursor-not-allowed"
+                  : "bg-blue-600 hover:bg-blue-700 text-white transform hover:scale-[1.03]"
+                }
+        `}
+            >
+              <Download size={18} />
+              {overallProgress < 100 ? "Selesaikan Semua Modul" : "Unduh Sertifikat"}
+            </button>
+          </div>
         </div>
       </motion.div>
 
 
-      {/* === PROFILE CARD === */}
+      {/* === PROFILE & PASSWORD CARD WITH TABS === */}
       <motion.div
-        whileHover={{ scale: 1.01 }}
-        className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-2xl shadow-lg p-6 mb-5  "
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.2 }}
+        className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-2xl shadow-lg p-6 mb-5"
       >
-        <form onSubmit={handleProfileUpdate} className="space-y-6">
-          <h2 className="text-xl font-semibold text-gray-700 dark:text-gray-200 border-b pb-3">
-            Informasi Akun
-          </h2>
-
-          <div className="flex flex-col sm:flex-row items-center gap-8 pt-4">
-            <div className="flex flex-col items-center">
-              {avatarPreview.startsWith("blob:") ? (
-                <img
-                  src={avatarPreview}
-                  alt="Preview Avatar"
-                  className="rounded-full object-cover border-4 border-blue-100 dark:border-gray-600 shadow-md w-28 h-28"
-                />
-              ) : (
-                <Avatar user={user} size={112} className="border-4 border-blue-100 dark:border-gray-600 shadow-md" />
-              )}
-
-              <label
-                htmlFor="avatarInput"
-                className="cursor-pointer mt-3 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition"
-              >
-                Ubah Foto
-              </label>
-              <input
-                id="avatarInput"
-                type="file"
-                accept="image/*"
-                onChange={handleAvatarChange}
-                className="hidden"
-              />
-              <p className="text-xs text-gray-500 dark:text-gray-400 mt-2">
-                PNG, JPG atau JPEG. Maks 2MB.
-              </p>
-            </div>
-
-            <div className="flex-1 w-full">
-              <div className="mb-4">
-                <label className="block text-sm text-gray-600 dark:text-gray-300 mb-1">
-                  Nama Lengkap
-                </label>
-                <input
-                  type="text"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-lg bg-gray-50 dark:bg-gray-700 focus:ring-2 focus:ring-blue-500 outline-none"
-                  required
-                />
-              </div>
-              <div>
-                <label className="block text-sm text-gray-600 dark:text-gray-300 mb-1">Email</label>
-                <input
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-lg bg-gray-50 dark:bg-gray-700 focus:ring-2 focus:ring-blue-500 outline-none"
-                  required
-                />
-              </div>
-            </div>
-          </div>
-
-          <div className="text-right pt-3">
+        {/* Tab Headers */}
+        <div className="border-b border-gray-200 dark:border-gray-700">
+          <nav className="-mb-px flex space-x-6" aria-label="Tabs">
             <button
-              type="submit"
-              className="px-6 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium shadow transition"
+              onClick={() => setActiveTab("info")}
+              className={`whitespace-nowrap py-3 px-1 border-b-2 font-medium text-sm transition-colors ${activeTab === 'info'
+                  ? 'border-blue-500 text-blue-600 dark:border-blue-400 dark:text-blue-300'
+                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 dark:text-gray-400 dark:hover:text-gray-200 dark:hover:border-gray-600'
+                }`}
             >
-              Simpan Perubahan
+              Informasi Akun
             </button>
-          </div>
-        </form>
-      </motion.div>
-
-      {/* === PASSWORD CARD === */}
-      {user.hasPassword && (
-        <motion.div
-          whileHover={{ scale: 1.01 }}
-          className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6 border border-gray-200 dark:border-gray-700"
-        >
-          <form onSubmit={handlePasswordChange} className="space-y-6">
-            <h2 className="text-xl font-semibold text-gray-700 dark:text-gray-200 border-b pb-3">
-              Ubah Password
-            </h2>
-
-            <div className="grid gap-5 sm:grid-cols-2">
-              <div className="sm:col-span-2">
-                <label className="block text-sm text-gray-600 dark:text-gray-300 mb-1">
-                  Password Saat Ini
-                </label>
-                <input
-                  type="password"
-                  value={currentPassword}
-                  onChange={(e) => setCurrentPassword(e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-lg bg-gray-50 dark:bg-gray-700 focus:ring-2 focus:ring-green-500 outline-none"
-                  required
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm text-gray-600 dark:text-gray-300 mb-1">
-                  Password Baru
-                </label>
-                <input
-                  type="password"
-                  value={newPassword}
-                  onChange={(e) => setNewPassword(e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-lg bg-gray-50 dark:bg-gray-700 focus:ring-2 focus:ring-green-500 outline-none"
-                  required
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm text-gray-600 dark:text-gray-300 mb-1">
-                  Konfirmasi Password Baru
-                </label>
-                <input
-                  type="password"
-                  value={confirmPassword}
-                  onChange={(e) => setConfirmPassword(e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-lg bg-gray-50 dark:bg-gray-700 focus:ring-2 focus:ring-green-500 outline-none"
-                  required
-                />
-              </div>
-            </div>
-
-            <div className="text-right">
+            {user.hasPassword && (
               <button
-                type="submit"
-                className="px-6 py-2.5 bg-green-600 hover:bg-green-700 text-white rounded-lg font-medium shadow transition"
+                onClick={() => setActiveTab("password")}
+                className={`whitespace-nowrap py-3 px-1 border-b-2 font-medium text-sm transition-colors ${activeTab === 'password'
+                    ? 'border-blue-500 text-blue-600 dark:border-blue-400 dark:text-blue-300'
+                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 dark:text-gray-400 dark:hover:text-gray-200 dark:hover:border-gray-600'
+                  }`}
               >
                 Ubah Password
               </button>
-            </div>
-          </form>
-        </motion.div>
-      )}
+            )}
+          </nav>
+        </div>
+
+        {/* Tab Content */}
+        <div className="pt-6">
+          {/* Informasi Akun Tab */}
+          {activeTab === "info" && (
+            <form onSubmit={handleProfileUpdate} className="space-y-6">
+              <div className="flex flex-col sm:flex-row items-center gap-8">
+                <div className="flex flex-col items-center">
+                  {avatarPreview.startsWith("blob:") ? (
+                    <img
+                      src={avatarPreview}
+                      alt="Preview Avatar"
+                      className="rounded-full object-cover border-4 border-blue-100 dark:border-gray-600 shadow-md w-28 h-28"
+                    />
+                  ) : (
+                    <Avatar user={user} size={256} className="border-4 border-blue-100 dark:border-gray-600 shadow-md rounded-full w-28 h-28" />
+                  )}
+                  <label htmlFor="avatarInput" className="cursor-pointer mt-3 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-xl text-sm font-medium transition">
+                    Ubah Foto
+                  </label>
+                  <input id="avatarInput" type="file" accept="image/*" onChange={handleAvatarChange} className="hidden" />
+                  <p className="text-xs text-gray-500 dark:text-gray-400 mt-2">PNG, JPG, maks 2MB.</p>
+                </div>
+                <div className="flex-1 w-full">
+                  <div className="mb-4">
+                    <label className="block text-sm text-gray-600 dark:text-gray-300 mb-1">Nama Lengkap</label>
+                    <input type="text" value={name} onChange={(e) => setName(e.target.value)} className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-lg bg-gray-50 dark:bg-gray-700 focus:ring-2 focus:ring-blue-500 outline-none" required />
+                  </div>
+                  <div>
+                    <label className="block text-sm text-gray-600 dark:text-gray-300 mb-1">Email</label>
+                    <input type="email" value={email} className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-lg bg-gray-200 dark:bg-gray-800 text-gray-500 dark:text-gray-400 cursor-not-allowed outline-none" disabled />
+                  </div>
+                </div>
+              </div>
+              <div className="text-right pt-3">
+                <button type="submit" className="px-6 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-2xl text-md shadow transition">
+                  Simpan Perubahan
+                </button>
+              </div>
+            </form>
+          )}
+
+          {/* Ubah Password Tab */}
+          {activeTab === "password" && user.hasPassword && (
+            <form onSubmit={handlePasswordChange} className="space-y-6">
+              <div className="grid gap-5 sm:grid-cols-2">
+                <div className="sm:col-span-2">
+                  <label className="block text-sm text-gray-600 dark:text-gray-300 mb-1">Password Saat Ini</label>
+                  <input type="password" value={currentPassword} onChange={(e) => setCurrentPassword(e.target.value)} className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-lg bg-gray-50 dark:bg-gray-700 focus:ring-2 focus:ring-blue-500 outline-none" required />
+                </div>
+                <div>
+                  <label className="block text-sm text-gray-600 dark:text-gray-300 mb-1">Password Baru</label>
+                  <input type="password" value={newPassword} onChange={(e) => setNewPassword(e.target.value)} className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-lg bg-gray-50 dark:bg-gray-700 focus:ring-2 focus:ring-blue-500 outline-none" required />
+                </div>
+                <div>
+                  <label className="block text-sm text-gray-600 dark:text-gray-300 mb-1">Konfirmasi Password Baru</label>
+                  <input type="password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-lg bg-gray-50 dark:bg-gray-700 focus:ring-2 focus:ring-blue-500 outline-none" required />
+                </div>
+              </div>
+              <div className="text-right">
+                <button type="submit" className="px-6 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-2xl font-medium text-md shadow transition">
+                  Ubah Password
+                </button>
+              </div>
+            </form>
+          )}
+        </div>
+      </motion.div>
     </div>
   );
 };

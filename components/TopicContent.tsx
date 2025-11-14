@@ -84,8 +84,8 @@ export default function TopicContent({ topik, onStartTest, onViewScore, hasAttem
                         <Image
                             src="/post-test-topik.png"
                             alt="Post Test"
-                            width={100}
-                            height={100}
+                            width={256}
+                            height={256}
                             className="w-24 h-24 sm:w-28 sm:h-28 object-contain flex-shrink-0"
                         />
                         <div className="text-left flex-1">
