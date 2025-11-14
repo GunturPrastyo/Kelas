@@ -24,11 +24,17 @@ interface Question {
   questionText: string;
   options: string[];
   answer: string;
+  topikId?: string;
   durationPerQuestion?: number;
   subMateriId?: string;
 }
 
 interface SubMateri {
+  _id: string;
+  title: string;
+}
+
+interface Topik {
   _id: string;
   title: string;
 }
@@ -41,6 +47,7 @@ interface TestFormProps {
   isEditing: boolean;
   initialQuestions?: Question[];
   initialDuration?: number;
+  topics?: Topik[];
   subMateris?: SubMateri[];
   testType: "pre-test-global" | "post-test-modul" | "post-test-topik";
 }
@@ -56,6 +63,7 @@ export default function TestForm({
   isEditing,
   initialQuestions = emptyInitialQuestions,
   initialDuration = 60,
+  topics = [],
   subMateris = [],
 }: TestFormProps) {
   const router = useRouter();
@@ -76,12 +84,12 @@ export default function TestForm({
       setDurationPerQuestion(initialDuration);
       setFetching(false);
     } else {
-      setQuestions([{ questionText: "", options: [""], answer: "", durationPerQuestion: 60, subMateriId: "" }]);
+      setQuestions([{ questionText: "", options: [""], answer: "", topikId: "", durationPerQuestion: 60, subMateriId: "" }]);
     }
   }, [isEditing, initialQuestions, initialDuration]);
 
   const handleAddQuestion = () => {
-    setQuestions([...questions, { questionText: "", options: [""], answer: "", durationPerQuestion: 60, subMateriId: "" }]);
+    setQuestions([...questions, { questionText: "", options: [""], answer: "", topikId: "", durationPerQuestion: 60, subMateriId: "" }]);
   };
 
   const handleRemoveQuestion = (index: number) => {
@@ -141,6 +149,7 @@ export default function TestForm({
       questionText: q.questionText,
       options: q.options,
       answer: q.answer,
+      topikId: q.topikId || null,
       durationPerQuestion: q.durationPerQuestion || 60,
       subMateriId: q.subMateriId || null
     }));
@@ -248,6 +257,29 @@ export default function TestForm({
               </select>
             </div>
 
+            {/* Dropdown untuk Topik Terkait (hanya untuk post-test-modul) */}
+            {testType === "post-test-modul" && topics && topics.length > 0 && (
+              <div className="grid w-full max-w-xs items-center gap-1.5 mb-4">
+                <Label htmlFor={`topik-${qIndex}`}>Topik Terkait</Label>
+                <select
+                  id={`topik-${qIndex}`}
+                  value={q.topikId || ""}
+                  onChange={(e) => {
+                    const updated = [...questions];
+                    updated[qIndex].topikId = e.target.value;
+                    setQuestions(updated);
+                  }}
+                  className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                >
+                  <option value="">-- Pilih Topik --</option>
+                  {topics.map((topik) => (
+                    <option key={topik._id} value={topik._id}>
+                      {topik.title}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            )}
             {/* Dropdown untuk Sub Topik */}
             {subMateris && subMateris.length > 0 && (
               <div className="grid w-full max-w-xs items-center gap-1.5 mb-4">

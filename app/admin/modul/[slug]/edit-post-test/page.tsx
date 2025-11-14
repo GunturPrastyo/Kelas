@@ -12,6 +12,13 @@ interface Modul {
     slug: string;
 }
 
+interface Topik {
+    _id: string;
+    title: string;
+    slug: string;
+    order: number;
+  }
+
 export default function EditPostTestPage() {
     const searchParams = useSearchParams();
     const params = useParams();
@@ -23,6 +30,7 @@ export default function EditPostTestPage() {
     >([]);
     const [loading, setLoading] = useState(false);
     const [modul, setModul] = useState<Modul | null>(null);
+    const [topics, setTopics] = useState<Topik[]>([]);
     const [fetching, setFetching] = useState(true);
 
     useEffect(() => {
@@ -59,6 +67,18 @@ export default function EditPostTestPage() {
         };
 
         fetchModul();
+
+        const fetchTopics = async () => {
+            if (!modulId) return;
+            try {
+                const res = await authFetch(`${process.env.NEXT_PUBLIC_API_URL}/api/topik/modul/${modulId}`);
+                const data = await res.json();
+                if (res.ok) setTopics(data);
+            } catch (error) {
+                console.error("Gagal memuat data topik:", error);
+            }
+        };
+        fetchTopics();
     }, [modulId, slug]);
 
     if (fetching)
@@ -88,6 +108,7 @@ export default function EditPostTestPage() {
                     modulSlug={slug} 
                     isEditing={true} 
                     initialQuestions={questions} 
+                    topics={topics}
                     testType="post-test-modul"
                 />}
             </div>
