@@ -303,13 +303,13 @@ export default function PreTestPage() {
                 ]} />
                 <header className="flex items-center justify-between gap-2 font-poppins mt-6">
                     <div className="flex items-center gap-2">
-                        <Image src="/logo1.png" width={40} height={40} className="h-10 w-auto" alt="Logo" />
+                        <Image src="/logo1.png" width={256} height={256} className="h-10 w-auto" alt="Logo" />
                         <h1 className="text-lg font-bold text-slate-800 dark:text-slate-200">Hasil Pre-test</h1>
                     </div>
                 </header>
 
-                <section className="bg-gradient-to-r from-indigo-500 to-blue-600 rounded-xl p-6 mt-6 shadow-md text-white flex items-center gap-4">
-                    <Image src="/test.png" width={256} height={256} className="h-20 w-20" alt="pre test" />
+                <section className="bg-gradient-to-r from-indigo-500 to-blue-600 rounded-xl p-4 mt-6 shadow-md text-white flex items-center gap-4">
+                    <Image src="/test.png" width={256} height={256} className="h-24 w-24" alt="pre test" />
                     <div>
                         <h2 className="text-base font-bold ">Pre-test Selesai!</h2>
                         <p className="text-sm opacity-90">Berikut adalah hasil dan rekomendasi jalur belajarmu.</p>
@@ -342,7 +342,7 @@ export default function PreTestPage() {
                                 {recommendedModules.length > 0 ? (
                                     recommendedModules.map(modul => (
                                         <Link href={`/modul/${modul.slug}`} key={modul._id} className="flex items-center gap-3 border border-slate-200 dark:border-gray-700 rounded-lg p-3 hover:bg-slate-50 dark:hover:bg-gray-700/50 transition">
-                                            <Image src={`${process.env.NEXT_PUBLIC_API_URL}/uploads/${modul.icon}`} alt={modul.title} width={32} height={32} className="w-8 h-8 rounded" />
+                                            <Image src={`${process.env.NEXT_PUBLIC_API_URL}/uploads/${modul.icon}`} alt={modul.title} width={128} height={128} className="w-8 h-8 rounded" />
                                             <div>
                                                 <p className="font-semibold text-sm text-slate-800 dark:text-slate-200">{modul.title}</p>
                                                 <p className="text-xs text-slate-500 dark:text-slate-400">Materi {level}</p>
@@ -369,7 +369,7 @@ export default function PreTestPage() {
     }
 
     return (
-        <div className="max-w-full mx-auto p-4 sm:p-5 my-4 sm:my-8 font-sans">
+        <div className="max-w-full mx-auto p-2 font-sans">
             <Breadcrumb paths={[
                 { name: "Dashboard", href: "/dashboard" },
                 { name: "Pre-test", href: "#" }
@@ -377,7 +377,7 @@ export default function PreTestPage() {
 
             <header className="flex items-center justify-between gap-4 font-poppins mt-6">
                 <div className="flex items-center gap-2">
-                    <Image src="/logo1.png" width={40} height={40} className="h-10 w-auto" alt="Logo" />
+                    <Image src="/logo1.png" width={256} height={256} className="h-10 w-auto" alt="Logo" />
                     <h1 className="text-lg font-bold text-slate-800 dark:text-slate-200">Pre-test</h1>
                 </div>
                 <div className="flex gap-2 sm:gap-3 items-center justify-center text-slate-500 dark:text-slate-400 text-xs sm:text-sm bg-slate-100 dark:bg-gray-800 px-2 sm:px-3 py-1.5 rounded-lg border border-slate-200 dark:border-gray-700">
@@ -387,11 +387,11 @@ export default function PreTestPage() {
                 </div>
             </header>
 
-            <section className="bg-gradient-to-r from-indigo-500 to-blue-600 rounded-xl p-6 mt-6 shadow-md text-white flex items-center gap-4">
-                <Image src="/test.png" width={80} height={80} className="h-20 w-20" alt="pre test" />
+            <section className="bg-gradient-to-r from-indigo-500 to-blue-600 rounded-xl p-4 mt-6 shadow-md text-white flex items-center gap-4">
+                <Image src="/test.png" width={256} height={256} className="h-24 w-24" alt="pre test" />
                 <div>
                     <h2 className="text-base font-bold ">Selamat Datang di Pre-test</h2>
-                    <p className="text-sm opacity-90">Kerjakan soal ini untuk menentukan level belajar yang sesuai denganmu 🎯</p>
+                    <p className="text-sm opacity-90">Kerjakan soal ini untuk menentukan level belajar yang sesuai denganmu</p>
                 </div>
             </section>
 

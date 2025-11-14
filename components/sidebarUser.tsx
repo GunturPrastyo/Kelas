@@ -63,7 +63,7 @@ export default function Sidebar() {
         </button>
         <div id="sidebar-title-container" className="flex-1 flex items-center gap-4 overflow-hidden" >
           {!isSidebarCollapsed && (
-            <Image id="sidebar-title" src="/logo.png" alt="KELAS Logo" width={150} height={40} className="h-10 w-auto transition-opacity duration-300" style={{ width: 'auto' }} priority />
+            <Image id="sidebar-title" src="/logo.png" alt="KELAS Logo" width={512} height={512} className="h-10 w-auto transition-opacity duration-300" style={{ width: 'auto' }} priority />
           )}
         </div>
       </div>
@@ -78,7 +78,7 @@ export default function Sidebar() {
               href={link.href}
               className={`nav-link flex items-center gap-4 p-3 rounded-lg transition-colors ${active ? 'bg-blue-50 dark:bg-gray-700' : 'hover:bg-gray-100 dark:hover:bg-gray-700'}`}
             >
-              <Image src={link.icon} alt={link.alt} width={28} height={28} className="flex-shrink-0" />
+              <Image src={link.icon} alt={link.alt} width={128} height={128} className="w-8 h-auto flex-shrink-0" />
               <span className={`sidebar-text whitespace-nowrap transition-opacity duration-300 ${isSidebarCollapsed ? 'opacity-0 hidden' : 'opacity-100'} ${active ? 'text-blue-600 dark:text-white font-semibold' : 'text-gray-600 dark:text-gray-300'}`}>
                 {link.label}
               </span>

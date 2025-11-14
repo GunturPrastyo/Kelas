@@ -1024,7 +1024,7 @@ export default function ModulDetailPage() {
             {/* Header Modul */}
             <header className="bg-gradient-to-r from-indigo-500 to-blue-600 rounded-xl p-6 mt-6 shadow-md text-white flex flex-col items-start gap-2 mb-8 md:flex-row md:items-center md:gap-4">
                 {/* Ikon untuk desktop (di kiri) */}
-                <Image src={`${process.env.NEXT_PUBLIC_API_URL}/uploads/${modul.icon}`} alt={modul.title} width={80} height={80} className="hidden md:block h-20 w-20 rounded-lg object-cover bg-white/20 p-1" />
+                <Image src={`${process.env.NEXT_PUBLIC_API_URL}/uploads/${modul.icon}`} alt={modul.title} width={256} height={256} className="hidden md:block h-20 w-20 rounded-lg object-cover bg-white/20 p-1" />
 
                 <div className="flex-1 text-left w-full"> {/* Wrapper untuk teks dan ikon mobile */}
                     <span className="text-xs font-semibold uppercase tracking-wider text-blue-200">{modul.category}</span>
@@ -1121,7 +1121,7 @@ export default function ModulDetailPage() {
 
                             {/* Gambar (akan muncul di atas pada mobile, di kanan pada desktop) */}
                             <div className="flex w-full md:w-1/3 justify-center items-center mt-4 md:mt-0 order-first md:order-last">
-                                <Image src={hasCompletedModulPostTest ? "/post-test-akhir.png" : "/post-test.png"} alt="Post Test" width={240} height={240} className="w-48 h-48 md:w-60 md:h-60 object-contain" unoptimized />
+                                <Image src={hasCompletedModulPostTest ? "/post-test-akhir.png" : "/post-test.png"} alt="Post Test" width={256} height={256} className="w-48 h-48 md:w-60 md:h-60 object-contain" unoptimized />
                             </div>
                         </div>
                     </section>
