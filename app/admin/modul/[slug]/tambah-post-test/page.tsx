@@ -11,6 +11,13 @@ interface Modul {
     slug: string;
 }
 
+interface Topik {
+    _id: string;
+    title: string;
+    slug: string;
+    order: number;
+  }
+
 export default function TambahPostTestPage() {
     const searchParams = useSearchParams();
     const params = useParams();
@@ -19,22 +26,34 @@ export default function TambahPostTestPage() {
 
     const [pageLoading, setPageLoading] = useState(true);
     const [modul, setModul] = useState<Modul | null>(null);
+    const [topics, setTopics] = useState<Topik[]>([]);
 
     useEffect(() => {
-        if (!slug) return;
-        const fetchModul = async () => {
+        if (!slug || !modulId) return;
+        const fetchData = async () => {
             try {
-                const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/modul/${slug}`);
-                const data = await res.json();
-                if (res.ok) setModul(data);
+                // Fetch modul and topics in parallel
+                const [modulRes, topicsRes] = await Promise.all([
+                    fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/modul/${slug}`),
+                    fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/topik/modul/${modulId}`)
+                ]);
+
+                if (modulRes.ok) {
+                    const modulData = await modulRes.json();
+                    setModul(modulData);
+                }
+                if (topicsRes.ok) {
+                    const topicsData = await topicsRes.json();
+                    setTopics(topicsData);
+                }
             } catch (error) {
-                console.error("Gagal memuat data modul:", error);
+                console.error("Gagal memuat data:", error);
             } finally {
                 setPageLoading(false);
             }
         };
-        fetchModul();
-    }, [slug]);
+        fetchData();
+    }, [slug, modulId]);
 
     if (pageLoading) {
         return <div className="p-6 text-center">Memuat data...</div>;
@@ -57,6 +76,7 @@ export default function TambahPostTestPage() {
                     modulId={modulId} 
                     modulSlug={slug} 
                     isEditing={false} 
+                    topics={topics}
                     testType="post-test-modul"
                 />}
             </div>

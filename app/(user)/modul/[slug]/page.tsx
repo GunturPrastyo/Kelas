@@ -446,7 +446,7 @@ export default function ModulDetailPage() {
                     modulId: modul?._id,
                     topikId: activeTest._id,
                     // Kirim jumlah soal unik yang diubah (changedQuestionIds.size) sebagai 'answerChanges'
-                    answerChanges: changedQuestionIds.size, 
+                    answerChanges: changedQuestionIds.size,
                     tabExits: tabExitCount,
                 }),
             });
@@ -671,7 +671,7 @@ export default function ModulDetailPage() {
                     {/* Body */}
                     <main className="p-6 overflow-y-auto" ref={questionModalRef}>
                         {testResult ? (
-                            <div className="text-center py-8">
+                            <div className="text-center py-4">
                                 {/* --- JUDUL --- */}
                                 <motion.div
                                     initial={{ opacity: 0, y: -15 }}
@@ -698,7 +698,7 @@ export default function ModulDetailPage() {
                                             Skor Kamu
                                         </p>
                                         <p className="text-7xl font-extrabold bg-gradient-to-r from-blue-600 to-purple-500 text-transparent bg-clip-text my-3 drop-shadow-md">
-                                            {Math.round(testResult.score)}% 
+                                            {Math.round(testResult.score)}%
                                         </p>
                                         <p className="text-base text-slate-700 dark:text-slate-300 font-semibold">
                                             {testResult.correct} / {activeTest.questions.length} Jawaban Benar
@@ -726,10 +726,23 @@ export default function ModulDetailPage() {
                                     )}
                                 </motion.div>
 
+                                {/* === DIVIDER "Analisis Performa Kamu" === */}
+                                <div className="relative my-5 flex items-center">
+                                    <div className="flex-grow border-t border-slate-300 dark:border-slate-700"></div>
+
+                                    <span className="mx-4 px-4 py-1 text-sm font-semibold 
+            text-slate-700 dark:text-slate-200 bg-white dark:bg-gray-800 
+            rounded-full shadow-sm tracking-wide">
+                                        Analisis Performa Kamu
+                                    </span>
+
+                                    <div className="flex-grow border-t border-slate-300 dark:border-slate-700"></div>
+                                </div>
+
                                 {/* --- RINCIAN SKOR --- */}
                                 {testResult.scoreDetails && (
                                     <motion.div
-                                        className="mt-10 grid grid-cols-2 lg:grid-cols-4 gap-5"
+                                        className="mt-5 grid grid-cols-2 lg:grid-cols-4 gap-5"
                                         initial={{ opacity: 0, y: 20 }}
                                         animate={{ opacity: 1, y: 0 }}
                                         transition={{ delay: 0.3, duration: 0.6, staggerChildren: 0.1 }}
@@ -759,7 +772,7 @@ export default function ModulDetailPage() {
                                             {
                                                 label: "Fokus Tes",
                                                 val: testResult.scoreDetails.focus,
-                                                desc: "Tingkat konsentrasi selama tes (minim keluar halaman).",
+                                                desc: "Tingkat konsentrasi selama tes.",
                                                 icon: <Eye className="w-5 h-5 text-amber-600" />,
                                                 gradient: "from-amber-500/10 to-amber-400/5 border-amber-300/30",
                                             },

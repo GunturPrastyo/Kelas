@@ -110,7 +110,8 @@ export default function ModuleList({ title, allModules, filter }: ModuleListProp
   if (modules.length === 0) return null;
 
   return (
-    <section className="bg-gradient-to-br from-indigo-100 via-blue-100 to-sky-200 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 p-6 rounded-3xl shadow-xl border border-white/10">
+    <section className="bg-gradient-to-br from-indigo-50 via-blue-50 to-sky-100 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 p-7 rounded-3xl shadow-xl border border-white/20 backdrop-blur-xl transition-all">
+      {/* Header */}
       <div className="flex justify-between items-center mb-6">
         <h2 className="text-xl font-semibold text-gray-800 dark:text-gray-100 flex items-center gap-2">
           <Route className="w-6 h-6 text-indigo-700 dark:text-indigo-300" />
@@ -118,31 +119,38 @@ export default function ModuleList({ title, allModules, filter }: ModuleListProp
         </h2>
       </div>
 
+      {/* Horizontal Scroll */}
       <div
         ref={scrollRef}
         onMouseDown={handleMouseDown}
-        className="flex gap-6 overflow-x-auto scroll-smooth pb-4 scrollbar-hidden snap-x snap-mandatory cursor-grab active:cursor-grabbing select-none"
+        className="flex gap-7 overflow-x-auto scroll-smooth pb-4 scrollbar-hidden snap-x snap-mandatory cursor-grab active:cursor-grabbing select-none px-1"
       >
         {modules.map((modul) => (
           <Link
-            href={modul.status !== "Terkunci" ? `/modul/${modul.slug}` : "#"}
             key={modul._id}
-            className={`group relative min-w-[240px] sm:min-w-[260px] p-6 rounded-2xl flex flex-col items-start bg-white/80 dark:bg-gray-900/70 border border-gray-200 dark:border-gray-700 backdrop-blur-md transition-all duration-300 hover:shadow-2xl snap-start flex-shrink-0
-              ${
-                modul.status === "Terkunci"
-                  ? "opacity-60 cursor-not-allowed"
-                  : "hover:-translate-y-2"
-              }`}
+            href={modul.status !== "Terkunci" ? `/modul/${modul.slug}` : "#"}
             onClick={(e) => modul.status === "Terkunci" && e.preventDefault()}
+            className={`
+          relative w-[260px] p-6 rounded-3xl flex flex-col items-start 
+          bg-white/80 dark:bg-gray-900/60 
+          border border-gray-200/50 dark:border-gray-700/60 
+          backdrop-blur-lg shadow-md 
+          transition-all duration-300 snap-start flex-shrink-0
+          ${modul.status === "Terkunci"
+                ? "opacity-50 cursor-not-allowed"
+                : "hover:-translate-y-2 hover:shadow-2xl"
+              }
+        `}
           >
             {/* Icon */}
             <div
-              className={`w-14 h-14 mb-4 rounded-xl flex items-center justify-center shadow-inner transition-all
-                ${
-                  modul.progress === 100
-                    ? "bg-green-100 dark:bg-green-900/40"
-                    : "bg-blue-100 dark:bg-blue-900/40"
-                }`}
+              className={`
+            w-16 h-16 mb-4 rounded-2xl flex items-center justify-center transition-all shadow-sm ring-1 
+            ${modul.progress === 100
+                  ? "bg-green-50 dark:bg-green-900/40 ring-green-200/60"
+                  : "bg-blue-50 dark:bg-blue-900/40 ring-blue-200/60"
+                }
+          `}
             >
               <Image
                 src={`${process.env.NEXT_PUBLIC_API_URL}/uploads/${modul.icon}`}
@@ -153,45 +161,47 @@ export default function ModuleList({ title, allModules, filter }: ModuleListProp
               />
             </div>
 
-            {/* Judul */}
-            <h3 className="font-semibold text-lg mb-3 text-gray-800 dark:text-gray-100 line-clamp-2 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+            {/* Title */}
+            <h3 className="font-semibold text-lg mb-3 text-gray-800 dark:text-gray-100 min-h-[56px] group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">
               {modul.title}
             </h3>
 
             {/* Progress Bar */}
-            <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2 mb-4 overflow-hidden">
+            <div className="w-full bg-gray-200/70 dark:bg-gray-700/70 rounded-full h-2 mb-4">
               <div
-                className={`h-2 rounded-full transition-all duration-500 ease-out ${
-                  modul.progress === 100 ? "bg-green-500" : "bg-blue-500"
-                }`}
+                className={`
+              h-2 rounded-full transition-all duration-500 ease-out
+              ${modul.progress === 100 ? "bg-green-500" : "bg-indigo-500"}
+            `}
                 style={{ width: `${modul.progress}%` }}
               ></div>
             </div>
 
-            {/* Group Badge */}
-            <div className="flex items-center gap-2">
+            {/* Badge */}
+            <div className="flex items-center gap-2 mt-auto">
               {getStatusBadge(modul.status, modul.progress)}
               {getCategoryBadge(modul.category)}
             </div>
 
-            {/* Glow efek ketika hover */}
+            {/* Glow Hover */}
             {modul.status !== "Terkunci" && (
-              <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-blue-400/0 via-blue-400/0 to-blue-400/10 opacity-0 group-hover:opacity-100 transition duration-300 blur-lg"></div>
+              <div className="absolute inset-0 rounded-3xl pointer-events-none bg-gradient-to-br from-indigo-400/0 via-blue-300/0 to-blue-400/10 opacity-0 group-hover:opacity-100 transition duration-300 blur-xl"></div>
             )}
           </Link>
         ))}
       </div>
 
-      {/* Hilangkan scrollbar bawaan */}
+      {/* Hidden Scrollbar */}
       <style jsx>{`
-        .scrollbar-hidden::-webkit-scrollbar {
-          display: none;
-        }
-        .scrollbar-hidden {
-          -ms-overflow-style: none;
-          scrollbar-width: none;
-        }
-      `}</style>
+    .scrollbar-hidden::-webkit-scrollbar {
+      display: none;
+    }
+    .scrollbar-hidden {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+  `}</style>
     </section>
+
   );
 }
