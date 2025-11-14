@@ -215,8 +215,8 @@ export default function ModulPage() {
             )}
 
             {userLevel && (
-                <section className={`bg-gradient-to-br ${recommendation.bgClass} p-5 rounded-xl shadow-md flex items-center gap-4 mb-6`}>
-                    <Image src={recommendation.icon} alt="Rekomendasi" width={64} height={64} className="w-16 h-16" />
+                <section className={`bg-gradient-to-br ${recommendation.bgClass} p-5 rounded-xl shadow-md flex items-center gap-6 mb-6`}>
+                    <Image src={recommendation.icon} alt="Rekomendasi" width={256} height={256} className="w-20 h-20" />
                     <div>
                         <h2 className={`text-lg font-semibold ${recommendation.textClass}`}>{recommendation.title}</h2>
                         <p className="text-sm text-gray-700 dark:text-gray-300">{recommendation.description}</p>

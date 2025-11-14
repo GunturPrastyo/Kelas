@@ -1,10 +1,25 @@
 "use client";
 
-import React, { useState, useEffect, ChangeEvent, FormEvent } from "react";
+import React, { useState, useEffect, ChangeEvent, FormEvent, useMemo } from "react";
 import { authFetch } from "@/lib/authFetch";
 import Avatar from "@/components/Avatar"; // Ganti Image dengan komponen Avatar
 import Breadcrumb from "@/components/Breadcrumb";
 import { motion } from "framer-motion";
+import { Award, Download, Star } from "lucide-react";
+
+interface ModuleProgress {
+  _id: string;
+  title: string;
+  progress: number;
+  totalTopics: number;
+  completedTopics: number;
+}
+
+interface ProgressData {
+  modules: ModuleProgress[];
+  totalTopics: number;
+  completedTopics: number;
+}
 
 interface User {
   _id: string;
@@ -17,6 +32,7 @@ interface User {
 const ProfilePage = () => {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
+  const [progressData, setProgressData] = useState<ProgressData | null>(null);
 
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -40,6 +56,24 @@ const ProfilePage = () => {
       // Logika avatar sekarang ditangani oleh komponen Avatar dan state avatarPreview
     }
     setLoading(false);
+
+    const fetchProgress = async () => {
+      try {
+        const res = await authFetch(`${process.env.NEXT_PUBLIC_API_URL}/api/modul/progress`);
+        if (res.ok) {
+          const modules: ModuleProgress[] = await res.json();
+          const totalTopics = modules.reduce((sum, mod) => sum + (mod.totalTopics || 0), 0);
+          const completedTopics = modules.reduce((sum, mod) => sum + (mod.completedTopics || 0), 0);
+          setProgressData({ modules, totalTopics, completedTopics });
+        }
+      } catch (error) {
+        console.error("Gagal memuat progres belajar:", error);
+      }
+    };
+
+    if (userRaw) {
+      fetchProgress();
+    }
   }, []);
 
   const handleAvatarChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -114,6 +148,56 @@ const ProfilePage = () => {
     }
   };
 
+  const handleDownloadCertificate = async () => {
+    if (!user) {
+      setMessage({ type: "error", text: "Pengguna belum login." });
+      return;
+    }
+    if (overallProgress < 100) {
+      setMessage({ type: "error", text: "Anda belum menyelesaikan semua modul untuk mendapatkan sertifikat." });
+      return;
+    }
+
+    try {
+      setMessage(null);
+      const res = await authFetch(`${process.env.NEXT_PUBLIC_API_URL}/api/results/certificate`, {
+        method: "GET",
+        // Penting: responseType 'blob' untuk mengunduh file
+        headers: {
+          'Content-Type': 'application/json', // Tetap kirim header ini jika diperlukan oleh authFetch
+        },
+      });
+
+      if (!res.ok) {
+        const errorText = await res.text(); // Coba baca pesan error dari respons
+        throw new Error(`Gagal mengunduh sertifikat: ${errorText || res.statusText}`);
+      }
+
+      const blob = await res.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `Sertifikat_${user.name.replace(/\s+/g, '_')}.pdf`; // Nama file dengan nama pengguna
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      window.URL.revokeObjectURL(url);
+      setMessage({ type: "success", text: "Sertifikat berhasil diunduh!" });
+
+    } catch (err) {
+      console.error("Error downloading certificate:", err);
+      setMessage({
+        type: "error",
+        text: err instanceof Error ? err.message : "Terjadi kesalahan saat mengunduh sertifikat.",
+      });
+    }
+  };
+
+  const overallProgress = useMemo(() => {
+    if (!progressData || progressData.totalTopics === 0) return 0;
+    return Math.round((progressData.completedTopics / progressData.totalTopics) * 100);
+  }, [progressData]);
+
   if (loading) return <div className="p-6 text-center text-gray-500">Memuat...</div>;
   if (!user) return <div className="p-6 text-center text-gray-500">Silakan login untuk melihat profil.</div>;
 
@@ -128,20 +212,85 @@ const ProfilePage = () => {
         <motion.div
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
-          className={`p-4 mb-6 rounded-xl text-center font-medium shadow ${
-            message.type === "success"
+          className={`p-4 mb-6 rounded-xl text-center font-medium shadow ${message.type === "success"
               ? "bg-green-100 text-green-800 border border-green-300"
               : "bg-red-100 text-red-800 border border-red-300"
-          }`}
+            }`}
         >
           {message.text}
         </motion.div>
       )}
 
+      {/* === KARTU SERTIFIKAT & PROGRES === */}
+      <motion.div
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.15 }}
+        className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-2xl shadow-xl p-6 mb-5"
+      >
+        <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+
+          {/* === LEFT SIDE === */}
+          <div className="flex-1">
+            <div className="flex items-center gap-3">
+              <div className="p-3 bg-blue-600/10 rounded-xl">
+                <Award className="text-blue-600 dark:text-blue-400" size={26} />
+              </div>
+              <div>
+                <h2 className="text-xl font-bold text-gray-800 dark:text-gray-100">
+                  Sertifikat Belajar
+                </h2>
+                <p className="text-sm text-gray-500 dark:text-gray-400">
+                  Kumpulkan XP dan selesaikan modul untuk membuka sertifikat.
+                </p>
+              </div>
+            </div>
+
+            {/* XP & Percentage */}
+            <div className="mt-4 flex items-center gap-4">
+              <div className="flex items-center gap-2 bg-blue-600/10 text-blue-700 dark:text-blue-300 px-3 py-1.5 rounded-full">
+                <Star className="w-4 h-4 text-yellow-400" />
+                <span className="font-bold text-sm">{progressData?.completedTopics || 0} XP</span>
+              </div>
+
+              <span className="text-sm font-medium text-gray-700 dark:text-gray-200">
+                {overallProgress}% Selesai
+              </span>
+            </div>
+
+            {/* Progress Bar */}
+            <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-3 mt-3 overflow-hidden">
+              <div
+                className="bg-blue-600 h-3 rounded-full transition-all duration-500"
+                style={{ width: `${overallProgress}%` }}
+              ></div>
+            </div>
+          </div>
+
+          {/* === RIGHT SIDE ACTION BUTTON === */}
+          <button
+            onClick={overallProgress === 100 ? handleDownloadCertificate : undefined}
+            disabled={overallProgress < 100}
+            className={`
+        flex items-center gap-2 px-5 py-3 rounded-xl font-semibold shadow-md transition-all
+        ${overallProgress < 100
+                ? "bg-gray-300 dark:bg-gray-700 text-gray-600 dark:text-gray-400 cursor-not-allowed"
+                : "bg-blue-600 hover:bg-blue-700 text-white transform hover:scale-[1.03]"
+              }
+      `}
+          >
+            <Download size={18} />
+            {overallProgress < 100 ? "Selesaikan Semua Modul" : "Unduh Sertifikat"}
+          </button>
+
+        </div>
+      </motion.div>
+
+
       {/* === PROFILE CARD === */}
       <motion.div
         whileHover={{ scale: 1.01 }}
-        className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6 mb-10 border border-gray-200 dark:border-gray-700"
+        className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-2xl shadow-lg p-6 mb-5  "
       >
         <form onSubmit={handleProfileUpdate} className="space-y-6">
           <h2 className="text-xl font-semibold text-gray-700 dark:text-gray-200 border-b pb-3">
@@ -174,7 +323,7 @@ const ProfilePage = () => {
                 className="hidden"
               />
               <p className="text-xs text-gray-500 dark:text-gray-400 mt-2">
-                JPG, PNG, atau GIF. Maks 2MB.
+                PNG, JPG atau JPEG. Maks 2MB.
               </p>
             </div>
 

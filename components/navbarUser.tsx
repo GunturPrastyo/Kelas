@@ -1,15 +1,37 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useMemo } from "react"
 import { useTheme } from "next-themes"
 import { usePathname } from "next/navigation"
 import { useUI } from "@/context/UIContext"
 import Image from "next/image"
 import NotificationBell from "./NotificationBell" // Import komponen notifikasi
 import UserDropdown from "./UserDropdown" // Import komponen UserDropdown
+import { Sun, Cloud, Sunset, Moon } from "lucide-react"
+
+interface User {
+  name: string;
+}
 
 export default function Navbar() {
   const [mounted, setMounted] = useState(false)
+  const [user, setUser] = useState<User | null>(null);
+
+  const greeting = useMemo(() => {
+    const hour = new Date().getHours();
+    if (hour >= 4 && hour < 11) {
+      return { text: "Selamat Pagi", icon: <Sun className="w-5 h-5 text-amber-500" /> };
+    }
+    if (hour >= 11 && hour < 15) {
+      return { text: "Selamat Siang", icon: <Cloud className="w-5 h-5 text-sky-500" /> };
+    }
+    if (hour >= 15 && hour < 19) {
+      return { text: "Selamat Sore", icon: <Sunset className="w-5 h-5 text-orange-500" /> };
+    }
+    return { text: "Selamat Malam", icon: <Moon className="w-5 h-5 text-indigo-500" /> };
+  }, []);
+
+
   const { theme, setTheme } = useTheme()
   const { isSidebarCollapsed, toggleMobileDrawer, searchQuery, setSearchQuery } = useUI()
   const pathname = usePathname();
@@ -17,6 +39,11 @@ export default function Navbar() {
 
   useEffect(() => {
     setMounted(true);
+    const userRaw = localStorage.getItem('user');
+    if (userRaw) {
+      const parsedUser = JSON.parse(userRaw);
+      setUser(parsedUser);
+    }
   }, []);
 
   // Logika untuk placeholder search bar
@@ -78,7 +105,9 @@ export default function Navbar() {
       </form>
 
       {/* Kanan */}
-      <div className="flex items-center gap-5 order-2 md:order-3 flex-shrink-0">
+      <div className="flex items-center gap-3 md:gap-5 order-2 md:order-3 flex-shrink-0">
+     
+
         {/* Icon group (Theme + Notifikasi) */}
         <div className="flex items-center gap-4">
           {mounted && (
@@ -104,6 +133,13 @@ export default function Navbar() {
 
           {/* Ganti notifikasi placeholder dengan komponen fungsional */}
           <NotificationBell />
+             {/* Sambutan Pengguna */}
+        {user && (
+          <p className="hidden md:block text-sm text-gray-600 dark:text-gray-300 whitespace-nowrap">
+            {" "}
+            {greeting.text}, <span className="font-semibold">{user.name.split(" ").slice(0, 2).join(" ")}!</span>
+          </p>
+        )}
         </div>
 
         <UserDropdown />

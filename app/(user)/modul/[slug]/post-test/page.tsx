@@ -305,7 +305,7 @@ export default function PostTestPage() {
                     </ol>
                 </nav>
 
-                <section className="bg-white dark:bg-gray-800 rounded-2xl p-6 mt-6 shadow-lg border border-slate-200/60 dark:border-gray-700/40">
+                <section className="bg-white dark:bg-gray-800 rounded-2xl p-6 mt-6 shadow-lg border border-slate-200 dark:border-slate-700">
 
                     {/* === HEADER UTAMA === */}
                     <div className="text-center mb-10">
@@ -520,7 +520,7 @@ export default function PostTestPage() {
                 </div>
             </header>
 
-            <section ref={questionAreaRef} className="bg-white dark:bg-gray-800 rounded-xl p-6 mt-6 shadow-lg">
+            <section ref={questionAreaRef} className="bg-white dark:bg-gray-800 rounded-xl p-6 mt-6 shadow-lg border border-slate-200 dark:border-slate-700">
                 {currentQuestion && (
                     <div className="py-6">
                         <div className="flex items-start font-semibold mb-4 text-base text-slate-800 dark:text-slate-200">

@@ -110,7 +110,7 @@ export default function ModuleList({ title, allModules, filter }: ModuleListProp
   if (modules.length === 0) return null;
 
   return (
-    <section className="bg-gradient-to-br from-indigo-50 via-blue-50 to-sky-100 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 p-7 rounded-3xl shadow-xl border border-white/20 backdrop-blur-xl transition-all">
+    <section className="bg-gradient-to-br from-indigo-100 via-blue-100 to-sky-200 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 p-7 rounded-3xl shadow-xl border border-white/20 backdrop-blur-xl transition-all">
       {/* Header */}
       <div className="flex justify-between items-center mb-6">
         <h2 className="text-xl font-semibold text-gray-800 dark:text-gray-100 flex items-center gap-2">
@@ -131,7 +131,7 @@ export default function ModuleList({ title, allModules, filter }: ModuleListProp
             href={modul.status !== "Terkunci" ? `/modul/${modul.slug}` : "#"}
             onClick={(e) => modul.status === "Terkunci" && e.preventDefault()}
             className={`
-          relative w-[260px] p-6 rounded-3xl flex flex-col items-start 
+          relative min-w-[240px] sm:min-w-[260px] p-6 rounded-3xl flex flex-col items-start 
           bg-white/80 dark:bg-gray-900/60 
           border border-gray-200/50 dark:border-gray-700/60 
           backdrop-blur-lg shadow-md 
@@ -155,14 +155,14 @@ export default function ModuleList({ title, allModules, filter }: ModuleListProp
               <Image
                 src={`${process.env.NEXT_PUBLIC_API_URL}/uploads/${modul.icon}`}
                 alt={`${modul.title} icon`}
-                width={36}
-                height={36}
-                className="object-contain"
+                width={128}
+                height={128}
+                className="object-contain w-10 h-10"
               />
             </div>
 
             {/* Title */}
-            <h3 className="font-semibold text-lg mb-3 text-gray-800 dark:text-gray-100 min-h-[56px] group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">
+            <h3 className="font-semibold text-lg mb-3 text-gray-800 dark:text-gray-100 line-clamp-2 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">
               {modul.title}
             </h3>
 

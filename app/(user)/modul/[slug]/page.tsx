@@ -1081,7 +1081,7 @@ export default function ModulDetailPage() {
                 const isPostTestLocked = modul.progress < 100;
                 const hasCompletedModulPostTest = modul.hasCompletedModulPostTest;
                 return ( // Kartu ini akan muncul jika `hasModulPostTest` bernilai true
-                    <section className={`bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-lg mt-5 transition-all ${isPostTestLocked ? 'opacity-60 cursor-not-allowed' : ''}`}>
+                    <section className={`bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-lg mt-5 transition-all border border-slate-200 dark:border-slate-700 ${isPostTestLocked ? 'opacity-60 cursor-not-allowed' : ''}`}>
                         <div className="flex flex-col md:flex-row items-center md:items-start gap-6 lg:p-2">
                             {/* Konten Teks */}
                             <div className="flex-1 text-center md:text-left">
