@@ -219,7 +219,7 @@ export default function TestForm({
       {questions.map((q, qIndex) => (
         <Card
           key={q._id || qIndex}
-          className="mb-6 border-gray-200 dark:border-gray-700"
+          className="mb-6 border-slate-200 dark:border-slate-700"
         >
           <CardContent className="p-4 sm:p-6">
             <div className="flex justify-between items-center mb-3">

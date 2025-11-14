@@ -309,7 +309,7 @@ export default function PreTestPage() {
                 </header>
 
                 <section className="bg-gradient-to-r from-indigo-500 to-blue-600 rounded-xl p-6 mt-6 shadow-md text-white flex items-center gap-4">
-                    <Image src="/test.png" width={80} height={80} className="h-20 w-20" alt="pre test" />
+                    <Image src="/test.png" width={256} height={256} className="h-20 w-20" alt="pre test" />
                     <div>
                         <h2 className="text-base font-bold ">Pre-test Selesai!</h2>
                         <p className="text-sm opacity-90">Berikut adalah hasil dan rekomendasi jalur belajarmu.</p>

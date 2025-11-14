@@ -48,7 +48,7 @@ export default function TopicCard({ topik, modulId, modulSlug, onDelete }: Props
   return (
     <div
       onClick={handleCardClick}
-      className="relative bg-white dark:bg-gray-800 rounded-xl shadow-md p-5 hover:shadow-lg border border-gray-200 dark:border-gray-700 transition-all flex flex-col h-full cursor-pointer"
+      className="relative bg-white dark:bg-gray-800 rounded-xl shadow-md p-5 hover:shadow-lg border border-slate-200 dark:border-slate-700 transition-all flex flex-col h-full cursor-pointer"
     >
         {/* Tombol aksi kanan atas */}
         <div className="absolute top-3 right-3 flex space-x-2">

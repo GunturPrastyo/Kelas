@@ -47,7 +47,7 @@ export default function ModulCard({ modul, onDelete }: Props) {
 
   return (
     <div
-      className="relative bg-white dark:bg-gray-800 rounded-xl shadow-md hover:shadow-lg border border-gray-200 dark:border-gray-700 transition-all flex flex-col cursor-pointer"
+      className="relative bg-white dark:bg-gray-800 rounded-xl shadow-md hover:shadow-lg border border-slate-200 dark:border-slate-700 transition-all flex flex-col cursor-pointer"
       onClick={handleCardClick}
     >
       {/* Tombol Aksi di Kanan Atas */}
