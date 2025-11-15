@@ -1031,7 +1031,7 @@ export default function ModulDetailPage() {
                     <h1 className="text-3xl font-bold text-white mt-1 mb-2">{modul.title}</h1>
 
                     {/* Ikon untuk mobile (di bawah judul, di tengah) */}
-                    <Image src={`${process.env.NEXT_PUBLIC_API_URL}/uploads/${modul.icon}`} alt={modul.title} width={80} height={80} className="hidden h-20 w-20 rounded-lg object-cover bg-white/20 p-1 mb-4 mx-auto" />
+                    <Image src={`${process.env.NEXT_PUBLIC_API_URL}/uploads/${modul.icon}`} alt={modul.title} width={256} height={256} className="hidden h-20 w-20 rounded-lg object-cover bg-white/20 p-1 mb-4 mx-auto" />
 
                     <p className="text-sm text-white/90 mb-2">{modul.overview}</p>
                     <div className="w-full bg-white/30 rounded-full h-2.5">
