@@ -61,7 +61,7 @@ export default function Navbar() {
       }`}
     >
       {/* Kiri */}
-      <div id="header-left" className="flex items-center gap-2 flex-shrink-0">
+      <div id="header-left" className="flex items-center flex-shrink-0">
         {/* Tombol Mobile Drawer */}
         <button
           id="mobile-drawer-toggle"
@@ -87,16 +87,16 @@ export default function Navbar() {
       </div>
 
       {/* Kanan */}
-      <div className="flex items-center gap-3 md:gap-5 flex-shrink-0">
+      <div className="flex items-center gap-0 ms:gap-5 flex-shrink-0">
      
 
         {/* Icon group (Theme + Notifikasi) */}
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-2 sm:gap-4">
           {mounted && (
             <button
               id="theme-toggle"
               type="button"
-              className="text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-700 rounded-lg text-sm p-2.5"
+              className="text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-700 rounded-lg text-sm"
               onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
             >
               {theme === 'dark' ? (
