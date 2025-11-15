@@ -1,21 +1,35 @@
 "use client"
 
-import { useState, useEffect, useMemo } from "react"
+import { useState, useEffect, useMemo, useRef } from "react"
 import { useTheme } from "next-themes"
 import { usePathname } from "next/navigation"
 import { useUI } from "@/context/UIContext"
 import Image from "next/image"
+import Link from "next/link"
 import NotificationBell from "./NotificationBell" // Import komponen notifikasi
 import UserDropdown from "./UserDropdown" // Import komponen UserDropdown
 import { Sun, Cloud, Sunset, Moon } from "lucide-react"
+import { authFetch } from "@/lib/authFetch"
 
 interface User {
   name: string;
 }
 
+interface ModulSuggestion {
+  _id: string;
+  slug: string;
+  title: string;
+  overview: string;
+  icon: string;
+}
+
 export default function Navbar() {
   const [mounted, setMounted] = useState(false)
   const [user, setUser] = useState<User | null>(null);
+  const [suggestions, setSuggestions] = useState<ModulSuggestion[]>([]);
+  const [isSearching, setIsSearching] = useState(false);
+  const [isSuggestionsOpen, setIsSuggestionsOpen] = useState(false);
+  const searchRef = useRef<HTMLDivElement>(null);
 
   const greeting = useMemo(() => {
     const hour = new Date().getHours();
@@ -46,6 +60,46 @@ export default function Navbar() {
     }
   }, []);
 
+  // Efek untuk mengambil sugesti pencarian
+  useEffect(() => {
+    if (searchQuery.trim() === "") {
+      setSuggestions([]);
+      setIsSuggestionsOpen(false);
+      return;
+    }
+
+    setIsSearching(true);
+    const debounceTimeout = setTimeout(async () => {
+      try {
+        const res = await authFetch(`${process.env.NEXT_PUBLIC_API_URL}/api/modul/search?q=${searchQuery}`);
+        if (res.ok) {
+          const data = await res.json();
+          setSuggestions(data);
+          setIsSuggestionsOpen(data.length > 0);
+        }
+      } catch (error) {
+        console.error("Gagal mengambil sugesti pencarian:", error);
+      } finally {
+        setIsSearching(false);
+      }
+    }, 300); // Debounce 300ms
+
+    return () => clearTimeout(debounceTimeout);
+  }, [searchQuery]);
+
+  // Efek untuk menutup dropdown saat klik di luar
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (searchRef.current && !searchRef.current.contains(event.target as Node)) {
+        setIsSuggestionsOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
   // Logika untuk placeholder search bar
   const getPlaceholder = () => {
     if (pathname === '/admin/modul') return "Cari modul...";
@@ -56,7 +110,7 @@ export default function Navbar() {
   return (
     <header
       className={`bg-white/80 dark:bg-gray-800/80 border-b border-gray-200/80 dark:border-gray-700/80 p-4 flex flex-wrap md:flex-nowrap justify-between items-center backdrop-blur-sm fixed max-w-full top-0 right-0 z-40 gap-3 h-20 mb-10 transition-all duration-300 ${
-        isSidebarCollapsed ? "w-full p-0 sm:pl-25" : "w-full sm:w-10/12"
+        isSidebarCollapsed ? "w-full p-0 sm:pl-22" : "w-full sm:w-10/12"
       }`}
     >
       {/* Kiri */}
@@ -81,30 +135,64 @@ export default function Navbar() {
       </div>
 
       {/* Search Bar */}
-      <form className="hidden md:flex order-3 md:order-2 w-full md:w-auto flex-grow max-w-full md:max-w-4xl mx-auto">
-        <label htmlFor="navbar-search" className="sr-only">Search</label>
-        <div className="relative w-full">
-          <div className="absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none">
-            <svg className="w-4 h-4 text-gray-500 dark:text-gray-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
-              <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z" />
-            </svg>
+      <div ref={searchRef} className="hidden md:block order-3 md:order-2 w-full md:w-auto flex-grow max-w-full md:max-w-xl mx-auto relative">
+        <form className="w-full">
+          <label htmlFor="navbar-search" className="sr-only">Search</label>
+          <div className="relative w-full">
+            <div className="absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none">
+              <svg className="w-4 h-4 text-gray-500 dark:text-gray-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
+                <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z" />
+              </svg>
+            </div>
+            <input
+              type="text"
+              id="navbar-search"
+              className="bg-gray-100 border-gray-200 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full ps-10 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-800"
+              placeholder={getPlaceholder()}
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              onFocus={() => setIsSuggestionsOpen(suggestions.length > 0)}
+              autoComplete="off"
+            />
           </div>
-          <input
-            type="text"
-            id="navbar-search"
-            className="bg-gray-100 border-gray-200 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full ps-10 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-800"
-            placeholder={getPlaceholder()}
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            required
-          />
-        </div>
-        <button type="submit" className="hidden sm:flex justify-center items-center py-2.5 px-3 ms-2 text-sm font-medium text-white bg-blue-700 rounded-lg border border-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
-          <svg className="w-4 h-4" aria-hidden="true" fill="none" viewBox="0 0 20 20">
-            <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z" />
-          </svg>
-        </button>
-      </form>
+        </form>
+
+        {/* Dropdown Sugesti */}
+        {isSuggestionsOpen && (
+          <div className="absolute mt-2 w-full bg-white dark:bg-gray-800 rounded-lg shadow-xl border border-gray-200 dark:border-gray-700 z-50 max-h-96 overflow-y-auto">
+            {isSearching ? (
+              <div className="p-4 text-center text-sm text-gray-500">Mencari...</div>
+            ) : suggestions.length > 0 ? (
+              suggestions.map((modul) => (
+                <Link
+                  key={modul._id}
+                  href={`/modul/${modul.slug}`}
+                  onClick={() => setIsSuggestionsOpen(false)}
+                  className="block p-3 hover:bg-gray-50 dark:hover:bg-gray-700/60 border-b border-gray-100 dark:border-gray-700 last:border-b-0"
+                >
+                  <div className="flex items-start gap-4">
+                    <Image
+                      src={`${process.env.NEXT_PUBLIC_API_URL}/uploads/${modul.icon}`}
+                      alt={modul.title}
+                      width={40}
+                      height={40}
+                      className="w-10 h-10 rounded-md object-cover bg-gray-100 dark:bg-gray-700 flex-shrink-0"
+                    />
+                    <div className="flex-1">
+                      <p className="font-semibold text-gray-800 dark:text-gray-200">{modul.title}</p>
+                      <p className="text-xs text-gray-500 dark:text-gray-400 mt-1 line-clamp-2">
+                        {modul.overview}
+                      </p>
+                    </div>
+                  </div>
+                </Link>
+              ))
+            ) : (
+              <div className="p-4 text-center text-sm text-gray-500">Tidak ada hasil ditemukan.</div>
+            )}
+          </div>
+        )}
+      </div>
 
       {/* Kanan */}
       <div className="flex items-center gap-3 md:gap-5 order-2 md:order-3 flex-shrink-0">
