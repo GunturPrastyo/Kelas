@@ -1,17 +1,22 @@
 "use client";
 
 import { GoogleOAuthProvider, GoogleLogin, CredentialResponse } from "@react-oauth/google";
-import Image from "next/image";
-import { useRouter, useSearchParams } from "next/navigation";
+import Image from "next/image"; 
+import { useRouter } from "next/navigation";
 import { useState, FormEvent, useEffect } from "react";
 
 import { Eye, EyeOff } from "lucide-react";
 
-
+// Define a type for the user data for better type safety
+interface User {
+  id: string;
+  name: string;
+  role: 'admin' | 'user';
+  // Add other user properties as needed
+}
 
 export default function LoginPage() {
   const router = useRouter();
-  const searchParams = useSearchParams();
   const [error, setError] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
   const [email, setEmail] = useState("");
@@ -35,6 +40,22 @@ export default function LoginPage() {
     }
   }, []); // Cukup jalankan sekali saat komponen dimuat
 
+  // Reusable function to handle post-authentication logic
+  const handleAuthSuccess = (user: User, token: string) => {
+    // Simpan token dan data user
+    localStorage.setItem("user", JSON.stringify(user));
+    localStorage.setItem("token", token);
+
+    console.log("Login berhasil, data user:", user);
+    console.log("Mencoba redirect berdasarkan role:", user.role);
+
+    // Arahkan sesuai role
+    if (user.role === "admin") {
+      router.push("/admin/dashboard");
+    } else {
+      router.push("/dashboard");
+    }
+  };
   const handleSuccess = async (credentialResponse: CredentialResponse) => {
     setIsLoading(true);
 
@@ -51,20 +72,7 @@ export default function LoginPage() {
         throw new Error(data.message || "Login Google gagal, token tidak diterima.");
       }
 
-      // Simpan token dan data user
-      localStorage.setItem("user", JSON.stringify(data.user));
-      localStorage.setItem("token", data.token);
-
-      console.log("Login berhasil, data user:", data.user);
-      console.log("Mencoba redirect berdasarkan role:", data.user.role);
-
-      // Arahkan sesuai role
-      if (data.user.role === "admin") {
-        router.push("/admin/dashboard");
-      } else {
-        router.push("/dashboard");
-      }
-
+      handleAuthSuccess(data.user, data.token);
     } catch (err) {
       if (err instanceof Error) {
         setError(err.message || "Login gagal");
@@ -94,18 +102,7 @@ export default function LoginPage() {
         throw new Error(data.message || "Login gagal, token tidak diterima.");
       }
 
-      localStorage.setItem("user", JSON.stringify(data.user));
-      localStorage.setItem("token", data.token);
-
-      console.log("Login berhasil, data user:", data.user);
-      console.log("Mencoba redirect berdasarkan role:", data.user.role);
-
-      if (data.user.role === "admin") {
-        router.push("/admin/dashboard");
-      } else {
-        router.push("/dashboard");
-      }
-
+      handleAuthSuccess(data.user, data.token);
     } catch (err) {
       if (err instanceof Error) {
         setError(err.message || "Login gagal. Periksa kembali email dan password Anda.");
