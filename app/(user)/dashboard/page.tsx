@@ -249,7 +249,7 @@ export default function DashboardPage() {
   }, [modules, userLevel, searchQuery]);
 
   // Hitung modul yang selesai setelah personalizedModules dihitung
-  useEffect(() => {
+  useEffect(() => {    
     const completedCount = personalizedModules.filter(m => m.status === 'Selesai').length;
     setAnalytics(prev => ({ ...prev, completedModulesCount: completedCount }));
   }, [personalizedModules]);
@@ -257,7 +257,7 @@ export default function DashboardPage() {
   const overallProgress = useMemo(() => {
     if (modules.length === 0) return 0;
     const totalAllTopics = modules.reduce((sum, module) => sum + (module.totalTopics || 0), 0);
-    const totalCompletedTopics = modules.reduce((sum, module) => sum + (module.completedTopics || 0), 0);
+    const totalCompletedTopics = modules.reduce((sum, module) => sum + (module.completedTopics || 0), 0);    
     if (totalAllTopics === 0) return 0;
     return Math.round((totalCompletedTopics / totalAllTopics) * 100);
   }, [modules]);
@@ -351,7 +351,7 @@ export default function DashboardPage() {
               </h2>
             </div>
 
-            {recommendation.continueToModule ? (
+            {recommendation?.continueToModule ? (
               <Link
                 href={
                   recommendation.continueToModule.nextTopic
