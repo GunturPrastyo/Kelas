@@ -36,8 +36,8 @@ export default function ModulPage() {
     const [selectedCategory, setSelectedCategory] = useState('');
     const [userLevel, setUserLevel] = useState<UserLevel>(null); // State untuk level pengguna
     const [recommendation, setRecommendation] = useState({ title: '', description: '', icon: '', bgClass: '', textClass: '' });
-    const [user, setUser] = useState<User | null>(null);
-    const { searchQuery, setSearchQuery } = useUI(); // Gunakan state global
+    const [user, setUser] = useState<User | null>(null); 
+    // const { searchQuery, setSearchQuery } = useUI(); // Hapus atau komentari baris ini
 
     useEffect(() => {
         const userRaw = localStorage.getItem('user');
@@ -151,11 +151,10 @@ export default function ModulPage() {
 
         return updatedModules.filter(m => {
             const mappedCategory = categoryMap[m.category];
-            const categoryMatch = selectedCategory ? mappedCategory === selectedCategory : true;
-            const searchMatch = m.title.toLowerCase().includes(searchQuery.toLowerCase());
-            return categoryMatch && searchMatch;
+            // Hapus filter berdasarkan searchQuery
+            return selectedCategory ? mappedCategory === selectedCategory : true;
         })
-    }, [searchQuery, selectedCategory, userLevel, modules]);
+    }, [selectedCategory, userLevel, modules]);
 
     const getStatusBadge = (status: ModuleStatus, progress: number) => {
         const base = "inline-flex items-center gap-1.5 text-xs font-medium px-2.5 py-1 rounded-full";
@@ -225,21 +224,6 @@ export default function ModulPage() {
             )}
 
             <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
-                <div className="relative w-full md:hidden">
-                    <div className="absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none">
-                        <svg className="w-4 h-4 text-gray-500 dark:text-gray-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
-                            <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z" />
-                        </svg>
-                    </div>
-                    <input
-                        type="search"
-                        placeholder="Cari modul..."
-                        value={searchQuery}
-                        onChange={(e) => setSearchQuery(e.target.value)}
-                        className="block w-full p-3 ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                    />
-                </div>
-
                 <div className="flex items-center gap-2 flex-wrap">
                     <button onClick={() => setSelectedCategory('')} className={`px-3 py-1.5 text-xs font-medium rounded-full transition ${selectedCategory === '' ? 'bg-blue-600 text-white' : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700'}`}>
                         Semua
@@ -317,9 +301,9 @@ export default function ModulPage() {
                 ))}
             </div>
             {!loading && personalizedModules.length === 0 && (
-                <div className="text-center py-16 text-gray-500">
-                    <p>{searchQuery ? `Tidak ada modul yang cocok dengan "${searchQuery}".` : "Tidak ada modul yang tersedia."}</p>
-                </div>
+                <div className="text-center py-16 text-gray-500"> 
+                    <p>{"Tidak ada modul yang tersedia untuk kategori ini."}</p>
+                </div> 
             )}
         </>
     );
