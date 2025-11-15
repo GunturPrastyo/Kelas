@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from 'react';
-import { Bell, X, CheckCircle } from 'lucide-react';
+import { Bell, X, CheckCircle, Award, Gift, CheckCircle2, MessageSquare } from 'lucide-react';
 import Link from 'next/link';
 import { formatDistanceToNow } from 'date-fns';
 import { id } from 'date-fns/locale';
@@ -15,6 +15,48 @@ interface Notification {
     isRead: boolean;
     createdAt: string;
 }
+
+const getNotificationDetails = (message: string) => {
+    const lowerCaseMessage = message.toLowerCase();
+    if (lowerCaseMessage.includes('menyelesaikan') || lowerCaseMessage.includes('berhasil')) {
+        return { Icon: CheckCircle2, className: 'text-green-500' };
+    }
+    if (lowerCaseMessage.includes('skor')) {
+        return { Icon: Award, className: 'text-amber-500' };
+    }
+    if (lowerCaseMessage.includes('baru') || lowerCaseMessage.includes('selamat')) {
+        return { Icon: Gift, className: 'text-sky-500' };
+    }
+    // Default icon
+    return { Icon: MessageSquare, className: 'text-gray-500' };
+};
+
+const renderHighlightedMessage = (message: string) => {
+    // Regex untuk menemukan teks di dalam tanda kutip ganda (misal: nama topik/kuis)
+    const topicRegex = /"([^"]+)"/g;
+    // Regex untuk menemukan kata "skor" diikuti oleh angka (termasuk desimal dengan . atau ,) menggunakan non-capturing group untuk desimal
+    const scoreRegex = /(skor\s*:?\s*\d+(?:[.,]\d+)?)/gi;
+
+    const parts = message.split(topicRegex);
+
+    return (
+        <>
+            {parts.map((part, index) => {
+                if (index % 2 === 1) { // Teks di dalam kutip
+                    return <strong key={index} className="font-semibold text-sky-600 dark:text-sky-400">{part}</strong>;
+                }
+                // Untuk bagian di luar kutip, periksa apakah ada kata 'skor'
+                return part.split(scoreRegex).map((subPart, subIndex) => {
+                    if (subIndex % 2 === 1) { // Teks yang cocok dengan regex skor
+                        return <strong key={`${index}-${subIndex}`} className="font-semibold text-amber-600 dark:text-amber-400">{subPart}</strong>;
+                    }
+                    return subPart; // Teks biasa
+                });
+            })}
+        </>
+    );
+};
+
 
 const NotificationBell = () => {
     const [isOpen, setIsOpen] = useState(false);
@@ -127,15 +169,17 @@ const NotificationBell = () => {
                                             }`}
                                     >
                                         <div className="flex items-start gap-3">
-                                            <div
-                                                className={`mt-1 flex-shrink-0 w-2 h-2 rounded-full ${!notif.isRead ? 'bg-blue-500' : 'bg-transparent'
-                                                    }`}
-                                            ></div>
+                                            <div className="flex-shrink-0 mt-0.5">
+                                                {(() => {
+                                                    const { Icon, className } = getNotificationDetails(notif.message);
+                                                    return <Icon className={`w-5 h-5 ${className}`} />;
+                                                })()}
+                                            </div>
                                             <div className="flex-1 pr-6">
                                                 <p className="text-sm text-gray-800 dark:text-gray-200">
-                                                    {notif.message}
+                                                    {renderHighlightedMessage(notif.message)}
                                                 </p>
-                                                <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                                                <p className="text-xs text-gray-500 dark:text-gray-400 mt-1.5">
                                                     {formatDistanceToNow(new Date(notif.createdAt), {
                                                         addSuffix: true,
                                                         locale: id,
