@@ -427,12 +427,12 @@ export default function AnalitikBelajarPage() {
   const animatedDailyStreak = useCountUp(summary?.dailyStreak || 0, 1500, isSummaryCardInView);
 
   // --- Logic for Weak Topics Search and Pagination ---
-  const filteredWeakTopics = weakTopics.filter(topic =>
+  const filteredWeakTopics = weakTopics?.filter(topic =>
     topic.topicTitle.toLowerCase().includes(weakTopicSearch.toLowerCase())
-  );
+  ) || [];
 
-  const totalPages = Math.ceil(filteredWeakTopics.length / ITEMS_PER_PAGE);
-  const paginatedWeakTopics = filteredWeakTopics.slice(
+  const totalPages = Math.ceil(filteredWeakTopics?.length / ITEMS_PER_PAGE);
+  const paginatedWeakTopics = filteredWeakTopics?.slice(
     (currentPage - 1) * ITEMS_PER_PAGE,
     currentPage * ITEMS_PER_PAGE
   );
@@ -729,7 +729,7 @@ export default function AnalitikBelajarPage() {
         ) : (
           <ul className="space-y-3">
             {/* REPEAT MODULE */}
-            {recommendations.repeatModule && (
+            {recommendations?.repeatModule && (
               <li className="flex items-center justify-between gap-4 p-4 bg-white/60 dark:bg-gray-700/40 rounded-xl hover:bg-white/80 dark:hover:bg-gray-600/50 transition-all shadow-sm" key="repeat-module">
                 <div className="flex items-center gap-4">
                   <Image
@@ -771,7 +771,7 @@ export default function AnalitikBelajarPage() {
             )}
 
             {/* DEEPEN TOPIC */}
-            {recommendations.deepenTopic && (
+            {recommendations?.deepenTopic && (
               <li className="flex items-center justify-between gap-4 p-4 bg-white/60 dark:bg-gray-700/40 rounded-xl hover:bg-white/80 dark:hover:bg-gray-600/50 transition-all shadow-sm" key="deepen-topic">
                 <div className="flex items-center gap-4">
                   <Image
@@ -804,7 +804,7 @@ export default function AnalitikBelajarPage() {
             )}
 
             {/* CONTINUE MODULE */}
-            {recommendations.continueToModule ? (
+            {recommendations?.continueToModule ? (
               <li className="flex items-center justify-between gap-4 p-4 bg-white/60 dark:bg-gray-700/40 rounded-xl hover:bg-white/80 dark:hover:bg-gray-600/50 transition-all shadow-sm" key="continue-module">
                 <div className="flex items-center gap-4">
                   <Image
