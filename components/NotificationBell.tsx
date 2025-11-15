@@ -35,7 +35,7 @@ const renderHighlightedMessage = (message: string) => {
     // Regex untuk menemukan teks di dalam tanda kutip ganda (misal: nama topik/kuis)
     const topicRegex = /"([^"]+)"/g;
     // Regex untuk menemukan kata "skor" diikuti oleh angka (termasuk desimal dengan . atau ,) menggunakan non-capturing group untuk desimal
-    const scoreRegex = /(skor\s*:?\s*\d+(?:[.,]\d+)?)/gi;
+    const scoreRegex = /(skor\s*:?\s*\d+(?:[.,]\d+)?%?)/gi;
 
     const parts = message.split(topicRegex);
 

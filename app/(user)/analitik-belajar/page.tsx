@@ -439,7 +439,7 @@ export default function AnalitikBelajarPage() {
 
 
   return (
-    <div className="space-y-10">
+    <div className="space-y-10 mt-22">
       {/* RINGKASAN */}
       <section>
         <h2 ref={summaryCardRef} className="text-xl font-semibold text-gray-700 dark:text-gray-200 mb-3 flex items-center gap-2">

@@ -55,10 +55,12 @@ export default function Navbar() {
 
   return (
     <header
-      className="bg-white/80 dark:bg-gray-800/80 border-b border-gray-200/80 dark:border-gray-700/80 p-4 flex flex-wrap md:flex-nowrap justify-between items-center backdrop-blur-sm sticky top-0 z-40 gap-3 h-20"
+      className={`bg-white/80 dark:bg-gray-800/80 border-b border-gray-200/80 dark:border-gray-700/80 p-4 flex flex-wrap md:flex-nowrap justify-between items-center backdrop-blur-sm fixed max-w-full top-0 right-0 z-40 gap-3 h-20 mb-10 transition-all duration-300 ${
+        isSidebarCollapsed ? "w-full p-0 sm:pl-25" : "w-full sm:w-10/12"
+      }`}
     >
       {/* Kiri */}
-      <div id="header-left" className="flex items-center gap-4 flex-shrink-0">
+      <div id="header-left" className="flex items-center gap-4 left-0 flex-shrink-0">
         {/* Tombol Mobile Drawer */}
         <button
           id="mobile-drawer-toggle"
