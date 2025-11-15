@@ -51,11 +51,11 @@ export default function UserDropdown() {
 
     return (
         <div className="relative" ref={dropdownRef}>
-            <button onClick={() => setIsOpen(!isOpen)} className="ml-4 lg:-ml-2 focus:outline-none">
+            <button onClick={() => setIsOpen(!isOpen)} className="ml-2 focus:outline-none">
                 <Avatar
                     user={user}
                     size={256}
-                    className="transition rounded-full w-10 h-10"
+                    className="transition rounded-full w-8 sm:w-10 h-8 sm:h-10"
                 />
             </button>
 
