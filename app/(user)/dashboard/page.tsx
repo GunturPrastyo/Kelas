@@ -121,7 +121,7 @@ export default function DashboardPage() {
   const [userLevel, setUserLevel] = useState<string | null>(null);
   const [studyTime, setStudyTime] = useState({ hours: 0, minutes: 0 });
   const [hasTakenPreTest, setHasTakenPreTest] = useState(false);
-  const { searchQuery } = useUI();
+  // const { searchQuery } = useUI(); // Tidak lagi diperlukan
   const [analytics, setAnalytics] = useState<AnalyticsData>({
     averageScore: 0,
     weakestTopic: null,
@@ -244,9 +244,9 @@ export default function DashboardPage() {
         status = 'Terkunci';
       }
 
-      return { ...modul, status };
-    }).filter(m => m.title.toLowerCase().includes(searchQuery.toLowerCase()));
-  }, [modules, userLevel, searchQuery]);
+      return { ...modul, status }; // Hapus filter dari sini
+    });
+  }, [modules, userLevel]);
 
   // Hitung modul yang selesai setelah personalizedModules dihitung
   useEffect(() => {    

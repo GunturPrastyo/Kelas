@@ -7,6 +7,7 @@ import { useUI } from "@/context/UIContext"
 import Image from "next/image"
 import NotificationBell from "./NotificationBell" // Import komponen notifikasi
 import UserDropdown from "./UserDropdown" // Import komponen UserDropdown
+import GlobalSearch from "./GlobalSearch"; // 1. Impor komponen GlobalSearch
 import { Sun, Cloud, Sunset, Moon } from "lucide-react"
 
 interface User {
@@ -55,17 +56,17 @@ export default function Navbar() {
 
   return (
     <header
-      className={`bg-white/80 dark:bg-gray-800/80 border-b border-gray-200/80 dark:border-gray-700/80 p-4 flex flex-wrap md:flex-nowrap justify-between items-center backdrop-blur-sm fixed max-w-full top-0 right-0 z-40 gap-3 h-20 mb-10 transition-all duration-300 ${
+      className={`bg-white/80 dark:bg-gray-800/80 border-b border-gray-200/80 dark:border-gray-700/80 p-4 flex justify-between items-center backdrop-blur-sm fixed max-w-full top-0 right-0 z-40 gap-4 h-20 mb-10 transition-all duration-300 ${
         isSidebarCollapsed ? "w-full p-0 sm:pl-25" : "w-full sm:w-10/12"
       }`}
     >
       {/* Kiri */}
-      <div id="header-left" className="flex items-center gap-4 left-0 flex-shrink-0">
+      <div id="header-left" className="flex items-center gap-2 flex-shrink-0">
         {/* Tombol Mobile Drawer */}
         <button
           id="mobile-drawer-toggle"
           type="button"
-          className="p-2 text-gray-500 rounded-lg md:hidden hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:text-gray-400 dark:hover:bg-gray-700 dark:focus:ring-gray-600"
+          className=" text-gray-500 rounded-lg sm:hidden hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:text-gray-400 dark:hover:bg-gray-700 dark:focus:ring-gray-600"
           onClick={toggleMobileDrawer}
         >
           <span className="sr-only">Open sidebar</span>
@@ -81,33 +82,12 @@ export default function Navbar() {
       </div>
 
       {/* Search Bar */}
-      <form className="hidden md:flex order-3 md:order-2 w-full md:w-auto flex-grow max-w-full md:max-w-4xl mx-auto">
-        <label htmlFor="navbar-search" className="sr-only">Search</label>
-        <div className="relative w-full">
-          <div className="absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none">
-            <svg className="w-4 h-4 text-gray-500 dark:text-gray-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
-              <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z" />
-            </svg>
-          </div>
-          <input
-            type="text"
-            id="navbar-search"
-            className="bg-gray-100 border-gray-200 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full ps-10 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-800"
-            placeholder={getPlaceholder()}
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            required
-          />
-        </div>
-        {/* <button type="submit" className="hidden sm:flex justify-center items-center py-2.5 px-3 ms-2 text-sm font-medium text-white bg-blue-700 rounded-lg border border-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
-          <svg className="w-4 h-4" aria-hidden="true" fill="none" viewBox="0 0 20 20">
-            <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z" />
-          </svg>
-        </button> */}
-      </form>
+      <div className="flex-1 flex justify-center ">
+        <GlobalSearch />
+      </div>
 
       {/* Kanan */}
-      <div className="flex items-center gap-3 md:gap-5 order-2 md:order-3 flex-shrink-0">
+      <div className="flex items-center gap-3 md:gap-5 flex-shrink-0">
      
 
         {/* Icon group (Theme + Notifikasi) */}
