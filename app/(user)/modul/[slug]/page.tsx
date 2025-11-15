@@ -981,7 +981,7 @@ export default function ModulDetailPage() {
 
     // --- RENDER MAIN PAGE ---
     return (
-        <div className="max-w-full mx-auto px-1.5 sm:px-5 pb-5 pt-0">
+        <div className="max-w-full mx-auto px-1.5 sm:px-5 pb-5 pt-0 mt-25">
             {/* 
               Menambahkan style global untuk menangani overflow pada code block di dalam .prose.
               Ini memastikan hanya code block yang bisa di-scroll horizontal, bukan seluruh kontainer soal.

@@ -275,7 +275,7 @@ export default function DashboardPage() {
 
   return (
     <>
-      <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+      <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 mt-22">
         {/* Progres Belajar */}
         <div
           ref={progressCardRef}

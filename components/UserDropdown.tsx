@@ -60,8 +60,8 @@ export default function UserDropdown() {
             </button>
 
             {isOpen && (
-                <div className="absolute right-0 mt-2 w-64 bg-white dark:bg-gray-800 rounded-lg shadow-xl border dark:border-gray-700 z-50">
-                    <div className="p-4 border-b dark:border-gray-700">
+                <div className="absolute right-0 mt-2 w-64 bg-white dark:bg-gray-800 rounded-lg shadow-xl border border-gray-200 dark:border-gray-700 z-50">
+                    <div className="p-4 border-b border-gray-300 dark:border-gray-700">
                         <div className="flex items-center gap-3">
                             <UserIcon className="w-5 h-5 text-gray-500 dark:text-gray-400" />
                             <p className="font-semibold text-gray-800 dark:text-gray-200 truncate">{user.name}</p>
