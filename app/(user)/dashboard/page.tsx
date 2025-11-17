@@ -151,9 +151,15 @@ export default function DashboardPage() {
           const preTestResult = await preTestRes.json();
           if (preTestResult) {
             setHasTakenPreTest(true);
-            if (preTestResult.score >= 75) setUserLevel('lanjut');
-            else if (preTestResult.score >= 40) setUserLevel('menengah');
-            else setUserLevel('dasar');
+            // Gunakan learningPath dari backend, bukan skor
+            const learningPath = preTestResult.learningPath?.toLowerCase(); // 'Lanjutan' -> 'lanjutan'
+            if (learningPath === 'lanjutan') {
+              setUserLevel('lanjut');
+            } else if (learningPath === 'menengah') {
+              setUserLevel('menengah');
+            } else {
+              setUserLevel('dasar'); // Default ke dasar jika tidak ada atau tidak valid
+            }
 
             // Sinkronkan ke localStorage untuk akses cepat
             const userRaw = localStorage.getItem('user');

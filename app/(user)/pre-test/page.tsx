@@ -5,6 +5,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import Breadcrumb from '@/components/Breadcrumb';
 // 1. Import highlight.js dan tema CSS-nya
+import { Info, X } from 'lucide-react';
 import { authFetch } from "@/lib/authFetch";
 import { useAlert } from "@/context/AlertContext";
 
@@ -41,6 +42,8 @@ export default function PreTestPage() {
     const [error, setError] = useState<string | null>(null);
     const [user, setUser] = useState<User | null>(null);
     const [allModules, setAllModules] = useState<Module[]>([]);
+    const [isInfoModalOpen, setIsInfoModalOpen] = useState(false);
+    const [isRecommendationInfoModalOpen, setIsRecommendationInfoModalOpen] = useState(false);
 
     const { showAlert } = useAlert();
     const total = questions.length;
@@ -314,7 +317,12 @@ export default function PreTestPage() {
                 <section className="bg-white dark:bg-gray-800 rounded-xl p-6 mt-6 shadow-lg font-poppins" id="resultCard">
                     <div className="flex items-center justify-between bg-slate-50 dark:bg-gray-700/50 p-4 rounded-lg border border-slate-200 dark:border-gray-700">
                         <div>
-                            <p className="text-sm text-slate-500 dark:text-slate-400">Skor Kamu</p>
+                            <div className="flex items-center gap-1.5">
+                                <p className="text-sm text-slate-500 dark:text-slate-400">Skor Kamu</p>
+                                <button onClick={() => setIsInfoModalOpen(true)} className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors">
+                                    <Info size={14} />
+                                </button>
+                            </div>
                             <p className="text-3xl font-bold text-blue-600 dark:text-blue-400">{result.score}%</p>
                         </div>
                         <div className="text-right">
@@ -328,7 +336,12 @@ export default function PreTestPage() {
                         </div>
                     </div>
                     <div className="mt-6">
-                        <h3 className="text-base font-semibold mb-3 text-slate-800 dark:text-slate-200">Rekomendasi Jalur Belajar</h3>
+                        <h3 className="text-base font-semibold mb-3 text-slate-800 dark:text-slate-200 flex items-center gap-1.5">
+                            Rekomendasi Jalur Belajar
+                            <button onClick={() => setIsRecommendationInfoModalOpen(true)} className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors">
+                                <Info size={14} />
+                            </button>
+                        </h3>
                         <div className="border border-slate-200 dark:border-gray-700 rounded-lg p-4">
                             <div className="flex flex-wrap gap-2 items-center mb-3">
                                 <span className={`inline-block text-xs font-medium px-3 py-1 rounded-full ${badgeClasses} dark:bg-opacity-20`}>{levelBadge}</span>
@@ -354,26 +367,34 @@ export default function PreTestPage() {
                     {/* Tambahan: Tampilan Skor per Fitur */}
                     {result.featureScores && result.featureScores.length > 0 && (
                         <div className="mt-6">
-                            <h3 className="text-base font-semibold mb-3 text-slate-800 dark:text-slate-200">Rincian Skor Indikator</h3>
-                            <div className="border border-slate-200 dark:border-gray-700 rounded-lg overflow-hidden">
-                                <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400">
-                                    <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
-                                        <tr>
-                                            <th scope="col" className="px-6 py-3">Indikator</th>
-                                            <th scope="col" className="px-6 py-3 text-right">Skor</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        {result.featureScores.map((fs: any) => (
-                                            <tr key={fs.featureId} className="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
-                                                <th scope="row" className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                                                    {fs.featureName}
-                                                </th>
-                                                <td className="px-6 py-4 text-right">{Math.round(fs.score)}%</td>
-                                            </tr>
-                                        ))}
-                                    </tbody>
-                                </table>
+                            <h3 className="text-base font-semibold mb-4 text-slate-800 dark:text-slate-200">Rincian Skor Indikator</h3>
+                            <div className="space-y-4">
+                                {result.featureScores.map((fs: any) => {
+                                    const score = Math.round(fs.score);
+                                    let progressBarClass;
+                                    if (score < 40) {
+                                        progressBarClass = 'bg-gradient-to-r from-red-400 to-red-500';
+                                    } else if (score < 70) {
+                                        progressBarClass = 'bg-gradient-to-r from-yellow-400 to-amber-500';
+                                    } else {
+                                        progressBarClass = 'bg-gradient-to-r from-green-400 to-green-500';
+                                    }
+
+                                    return (
+                                        <div key={fs.featureId}>
+                                            <div className="flex justify-between items-center mb-1">
+                                                <span className="text-sm font-medium text-gray-700 dark:text-gray-300">{fs.featureName}</span>
+                                                <span className="text-sm font-semibold text-gray-600 dark:text-gray-400">{score}%</span>
+                                            </div>
+                                            <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
+                                                <div
+                                                    className={`${progressBarClass} h-2 rounded-full transition-all duration-500`}
+                                                    style={{ width: `${score}%` }}
+                                                ></div>
+                                            </div>
+                                        </div>
+                                    );
+                                })}
                             </div>
                         </div>
                     )}
@@ -386,6 +407,94 @@ export default function PreTestPage() {
                 <footer className="bg-white dark:bg-gray-800 p-4 text-center text-gray-600 dark:text-gray-400 text-sm mt-8 shadow-inner font-poppins">
                     <p>&copy; 2025 KELAS. All rights reserved.</p>
                 </footer>
+
+                {/* Modal Informasi Rekomendasi Jalur Belajar */}
+                {isRecommendationInfoModalOpen && (
+                    <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50 p-4" onClick={() => setIsRecommendationInfoModalOpen(false)}>
+                        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-2xl p-6 w-full max-w-lg relative" onClick={(e) => e.stopPropagation()}>
+                            <button
+                                onClick={() => setIsRecommendationInfoModalOpen(false)}
+                                className="absolute top-3 right-3 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition-colors"
+                            >
+                                <X size={20} />
+                            </button>
+
+                            <h3 className="text-lg font-bold text-gray-800 dark:text-gray-100 mb-4">
+                                Cara Sistem Merekomendasikan Jalur Belajarmu
+                            </h3>
+
+                            <p className="text-sm text-gray-600 dark:text-gray-300 mb-4">
+                                Sistem akan memberi rekomendasi jalur belajar berdasarkan hasil pre-test kamu di tiga bagian : materi
+                                <span className="font-semibold"> Dasar </span>
+                                ,
+                                <span className="font-semibold"> Menengah</span> dan
+                                <span className="font-semibold"> Lanjutan</span>.
+                            </p>
+
+                            <div className="space-y-3 text-sm border-t border-gray-200 dark:border-gray-700 pt-4">
+
+                                <div className="p-3 rounded-lg bg-green-50 dark:bg-green-900/30 border border-green-200 dark:border-green-800">
+                                    <p className="font-bold text-green-700 dark:text-green-300">Jalur Lanjutan</p>
+                                    <p className="text-xs text-gray-600 dark:text-gray-400">
+                                        Kamu masuk jalur ini kalau nilai rata-rata materi Dasar minimal 85 persen dan nilai materi Menengah minimal 75 persen.
+                                    </p>
+                                </div>
+
+                                <div className="p-3 rounded-lg bg-blue-50 dark:bg-blue-900/30 border border-blue-200 dark:border-blue-800">
+                                    <p className="font-bold text-blue-700 dark:text-blue-300">Jalur Menengah</p>
+                                    <p className="text-xs text-gray-600 dark:text-gray-400">
+                                        Kamu dapat jalur ini kalau nilai rata-rata materi Dasar minimal 75 persen, tapi belum memenuhi syarat untuk masuk jalur Lanjutan.
+                                    </p>
+                                </div>
+
+                                <div className="p-3 rounded-lg bg-yellow-50 dark:bg-yellow-900/30 border border-yellow-200 dark:border-yellow-800">
+                                    <p className="font-bold text-yellow-700 dark:text-yellow-300">Jalur Dasar</p>
+                                    <p className="text-xs text-gray-600 dark:text-gray-400">
+                                        Kalau nilai kamu belum memenuhi syarat buat jalur Menengah atau Lanjutan, sistem akan memberi saran mulai dari Jalur Dasar dulu.
+                                    </p>
+                                </div>
+
+                            </div>
+                        </div>
+
+                    </div>
+                )}
+
+                {/* Modal Informasi Skor */}
+                {isInfoModalOpen && (
+                    <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50 p-4" onClick={() => setIsInfoModalOpen(false)}>
+                        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-2xl p-6 w-full max-w-md relative" onClick={(e) => e.stopPropagation()}>
+                            <button
+                                onClick={() => setIsInfoModalOpen(false)}
+                                className="absolute top-3 right-3 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition-colors"
+                            >
+                                <X size={20} />
+                            </button>
+                            <h3 className="text-lg font-bold text-gray-800 dark:text-gray-100 mb-4">Asal Perhitungan Skor</h3>
+                            <p className="text-sm text-gray-600 dark:text-gray-300 mb-4">
+                                "Skor Kamu" adalah skor akhir yang dihitung dari 4 komponen dengan bobot berbeda untuk memberikan gambaran performa yang lebih komprehensif.
+                            </p>
+                            <ul className="space-y-3 text-sm">
+                                <li className="flex items-start">
+                                    <span className="font-semibold text-green-600 dark:text-green-400 w-28 flex-shrink-0">Ketepatan (60%)</span>
+                                    <span className="text-gray-500 dark:text-gray-400">Berdasarkan bobot indikator dari setiap jawaban yang benar.</span>
+                                </li>
+                                <li className="flex items-start">
+                                    <span className="font-semibold text-blue-600 dark:text-blue-400 w-28 flex-shrink-0">Kecepatan (15%)</span>
+                                    <span className="text-gray-500 dark:text-gray-400">Seberapa efisien Anda menyelesaikan tes dibandingkan total waktu yang tersedia.</span>
+                                </li>
+                                <li className="flex items-start">
+                                    <span className="font-semibold text-yellow-600 dark:text-yellow-400 w-28 flex-shrink-0">Stabilitas (10%)</span>
+                                    <span className="text-gray-500 dark:text-gray-400">Seberapa sering Anda mengubah jawaban. Lebih sedikit perubahan berarti skor lebih tinggi.</span>
+                                </li>
+                                <li className="flex items-start">
+                                    <span className="font-semibold text-purple-600 dark:text-purple-400 w-28 flex-shrink-0">Fokus (15%)</span>
+                                    <span className="text-gray-500 dark:text-gray-400">Seberapa sering Anda keluar dari halaman tes. Lebih sedikit keluar berarti skor lebih tinggi.</span>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                )}
             </div>
         );
     }
