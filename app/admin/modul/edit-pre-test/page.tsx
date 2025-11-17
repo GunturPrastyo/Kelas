@@ -4,10 +4,22 @@ import { useState, useEffect } from "react";
 import Breadcrumb from "@/components/Breadcrumb";
 import TestForm from "@/components/TestForm";
 
+export interface FeatureWeight {
+    featureId: string;
+    featureName: string;
+    weight: number;
+}
+
+export interface Question {
+    _id?: string;
+    questionText: string;
+    options: string[];
+    answer: string;
+    features: FeatureWeight[];
+}
+
 export default function EditPreTestPage() {
-    const [questions, setQuestions] = useState<
-        { _id?: string; questionText: string; options: string[]; answer: string }[]
-    >([]);
+    const [questions, setQuestions] = useState<Question[]>([]);
     const [fetching, setFetching] = useState(true);
     const [error, setError] = useState<string | null>(null);
 
