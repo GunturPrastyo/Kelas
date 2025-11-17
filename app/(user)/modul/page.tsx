@@ -6,6 +6,7 @@ import Image from 'next/image';
 import { useUI } from '@/context/UIContext';
 import { Home, CheckCircle2, Activity, Lock, Rocket } from "lucide-react";
 import { authFetch } from '@/lib/authFetch';
+import ModuleCardSkeleton from '@/components/ModuleCardSkeleton'; // Impor komponen skeleton
 
 interface User {
     _id: string;
@@ -124,15 +125,21 @@ export default function ModulPage() {
             let isHighlighted = false;
             let isLocked = false; // Default: modul tidak terkunci
  
-            // Terapkan kembali logika penguncian di frontend berdasarkan userLevel
-            if (userLevel === 'lanjut') {
-                isLocked = false; // Semua modul terbuka untuk level lanjut
-            } else if (userLevel === 'menengah') {
-                // Kunci modul 'lanjut' untuk level menengah
-                isLocked = mappedCategory === 'lanjut';
-            } else if (userLevel === 'dasar') {
-                // Kunci modul 'menengah' dan 'lanjut' untuk level dasar
-                isLocked = mappedCategory !== 'dasar';
+            // Logika penguncian modul
+            if (userLevel === null) {
+                // Jika user belum mengambil pre-test, kunci semua modul.
+                isLocked = true;
+            } else {
+                // Jika user sudah punya level, terapkan logika penguncian berdasarkan level.
+                if (userLevel === 'lanjut') {
+                    isLocked = false; // Semua modul terbuka untuk level lanjut
+                } else if (userLevel === 'menengah') {
+                    // Kunci modul 'lanjut' untuk level menengah
+                    isLocked = mappedCategory === 'lanjut';
+                } else if (userLevel === 'dasar') {
+                    // Kunci modul 'menengah' dan 'lanjut' untuk level dasar
+                    isLocked = mappedCategory !== 'dasar';
+                }
             }
 
             // Timpa status menjadi 'Terkunci' jika kondisi isLocked terpenuhi
@@ -197,12 +204,17 @@ export default function ModulPage() {
                     </li>
                 </ol>
             </nav>
+            {/* Tampilkan skeleton UI saat loading */}
             {loading && (
-                <div className="text-center py-16 text-gray-500">
-                    <p>Memuat modul...</p>
+                <div className="relative grid gap-6 sm:grid-cols-2 lg:grid-cols-3 grid-auto-rows-fr mt-6">
+                    <div className="absolute left-6 top-0 bottom-0 w-0.5 bg-gray-200 dark:bg-gray-700 md:hidden"></div>
+                    <ModuleCardSkeleton />
+                    <ModuleCardSkeleton />
+                    <ModuleCardSkeleton />
                 </div>
             )}
 
+            {/* Tampilkan konten setelah loading selesai */}
             {!loading && !userLevel && (
                 <section className="bg-gradient-to-br from-yellow-50 to-orange-100 dark:from-gray-900 dark:to-gray-800 p-4 rounded-xl shadow-sm flex items-center gap-4 mb-6">
                     <Image src="/warning-test.png" alt="Pre-test" width={480} height={480} className="w-20 h-20" />
@@ -213,7 +225,7 @@ export default function ModulPage() {
                 </section>
             )}
 
-            {userLevel && (
+            {!loading && userLevel && (
                 <section className={`bg-gradient-to-br ${recommendation.bgClass} p-5 rounded-xl shadow-md flex items-center gap-6 mb-6`}>
                     <Image src={recommendation.icon} alt="Rekomendasi" width={256} height={256} className="w-20 h-20" />
                     <div>
@@ -223,7 +235,7 @@ export default function ModulPage() {
                 </section>
             )}
 
-            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
+            {!loading && <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
                 <div className="flex items-center gap-2 flex-wrap">
                     <button onClick={() => setSelectedCategory('')} className={`px-3 py-1.5 text-xs font-medium rounded-full transition ${selectedCategory === '' ? 'bg-blue-600 text-white' : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700'}`}>
                         Semua
@@ -238,9 +250,9 @@ export default function ModulPage() {
                         Lanjut
                     </button>
                 </div>
-            </div>
+            </div>}
 
-            <div className="relative grid gap-6 sm:grid-cols-2 lg:grid-cols-3 grid-auto-rows-fr">
+            {!loading && <div className="relative grid gap-6 sm:grid-cols-2 lg:grid-cols-3 grid-auto-rows-fr">
                 {/* Garis vertikal untuk tampilan mobile */}
                 <div className="absolute left-6 top-0 bottom-0 w-0.5 bg-gray-200 dark:bg-gray-700 md:hidden"></div>
 
@@ -299,7 +311,7 @@ export default function ModulPage() {
                         </div>
                     </div>
                 ))}
-            </div>
+            </div>}
             {!loading && personalizedModules.length === 0 && (
                 <div className="text-center py-16 text-gray-500"> 
                     <p>{"Tidak ada modul yang tersedia untuk kategori ini."}</p>
