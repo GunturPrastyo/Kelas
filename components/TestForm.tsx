@@ -288,11 +288,12 @@ export default function TestForm({
   return (
     <>
       {/* Tombol untuk mengelola fitur/indikator */}
-      <div className="mb-6 p-4 bg-slate-50 dark:bg-gray-800 border dark:border-gray-700 rounded-lg flex justify-between items-center">
-        <p className="text-sm text-gray-600 dark:text-gray-300">Gunakan tombol ini untuk menambah atau mengubah daftar indikator yang akan dinilai.</p>
-        <FeatureManager onFeaturesUpdate={setAvailableFeatures} />
-      </div>
-
+      {testType === "pre-test-global" && (
+        <div className="mb-6 p-4 bg-slate-50 dark:bg-gray-800 border dark:border-gray-700 rounded-lg flex justify-between items-center">
+          <p className="text-sm text-gray-600 dark:text-gray-300">Gunakan tombol ini untuk menambah atau mengubah daftar indikator yang akan dinilai.</p>
+          <FeatureManager onFeaturesUpdate={setAvailableFeatures} />
+        </div>
+      )}
 
       {questions.map((q, qIndex) => (
         <Card
@@ -391,7 +392,7 @@ export default function TestForm({
             </div>
 
             {/* Bagian Fitur dan Bobot */}
-            {availableFeatures.length > 0 && (
+            {testType === "pre-test-global" && availableFeatures.length > 0 && (
               <div className="mt-4 pt-4 border-t dark:border-gray-700">
                 <Label className="font-semibold text-base mb-2 block">Indikator Penilaian</Label>
                 <p className="text-xs text-gray-500 mb-3">Atur bobot untuk setiap indikator yang diukur oleh soal ini melalui menu pengaturan.</p>
