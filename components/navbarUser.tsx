@@ -56,12 +56,13 @@ export default function Navbar() {
 
   return (
     <header
+      suppressHydrationWarning
       className={`bg-white/80 dark:bg-gray-800/80 border-b border-gray-200/80 dark:border-gray-700/80 p-4 flex justify-between items-center backdrop-blur-sm fixed max-w-full top-0 right-0 z-40 gap-4 h-20 mb-10 transition-all duration-300 ${
         isSidebarCollapsed ? "w-full p-0 sm:pl-25" : "w-full sm:w-10/12"
       }`}
     >
       {/* Kiri */}
-      <div id="header-left" className="flex items-center flex-shrink-0">
+      <div id="header-left" className="flex items-center flex-shrink-0" suppressHydrationWarning>
         {/* Tombol Mobile Drawer */}
         <button
           id="mobile-drawer-toggle"
@@ -74,7 +75,7 @@ export default function Navbar() {
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16" />
           </svg>
         </button>
-        <div id="header-title-placeholder">
+        <div id="header-title-placeholder" suppressHydrationWarning>
           {isSidebarCollapsed && (
             <Image src="/logo.png" alt="KELAS Logo" width={150} height={40} className="h-10 w-auto" />
           )}
@@ -82,16 +83,16 @@ export default function Navbar() {
       </div>
 
       {/* Search Bar */}
-      <div className="flex-1 flex justify-center ">
+      <div className="flex-1 flex justify-center " suppressHydrationWarning>
         <GlobalSearch />
       </div>
 
       {/* Kanan */}
-      <div className="flex items-center gap-0 ms:gap-5 flex-shrink-0">
+      <div className="flex items-center gap-0 ms:gap-5 flex-shrink-0" suppressHydrationWarning>
      
 
         {/* Icon group (Theme + Notifikasi) */}
-        <div className="flex items-center gap-2 sm:gap-4">
+        <div className="flex items-center gap-2 sm:gap-4" suppressHydrationWarning>
           {mounted && (
             <button
               id="theme-toggle"
@@ -116,7 +117,7 @@ export default function Navbar() {
           {/* Ganti notifikasi placeholder dengan komponen fungsional */}
           <NotificationBell />
              {/* Sambutan Pengguna */}
-        {user && (
+        {mounted && user && (
           <p className="hidden md:block text-sm text-gray-600 dark:text-gray-300 whitespace-nowrap">
             {" "}
             {greeting.text}, <span className="font-semibold">{user.name.split(" ").slice(0, 2).join(" ")}!</span>

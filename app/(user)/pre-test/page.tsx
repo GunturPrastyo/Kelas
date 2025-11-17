@@ -62,50 +62,45 @@ export default function PreTestPage() {
             console.warn("Gagal membuat notifikasi:", error);
         }
     }, [user]);
+
     const grade = useCallback(() => {
         if (!user) return; // Pastikan user sudah ada
-        let correct = 0;
         const timeTaken = Math.round((Date.now() - startTime) / 1000);
-        questions.forEach(q => {
-            // Jawaban yang dipilih user untuk soal q._id
-            const userAnswer = answers[q._id];
-            if (userAnswer === q.answer) correct++;
-        });
-        const score = total > 0 ? Math.round((correct / total) * 100) : 0;
-        const record = { score, correct, total, timeTaken, totalDuration, timestamp: new Date().toISOString() };
 
-        // 1. Simpan hasil ke localStorage untuk ditampilkan segera
-        const resultKey = `pretest_result_${user._id}`;
-        localStorage.setItem(resultKey, JSON.stringify(record));
-        setResult(record);
-
-        // 2. Kirim hasil ke database
-        const saveResultToDB = async () => {
+        const submitAndGrade = async () => {
             try {
-                const response = await authFetch(`${process.env.NEXT_PUBLIC_API_URL}/api/results`, { // Menggunakan endpoint baru
+                const response = await authFetch(`${process.env.NEXT_PUBLIC_API_URL}/api/results/submit-test`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
-                        ...record,
                         testType: 'pre-test-global',
+                        answers,
+                        timeTaken,
                     }),
                 });
+                const resultData = await response.json();
                 if (!response.ok) {
-                    console.error("Gagal menyimpan hasil pre-test ke database.");
+                    throw new Error(resultData.message || "Gagal mengirimkan jawaban.");
                 }
+
+                // Simpan hasil lengkap (termasuk skor fitur) ke state dan localStorage
+                setResult(resultData.data);
+                localStorage.setItem(`pretest_result_${user._id}`, JSON.stringify(resultData.data));
+
+                // Buat notifikasi
+                createNotification(
+                    `Anda telah menyelesaikan Pre-Test dengan skor ${resultData.data.score}%.`,
+                    '/profil' // Arahkan ke halaman profil/hasil
+                );
+
             } catch (error) {
                 console.error("Error saat mengirim hasil pre-test:", error);
+                showAlert({ title: 'Error', message: 'Gagal mengirimkan hasil pre-test.' });
             }
         };
 
-        saveResultToDB();
-
-        // Buat notifikasi setelah menyelesaikan pre-test
-        createNotification(
-            `Anda telah menyelesaikan Pre-Test dengan skor ${score}%.`,
-            '/profil' // Arahkan ke halaman profil/hasil
-        );
-    }, [answers, startTime, total, questions, user, createNotification, totalDuration]);
+        submitAndGrade();
+    }, [answers, createNotification, showAlert, startTime, user]);
 
     useEffect(() => {
         const userRaw = localStorage.getItem('user');
@@ -271,25 +266,26 @@ export default function PreTestPage() {
     if (!loading && questions.length === 0 && !result) return <div className="p-6 text-center">Tidak ada soal pre-test yang tersedia saat ini.</div>
 
     if (result) {
-        let level: 'dasar' | 'menengah' | 'lanjut' | null = null;
+        // Gunakan result.learningPath dari backend sebagai sumber kebenaran
+        const learningPath = result.learningPath; // "Dasar", "Menengah", atau "Lanjutan"
+        let level: 'dasar' | 'menengah' | 'lanjut';
         let levelBadge = '', badgeClasses = '', profileDesc = '';
-        const avgTimePerQuestion = result.timeTaken / total;
 
-        if (result.score >= 75) {
+        if (learningPath === 'Lanjutan') {
             level = 'lanjut';
             levelBadge = 'Level: Lanjut';
             badgeClasses = 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300';
-            profileDesc = avgTimePerQuestion <= 20 ? 'Profil: Cepat & Tepat. Kamu siap ke materi tingkat lanjut dengan kecepatan tinggi.' : 'Profil: Teliti & Paham. Pemahaman bagus, mari latih efisiensi.';
-        } else if (result.score >= 40) {
+            profileDesc = 'Penguasaan materi Anda sangat baik. Anda direkomendasikan untuk langsung menuju materi tingkat lanjut.';
+        } else if (learningPath === 'Menengah') {
             level = 'menengah';
             levelBadge = 'Level: Menengah';
             badgeClasses = 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300';
-            profileDesc = avgTimePerQuestion < 15 ? 'Profil: Grasp Cepat. Kamu cepat memahami, tapi hati-hati dengan kesalahan konsep.' : 'Profil: Stabil. Waktu dan hasil seimbang, perkuat konsep inti.';
-        } else {
+            profileDesc = 'Anda telah menguasai materi dasar. Anda dapat melewati modul dasar dan memulai dari level menengah.';
+        } else { // Default ke "Dasar"
             level = 'dasar';
             levelBadge = 'Level: Dasar';
             badgeClasses = 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300';
-            profileDesc = avgTimePerQuestion < 15 ? 'Profil: Terburu-buru. Sebaiknya ulangi dasar dengan pelan-pelan.' : 'Profil: Perlu Penguatan. Fokus dulu ke materi dasar.';
+            profileDesc = 'Sebaiknya Anda memulai dari materi dasar untuk memperkuat pemahaman fundamental Anda.';
         }
 
         const categoryMap = { mudah: 'dasar', sedang: 'menengah', sulit: 'lanjut' };
@@ -355,6 +351,32 @@ export default function PreTestPage() {
                             </div>
                         </div>
                     </div>
+                    {/* Tambahan: Tampilan Skor per Fitur */}
+                    {result.featureScores && result.featureScores.length > 0 && (
+                        <div className="mt-6">
+                            <h3 className="text-base font-semibold mb-3 text-slate-800 dark:text-slate-200">Rincian Skor Indikator</h3>
+                            <div className="border border-slate-200 dark:border-gray-700 rounded-lg overflow-hidden">
+                                <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400">
+                                    <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+                                        <tr>
+                                            <th scope="col" className="px-6 py-3">Indikator</th>
+                                            <th scope="col" className="px-6 py-3 text-right">Skor</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {result.featureScores.map((fs: any) => (
+                                            <tr key={fs.featureId} className="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
+                                                <th scope="row" className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                                                    {fs.featureName}
+                                                </th>
+                                                <td className="px-6 py-4 text-right">{Math.round(fs.score)}%</td>
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    )}
                     <div className="mt-6 flex gap-2">
                         <button onClick={handleRetake} className="bg-transparent text-blue-600 dark:text-blue-400 border border-blue-500/20 dark:border-blue-400/20 px-3.5 py-2.5 rounded-lg cursor-pointer hover:bg-blue-50 dark:hover:bg-blue-900/20 transition">Ulangi Pre-test</button>
                         <Link href="/modul" className="bg-blue-600 hover:bg-blue-700 text-white border-none px-3.5 py-2.5 rounded-lg cursor-pointer">Lihat Rekomendasi Modul</Link>

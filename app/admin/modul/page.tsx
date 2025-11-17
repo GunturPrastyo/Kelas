@@ -23,17 +23,30 @@ export default function ModulPage() {
   const router = useRouter();
   const [modules, setModules] = useState<Modul[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null); // State untuk menyimpan pesan error
   const [hasPreTest, setHasPreTest] = useState<boolean | null>(null);
   const [view, setView] = useState<"grid" | "order">("grid");
 
   useEffect(() => {
+    setLoading(true);
+    setError(null);
     authFetch(`${process.env.NEXT_PUBLIC_API_URL}/api/modul`)
-      .then((res) => res.ok ? res.json() : Promise.reject(new Error('Gagal memuat modul')))
+      .then(async (res) => {
+        if (!res.ok) {
+          // Coba baca pesan error dari body response
+          const errorData = await res.json().catch(() => null);
+          throw new Error(errorData?.message || 'Gagal memuat modul dari server.');
+        }
+        return res.json();
+      })
       .then((data) => {
         setModules(data);
-        setLoading(false);
       })
-      .catch(console.error);
+      .catch((err) => {
+        console.error(err);
+        setError(err.message); // Simpan pesan error ke state
+      })
+      .finally(() => setLoading(false));
 
     // Cek apakah pre-test global sudah ada
     const checkPreTest = async () => {
@@ -71,7 +84,13 @@ export default function ModulPage() {
     }
   };
 
-  if (loading) return <p>Loading...</p>;
+  if (loading) return <div className="text-center p-10">Memuat data modul...</div>;
+
+  if (error) {
+    return <div className="text-center p-10 text-red-500">
+      Terjadi kesalahan: {error}
+    </div>;
+  }
 
   return (
     <div className="p-6">

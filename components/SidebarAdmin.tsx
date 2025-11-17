@@ -1,6 +1,7 @@
 "use client"
 
 import Link from "next/link"
+import { useState, useEffect } from "react";
 import Image from "next/image";
 import { usePathname, useRouter } from 'next/navigation';
 import { useUI } from "@/context/UIContext"
@@ -18,6 +19,12 @@ export default function SidebarAdmin() {
   const { isSidebarCollapsed, isMobileDrawerOpen, toggleSidebar } = useUI()
   const pathname = usePathname();
   const router = useRouter();
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
 
   const isActive = (href: string) => {
     if (href === "/admin/dashboard") return pathname === href;
@@ -43,13 +50,12 @@ export default function SidebarAdmin() {
   return (
     <aside
       id="sidebar-admin"
-      className={`fixed top-0 left-0 z-50 h-screen bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 transition-all duration-300 ease-in-out flex flex-col
-        ${isSidebarCollapsed ? 'w-20' : 'w-64'}
-        ${isMobileDrawerOpen ? 'translate-x-0' : '-translate-x-full'}
-        md:translate-x-0`}
+      className={`fixed top-0 left-0 z-50 h-screen bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 transition-all duration-300 ease-in-out flex flex-col ${
+        mounted ? (isSidebarCollapsed ? 'w-20' : 'w-64') : 'w-64'
+      } ${mounted ? (isMobileDrawerOpen ? 'translate-x-0' : '-translate-x-full') : '-translate-x-full'} md:translate-x-0`}
     >
       {/* Sidebar Header */}
-      <div className={`px-4 h-20 flex items-center gap-3 flex-shrink-0 ${isSidebarCollapsed ? 'justify-center' : 'justify-start'}`}>
+      <div className={`px-4 h-20 flex items-center gap-3 flex-shrink-0 ${isSidebarCollapsed ? 'justify-center' : 'justify-start'}`} suppressHydrationWarning>
         <button
           type="button"
           className="p-2 text-gray-500 rounded-lg hidden md:block hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:focus:ring-gray-600"
@@ -60,8 +66,8 @@ export default function SidebarAdmin() {
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16" />
           </svg>
         </button>
-        <div className="flex-1 flex items-center gap-4 overflow-hidden" >
-          {!isSidebarCollapsed && (
+        <div className="flex-1 flex items-center gap-4 overflow-hidden" suppressHydrationWarning>
+          {mounted && !isSidebarCollapsed && (
             <Image src="/logo.png" alt="KELAS Logo" width={150} height={40} className="h-10 w-auto transition-opacity duration-300" priority />
           )}
         </div>
@@ -73,7 +79,7 @@ export default function SidebarAdmin() {
           const active = isActive(link.href);
           return (
           <Link key={link.href} href={link.href} className={`flex items-center gap-4 p-3 rounded-lg transition-colors ${active ? 'bg-blue-50 dark:bg-gray-700' : 'hover:bg-gray-100 dark:hover:bg-gray-700'}`}>
-            <Image src={link.icon} alt={link.alt} width={28} height={28} className="flex-shrink-0" />
+            <Image src={link.icon} alt={link.alt} width={28} height={28} className="flex-shrink-0" priority={false} />
             <span className={`whitespace-nowrap transition-opacity duration-300 text-sm ${isSidebarCollapsed ? 'opacity-0 hidden' : 'opacity-100'} ${active ? 'text-blue-600 dark:text-white font-semibold' : 'text-gray-600 dark:text-gray-300'}`}>
               {link.label}
             </span>
@@ -82,7 +88,7 @@ export default function SidebarAdmin() {
       </nav>
 
       {/* Tombol Logout */}
-      <div className="px-4 py-4 mt-auto">
+      <div className="px-4 py-4 mt-auto" suppressHydrationWarning>
         <button
           onClick={handleLogout}
           className={`flex items-center gap-4 p-3 rounded-lg w-full text-red-500 hover:bg-red-50 dark:hover:bg-red-900/30 dark:text-red-400 transition-colors ${isSidebarCollapsed ? 'justify-center' : ''}`}

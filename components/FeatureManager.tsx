@@ -36,12 +36,12 @@ export default function FeatureManager({ onFeaturesUpdate }: FeatureManagerProps
         fetchFeatures();
     };
 
-    const handleAddFeature = async (name: string) => {
+    const handleAddFeature = async (name: string, group: Feature['group']) => {
         try {
             await authFetch(`${process.env.NEXT_PUBLIC_API_URL}/api/features`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ name }),
+                body: JSON.stringify({ name, group }),
             });
             await fetchFeatures(); // Re-fetch
         } catch (error) {
@@ -49,12 +49,12 @@ export default function FeatureManager({ onFeaturesUpdate }: FeatureManagerProps
         }
     };
 
-    const handleUpdateFeature = async (id: string, name: string) => {
+    const handleUpdateFeature = async (id: string, name: string, group: Feature['group']) => {
         try {
             await authFetch(`${process.env.NEXT_PUBLIC_API_URL}/api/features/${id}`, {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ name }),
+                body: JSON.stringify({ name, group }),
             });
             await fetchFeatures(); // Re-fetch
         } catch (error) {
