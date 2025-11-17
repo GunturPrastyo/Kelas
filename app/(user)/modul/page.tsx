@@ -50,9 +50,12 @@ export default function ModulPage() {
             const resultRaw = localStorage.getItem(resultKey);
             if (resultRaw) {
                 try {
+                    // Perubahan: Gunakan 'learningPath' dari backend, bukan 'score'
                     const parsedResult = JSON.parse(resultRaw);
-                    if (parsedResult.score >= 75) {
-                        setUserLevel('lanjut');
+                    const learningPath = parsedResult.learningPath?.toLowerCase(); // 'Lanjutan' -> 'lanjutan'
+
+                    if (learningPath === 'lanjutan') {
+                        setUserLevel('lanjut'); // Sesuaikan dengan nilai state 'lanjut'
                         setRecommendation({
                             title: 'Jalur Belajar: Lanjut',
                             description: 'Pemahamanmu sudah kuat. Kamu siap untuk tantangan materi tingkat lanjut!',
@@ -60,7 +63,7 @@ export default function ModulPage() {
                             bgClass: 'from-green-100 to-emerald-200 dark:from-gray-800 dark:to-emerald-900',
                             textClass: 'text-green-800 dark:text-green-300'
                         });
-                    } else if (parsedResult.score >= 40) {
+                    } else if (learningPath === 'menengah') {
                         setUserLevel('menengah');
                         setRecommendation({
                             title: 'Jalur Belajar: Menengah',
@@ -69,7 +72,7 @@ export default function ModulPage() {
                             bgClass: 'from-blue-100 to-sky-200 dark:from-gray-800 dark:to-sky-900',
                             textClass: 'text-blue-800 dark:text-blue-300'
                         });
-                    } else {
+                    } else if (learningPath === 'dasar') {
                         setUserLevel('dasar');
                         setRecommendation({
                             title: 'Jalur Belajar: Dasar',
@@ -78,6 +81,9 @@ export default function ModulPage() {
                             bgClass: 'from-yellow-100 to-amber-200 dark:from-gray-800 dark:to-amber-900',
                             textClass: 'text-yellow-800 dark:text-yellow-300'
                         });
+                    } else {
+                        // Fallback jika 'learningPath' tidak ada atau tidak valid
+                        setUserLevel(null);
                     }
                 } catch (e) {
                     console.warn('Gagal memuat hasil pre-test untuk personalisasi.', e);
@@ -112,43 +118,37 @@ export default function ModulPage() {
         // Pastikan modul diurutkan berdasarkan 'order' sebelum diproses lebih lanjut
         const sortedModules = [...modules].sort((a, b) => (a.order || 0) - (b.order || 0));
 
-
         const updatedModules = sortedModules.map(modul => {
             const mappedCategory = categoryMap[modul.category];
-
-            let status: ModuleStatus;
+            let status = modul.status; // Ambil status awal dari backend
             let isHighlighted = false;
-            let isLocked = true; // Secara default, semua modul terkunci
-
-            // Logika untuk membuka kunci berdasarkan level pengguna
+            let isLocked = false; // Default: modul tidak terkunci
+ 
+            // Terapkan kembali logika penguncian di frontend berdasarkan userLevel
             if (userLevel === 'lanjut') {
-                isLocked = false; // Buka semua modul
+                isLocked = false; // Semua modul terbuka untuk level lanjut
             } else if (userLevel === 'menengah') {
-                isLocked = mappedCategory === 'lanjut'; // Kunci hanya modul lanjut
+                // Kunci modul 'lanjut' untuk level menengah
+                isLocked = mappedCategory === 'lanjut';
             } else if (userLevel === 'dasar') {
-                isLocked = mappedCategory !== 'dasar'; // Kunci modul menengah dan lanjut
+                // Kunci modul 'menengah' dan 'lanjut' untuk level dasar
+                isLocked = mappedCategory !== 'dasar';
             }
 
-            if (modul.progress === 100) {
-                status = 'Selesai';
-            } else if (modul.progress > 0) {
-                status = 'Berjalan';
-            } else {
-                status = 'Belum Mulai';
-            }
-
-            // Terapkan status 'Terkunci' jika isLocked true, kecuali modul sudah selesai
-            if (isLocked && status !== 'Selesai') {
+            // Timpa status menjadi 'Terkunci' jika kondisi isLocked terpenuhi
+            if (isLocked) {
                 status = 'Terkunci';
             }
+ 
             // Sorot modul yang direkomendasikan dan belum dimulai
             if (!isLocked && mappedCategory === userLevel && status === 'Belum Mulai') {
                 isHighlighted = true;
             }
-
+ 
+            // Kembalikan modul dengan status dan isHighlighted yang sudah diperbarui.
             return { ...modul, status, isHighlighted };
         });
-
+ 
         return updatedModules.filter(m => {
             const mappedCategory = categoryMap[m.category];
             // Hapus filter berdasarkan searchQuery
