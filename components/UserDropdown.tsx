@@ -14,10 +14,12 @@ interface User {
 export default function UserDropdown() {
     const [user, setUser] = useState<User | null>(null);
     const [isOpen, setIsOpen] = useState(false);
+    const [mounted, setMounted] = useState(false);
     const router = useRouter();
     const dropdownRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
+        setMounted(true);
         // Ambil data pengguna dari localStorage
         const userRaw = localStorage.getItem('user');
         if (userRaw) {
@@ -44,7 +46,7 @@ export default function UserDropdown() {
         router.push('/login');
     };
 
-    if (!user) {
+    if (!mounted || !user) {
         // Tampilkan placeholder atau tidak sama sekali jika user belum login
         return null;
     }
