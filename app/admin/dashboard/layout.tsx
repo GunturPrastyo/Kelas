@@ -1,9 +1,11 @@
 "use client";
 
 import { UIProvider, useUI } from "@/context/UIContext";
-import Navbar from "@/components/navbarUser";
+import Navbar from "@/components/navbarUser"; // Ini sebenarnya navbarUser
 import Sidebar from "@/components/SidebarAdmin";
 import AuthGuard from "@/components/AuthGuard";
+import { AlertProvider } from "@/context/AlertContext";
+import AlertDialog from "@/components/AlertDialog";
 
 function DashboardContent({ children }: { children: React.ReactNode }) {
   const { isSidebarCollapsed, isMobileDrawerOpen, toggleMobileDrawer } = useUI();
@@ -53,7 +55,10 @@ export default function DashboardLayout({
   return (
     <AuthGuard>
       <UIProvider>
-        <DashboardContent>{children}</DashboardContent>
+        <AlertProvider>
+          <DashboardContent>{children}</DashboardContent>
+          <AlertDialog />
+        </AlertProvider>
       </UIProvider>
     </AuthGuard>
   );
