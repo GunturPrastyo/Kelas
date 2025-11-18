@@ -20,6 +20,7 @@ interface Module {
     title: string;
     slug: string;
     status: 'Selesai' | 'Berjalan' | 'Terkunci' | 'Belum Mulai';
+    progress: number;
 }
 
 export default function UserDropdown() {
@@ -55,9 +56,11 @@ export default function UserDropdown() {
             if (res.ok) {
                 const modules: Module[] = await res.json();
                 const totalModules = modules.length;
-                if (totalModules > 0) {
-                    const completedModules = modules.filter(m => m.status === 'Selesai').length;
-                    setOverallProgress(Math.round((completedModules / totalModules) * 100));
+                if (totalModules > 0) { 
+                    // Kalkulasi progres berdasarkan rata-rata progress setiap modul
+                    const totalProgress = modules.reduce((sum, module) => sum + (module.progress || 0), 0);
+                    const averageProgress = totalProgress / totalModules;
+                    setOverallProgress(Math.round(averageProgress));
 
                     const lastInProgress = modules.find(m => m.status === 'Berjalan');
                     setLastModule(lastInProgress || null);
@@ -203,7 +206,7 @@ export default function UserDropdown() {
                                 </button>
                             )}
                         </div>
-                        <button onClick={handleSettingsClick} className="w-full text-left flex items-center gap-3 px-3 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700/50 rounded-md transition-colors">
+                        <button onClick={handleSettingsClick} className="w-full text-left flex items-center gap-3 px-3 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700/50 rounded-md transition-colors cursor-not-allowed opacity-60">
                             <Settings className="w-5 h-5" />
                             <span>Pengaturan</span>
                         </button>
