@@ -265,11 +265,10 @@ export default function ModulPage() {
                         {/* Nomor urut yang "duduk" di atas garis (hanya mobile) */}
                         <div className="absolute top-5 left-0 z-10 w-12 h-12 flex items-center justify-center md:hidden">
                             <div className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm
-                                ${modul.status === 'Selesai' ? 'bg-green-500 text-white border-2 border-white dark:border-gray-800' : ''}
-                                ${modul.status === 'Berjalan' ? 'bg-blue-500 text-white border-2 border-white dark:border-gray-800' : ''}
-                                ${modul.status === 'Belum Mulai' && !modul.isHighlighted ? 'bg-white dark:bg-gray-900 border-2 border-gray-300 dark:border-gray-600 text-gray-500' : ''}
-                                ${modul.status === 'Terkunci' ? 'bg-gray-200 dark:bg-gray-700 border-2 border-white dark:border-gray-800 text-gray-400' : ''}
-                                ${modul.isHighlighted ? 'bg-blue-500 text-white border-2 border-white dark:border-gray-800 ring-4 ring-blue-300 dark:ring-blue-500/50' : ''}
+                                ${modul.status === 'Selesai' ? 'bg-green-500 text-white border-2 border-white dark:border-gray-800' :
+                                 modul.status === 'Berjalan' || modul.isHighlighted ? 'bg-blue-500 text-white border-2 border-white dark:border-gray-800' + (modul.isHighlighted ? ' ring-4 ring-blue-300 dark:ring-blue-500/50' : '') :
+                                 modul.status === 'Terkunci' ? 'bg-gray-200 dark:bg-gray-700 border-2 border-white dark:border-gray-800 text-gray-400' :
+                                 'bg-white dark:bg-gray-900 border-2 border-gray-300 dark:border-gray-600 text-gray-500'}
                             `}>
                                 {modul.status === 'Selesai' ? <CheckCircle2 size={16} /> : '•'}
                             </div>
