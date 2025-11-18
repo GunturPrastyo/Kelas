@@ -21,6 +21,8 @@ interface Module {
     slug: string;
     status: 'Selesai' | 'Berjalan' | 'Terkunci' | 'Belum Mulai';
     progress: number;
+    totalTopics?: number;
+    completedTopics?: number;
 }
 
 export default function UserDropdown() {
@@ -53,15 +55,18 @@ export default function UserDropdown() {
     const fetchDropdownData = async () => {
         try {
             const res = await authFetch(`${process.env.NEXT_PUBLIC_API_URL}/api/modul/progress`);
+            
             if (res.ok) {
                 const modules: Module[] = await res.json();
                 const totalModules = modules.length;
                 if (totalModules > 0) { 
-                    // Kalkulasi progres berdasarkan rata-rata progress setiap modul
-                    const totalProgress = modules.reduce((sum, module) => sum + (module.progress || 0), 0);
-                    const averageProgress = totalProgress / totalModules;
-                    setOverallProgress(Math.round(averageProgress));
+                    // Kalkulasi progres berdasarkan total topik yang selesai (disamakan dengan dashboard)
+                    const totalAllTopics = modules.reduce((sum, module) => sum + (module.totalTopics || 0), 0);
+                    const totalCompletedTopics = modules.reduce((sum, module) => sum + (module.completedTopics || 0), 0);
+                    const newOverallProgress = totalAllTopics > 0 ? Math.round((totalCompletedTopics / totalAllTopics) * 100) : 0;
+                    setOverallProgress(newOverallProgress);
 
+                    // Logika untuk menemukan modul terakhir yang sedang dikerjakan tetap sama
                     const lastInProgress = modules.find(m => m.status === 'Berjalan');
                     setLastModule(lastInProgress || null);
                 }
@@ -93,6 +98,15 @@ export default function UserDropdown() {
             document.removeEventListener('mousedown', handleClickOutside);
         };
     }, []);
+
+    // Tambahkan useEffect baru untuk mendengarkan event 'progressUpdated'
+    useEffect(() => {
+        const handleProgressUpdate = () => {
+            fetchDropdownData(); // Panggil ulang fungsi fetch data saat event diterima
+        };
+        window.addEventListener('progressUpdated', handleProgressUpdate);
+        return () => window.removeEventListener('progressUpdated', handleProgressUpdate);
+    }, []); // Dependency kosong agar hanya berjalan sekali
 
     const handleLogout = () => {
         // Hapus data dari localStorage dan redirect ke halaman login

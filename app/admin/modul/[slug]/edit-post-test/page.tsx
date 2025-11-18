@@ -89,7 +89,7 @@ export default function EditPostTestPage() {
         );
 
     return (
-        <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+        <div className="mt-22 min-h-screen bg-gray-50 dark:bg-gray-900">
             <div className="max-w-screen p-5 mx-auto">
                 <div className="py-4">
                     <Breadcrumb

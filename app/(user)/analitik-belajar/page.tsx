@@ -455,7 +455,7 @@ export default function AnalitikBelajarPage() {
                 alt="Modul Icon"
                 width={256}
                 height={256}
-                className="w-20 h-20 rounded-xl bg-blue-100 dark:bg-gray-700 p-2"
+                className="w-18 h-auto rounded-xl bg-blue-100 dark:bg-gray-700 p-2"
               />
             </div>
             <div>
@@ -476,7 +476,7 @@ export default function AnalitikBelajarPage() {
           {/* Card 2 */}
           <div className="flex items-center gap-4 bg-gradient-to-br from-green-50 to-green-100 dark:from-gray-800 dark:to-gray-900 text-gray-800 dark:text-gray-100 rounded-2xl p-5 shadow-md hover:scale-[1.02] transition-transform dark:shadow-lg dark:shadow-gray-800/40">
             <div className="flex-shrink-0">
-              <Image src="/star.png" alt="Score Icon" width={256} height={256} className="w-20 h-20 rounded-xl bg-green-100 dark:bg-gray-700 p-2" />
+              <Image src="/star.png" alt="Score Icon" width={256} height={256} className="w-18 h-auto rounded-xl bg-green-100 dark:bg-gray-700 p-2" />
             </div>
             <div>
               <p className="text-sm text-gray-600 dark:text-gray-400">Rata-rata Nilai</p>
@@ -500,7 +500,7 @@ export default function AnalitikBelajarPage() {
                 alt="Time Icon"
                 width={256}
                 height={256}
-                className="w-20 h-20 rounded-xl bg-purple-100 dark:bg-gray-700 p-2"
+                className="w-18 h-auto rounded-xl bg-purple-100 dark:bg-gray-700 p-2"
               />
             </div>
             <div>
@@ -519,7 +519,7 @@ export default function AnalitikBelajarPage() {
           {/* Card 4 */}
           <div className="flex items-center gap-4 bg-gradient-to-br from-orange-50 to-orange-100 dark:from-gray-800 dark:to-gray-900 text-gray-800 dark:text-gray-100 rounded-2xl p-5 shadow-md hover:scale-[1.02] transition-transform dark:shadow-lg dark:shadow-gray-800/40">
             <div className="flex-shrink-0">
-              <Image src="/streak.png" alt="Streak Icon" width={256} height={256} className="w-20 h-20 rounded-xl bg-orange-100 dark:bg-gray-700 p-2" />
+              <Image src="/streak.png" alt="Streak Icon" width={256} height={256} className="w-18 h-auto rounded-xl bg-orange-100 dark:bg-gray-700 p-2" />
             </div>
             <div>
               <p className="text-sm text-gray-600 dark:text-gray-400">Streak Harian</p>

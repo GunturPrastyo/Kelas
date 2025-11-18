@@ -93,9 +93,9 @@ export default function ModulPage() {
   }
 
   return (
-    <div className="p-6">
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-bold">Manajemen Modul dan Tes</h1>
+    <div className="p-6 mt-22">
+      <div className="block sm:flex justify-between items-center mb-6">
+        <h1 className="mb-5 sm:m-0 text-2xl font-bold">Manajemen Modul dan Tes</h1>
         <div className="flex items-center gap-4">
           {/* Tombol Ganti Tampilan */}
           <div className="flex items-center gap-1 bg-gray-100 dark:bg-gray-700 p-1 rounded-lg">

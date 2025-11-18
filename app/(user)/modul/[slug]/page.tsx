@@ -494,6 +494,9 @@ export default function ModulDetailPage() {
                     };
                 });
             } else {
+                // Jika tidak lulus, panggil fetchModulData untuk sinkronisasi status 'hasAttempted'
+                fetchModulData();
+
                 // Jika tidak lulus, pastikan accordion topik yang sama tetap terbuka setelah modal ditutup.
                 setOpenTopicId(activeTest._id); // Jika tidak lulus, tetap buka topik yang sama
             }
@@ -503,6 +506,9 @@ export default function ModulDetailPage() {
             authFetch(deleteUrl, {
                 method: 'DELETE', // Menggunakan DELETE untuk menghapus progress
             });
+
+            // Memicu event kustom untuk memberitahu komponen lain (seperti UserDropdown)
+            window.dispatchEvent(new CustomEvent('progressUpdated'));
 
         } catch (error) {
             showAlert({

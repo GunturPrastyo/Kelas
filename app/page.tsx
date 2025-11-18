@@ -222,7 +222,7 @@ export default function LoginPage() {
                 }}
                 theme="outline"
                 shape="rectangular"
-                width="320px"
+                width="256px"
               />
             </div>
 

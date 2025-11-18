@@ -71,7 +71,7 @@ export default function TambahPostTestPage() {
 
   return (
     <div className="p-5">
-      <nav className="flex items-center text-sm text-gray-500 dark:text-gray-400 mb-6">
+      <nav className="mt-22 flex items-center text-sm text-gray-500 dark:text-gray-400 mb-6">
         <Link href="/admin/dashboard" className="hover:underline">Dashboard</Link>
         <span className="mx-2">/</span>
         <Link href="/admin/modul" className="hover:underline">Modul</Link>

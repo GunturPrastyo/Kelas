@@ -49,6 +49,20 @@ export default function RegisterPage() {
     setIsLoading(true);
     setError("");
 
+    // Validasi nama tidak boleh kosong
+    if (!name.trim()) {
+      setError("Nama lengkap harus diisi.");
+      setIsLoading(false);
+      return;
+    }
+
+    // Validasi email tidak boleh kosong
+    if (!email.trim()) {
+      setError("Email harus diisi.");
+      setIsLoading(false);
+      return;
+    }
+
     // Validasi format email di sisi klien menggunakan library validator
     if (!validator.isEmail(email)) {
       setError("Silakan masukkan format email yang valid.");
@@ -56,9 +70,23 @@ export default function RegisterPage() {
       return;
     }
 
+    // Validasi password tidak boleh kosong
+    if (!password) {
+      setError("Password harus diisi.");
+      setIsLoading(false);
+      return;
+    }
+
     // Validasi password
     if (password.length < 8) {
       setError("Password minimal harus 8 karakter.");
+      setIsLoading(false);
+      return;
+    }
+
+    // Validasi panjang maksimum password
+    if (password.length > 50) {
+      setError("Password tidak boleh lebih dari 50 karakter.");
       setIsLoading(false);
       return;
     }
@@ -74,21 +102,26 @@ export default function RegisterPage() {
       const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/users/register`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, email, password }),
+        body: JSON.stringify({ name, email, password, confirmPassword }),
       });
 
       const data = await res.json();
 
-      if (!res.ok) throw new Error(data.message || "Registrasi gagal");
+      // If the response is not OK, throw an error with the message from the backend.
+      // This will be caught by the catch block and displayed to the user.
+      if (!res.ok) {
+        throw new Error(data.message || "Registrasi gagal. Silakan coba lagi.");
+      }
 
-      // Cek apakah backend mengirim kredensial, lalu simpan di sessionStorage
+      // On success, check if the backend sent credentials to pre-fill the login form.
       if (data.loginCredentials) {
         sessionStorage.setItem('loginCredentials', JSON.stringify(data.loginCredentials));
       }
 
-      // Arahkan ke halaman login
+      // Redirect to the login page only after a successful registration.
       router.push("/login");
     } catch (err) {
+      // The error message from the backend will now be displayed in the error div.
       setError(err instanceof Error ? err.message : "Terjadi kesalahan saat registrasi.");
     } finally {
       setIsLoading(false);
