@@ -1,21 +1,21 @@
 "use client";
-import { useState } from "react";
+import { useState, use } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { authFetch } from "@/lib/authFetch";
-// Asumsi Anda memiliki SidebarContext untuk state isSidebarCollapsed
+
 // import { SidebarContext } from "@/context/SidebarContext";
  
 export default function TambahTopikPage({
   params,
   searchParams,
 }: {
-  params: { slug: string };
-  searchParams: { modulId?: string };
+  params: Promise<{ slug: string }>;
+  searchParams: Promise<{ modulId?: string }>;
 }) {
   const router = useRouter();
-  const { slug: modulSlug } = params;
-  const modulId = searchParams?.modulId;
+  const { slug: modulSlug } = use(params);
+  const { modulId } = use(searchParams);
 
   const [title, setTitle] = useState("");
   const [loading, setLoading] = useState(false);

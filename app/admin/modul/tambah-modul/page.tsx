@@ -54,7 +54,7 @@ export default function TambahModulPage({ isSidebarCollapsed }: { isSidebarColla
   };
 
   return (
-    <div className={`p-6 mx-auto transition-all duration-300 ${isSidebarCollapsed ? 'max-w-full' : 'max-w-7xl'}`}>
+    <div className={`mt-22 p-6 mx-auto transition-all duration-300 ${isSidebarCollapsed ? 'max-w-full' : 'max-w-7xl'}`}>
       <div className="mb-6">
         <Breadcrumb
           paths={[
@@ -70,12 +70,12 @@ export default function TambahModulPage({ isSidebarCollapsed }: { isSidebarColla
         <form onSubmit={handleSubmit} className="space-y-6">
           <div>
             <label htmlFor="title" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Judul Modul</label>
-            <input type="text" id="title" className="block w-full p-3 text-gray-900 dark:text-gray-100 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-700" placeholder="Masukkan judul modul" value={title} onChange={(e) => setTitle(e.target.value)} required />
+            <input type="text" id="title" className="block w-full p-2 text-gray-900 dark:text-gray-100 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-700" placeholder="Masukkan judul modul" value={title} onChange={(e) => setTitle(e.target.value)} required />
           </div>
 
           <div>
             <label htmlFor="file_input" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Upload Icon Modul</label>
-            <input className="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 dark:text-gray-400 focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400" id="file_input" type="file" accept="image/*" onChange={handleFileChange} />
+            <input className="p-2 block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 dark:text-gray-400 focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400" id="file_input" type="file" accept="image/*" onChange={handleFileChange} />
             {iconPreview && (
               <div className="mt-4">
                 <p className="text-sm text-gray-600 dark:text-gray-300 mb-1">Preview Icon:</p>
@@ -86,7 +86,7 @@ export default function TambahModulPage({ isSidebarCollapsed }: { isSidebarColla
 
           <div>
             <label htmlFor="category" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Kategori Modul</label>
-            <select id="category" className="block w-full p-3 border border-gray-300 rounded-lg bg-gray-50 dark:bg-gray-700 dark:border-gray-600 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:outline-none" value={category} onChange={(e) => setCategory(e.target.value)} required>
+            <select id="category" className="block w-full p-2 border border-gray-300 rounded-lg bg-gray-50 dark:bg-gray-700 dark:border-gray-600 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:outline-none" value={category} onChange={(e) => setCategory(e.target.value)} required>
               <option value="mudah">Mudah</option>
               <option value="sedang">Sedang</option>
               <option value="sulit">Sulit</option>

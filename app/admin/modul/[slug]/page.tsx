@@ -47,10 +47,12 @@ export default function ModulDetail({ params }: ModulDetailProps) {
       try {
         setLoading(true);
         setError(null);
+        // Use an endpoint that fetches the module by its slug without populating topics.
         const modulRes = await authFetch(`${process.env.NEXT_PUBLIC_API_URL}/api/modul/${slug}`);
+
         if (!modulRes.ok) {
-          const errorData = await modulRes.json().catch(() => ({ message: "Gagal memuat data modul." }));
-          throw new Error(errorData.message || "Gagal memuat data modul.");
+          const modulData = await modulRes.json().catch(() => ({ message: "Gagal memuat data modul. Pastikan URL sudah benar." }));
+          throw new Error(modulData.message || "Gagal memuat data modul.");
         }
         const modulData = await modulRes.json();
         setModul(modulData);
@@ -71,6 +73,11 @@ export default function ModulDetail({ params }: ModulDetailProps) {
             if (postTestRes.ok) {
               const postTestData = await postTestRes.json();
               setHasModulPostTest(postTestData.exists);
+            } else {
+              // Handle non-200 responses, including 500 errors
+              const errorData = await postTestRes.json().catch(() => ({ message: "Gagal memeriksa status post-test." }));
+              console.error(`Error checking post-test: ${postTestRes.status}`, errorData.message);
+              setHasModulPostTest(false); // Assume no post-test if check fails
             }
           } catch (err) {
             console.error("Gagal memeriksa post-test modul:", err);
@@ -117,7 +124,7 @@ export default function ModulDetail({ params }: ModulDetailProps) {
   if (!modul) return <p className="p-6 text-center text-red-500">Modul tidak ditemukan.</p>;
 
   return (
-    <div className="p-5">
+    <div className="p-5 mt-22">
       {/* Breadcrumb */}
       <nav className="flex" aria-label="Breadcrumb">
         <ol className="inline-flex items-center space-x-1 md:space-x-2 rtl:space-x-reverse text-slate-700 dark:text-slate-300">
@@ -141,9 +148,9 @@ export default function ModulDetail({ params }: ModulDetailProps) {
           </li>
         </ol>
       </nav>
-      <div className="flex justify-between items-center mt-4 mb-6">
+      <div className="block sm:flex justify-between items-center mt-4 mb-6">
 
-        <h1 className="text-2xl font-bold">Topik di Modul: {modul.title}</h1>
+        <h1 className="mb-5 sm:m-0 text-2xl font-bold">Topik di Modul: {modul.title}</h1>
 
         <div className="flex items-center gap-2">
           {/* Tombol Ganti Tampilan */}
@@ -175,21 +182,21 @@ export default function ModulDetail({ params }: ModulDetailProps) {
             <Button disabled className="animate-pulse">Memeriksa Tes...</Button>
           ) : hasModulPostTest ? (
             <Link href={`/admin/modul/${slug}/edit-post-test?modulId=${modul._id}`}>
-              <Button variant="outline" className="flex items-center gap-2 text-yellow-600 border-yellow-500 hover:bg-yellow-50 hover:text-yellow-700">
+              <Button variant="outline" className="text-sm flex items-center gap-2 text-yellow-600 border-yellow-500 hover:bg-yellow-50 hover:text-yellow-700">
                 <FileEdit size={16} /> Edit Post Test Modul
               </Button>
             </Link>
           ) : (
             <Link href={`/admin/modul/${slug}/tambah-post-test?modulId=${modul._id}`}>
-              <Button variant="outline" className="flex items-center gap-2 text-blue-600 border-blue-500 hover:bg-blue-50 hover:text-blue-700">
-                <PlusCircle size={16} /> Tambah Post Test Modul
+              <Button variant="outline" className="text-sm flex items-center gap-2 text-blue-600 border-blue-500 hover:bg-blue-50 hover:text-blue-700">
+                <PlusCircle size={15} /> Tambah Post Test Modul
               </Button>
             </Link>
           )}
 
           <Link href={`/admin/modul/${slug}/tambah-topik?modulId=${modul._id}`}>
-            <Button className="bg-blue-600 hover:bg-blue-700">
-              <PlusCircle size={16} className="mr-2" /> Tambah Topik
+            <Button className="text-sm bg-blue-600 hover:bg-blue-700">
+              <PlusCircle size={15} className="mr-2" /> Tambah Topik
             </Button>
           </Link>
         </div>

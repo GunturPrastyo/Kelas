@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { useSearchParams, useParams } from "next/navigation";
 import Breadcrumb from "@/components/Breadcrumb";
+import { authFetch } from "@/lib/authFetch";
 import TestForm from "@/components/TestForm";
 
 interface Modul {
@@ -34,8 +35,8 @@ export default function TambahPostTestPage() {
             try {
                 // Fetch modul and topics in parallel
                 const [modulRes, topicsRes] = await Promise.all([
-                    fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/modul/${slug}`),
-                    fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/topik/modul/${modulId}`)
+                    authFetch(`${process.env.NEXT_PUBLIC_API_URL}/api/modul/${slug}`),
+                    authFetch(`${process.env.NEXT_PUBLIC_API_URL}/api/topik/modul/${modulId}`)
                 ]);
 
                 if (modulRes.ok) {
@@ -60,7 +61,7 @@ export default function TambahPostTestPage() {
     }
 
     return (
-        <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+        <div className="mt-22 min-h-screen bg-gray-50 dark:bg-gray-900">
             <div className="max-w-screen p-5 mx-auto">
                 <div className="py-4">
                     <Breadcrumb

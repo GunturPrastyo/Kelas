@@ -2,6 +2,8 @@
 
 import { useState, useEffect, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
+import Breadcrumb from "@/components/Breadcrumb";
+import { authFetch } from "@/lib/authFetch";
 import Link from "next/link";
 
 function EditModulForm({ isSidebarCollapsed }: { isSidebarCollapsed?: boolean }) {
@@ -27,7 +29,7 @@ function EditModulForm({ isSidebarCollapsed }: { isSidebarCollapsed?: boolean })
           throw new Error("Slug modul tidak ditemukan di URL.");
         }
         setLoading(true);
-        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/modul/${slug}`);
+        const res = await authFetch(`${process.env.NEXT_PUBLIC_API_URL}/api/modul/${slug}`);
         if (!res.ok) {
           throw new Error("Gagal memuat data modul.");
         }
@@ -73,7 +75,7 @@ function EditModulForm({ isSidebarCollapsed }: { isSidebarCollapsed?: boolean })
       formData.append("slug", generateSlug(title));
       if (iconFile) formData.append("icon", iconFile);
 
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/modul/${modulId}`, {
+      const res = await authFetch(`${process.env.NEXT_PUBLIC_API_URL}/api/modul/${modulId}`, {
         method: "PUT",
         body: formData, // Menggunakan FormData, hapus header Content-Type
       });
@@ -98,18 +100,27 @@ function EditModulForm({ isSidebarCollapsed }: { isSidebarCollapsed?: boolean })
   if (loading) return <p className="p-6 text-center">Memuat data modul...</p>;
 
   return (
-    <div className={`p-6 mx-auto transition-all duration-300 ${isSidebarCollapsed ? 'max-w-full' : 'max-w-7xl'}`}>
+    <div className={`mt-22 p-6 mx-auto transition-all duration-300 ${isSidebarCollapsed ? 'max-w-full' : 'max-w-7xl'}`}>
+      <div className="mb-6">
+        <Breadcrumb
+          paths={[
+            { name: "Manajemen Modul", href: "/admin/modul" },
+            { name: "Edit Modul", href: `/admin/modul/edit-modul?slug=${slug}` },
+          ]}
+        />
+      </div>
+
       <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-8">
         <h1 className="text-2xl font-bold mb-6 text-gray-900 dark:text-white">Edit Modul</h1>
         {error && <p className="text-red-500 mb-4">{error}</p>}
         <form onSubmit={handleSubmit} className="space-y-6">
           <div>
             <label htmlFor="title" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Judul Modul</label>
-            <input type="text" id="title" value={title} onChange={(e) => setTitle(e.target.value)} className="block w-full p-3 text-gray-900 dark:text-gray-100 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-700" required />
+            <input type="text" id="title" value={title} onChange={(e) => setTitle(e.target.value)} className="block w-full p-2 text-gray-900 dark:text-gray-100 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-700" required />
           </div>
           <div>
             <label htmlFor="category" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Kategori Modul</label>
-            <select id="category" className="block w-full p-3 border border-gray-300 rounded-lg bg-gray-50 dark:bg-gray-700 dark:border-gray-600 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:outline-none" value={category} onChange={(e) => setCategory(e.target.value)} required>
+            <select id="category" className="block w-full p-2 border border-gray-300 rounded-lg bg-gray-50 dark:bg-gray-700 dark:border-gray-600 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:outline-none" value={category} onChange={(e) => setCategory(e.target.value)} required>
               <option value="mudah">Mudah</option>
               <option value="sedang">Sedang</option>
               <option value="sulit">Sulit</option>
@@ -117,7 +128,7 @@ function EditModulForm({ isSidebarCollapsed }: { isSidebarCollapsed?: boolean })
           </div>
           <div>
             <label htmlFor="file_input" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Ganti Icon Modul (Opsional)</label>
-            <input className="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 dark:text-gray-400 focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400" id="file_input" type="file" accept="image/*" onChange={handleFileChange} />
+            <input className="p-2 block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 dark:text-gray-400 focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400" id="file_input" type="file" accept="image/*" onChange={handleFileChange} />
             {iconPreview && (
               <div className="mt-4">
                 <p className="text-sm text-gray-600 dark:text-gray-300 mb-1">

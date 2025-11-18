@@ -165,7 +165,7 @@ export default function MateriEditorPage({ params }: MateriEditorPageProps) {
       <div className="p-6">
       <Toaster position="top-center" reverseOrder={false} />
       {/* Breadcrumb */}
-      <nav className="text-sm mb-6 text-gray-600 dark:text-gray-300">
+      <nav className="mt-22 text-sm mb-6 text-gray-600 dark:text-gray-300">
         <Link href="/admin/modul" className="hover:underline text-blue-600">
           Modul
         </Link>{" "}
