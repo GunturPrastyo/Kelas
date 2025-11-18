@@ -145,7 +145,7 @@ const NotificationBell = () => {
 
     return (
         <div className="relative" ref={dropdownRef} suppressHydrationWarning>
-            <button onClick={handleBellClick} className="relative p-3.5 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700">
+            <button onClick={handleBellClick} className="relative p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700">
                 <Bell className="h-5 w-5 text-gray-600 dark:text-gray-300" />
                 {unreadCount > 0 && (
                     <span className="absolute top-1 right-1.5 flex h-4 w-4">
