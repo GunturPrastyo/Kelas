@@ -410,18 +410,20 @@ export default function PreTestPage() {
 
                 {/* Modal Informasi Rekomendasi Jalur Belajar */}
                 {isRecommendationInfoModalOpen && (
-                    <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50 p-4" onClick={() => setIsRecommendationInfoModalOpen(false)}>
-                        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-2xl p-6 w-full max-w-lg relative" onClick={(e) => e.stopPropagation()}>
+                    <div className="fixed inset-0 bg-black bg-opacity-60 z-[99] flex justify-center items-start md:items-center p-4" onClick={() => setIsRecommendationInfoModalOpen(false)}>
+                        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-2xl p-6 w-full max-w-lg relative mt-8 md:mt-0 animate-in fade-in-0 zoom-in-95" onClick={(e) => e.stopPropagation()}>
                             <button
                                 onClick={() => setIsRecommendationInfoModalOpen(false)}
                                 className="absolute top-3 right-3 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition-colors"
                             >
                                 <X size={20} />
                             </button>
-
-                            <h3 className="text-lg font-bold text-gray-800 dark:text-gray-100 mb-4">
-                                Cara Sistem Merekomendasikan Jalur Belajarmu
-                            </h3>
+                            <div className="text-center mb-4">
+                                <div className="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-blue-100 dark:bg-blue-900/50 mb-3">
+                                    <Info className="w-8 h-8 text-blue-500" />
+                                </div>
+                                <h3 className="text-lg font-bold text-gray-800 dark:text-gray-100">Rekomendasi Jalur Belajar</h3>
+                            </div>
 
                             <p className="text-sm text-gray-600 dark:text-gray-300 mb-4">
                                 Sistem akan memberi rekomendasi jalur belajar berdasarkan hasil pre-test kamu di tiga bagian : materi
@@ -462,16 +464,20 @@ export default function PreTestPage() {
 
                 {/* Modal Informasi Skor */}
                 {isInfoModalOpen && (
-                    <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50 p-4" onClick={() => setIsInfoModalOpen(false)}>
-                        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-2xl p-6 w-full max-w-md relative" onClick={(e) => e.stopPropagation()}>
+                    <div className="fixed inset-0 bg-black bg-opacity-60 z-[99] flex justify-center items-start md:items-center p-4" onClick={() => setIsInfoModalOpen(false)}>
+                        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-2xl p-6 w-full max-w-md relative mt-8 md:mt-0 animate-in fade-in-0 zoom-in-95" onClick={(e) => e.stopPropagation()}>
                             <button
                                 onClick={() => setIsInfoModalOpen(false)}
                                 className="absolute top-3 right-3 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition-colors"
                             >
                                 <X size={20} />
                             </button>
-                            <h3 className="text-lg font-bold text-gray-800 dark:text-gray-100 mb-4">Asal Perhitungan Skor</h3>
-                            <p className="text-sm text-gray-600 dark:text-gray-300 mb-4">
+                            <div className="text-center mb-4">
+                                <div className="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-blue-100 dark:bg-blue-900/50 mb-3">
+                                    <Info className="w-8 h-8 text-blue-500" />
+                                </div>
+                                <h3 className="text-lg font-bold text-gray-800 dark:text-gray-100">Asal Perhitungan Skor</h3>
+                            </div>                            <p className="text-sm text-gray-600 dark:text-gray-300 mb-4">
                                 "Skor Kamu" adalah skor akhir yang dihitung dari 4 komponen dengan bobot berbeda untuk memberikan gambaran performa yang lebih komprehensif.
                             </p>
                             <ul className="space-y-3 text-sm">
@@ -629,7 +635,15 @@ export default function PreTestPage() {
                 </div>
 
                 <div className="h-2.5 bg-indigo-100 dark:bg-gray-700 rounded-full overflow-hidden mt-3" aria-hidden="true">
-                    <i id="progBar" className="block h-full bg-gradient-to-r from-blue-500 to-violet-500" style={{ width: `${((idx + 1) / total) * 100}%` }}></i>
+                    <div
+                        id="progBar"
+                        className="h-full rounded-full bg-gradient-to-r from-blue-500 to-violet-500 transition-all duration-500 ease-out"
+                        style={{
+                            width: `${((idx + 1) / total) * 100}%`,
+                            backgroundImage: 'linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.15) 50%, rgba(255, 2_55, 255, 0.15) 75%, transparent 75%, transparent)',
+                            backgroundSize: '40px 40px',
+                            animation: 'progress-bar-stripes 1s linear infinite'
+                        }}></div>
                 </div>
                 <div className="text-sm text-slate-500 dark:text-slate-400 mt-2">Pertanyaan ke <span>{idx + 1}</span> dari <span>{total}</span></div>
             </section>
