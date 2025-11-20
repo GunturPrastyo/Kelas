@@ -210,7 +210,7 @@ export default function ModulDetailPage() {
 
             // Coba cari sebagai sub-materi terlebih dahulu
             for (const topic of modul.topics) {
-                if (topic.materi?.subMateris.some(sub => sub._id === hashId)) {
+                if (topic.materi && topic.materi.subMateris && topic.materi.subMateris.some(sub => sub._id === hashId)) {
                     setOpenTopicId(topic._id);
                     setTimeout(() => {
                         document.getElementById(hashId)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
