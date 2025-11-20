@@ -4,6 +4,7 @@ import { GoogleOAuthProvider, GoogleLogin, CredentialResponse } from "@react-oau
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useState, FormEvent, useEffect } from "react";
+import validator from "validator";
 
 import { Eye, EyeOff } from "lucide-react";
 
@@ -89,6 +90,13 @@ export default function LoginPage() {
     setIsLoading(true);
     setError("");
 
+    // Validasi format email di sisi klien
+    if (!validator.isEmail(email)) {
+      setError("Format email yang Anda masukkan tidak valid.");
+      setIsLoading(false);
+      return;
+    }
+
     try {
       const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/users/login`, {
         method: "POST",
@@ -169,7 +177,7 @@ export default function LoginPage() {
                   onChange={(e) => setEmail(e.target.value)}
                   required
                   placeholder="Masukkan email Anda"
-                  className="w-full px-4 py-2 mt-1 rounded-xl bg-white border border-gray-300 dark:bg-gray-800 dark:border-gray-700 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
+                  className="w-full px-4 py-2 mt-1 rounded-xl bg-white border border-gray-300 dark:text-white dark:bg-gray-800 dark:border-gray-700 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
                 />
               </div>
 
@@ -184,7 +192,7 @@ export default function LoginPage() {
                     onChange={(e) => setPassword(e.target.value)}
                     required
                     placeholder="Masukkan password Anda"
-                    className="w-full px-4 py-2 mt-1 rounded-xl bg-white border border-gray-300 dark:bg-gray-800 dark:border-gray-700 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition pr-10"
+                    className="w-full px-4 py-2 mt-1 rounded-xl bg-white border border-gray-300 dark:text-white dark:bg-gray-800 dark:border-gray-700 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition pr-10"
                   />
                   <button
                     type="button"
