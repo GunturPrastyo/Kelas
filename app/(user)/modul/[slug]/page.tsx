@@ -1074,6 +1074,36 @@ export default function ModulDetailPage() {
                                 </div>
                                 {/* Accordion Content */}
                                 <div className={`transition-all duration-500 ease-in-out overflow-hidden ${isOpen && !isLocked ? 'max-h-[2000px]' : 'max-h-0'}`}>
+                                    {/* Daftar Isi Sub Topik */}
+                                    {isOpen && !isLocked && topik.materi && topik.materi.subMateris.length > 0 && (
+                                        <div className="pt-6 pb-2 px-6">
+                                            <div className="bg-slate-50 dark:bg-gray-900/50 border border-slate-200 dark:border-gray-700/50 rounded-xl p-5 shadow-sm">
+                                                <h4 className="text-lg font-bold text-gray-800 dark:text-gray-100 mb-5 flex items-center gap-2">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-blue-500"><line x1="8" y1="6" x2="21" y2="6"></line><line x1="8" y1="12" x2="21" y2="12"></line><line x1="8" y1="18" x2="21" y2="18"></line><line x1="3" y1="6" x2="3.01" y2="6"></line><line x1="3" y1="12" x2="3.01" y2="12"></line><line x1="3" y1="18" x2="3.01" y2="18"></line></svg>
+                                                    Daftar Isi Materi
+                                                </h4>
+                                                <ul className="relative">
+                                                    {topik.materi.subMateris.map((sub, subIndex, arr) => (
+                                                        <li key={sub._id} className="relative pl-10 pb-5 last:pb-0">
+                                                            {/* Garis vertikal */}
+                                                            {subIndex < arr.length - 1 && <div className="absolute left-[11px] top-4 h-full w-0.5 bg-slate-200 dark:bg-slate-700"></div>}
+                                                            
+                                                            {/* Lingkaran Nomor */}
+                                                            <div className="absolute left-0 top-0 flex h-6 w-6 items-center justify-center rounded-full bg-blue-500 text-white text-xs font-bold ring-4 ring-slate-50 dark:ring-gray-900/50">
+                                                                {subIndex + 1}
+                                                            </div>
+
+                                                            {/* Judul Sub Topik */}
+                                                            <a href={`#${sub._id}`} className="block text-sm font-medium text-slate-700 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors duration-200">
+                                                                {sub.title.replace(/^\d+[\.\)\-]\s*/, '')}
+                                                            </a>
+                                                        </li>
+                                                    ))}
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    )}
+
                                     <TopicContent topik={topik} onStartTest={startTest} onViewScore={viewScore} hasAttempted={topik.isCompleted || topik.hasAttempted} />
                                 </div>
                             </div>
