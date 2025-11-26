@@ -337,12 +337,12 @@ export default function ModulDetailPage() {
                 const progressRes = await authFetch(`${process.env.NEXT_PUBLIC_API_URL}/api/results/progress?testType=post-test-topik-progress&modulId=${modul?._id}&topikId=${topik._id}`);
                 if (progressRes.ok) {
                     const progressData = await progressRes.json();
-                    if (progressData && progressData.answers && Array.isArray(progressData.answers) && progressData.answers.length > 0) {
+                    if (progressData && Array.isArray(progressData.answers)) {
                         // Jika ada progress pengerjaan, muat progress tersebut
                         setTestAnswers(progressData.answers.reduce((acc: { [key: string]: string }, ans: { questionId: string, selectedOption: string }) => {
                             acc[ans.questionId] = ans.selectedOption;
                             return acc;
-                        }, {}) || {});
+                        }, {}));
                         setTestIdx(progressData.currentIndex || 0);
                         setAnswerChangesCount(progressData.answerChangesCount || 0);
                         setChangedQuestionIds(new Set(progressData.changedQuestionIds || [])); // Muat progress untuk Set
