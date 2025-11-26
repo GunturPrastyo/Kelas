@@ -63,11 +63,11 @@ export default function TopicContent({ topik, onStartTest, onViewScore, hasAttem
                 {subMateris.length > 0 ? (
                     subMateris.map((sub, index) => (
                         <div
-                            key={sub._id || index}
-                            id={sub._id} // ID unik untuk target scroll
-                            className="scroll-mt-24" // Margin atas saat scroll agar tidak tertutup header
+                        key={sub._id || index}
+                        id={sub._id} // ID unik untuk target scroll
+                        className="scroll-mt-24 bg-slate-50 dark:bg-gray-800/50 p-6 rounded-xl border border-slate-200 dark:border-gray-700/60 shadow-sm border-l-4 border-l-blue-500"
                         >
-                            <h4 className="font-bold text-lg !mb-2">{sub.title}</h4>
+                            <h4 className="font-bold text-lg !mb-2 text-gray-800 dark:text-gray-100">{sub.title}</h4>
                             <div dangerouslySetInnerHTML={{ __html: sub.content }} />
                         </div>
                     ))

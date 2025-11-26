@@ -4,7 +4,7 @@ import { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useUI } from '@/context/UIContext';
-import { Home, CheckCircle2, Activity, Lock, Rocket } from "lucide-react";
+import { Home, CheckCircle2, Activity, Lock, Rocket, Users, Clock } from "lucide-react";
 import { authFetch } from '@/lib/authFetch';
 import ModuleCardSkeleton from '@/components/ModuleCardSkeleton'; // Impor komponen skeleton
 
@@ -27,7 +27,12 @@ export interface Module {
     slug: string;
     status: ModuleStatus;
     isHighlighted?: boolean;
+    isLocked?: boolean; // Tambahkan properti isLocked
     order: number;
+    completedTopics?: number;
+    totalTopics?: number;
+    userCount?: number;
+    totalDuration?: number;
 }
 
 
@@ -121,42 +126,54 @@ export default function ModulPage() {
 
         const updatedModules = sortedModules.map(modul => {
             const mappedCategory = categoryMap[modul.category];
-            let status = modul.status; // Ambil status awal dari backend
-            let isHighlighted = false;
-            let isLocked = false; // Default: modul tidak terkunci
- 
-            // Logika penguncian modul
+            let isLocked = modul.isLocked ?? false; // Ambil status kunci dari backend sebagai dasar
+
+            // Terapkan logika penguncian di frontend berdasarkan userLevel
             if (userLevel === null) {
-                // Jika user belum mengambil pre-test, kunci semua modul.
-                isLocked = true;
-            } else {
-                // Jika user sudah punya level, terapkan logika penguncian berdasarkan level.
-                if (userLevel === 'lanjut') {
-                    isLocked = false; // Semua modul terbuka untuk level lanjut
-                } else if (userLevel === 'menengah') {
-                    // Kunci modul 'lanjut' untuk level menengah
-                    isLocked = mappedCategory === 'lanjut';
-                } else if (userLevel === 'dasar') {
-                    // Kunci modul 'menengah' dan 'lanjut' untuk level dasar
-                    isLocked = mappedCategory !== 'dasar';
-                }
+                isLocked = true; // Kunci semua jika belum pre-test
+            } else if (userLevel === 'dasar') {
+                isLocked = mappedCategory !== 'dasar';
+            } else if (userLevel === 'menengah') {
+                isLocked = mappedCategory === 'lanjut'; // Hanya kunci modul 'lanjut'
+            } else if (userLevel === 'lanjut') {
+                isLocked = false; // Buka semua modul
             }
 
+            // Tentukan status berdasarkan isLocked dan progress
+            let status: ModuleStatus = isLocked ? 'Terkunci' : modul.status;
+            let isHighlighted = false; // Deklarasikan isHighlighted
+ 
             // Timpa status menjadi 'Terkunci' jika kondisi isLocked terpenuhi
-            if (isLocked) {
+            if (isLocked) { // Pastikan status adalah 'Terkunci' jika isLocked true
                 status = 'Terkunci';
             }
  
-            // Sorot modul yang direkomendasikan dan belum dimulai
-            if (!isLocked && mappedCategory === userLevel && status === 'Belum Mulai') {
+            // Sorot modul yang direkomendasikan (belum dimulai) ATAU yang sedang berjalan
+            if (!isLocked && ((mappedCategory === userLevel && status === 'Belum Mulai') || status === 'Berjalan')) {
                 isHighlighted = true;
             }
- 
-            // Kembalikan modul dengan status dan isHighlighted yang sudah diperbarui.
-            return { ...modul, status, isHighlighted };
+            return { ...modul, status, isLocked, isHighlighted: false }; // Reset isHighlighted untuk diproses di langkah berikutnya
+        });
+        // Logika baru untuk menentukan modul yang akan di-highlight
+        let hasHighlighted = false;
+        const finalModules = updatedModules.map(modul => {
+            const mappedCategory = categoryMap[modul.category];
+            let shouldHighlight = false;
+
+            // Highlight modul pertama yang belum selesai pada level yang direkomendasikan
+            if (!hasHighlighted && !modul.isLocked && mappedCategory === userLevel && modul.status !== 'Selesai') {
+                shouldHighlight = true;
+                hasHighlighted = true;
+            }
+            // Juga highlight modul yang sedang berjalan, terlepas dari levelnya
+            if (modul.status === 'Berjalan') {
+                shouldHighlight = true;
+            }
+
+            return { ...modul, isHighlighted: shouldHighlight };
         });
  
-        return updatedModules.filter(m => {
+        return finalModules.filter(m => {
             const mappedCategory = categoryMap[m.category];
             // Hapus filter berdasarkan searchQuery
             return selectedCategory ? mappedCategory === selectedCategory : true;
@@ -181,6 +198,19 @@ export default function ModulPage() {
             </span>
         );
         return <span className={`${base} bg-yellow-100 text-yellow-700 dark:bg-amber-900/40 dark:text-amber-300`}><Rocket size={14} /> Mulai</span>;
+    };
+
+    const getCategoryBadge = (category: Category) => {
+        const base = "text-xs font-semibold px-2 py-0.5 rounded-md";
+        switch (category) {
+            case 'mudah':
+                return <span className={`${base} bg-amber-100 text-amber-800 dark:bg-amber-900/40 dark:text-amber-300`}>Dasar</span>;
+            case 'sedang':
+                return <span className={`${base} bg-blue-100 text-blue-800 dark:bg-blue-900/40 dark:text-blue-300`}>Menengah</span>;
+            case 'sulit':
+                return <span className={`${base} bg-green-100 text-green-800 dark:bg-green-900/40 dark:text-green-300`}>Lanjut</span>;
+            default: return null;
+        }
     };
 
     return (
@@ -266,11 +296,11 @@ export default function ModulPage() {
                         <div className="absolute top-5 left-0 z-10 w-12 h-12 flex items-center justify-center md:hidden">
                             <div className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm
                                 ${modul.status === 'Selesai' ? 'bg-green-500 text-white border-2 border-white dark:border-gray-800' :
-                                 modul.status === 'Berjalan' || modul.isHighlighted ? 'bg-blue-500 text-white border-2 border-white dark:border-gray-800' + (modul.isHighlighted ? ' ring-4 ring-blue-300 dark:ring-blue-500/50' : '') :
+                                 modul.status === 'Berjalan' || modul.isHighlighted ? 'bg-blue-500 text-white border-2 border-white dark:border-gray-800' + (modul.isHighlighted ? ' ring-4 ring-blue-300 dark:ring-blue-500/50' : '') : // Modul berjalan atau direkomendasikan
                                  modul.status === 'Terkunci' ? 'bg-gray-200 dark:bg-gray-700 border-2 border-white dark:border-gray-800 text-gray-400' :
                                  'bg-white dark:bg-gray-900 border-2 border-gray-300 dark:border-gray-600 text-gray-500'}
                             `}>
-                                {modul.status === 'Selesai' ? <CheckCircle2 size={16} /> : '•'}
+                                {modul.status === 'Selesai' ? <CheckCircle2 size={16} /> : modul.status === 'Terkunci' ? <Lock size={14}/> : (personalizedModules.indexOf(modul) + 1)}
                             </div>
                         </div>
                         <div className={`bg-white dark:bg-gray-800 rounded-xl shadow-md p-5 flex flex-col transition-all duration-300 ml-12 sm:ml-0 h-full ${modul.isHighlighted ? 'ring-2 ring-blue-500 shadow-blue-500/20' : 'hover:-translate-y-1 hover:shadow-lg'} ${modul.status === 'Terkunci' ? 'opacity-60 bg-gray-50 dark:bg-gray-800/50' : ''}`}>
@@ -287,6 +317,9 @@ export default function ModulPage() {
                                     <h3 className="font-semibold text-base text-gray-800 dark:text-gray-100">
                                         {modul.title}
                                     </h3>
+                                    <div className="mt-1.5">
+                                        {getCategoryBadge(modul.category)}
+                                    </div>
                                 </div>
                                 </div>
                                 {getStatusBadge(modul.status, modul.progress)}
@@ -294,12 +327,25 @@ export default function ModulPage() {
                             <p className="text-sm text-gray-600 dark:text-gray-400 mb-4 line-clamp-2 flex-grow">
                                 {modul.overview}
                             </p>
-                            {modul.progress > 0 && (
-                                <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-1.5 mb-4">
+                            {/* Info User & Waktu */}
+                            <div className="flex items-center gap-4 text-xs text-gray-500 dark:text-gray-400 mb-4">
+                                {(modul.userCount !== undefined && modul.userCount > 0) && (
+                                    <div className="flex items-center gap-1.5">
+                                        <Users size={14} />
+                                        <span>{modul.userCount} Pengguna</span>
+                                    </div>
+                                )}
+                                {modul.totalDuration && (
+                                    <div className="flex items-center gap-1.5"><Clock size={14} /> <span>Estimasi {modul.totalDuration} menit</span></div>
+                                )}
+                            </div>
+                            <div className="mb-4">
+                                <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-1.5">
                                     <div className="bg-blue-500 h-1.5 rounded-full" style={{ width: `${modul.progress}%` }} />
                                 </div>
-                            )}
-                            <Link href={modul.status !== 'Terkunci' ? `/modul/${modul.slug}` : '#'} passHref className={modul.status === 'Terkunci' ? 'pointer-events-none' : ''}>
+                                <p className="text-xs text-gray-500 dark:text-gray-400 mt-1.5">{modul.completedTopics || 0} dari {modul.totalTopics || 0} topik selesai</p>
+                            </div>
+                            <Link href={modul.status !== 'Terkunci' ? `/modul/${modul.slug}` : '#'} passHref className={`mt-auto ${modul.status === 'Terkunci' ? 'pointer-events-none' : ''}`}>
                                 <button
                                     disabled={modul.status === 'Terkunci'}
                                     className="mt-auto w-full py-2.5 px-4 rounded-lg bg-blue-600 text-white font-semibold hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed disabled:hover:bg-gray-400 dark:disabled:bg-gray-600 transition"

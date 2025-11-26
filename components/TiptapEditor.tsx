@@ -240,7 +240,7 @@ export default function TiptapEditor({
     editorProps: {
       attributes: {
         class:
-          "prose dark:prose-invert max-w-none min-h-[200px] px-4 py-3 mt-2 border border-gray-200 dark:border-gray-700 rounded-md focus:outline-none",
+          "prose dark:prose-invert max-w-none min-h-[200px] px-4 py-3 mt-2 border border-gray-200 dark:border-gray-700 rounded-md focus:outline-none [&_pre]:bg-gray-900",
       },
     },
     immediatelyRender: false,

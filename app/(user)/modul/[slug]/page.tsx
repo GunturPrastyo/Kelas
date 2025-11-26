@@ -6,9 +6,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 // 1. Import highlight.js dan tema CSS-nya
 import hljs from 'highlight.js';
-// Impor tema terang sebagai default
-import 'highlight.js/styles/stackoverflow-light.css';
-// Impor tema gelap, yang akan kita aktifkan hanya pada dark mode
+// Selalu gunakan tema gelap untuk konsistensi tampilan block code
 import 'highlight.js/styles/github-dark.css';
 import { authFetch } from '@/lib/authFetch'; // <-- Import helper baru
 import { useAlert } from '@/context/AlertContext';
@@ -337,12 +335,12 @@ export default function ModulDetailPage() {
                 const progressRes = await authFetch(`${process.env.NEXT_PUBLIC_API_URL}/api/results/progress?testType=post-test-topik-progress&modulId=${modul?._id}&topikId=${topik._id}`);
                 if (progressRes.ok) {
                     const progressData = await progressRes.json();
-                    if (progressData && Array.isArray(progressData.answers)) {
+                    if (progressData && progressData.answers && Array.isArray(progressData.answers) && progressData.answers.length > 0) {
                         // Jika ada progress pengerjaan, muat progress tersebut
                         setTestAnswers(progressData.answers.reduce((acc: { [key: string]: string }, ans: { questionId: string, selectedOption: string }) => {
                             acc[ans.questionId] = ans.selectedOption;
                             return acc;
-                        }, {}));
+                        }, {}) || {});
                         setTestIdx(progressData.currentIndex || 0);
                         setAnswerChangesCount(progressData.answerChangesCount || 0);
                         setChangedQuestionIds(new Set(progressData.changedQuestionIds || [])); // Muat progress untuk Set
@@ -997,6 +995,10 @@ export default function ModulDetailPage() {
                     scroll-behavior: smooth;
                 }
                 .prose pre { white-space: pre; overflow-x: auto; }
+                /* Paksa background gelap untuk block code di mode terang */
+                html:not(.dark) .prose pre {
+                    background-color: #0d1117; /* Warna dari github-dark.css */
+                }
             `}</style>
             {/* 
               Menambahkan style global untuk menangani font-size pada code block yang overflow.
@@ -1076,7 +1078,7 @@ export default function ModulDetailPage() {
                                 <div className={`transition-all duration-500 ease-in-out overflow-hidden ${isOpen && !isLocked ? 'max-h-[2000px]' : 'max-h-0'}`}>
                                     {/* Daftar Isi Sub Topik */}
                                     {isOpen && !isLocked && topik.materi && topik.materi.subMateris.length > 0 && (
-                                        <div className="pt-6 pb-2 px-6">
+                                        <div className="pt-2 pb-2 px-4">
                                             <div className="bg-slate-50 dark:bg-gray-900/50 border border-slate-200 dark:border-gray-700/50 rounded-xl p-5 shadow-sm">
                                                 <h4 className="text-lg font-bold text-gray-800 dark:text-gray-100 mb-5 flex items-center gap-2">
                                                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-blue-500"><line x1="8" y1="6" x2="21" y2="6"></line><line x1="8" y1="12" x2="21" y2="12"></line><line x1="8" y1="18" x2="21" y2="18"></line><line x1="3" y1="6" x2="3.01" y2="6"></line><line x1="3" y1="12" x2="3.01" y2="12"></line><line x1="3" y1="18" x2="3.01" y2="18"></line></svg>
@@ -1091,10 +1093,16 @@ export default function ModulDetailPage() {
                                                             {/* Lingkaran Nomor */}
                                                             <div className="absolute left-0 top-0 flex h-6 w-6 items-center justify-center rounded-full bg-blue-500 text-white text-xs font-bold ring-4 ring-slate-50 dark:ring-gray-900/50">
                                                                 {subIndex + 1}
-                                                            </div>
+                                                            </div> 
 
                                                             {/* Judul Sub Topik */}
-                                                            <a href={`#${sub._id}`} className="block text-sm font-medium text-slate-700 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors duration-200">
+                                                            <a 
+                                                                href={`#${sub._id}`} 
+                                                                onClick={(e) => {
+                                                                    e.preventDefault();
+                                                                    document.getElementById(sub._id)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                                                                }}
+                                                                className="block text-sm font-medium text-slate-700 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors duration-200">
                                                                 {sub.title.replace(/^\d+[\.\)\-]\s*/, '')}
                                                             </a>
                                                         </li>
