@@ -329,13 +329,13 @@ export default function ModulPage() {
                             </p>
                             {/* Info User & Waktu */}
                             <div className="flex items-center gap-4 text-xs text-gray-500 dark:text-gray-400 mb-4">
-                                {(modul.userCount !== undefined && modul.userCount > 0) && (
+                                {(modul.userCount !== undefined) && (
                                     <div className="flex items-center gap-1.5">
                                         <Users size={14} />
                                         <span>{modul.userCount} Pengguna</span>
                                     </div>
                                 )}
-                                {modul.totalDuration && (
+                                {modul.totalDuration !== undefined && (
                                     <div className="flex items-center gap-1.5"><Clock size={14} /> <span>Estimasi {modul.totalDuration} menit</span></div>
                                 )}
                             </div>
