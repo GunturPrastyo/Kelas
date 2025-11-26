@@ -1078,7 +1078,7 @@ export default function ModulDetailPage() {
                                 <div className={`transition-all duration-500 ease-in-out overflow-hidden ${isOpen && !isLocked ? 'max-h-[2000px]' : 'max-h-0'}`}>
                                     {/* Daftar Isi Sub Topik */}
                                     {isOpen && !isLocked && topik.materi && topik.materi.subMateris.length > 0 && (
-                                        <div className="pt-2 pb-2 px-4">
+                                        <div className="pt-2 pb-2 px-2">
                                             <div className="bg-slate-50 dark:bg-gray-900/50 border border-slate-200 dark:border-gray-700/50 rounded-xl p-5 shadow-sm">
                                                 <h4 className="text-lg font-bold text-gray-800 dark:text-gray-100 mb-5 flex items-center gap-2">
                                                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-blue-500"><line x1="8" y1="6" x2="21" y2="6"></line><line x1="8" y1="12" x2="21" y2="12"></line><line x1="8" y1="18" x2="21" y2="18"></line><line x1="3" y1="6" x2="3.01" y2="6"></line><line x1="3" y1="12" x2="3.01" y2="12"></line><line x1="3" y1="18" x2="3.01" y2="18"></line></svg>
