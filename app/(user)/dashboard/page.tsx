@@ -367,10 +367,10 @@ export default function DashboardPage() {
                 className="block p-2 border border-green-200 dark:border-gray-700 rounded-2xl bg-white dark:bg-gray-800 hover:bg-green-50/60 dark:hover:bg-gray-700 cursor-pointer transition-all group shadow-sm hover:shadow-md"
               >
                 <div className="flex items-start gap-2">
-                  <PlayCircle className="w-8 h-8 text-green-500/70 dark:text-green-500/70 group-hover:text-green-600 dark:group-hover:text-green-400 transition-colors flex-shrink-0 mt-1" />
+                  <PlayCircle className="w-8 h-8 text-green-600/70 dark:text-green-400/70 group-hover:text-green-600 dark:group-hover:text-green-400 transition-colors flex-shrink-0 mt-3" />
                   <div className="flex-1 min-w-0">
                     <h3 className="font-bold text-green-700 dark:text-green-400 group-hover:text-green-800 dark:group-hover:text-green-300 transition-colors">
-                      Mulai: {recommendation.continueToModule.moduleTitle}
+                      Mulai : {recommendation.continueToModule.moduleTitle}
                     </h3>
 
                     <p className="text-xs text-gray-600 dark:text-gray-400 leading-relaxed">
@@ -422,7 +422,7 @@ export default function DashboardPage() {
                 />
               </div>
               <h2 className="text-base sm:text-lg font-bold text-gray-900 dark:text-white">
-                Pre-Test Awal
+                Pre-Test 
               </h2>
             </div>
             <p className="text-gray-600 dark:text-gray-300 mb-3 text-xs sm:text-sm leading-relaxed">
@@ -473,7 +473,9 @@ export default function DashboardPage() {
                       <div className="bg-blue-600 rounded-full w-10 h-10 flex items-center justify-center">
                         <Image src="/book.png" width={256} height={256} className="w-full h-full object-contain p-1" alt="" />
                       </div>
-                      <p className="text-2xl font-bold text-blue-700 dark:text-blue-400">{animatedCompletedModules ?? 0}</p>
+                      <p className="text-2xl font-bold text-blue-700 dark:text-blue-400">
+                        {animatedCompletedModules ?? 0} <span className="text-xl text-gray-500 dark:text-gray-400">/ {modules.length}</span>
+                      </p>
                       <p className="text-sm text-gray-600 dark:text-gray-300">Modul Selesai</p>
                     </div>
                   </div>

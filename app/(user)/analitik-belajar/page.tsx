@@ -22,11 +22,6 @@ interface ModulProgress {
   progress: number;
 }
 
-interface ModuleScoreData {
-  moduleTitle: string;
-  score: number;
-}
-
 interface ComparisonData {
   labels: string[];
   userScores: number[];
@@ -34,6 +29,12 @@ interface ComparisonData {
   rank: number;
   totalParticipants: number;
   scoreDifference: number;
+}
+
+interface CompetencyMapData {
+  labels: string[];
+  userScores: number[];
+  classAverages: number[];
 }
 
 interface RecommendationData {
@@ -70,6 +71,7 @@ interface RecommendationData {
 
 interface WeakTopicData {
   topicTitle: string;
+  modulSlug: string; // Memastikan modulSlug ada di level atas
   score: number;
   weakSubTopics: {
     title: string;
@@ -145,15 +147,36 @@ const useCountUp = (end: number, duration: number = 1500, start: boolean = true)
   return count;
 };
 
+// Helper function untuk mendapatkan feedback berdasarkan skor kompetensi
+const getCompetencyFeedback = (score: number) => {
+  if (score >= 85) {
+    return {
+      level: "Sangat Baik",
+      color: "bg-gradient-to-r from-green-500 to-emerald-500",
+      textColor: "text-green-600 dark:text-green-400"
+    };
+  }
+  if (score >= 70) {
+    return {
+      level: "Baik",
+      color: "bg-gradient-to-r from-blue-500 to-indigo-500",
+      textColor: "text-blue-600 dark:text-blue-400"
+    };
+  }
+  return {
+    level: "Perlu Ditingkatkan",
+    color: "bg-gradient-to-r from-red-500 to-rose-500",
+    textColor: "text-red-600 dark:text-red-400"
+  };
+};
+
 export default function AnalitikBelajarPage() {
   const router = useRouter();
   const [summaryCardRef, isSummaryCardInView] = useInView({ threshold: 0.2, triggerOnce: true }) as [React.RefObject<HTMLHeadingElement>, boolean];
-  const [chartAktivitasRef, isChartAktivitasInView] = useInView({ threshold: 0.5, triggerOnce: true }) as [React.RefObject<HTMLCanvasElement>, boolean];
-  const [chartNilaiRef, isChartNilaiInView] = useInView({ threshold: 0.5, triggerOnce: true }) as [React.RefObject<HTMLCanvasElement>, boolean];
   const [chartPerbandinganRef, isChartPerbandinganInView] = useInView({ threshold: 0.5, triggerOnce: true }) as [React.RefObject<HTMLCanvasElement>, boolean];
   const [summary, setSummary] = useState<SummaryData | null>(null);
   const [weeklyActivity, setWeeklyActivity] = useState<number[]>([]);
-  const [moduleScores, setModuleScores] = useState<ModuleScoreData[]>([]);
+  const [competencyData, setCompetencyData] = useState<CompetencyMapData | null>(null);
   const [comparisonData, setComparisonData] = useState<ComparisonData | null>(null);
   const [recommendations, setRecommendations] = useState<RecommendationData | null>(null);
   const [weakTopics, setWeakTopics] = useState<WeakTopicData[]>([]);
@@ -161,6 +184,9 @@ export default function AnalitikBelajarPage() {
   const [weakTopicSearch, setWeakTopicSearch] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const ITEMS_PER_PAGE = 5;
+  
+  // Definisikan ref dan state inView untuk chart aktivitas di sini
+  const [chartAktivitasRef, isChartAktivitasInView] = useInView({ threshold: 0.5, triggerOnce: true }) as [React.RefObject<HTMLCanvasElement>, boolean];
 
   // --- 1️⃣ FETCH DATA SEKALI SAJA ---
   useEffect(() => {
@@ -168,26 +194,26 @@ export default function AnalitikBelajarPage() {
       try {
         setLoading(true);
 
-        const [progressRes, analyticsRes, weeklyActivityRes, moduleScoresRes, comparisonRes, recommendationsRes, weakTopicsRes] =
+        const [progressRes, analyticsRes, weeklyActivityRes, competencyMapRes, comparisonRes, recommendationsRes, weakTopicsRes] =
           await Promise.all([
             authFetch(`${process.env.NEXT_PUBLIC_API_URL}/api/modul/progress`),
             authFetch(`${process.env.NEXT_PUBLIC_API_URL}/api/results/analytics`),
             authFetch(`${process.env.NEXT_PUBLIC_API_URL}/api/results/weekly-activity`),
-            authFetch(`${process.env.NEXT_PUBLIC_API_URL}/api/results/module-scores`),
+            authFetch(`${process.env.NEXT_PUBLIC_API_URL}/api/results/competency-map`), // Mengganti module-scores dengan competency-map
             authFetch(`${process.env.NEXT_PUBLIC_API_URL}/api/results/comparison-analytics`),
             authFetch(`${process.env.NEXT_PUBLIC_API_URL}/api/results/recommendations`),
             authFetch(`${process.env.NEXT_PUBLIC_API_URL}/api/results/topics-to-reinforce`),
           ]);
         
         // Handle potential errors from individual fetches
-        if (!progressRes.ok || !analyticsRes.ok || !weeklyActivityRes.ok || !moduleScoresRes.ok || !comparisonRes.ok || !recommendationsRes.ok || !weakTopicsRes.ok) {
+        if (!progressRes.ok || !analyticsRes.ok || !weeklyActivityRes.ok || !competencyMapRes.ok || !comparisonRes.ok || !recommendationsRes.ok || !weakTopicsRes.ok) {
           throw new Error("Satu atau lebih permintaan data gagal.");
         }
 
         const progressData = await progressRes.json();
         const analyticsData = await analyticsRes.json();
         const weeklyActivityData = await weeklyActivityRes.json();
-        const moduleScoresData = await moduleScoresRes.json();
+        const competencyMapData = await competencyMapRes.json();
         const comparisonData = await comparisonRes.json();
         const recommendationsData = await recommendationsRes.json();
         const weakTopicsData = await weakTopicsRes.json();
@@ -200,19 +226,10 @@ export default function AnalitikBelajarPage() {
         const studyMinutes = Math.floor((totalSeconds % 3600) / 60);
         const dailyStreak = analyticsData.dailyStreak || 0;
 
-        // Konversi detik ke jam untuk data grafik, tapi simpan data asli untuk tooltip
-        // 1. Buat peta skor untuk pencarian cepat
-        const scoresMap = new Map(moduleScoresData.map((s: ModuleScoreData) => [s.moduleTitle, s.score]));        
         const comparisonUserScoresMap = new Map(comparisonData.labels.map((label: string, index: number) => [label, comparisonData.userScores[index]]));
         const comparisonClassAveragesMap = new Map(comparisonData.labels.map((label: string, index: number) => [label, comparisonData.classAverages[index]]));
         
-        // 2. Gunakan `progressData` sebagai sumber kebenaran untuk semua judul modul
-        const allModuleScores = progressData.map((modul: ModulProgress) => ({
-          moduleTitle: modul.title,
-          score: scoresMap.get(modul.title) || 0, // Beri nilai 0 jika tidak ada skor
-        }));
-
-        // 3. Buat ulang data perbandingan berdasarkan semua modul
+        // Buat ulang data perbandingan berdasarkan semua modul
         const allModuleTitles = progressData.map((modul: ModulProgress) => modul.title);
         const updatedComparisonData = {
           ...comparisonData,
@@ -223,10 +240,19 @@ export default function AnalitikBelajarPage() {
 
         const weeklySeconds = weeklyActivityData.weeklySeconds || Array(7).fill(0);
         setWeeklyActivity(weeklySeconds); // Simpan dalam detik, konversi akan dilakukan di chart options
-        setModuleScores(allModuleScores);
+        setCompetencyData(competencyMapData);
         setComparisonData(updatedComparisonData);
         setRecommendations(recommendationsData);
-        setWeakTopics(weakTopicsData.filter((t: WeakTopicData) => t.status !== "Sudah bagus"));
+
+        // Tambahkan modulSlug ke setiap topik yang lemah
+        const enrichedWeakTopics = weakTopicsData.map((topic: any) => {
+          const moduleForTopic = progressData.find((modul: any) => 
+            modul.topics.some((t: any) => t.title === topic.topicTitle)
+          );
+          return { ...topic, modulSlug: moduleForTopic?.slug };
+        }).filter((t: WeakTopicData) => t.status !== "Sudah bagus" && t.modulSlug);
+
+        setWeakTopics(enrichedWeakTopics);
 
         setSummary({
           completedModules,
@@ -324,43 +350,6 @@ export default function AnalitikBelajarPage() {
   }, [weeklyActivity, isChartAktivitasInView, chartAktivitasRef]); // ✅ hanya update kalau data & visibilitas terpenuhi
 
 
-  // --- 3️⃣ GRAFIK NILAI PER MODUL & PERBANDINGAN (tidak berubah dinamis) ---
-  useEffect(() => {
-    if (chartNilaiRef.current && moduleScores.length > 0 && isChartNilaiInView) { // chartNilaiRef.current sudah pasti HTMLCanvasElement
-      const chartNilaiInstance = new Chart(chartNilaiRef.current, {
-        type: "bar",
-        data: {
-          labels: moduleScores.map(m => m.moduleTitle),
-          datasets: [
-            {
-              data: moduleScores.map(m => m.score),
-              backgroundColor: [
-                "#3b82f6",
-                "#06b6d4",
-                "#f59e0b",
-                "#a855f7",
-                "#10b981",
-                "#d1d5db",
-              ],
-              borderRadius: 8,
-            },
-          ],
-        },
-        options: {
-          indexAxis: 'y', // <-- Ini membuat chart menjadi horizontal
-          plugins: { legend: { display: false } },
-          scales: {
-            // Sumbu X (horizontal) sekarang menjadi sumbu nilai
-            x: { beginAtZero: true, max: 100, ticks: { display: false } },
-            // Sumbu Y (vertikal) sekarang menjadi sumbu kategori/label
-            y: { ticks: { autoSkip: false } } // autoSkip: false memastikan semua label modul ditampilkan
-          },
-        },
-      });
-      return () => chartNilaiInstance.destroy();
-    }
-  }, [moduleScores, isChartNilaiInView, chartNilaiRef]);
-
   useEffect(() => {
     if (chartPerbandinganRef.current && comparisonData && isChartPerbandinganInView) { // chartPerbandinganRef.current sudah pasti HTMLCanvasElement
       // Tentukan label berdasarkan ukuran layar
@@ -437,6 +426,14 @@ export default function AnalitikBelajarPage() {
     currentPage * ITEMS_PER_PAGE
   );
 
+  const handleRowClick = (topic: WeakTopicData) => {
+    if (topic.weakSubTopics && topic.weakSubTopics.length > 0) {
+      const firstWeakSubTopic = topic.weakSubTopics[0];
+      // Menggunakan modulSlug dari level topik dan subMateriId dari sub-topik
+      router.push(`/modul/${topic.modulSlug}#${firstWeakSubTopic.subMateriId}`);
+    }
+  };
+
 
   return (
     <div className="space-y-10 mt-22">
@@ -485,7 +482,7 @@ export default function AnalitikBelajarPage() {
               ) : (
                 <>
                   <h2 className="text-3xl font-bold text-green-600 dark:text-green-400 mt-1">{animatedAverageScore}%</h2>
-                  <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">Dari semua post-test topik</p>
+                  <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">Dari semua tes setiap topik</p>
                 </>
               )}
             </div>
@@ -546,16 +543,87 @@ export default function AnalitikBelajarPage() {
           <canvas ref={chartAktivitasRef}></canvas>
         </div>
 
+        {/* PERBANDINGAN DENGAN KELAS */}
         <div className="bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-md">
-          <h3 className="font-semibold text-gray-700 dark:text-gray-200 mb-3 flex items-center gap-2">
-            <BarChartHorizontal className="w-5 h-5" />
-            Nilai per Modul
-          </h3>
-          <canvas ref={chartNilaiRef}></canvas>
+          <h2 className="font-semibold text-gray-700 dark:text-gray-200 flex items-center gap-2 mb-2">
+            <Users className="w-5 h-5" />
+            Perbandingan Kelas
+          </h2>
+          <div className="flex flex-col lg:flex-row gap-4 items-center">
+            <div className="lg:w-3/5 w-full flex justify-center">
+              <canvas ref={chartPerbandinganRef}></canvas>
+            </div>
+            <div className="lg:w-2/5 w-full space-y-3 text-gray-800 dark:text-gray-200">
+              {loading || !comparisonData ? (
+                <>
+                  <div className="h-16 w-full bg-gray-200 dark:bg-gray-700 rounded-lg animate-pulse"></div>
+                  <div className="h-16 w-full bg-gray-200 dark:bg-gray-700 rounded-lg animate-pulse"></div>
+                </>
+              ) : (
+                <>
+                  <div className="flex items-center gap-4 p-3 bg-blue-50 dark:bg-gray-700/50 rounded-lg border border-blue-100 dark:border-gray-700">
+                    <Award className="w-8 h-8 text-blue-500 flex-shrink-0" />
+                    <div>
+                      <p className="text-xs text-gray-600 dark:text-gray-400">Peringkat Kamu</p>
+                      <p className="font-bold text-base">
+                        {comparisonData.rank} <span className="text-xs font-normal">dari {comparisonData.totalParticipants} peserta</span>
+                      </p>
+                    </div>
+                  </div>
+                  <div className={`flex items-center gap-4 p-3 rounded-lg border ${comparisonData.scoreDifference > 0 ? 'bg-green-50 dark:bg-green-900/30 border-green-100 dark:border-green-800' : 'bg-yellow-50 dark:bg-yellow-900/30 border-yellow-100 dark:border-yellow-800'}`}>
+                    {comparisonData.scoreDifference > 0 ? (
+                      <TrendingUp className="w-8 h-8 text-green-500 flex-shrink-0" />
+                    ) : (
+                      <TrendingDown className="w-8 h-8 text-yellow-500 flex-shrink-0" />
+                    )}
+                    <div>
+                      <p className="text-xs text-gray-600 dark:text-gray-400">Performa Nilai</p>
+                      <p className="font-bold text-base">
+                        {comparisonData.scoreDifference > 0 ? `Lebih Tinggi ${comparisonData.scoreDifference}%` : comparisonData.scoreDifference < 0 ? `Lebih Rendah ${Math.abs(comparisonData.scoreDifference)}%` : 'Setara'}
+                      </p>
+                    </div>
+                  </div>
+                </>
+              )}
+            </div>
+          </div>
         </div>
       </section>
 
-      {/* TOPIK YANG PERLU DIPERKUAT */}
+      {/* PETA KOMPETENSI */}
+      <section className="bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-md">
+        <div className="bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-md">
+          <h3 className="font-semibold text-gray-700 dark:text-gray-200 mb-1 flex items-center gap-2">
+            <Target className="w-5 h-5 text-indigo-500" />
+            Peta Kompetensi Individu
+          </h3>
+          <p className="text-xs text-gray-500 dark:text-gray-400 mb-4">Visualisasi tingkat penguasaanmu pada setiap kompetensi inti yang diukur dari pre-test.</p>
+          
+          <div className="space-y-4">
+            {competencyData && competencyData.labels.map((label, index) => {
+              const score = Math.round(competencyData.userScores[index]);
+              const feedback = getCompetencyFeedback(score);
+              return (
+                <div key={index}>
+                  <div className="flex justify-between items-center mb-1">
+                    <span className="text-sm font-medium text-gray-700 dark:text-gray-300">{label}</span>
+                    <span className={`text-sm font-bold ${feedback.textColor}`}>{score}%</span>
+                  </div>
+                  <div className="h-2.5 w-full bg-gray-200 dark:bg-gray-700 rounded-full">
+                    <div 
+                      className={`h-full rounded-full transition-all duration-500 ease-out ${feedback.color}`}
+                      style={{ width: `${score}%` }}
+                    ></div>
+                  </div>
+                  <p className={`text-xs mt-1 font-medium ${feedback.textColor}`}>{feedback.level}</p>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      </section>
+
+      {/* TOPIK YANG PERLU DIPERKUAT (Tidak berubah) */}
       <section className="bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-md">
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 gap-3">
           <h3 className="font-semibold text-gray-700 dark:text-gray-200 flex items-center gap-2">
@@ -580,10 +648,11 @@ export default function AnalitikBelajarPage() {
           <table className="w-full text-left border-collapse">
             <thead className="bg-gray-100 dark:bg-gray-700 text-sm text-gray-600 dark:text-gray-400 whitespace-nowrap">
               <tr>
-                <th className="p-3 font-medium">Topik</th>
-                <th className="p-3 font-medium">Nilai Terakhir</th>
-                <th className="p-3 font-medium">Status</th>
+                <th className="p-3 font-medium rounded-l-lg">Topik</th>
+                <th className="p-3 font-medium text-center">Nilai Terakhir</th>
+                <th className="p-3 font-medium text-center">Status</th>
                 <th className="p-3 font-medium">Rekomendasi Perbaikan</th>
+                <th className="p-3 font-medium rounded-r-lg">Aksi</th>
               </tr>
             </thead>
             <tbody>
@@ -597,30 +666,39 @@ export default function AnalitikBelajarPage() {
                   </tr>
                 ))
               ) : paginatedWeakTopics.length > 0 ? (
-                paginatedWeakTopics.map((topic, index) => (
-                  <tr key={index} className="border-b dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700/50">
-                    <td className="p-3 font-medium text-gray-800 dark:text-gray-200">{topic.topicTitle}</td>
-                    <td className="p-3 text-gray-600 dark:text-gray-300">{topic.score}%</td>
-                    <td className="p-3">
+                paginatedWeakTopics.map((topic) => (
+                  <tr key={topic.topicTitle} className="border-b dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
+                    <td className="p-3 font-medium text-gray-800 dark:text-gray-200">{topic.topicTitle.replace(/^\d+\.?\s*/, '')}</td>
+                    <td className="p-3 text-gray-600 dark:text-gray-300 text-center">{topic.score}%</td>
+                    <td className="p-3 text-center">
                       {topic.status === "Perlu review" && <span className="bg-red-100 text-red-700 text-xs px-2 py-1 rounded-full">Perlu review</span>}
                       {topic.status === "Butuh latihan" && <span className="bg-yellow-100 text-yellow-700 text-xs px-2 py-1 rounded-full">Butuh latihan</span>}
                     </td>
                     <td className="p-3 text-sm text-gray-600 dark:text-gray-400">
                       {topic.weakSubTopics && topic.weakSubTopics.length > 0 ? (
-                        <ul className="list-disc list-inside">
+                        <ul className="list-disc list-inside space-y-1">
                           {topic.weakSubTopics.map((sub, subIndex) => (
-                            <li key={subIndex}>{sub.title}</li>
+                            <li key={subIndex}>{sub.title.replace(/^\d+\.?\s*/, '')}</li>
                           ))}
                         </ul>
                       ) : (
                         "-"
                       )}
                     </td>
+                    <td className="p-3 text-center">
+                      <button
+                        onClick={() => handleRowClick(topic)}
+                        className="px-3 py-1.5 bg-blue-500 text-white text-xs font-semibold rounded-lg hover:bg-blue-600 transition-colors shadow-sm hover:shadow-md disabled:opacity-50 disabled:cursor-not-allowed"
+                        disabled={!topic.weakSubTopics || topic.weakSubTopics.length === 0}
+                      >
+                        Pelajari Lagi
+                      </button>
+                    </td>
                   </tr>
                 ))
               ) : (
                 <tr className="border-b dark:border-gray-700">
-                  <td colSpan={4} className="p-4 text-center text-gray-500 dark:text-gray-400">
+                  <td colSpan={5} className="p-4 text-center text-gray-500 dark:text-gray-400">
                     {weakTopicSearch ? "Tidak ada topik yang cocok dengan pencarian." : "Kerja bagus! Tidak ada topik yang perlu diperkuat saat ini."}
                   </td>
                 </tr>
@@ -650,56 +728,6 @@ export default function AnalitikBelajarPage() {
             </button>
           </div>
         )}
-      </section>
-
-      {/* PERBANDINGAN DENGAN KELAS */}
-      <section className="bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-md">
-        <h2 className="font-semibold text-gray-700 dark:text-gray-200 flex items-center gap-2 -mb-5">
-          <Users className="w-5 h-5" />
-          Perbandingan dengan Rata-rata Kelas
-        </h2>
-        <div className="flex flex-col lg:flex-row gap-4 items-center mt-2">
-          <div className="lg:w-3/5 w-full flex justify-center">
-            <canvas ref={chartPerbandinganRef}></canvas>
-          </div>
-          <div className="lg:w-2/5 w-full space-y-4 text-gray-800 dark:text-gray-200">
-            {loading || !comparisonData ? (
-              <>
-                <div className="h-16 w-full bg-gray-200 dark:bg-gray-700 rounded-lg animate-pulse"></div>
-                <div className="h-16 w-full bg-gray-200 dark:bg-gray-700 rounded-lg animate-pulse"></div>
-                <div className="h-10 w-full bg-gray-200 dark:bg-gray-700 rounded-lg animate-pulse"></div>
-              </>
-            ) : (
-              <>
-                <div className="flex items-center gap-4 p-3 bg-blue-50 dark:bg-gray-700/50 rounded-lg border border-blue-100 dark:border-gray-700">
-                  <Award className="w-8 h-8 text-blue-500 flex-shrink-0" />
-                  <div>
-                    <p className="text-sm text-gray-600 dark:text-gray-400">Peringkat Kamu</p>
-                    <p className="font-bold text-lg">
-                      {comparisonData.rank} <span className="text-sm font-normal">dari {comparisonData.totalParticipants} peserta</span>
-                    </p>
-                  </div>
-                </div>
-                <div className={`flex items-center gap-4 p-3 rounded-lg border ${comparisonData.scoreDifference > 0 ? 'bg-green-50 dark:bg-green-900/30 border-green-100 dark:border-green-800' : 'bg-yellow-50 dark:bg-yellow-900/30 border-yellow-100 dark:border-yellow-800'}`}>
-                  {comparisonData.scoreDifference > 0 ? (
-                    <TrendingUp className="w-8 h-8 text-green-500 flex-shrink-0" />
-                  ) : (
-                    <TrendingDown className="w-8 h-8 text-yellow-500 flex-shrink-0" />
-                  )}
-                  <div>
-                    <p className="text-sm text-gray-600 dark:text-gray-400">Performa Nilai</p>
-                    <p className="font-bold text-lg">
-                      {comparisonData.scoreDifference > 0 ? `Lebih Tinggi ${comparisonData.scoreDifference}%` : comparisonData.scoreDifference < 0 ? `Lebih Rendah ${Math.abs(comparisonData.scoreDifference)}%` : 'Setara'}
-                    </p>
-                  </div>
-                </div>
-                <p className="text-sm text-center md:text-left text-gray-600 dark:text-gray-400 pt-2">
-                  {comparisonData.scoreDifference > 0 ? 'Kerja bagus, terus pertahankan performa belajarmu!' : '💡 Terus tingkatkan pemahamanmu di setiap modul untuk hasil yang lebih baik.'}
-                </p>
-              </>
-            )}
-          </div>
-        </div>
       </section>
 
       {/* REKOMENDASI */}
