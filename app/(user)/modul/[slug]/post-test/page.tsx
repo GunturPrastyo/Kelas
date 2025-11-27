@@ -444,7 +444,7 @@ export default function PostTestPage() {
 
                                         <div className="flex items-center gap-2 mb-2 sm:mb-0">
                                             <Star className="w-4 h-4 text-yellow-600" />
-                                            <span>{topik.title}</span>
+                                            <span>{topik.title.replace(/^\d+\.?\s*/, '')}</span>
                                         </div>
 
                                         <div className="flex items-center gap-3">

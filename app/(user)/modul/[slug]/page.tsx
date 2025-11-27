@@ -138,17 +138,7 @@ export default function ModulDetailPage() {
     }, []);
 
     // [DEBUG] Menambahkan console.log untuk memeriksa status autentikasi di sisi client
-    useEffect(() => {
-        const userInStorage = localStorage.getItem('user');
-        if (userInStorage) {
-            console.log("[Auth Check] User data ditemukan di localStorage:", JSON.parse(userInStorage));
-            console.log("[Auth Check] Request ke API akan dikirim dengan 'credentials: include'. Browser seharusnya menyertakan cookie token.");
-        } else {
-            console.warn("[Auth Check] User data TIDAK ditemukan di localStorage. Pengguna mungkin belum login atau data sudah dihapus.");
-            // Anda bisa menambahkan logika redirect ke halaman login di sini jika perlu
-            // window.location.href = '/login';
-        }
-    }, []);
+
 
     const fetchModulData = useCallback(async () => {
         if (!user || typeof slug !== 'string') return;
