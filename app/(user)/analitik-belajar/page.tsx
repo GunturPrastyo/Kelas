@@ -597,7 +597,7 @@ export default function AnalitikBelajarPage() {
             <Target className="w-5 h-5 text-indigo-500" />
             Peta Kompetensi Individu
           </h3>
-          <p className="text-xs text-gray-500 dark:text-gray-400 mb-4">Visualisasi tingkat penguasaanmu pada setiap kompetensi inti yang diukur dari pre-test.</p>
+          <p className="text-xs text-gray-500 dark:text-gray-400 mb-4">Visualisasi tingkat penguasaanmu pada setiap kompetensi inti yang diukur dari setiap tes yang dikerjakan.</p>
           
           <div className="space-y-4">
             {competencyData && competencyData.labels.map((label, index) => {
