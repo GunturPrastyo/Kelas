@@ -148,30 +148,29 @@ export default function ModulPage() {
                 status = 'Terkunci';
             }
  
-            // Sorot modul yang direkomendasikan (belum dimulai) ATAU yang sedang berjalan
-            if (!isLocked && ((mappedCategory === userLevel && status === 'Belum Mulai') || status === 'Berjalan')) {
-                isHighlighted = true;
-            }
-            return { ...modul, status, isLocked, isHighlighted: false }; // Reset isHighlighted untuk diproses di langkah berikutnya
+            return { ...modul, status, isLocked };
         });
-        // Logika baru untuk menentukan modul yang akan di-highlight
-        let hasHighlighted = false;
-        const finalModules = updatedModules.map(modul => {
-            const mappedCategory = categoryMap[modul.category];
-            let shouldHighlight = false;
 
-            // Highlight modul pertama yang belum selesai pada level yang direkomendasikan
-            if (!hasHighlighted && !modul.isLocked && mappedCategory === userLevel && modul.status !== 'Selesai') {
-                shouldHighlight = true;
-                hasHighlighted = true;
-            }
-            // Juga highlight modul yang sedang berjalan, terlepas dari levelnya
-            if (modul.status === 'Berjalan') {
-                shouldHighlight = true;
-            }
+        // Logika baru untuk menyorot HANYA SATU modul berikutnya
+        let nextModuleToHighlightId: string | null = null;
 
-            return { ...modul, isHighlighted: shouldHighlight };
-        });
+        // Prioritas 1: Cari modul pertama yang sedang berjalan (progress > 0 dan < 100)
+        const firstInProgressModule = updatedModules.find(m => m.status === 'Berjalan');
+        if (firstInProgressModule) {
+            nextModuleToHighlightId = firstInProgressModule._id;
+        } else {
+            // Prioritas 2: Jika tidak ada yang berjalan, cari modul pertama yang belum dimulai dan tidak terkunci
+            const firstReadyModule = updatedModules.find(m => m.status === 'Belum Mulai' && !m.isLocked);
+            if (firstReadyModule) {
+                nextModuleToHighlightId = firstReadyModule._id;
+            }
+        }
+
+        // Terapkan highlight ke modul yang dipilih
+        const finalModules = updatedModules.map(modul => ({
+            ...modul,
+            isHighlighted: modul._id === nextModuleToHighlightId,
+        }));
  
         return finalModules.filter(m => {
             const mappedCategory = categoryMap[m.category];
