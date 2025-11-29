@@ -1,7 +1,8 @@
 "use client"
 
 import Link from "next/link"
-import Image from "next/image";
+import Image from "next/image"
+import { useEffect } from "react"
 import { usePathname, useRouter } from 'next/navigation';
 import { useUI } from "@/context/UIContext"
 import { LogOut } from "lucide-react";
@@ -19,6 +20,14 @@ export default function Sidebar() {
   const { isSidebarCollapsed, isMobileDrawerOpen, toggleMobileDrawer, toggleSidebar } = useUI();
   const pathname = usePathname();
   const router = useRouter();
+
+  useEffect(() => {
+    // Set sidebar to collapsed on initial desktop load
+    if (window.innerWidth >= 768 && !isSidebarCollapsed) {
+      // We call toggleSidebar only if it's not already collapsed
+      toggleSidebar();
+    }
+  }, []); // Empty dependency array ensures this runs only once on mount
 
   const isActive = (href: string) => {
     if (href === "/dashboard") return pathname === href;

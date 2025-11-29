@@ -291,7 +291,7 @@ export default function PostTestPage() {
     if (result) {
         const isPassed = result.score >= 70;
         return (
-            <div className="max-w-full mx-auto px-1.5 sm:px-3 lg:px-5 py-2 font-sans">
+            <div className="mt-20 max-w-full mx-auto px-1.5 sm:px-3 lg:px-5 py-2 font-sans">
                 <nav className="flex mb-6" aria-label="Breadcrumb">
                     <ol className="inline-flex items-center md:space-x-2 rtl:space-x-reverse text-slate-700 dark:text-slate-300">
                         <li className="inline-flex items-center">
