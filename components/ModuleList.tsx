@@ -123,7 +123,7 @@ export default function ModuleList({ title, allModules, filter }: ModuleListProp
       <div
         ref={scrollRef}
         onMouseDown={handleMouseDown}
-        className="flex gap-7 overflow-x-auto scroll-smooth pb-4 scrollbar-hidden snap-x snap-mandatory cursor-grab active:cursor-grabbing select-none px-1"
+        className="grid grid-flow-col auto-cols-[240px] sm:auto-cols-[260px] gap-7 overflow-x-auto scroll-smooth pb-4 scrollbar-hidden snap-x snap-mandatory cursor-grab active:cursor-grabbing select-none px-1"
       >
         {modules.map((modul) => (
           <Link
@@ -131,7 +131,7 @@ export default function ModuleList({ title, allModules, filter }: ModuleListProp
             href={modul.status !== "Terkunci" ? `/modul/${modul.slug}` : "#"}
             onClick={(e) => modul.status === "Terkunci" && e.preventDefault()}
             className={`
-          relative min-w-[240px] sm:min-w-[260px] p-6 rounded-3xl flex flex-col items-start 
+          relative p-6 rounded-3xl flex flex-col items-start 
           bg-white/80 dark:bg-gray-900/60 
           border border-gray-200/50 dark:border-gray-700/60 
           backdrop-blur-lg shadow-md 

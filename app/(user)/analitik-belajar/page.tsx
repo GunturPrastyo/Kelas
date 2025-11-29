@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import Image from "next/image"; 
+import Image from "next/image";
 import { authFetch } from "@/lib/authFetch";
 import { useRouter } from "next/navigation";
 import { Award, TrendingUp, TrendingDown, LayoutDashboard, Activity, BarChartHorizontal, AlertTriangle, Users, Target, Play } from "lucide-react";
@@ -20,6 +20,7 @@ interface SummaryData {
 interface ModulProgress {
   title: string;
   progress: number;
+  isLocked: boolean;
 }
 
 interface ComparisonData {
@@ -31,10 +32,16 @@ interface ComparisonData {
   scoreDifference: number;
 }
 
-interface CompetencyMapData {
-  labels: string[];
-  userScores: number[];
-  classAverages: number[];
+interface CompetencyFeature {
+  name: string;
+  score: number;
+}
+interface CompetencyMapDataByModule {
+  moduleTitle: string;
+  moduleSlug: string;
+  moduleIcon?: string;
+  isLocked: boolean;
+  features: CompetencyFeature[];
 }
 
 interface RecommendationData {
@@ -176,15 +183,17 @@ export default function AnalitikBelajarPage() {
   const [chartPerbandinganRef, isChartPerbandinganInView] = useInView({ threshold: 0.5, triggerOnce: true }) as [React.RefObject<HTMLCanvasElement>, boolean];
   const [summary, setSummary] = useState<SummaryData | null>(null);
   const [weeklyActivity, setWeeklyActivity] = useState<number[]>([]);
-  const [competencyData, setCompetencyData] = useState<CompetencyMapData | null>(null);
+  const [classWeeklyActivity, setClassWeeklyActivity] = useState<number[]>([]);  
+  const [competencyData, setCompetencyData] = useState<CompetencyMapDataByModule[]>([]);
   const [comparisonData, setComparisonData] = useState<ComparisonData | null>(null);
   const [recommendations, setRecommendations] = useState<RecommendationData | null>(null);
   const [weakTopics, setWeakTopics] = useState<WeakTopicData[]>([]);
   const [loading, setLoading] = useState(true);
   const [weakTopicSearch, setWeakTopicSearch] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
+  const [competencyCurrentPage, setCompetencyCurrentPage] = useState(1);
   const ITEMS_PER_PAGE = 5;
-  
+
   // Definisikan ref dan state inView untuk chart aktivitas di sini
   const [chartAktivitasRef, isChartAktivitasInView] = useInView({ threshold: 0.5, triggerOnce: true }) as [React.RefObject<HTMLCanvasElement>, boolean];
 
@@ -194,30 +203,32 @@ export default function AnalitikBelajarPage() {
       try {
         setLoading(true);
 
-        const [progressRes, analyticsRes, weeklyActivityRes, competencyMapRes, comparisonRes, recommendationsRes, weakTopicsRes] =
+        const [progressRes, analyticsRes, weeklyActivityRes, classWeeklyActivityRes, competencyMapRes, comparisonRes, recommendationsRes, weakTopicsRes] =
           await Promise.all([
             authFetch(`${process.env.NEXT_PUBLIC_API_URL}/api/modul/progress`),
             authFetch(`${process.env.NEXT_PUBLIC_API_URL}/api/results/analytics`),
             authFetch(`${process.env.NEXT_PUBLIC_API_URL}/api/results/weekly-activity`),
+            authFetch(`${process.env.NEXT_PUBLIC_API_URL}/api/results/class-weekly-activity`),
             authFetch(`${process.env.NEXT_PUBLIC_API_URL}/api/results/competency-map`), // Mengganti module-scores dengan competency-map
             authFetch(`${process.env.NEXT_PUBLIC_API_URL}/api/results/comparison-analytics`),
             authFetch(`${process.env.NEXT_PUBLIC_API_URL}/api/results/recommendations`),
             authFetch(`${process.env.NEXT_PUBLIC_API_URL}/api/results/topics-to-reinforce`),
           ]);
-        
+
         // Handle potential errors from individual fetches
-        if (!progressRes.ok || !analyticsRes.ok || !weeklyActivityRes.ok || !competencyMapRes.ok || !comparisonRes.ok || !recommendationsRes.ok || !weakTopicsRes.ok) {
+        if (!progressRes.ok || !analyticsRes.ok || !weeklyActivityRes.ok || !classWeeklyActivityRes.ok || !competencyMapRes.ok || !comparisonRes.ok || !recommendationsRes.ok || !weakTopicsRes.ok) {
           throw new Error("Satu atau lebih permintaan data gagal.");
         }
 
         const progressData = await progressRes.json();
         const analyticsData = await analyticsRes.json();
         const weeklyActivityData = await weeklyActivityRes.json();
+        const classWeeklyActivityData = await classWeeklyActivityRes.json();
         const competencyMapData = await competencyMapRes.json();
         const comparisonData = await comparisonRes.json();
-        const recommendationsData = await recommendationsRes.json();
+        const recommendationsData: RecommendationData = await recommendationsRes.json();
         const weakTopicsData = await weakTopicsRes.json();
-        
+
         const completedModules = progressData.filter((m: ModulProgress) => m.progress === 100).length;
         const totalModules = progressData.length;
         const averageScore = analyticsData.averageScore || 0;
@@ -228,7 +239,7 @@ export default function AnalitikBelajarPage() {
 
         const comparisonUserScoresMap = new Map(comparisonData.labels.map((label: string, index: number) => [label, comparisonData.userScores[index]]));
         const comparisonClassAveragesMap = new Map(comparisonData.labels.map((label: string, index: number) => [label, comparisonData.classAverages[index]]));
-        
+
         // Buat ulang data perbandingan berdasarkan semua modul
         const allModuleTitles = progressData.map((modul: ModulProgress) => modul.title);
         const updatedComparisonData = {
@@ -236,19 +247,27 @@ export default function AnalitikBelajarPage() {
           labels: allModuleTitles,
           userScores: allModuleTitles.map((title: string) => comparisonUserScoresMap.get(title) || 0),
           classAverages: allModuleTitles.map((title: string) => comparisonClassAveragesMap.get(title) || 0),
-        };        
+        };
 
         const weeklySeconds = weeklyActivityData.weeklySeconds || Array(7).fill(0);
         setWeeklyActivity(weeklySeconds); // Simpan dalam detik, konversi akan dilakukan di chart options
-        setCompetencyData(competencyMapData);
+        setClassWeeklyActivity(classWeeklyActivityData.weeklyAverages || Array(7).fill(0));
+
+        // Gabungkan data kompetensi dengan status 'isLocked' dari progressData
+        const mergedCompetencyData = competencyMapData.map((compModul: CompetencyMapDataByModule) => {
+          const progressModul = progressData.find((progModul: ModulProgress) => progModul.title === compModul.moduleTitle);
+          return { ...compModul, isLocked: progressModul?.isLocked ?? true }; // Default ke true jika tidak ditemukan
+        });
+
+        setCompetencyData(mergedCompetencyData);
         setComparisonData(updatedComparisonData);
         setRecommendations(recommendationsData);
 
         // Tambahkan modulSlug ke setiap topik yang lemah
         const enrichedWeakTopics = weakTopicsData.map((topic: any) => {
-          const moduleForTopic = progressData.find((modul: any) => 
+          const moduleForTopic = progressData.find((modul: any) =>
             modul.topics.some((t: any) => t.title === topic.topicTitle)
-          );
+          ); 
           return { ...topic, modulSlug: moduleForTopic?.slug };
         }).filter((t: WeakTopicData) => t.status !== "Sudah bagus" && t.modulSlug);
 
@@ -293,12 +312,22 @@ export default function AnalitikBelajarPage() {
         datasets: [
           {
             label: "Jam Belajar",
+            data: classWeeklyActivity,
+            borderColor: "rgb(156, 163, 175)",
+            backgroundColor: "rgba(156, 163, 175, 0.1)",
+            fill: true,
+            tension: 0.4,
+            pointRadius: 0,
+          },
+          {
+            label: "Aktivitas Kamu",
             data: weeklyActivity,
             borderColor: "#2563eb",
             backgroundColor: "rgba(37,99,235,0.15)",
             fill: true,
             tension: 0.4,
             pointRadius: 5,
+            pointHoverRadius: 7,
             pointBackgroundColor: "#2563eb",
           },
         ],
@@ -307,15 +336,21 @@ export default function AnalitikBelajarPage() {
         plugins: {
           legend: { display: false },
           tooltip: {
+            mode: 'index',
+            intersect: false,
+            position: 'nearest',
+            padding: 12,
+            boxPadding: 4,
+            titleFont: { weight: 'bold' },
             callbacks: {
               label: function (context) {
                 let label = context.dataset.label || '';
                 if (label) {
                   label += ': ';
-                } 
+                }
                 if (context.parsed.y !== null) {
                   const totalSeconds = context.raw as number; // Gunakan data mentah (dalam detik)
-                  const hours = Math.floor(totalSeconds / 3600); 
+                  const hours = Math.floor(totalSeconds / 3600);
                   const minutes = Math.floor((totalSeconds % 3600) / 60);
                   label += `${hours > 0 ? hours + ' jam ' : ''}${minutes} menit`;
                 }
@@ -327,9 +362,9 @@ export default function AnalitikBelajarPage() {
         scales: {
           y: {
             beginAtZero: true,
-            ticks: { 
+            ticks: {
               display: true, // Tampilkan ticks untuk referensi
-              callback: function(value) {
+              callback: function (value) {
                 const totalSeconds = value as number;
                 if (totalSeconds === 0) return '0 mnt';
                 if (totalSeconds < 3600) {
@@ -347,7 +382,7 @@ export default function AnalitikBelajarPage() {
     });
 
     return () => chartAktivitasInstance.destroy();
-  }, [weeklyActivity, isChartAktivitasInView, chartAktivitasRef]); // ✅ hanya update kalau data & visibilitas terpenuhi
+  }, [weeklyActivity, classWeeklyActivity, isChartAktivitasInView, chartAktivitasRef]); // ✅ hanya update kalau data & visibilitas terpenuhi
 
 
   useEffect(() => {
@@ -397,7 +432,7 @@ export default function AnalitikBelajarPage() {
                 padding: 15,      // Mengurangi jarak antara legenda dan grafik
               }
             }
-        },
+          },
           scales: {
             r: { beginAtZero: true, max: 100, ticks: { display: false } },
           },
@@ -409,7 +444,7 @@ export default function AnalitikBelajarPage() {
 
   // --- Gunakan hook animasi untuk ringkasan ---
   const animatedCompletedModules = useCountUp(summary?.completedModules || 0, 1500, isSummaryCardInView);
-  const animatedTotalModules = useCountUp(summary?.totalModules || 0, 1500, isSummaryCardInView);  
+  const animatedTotalModules = useCountUp(summary?.totalModules || 0, 1500, isSummaryCardInView);
   const averageScoreForAnimation = parseFloat((summary?.averageScore || 0).toFixed(2));
   const animatedAverageScore = useCountUp(averageScoreForAnimation, 1500, isSummaryCardInView);
   const animatedStudyHours = useCountUp(summary?.studyHours || 0, 1500, isSummaryCardInView);
@@ -434,7 +469,58 @@ export default function AnalitikBelajarPage() {
     }
   };
 
+  // --- Logic for Weekly Activity Feedback ---
+  const userTotalWeekly = weeklyActivity.reduce((acc, curr) => acc + curr, 0);
+  const classTotalWeekly = classWeeklyActivity.reduce((acc, curr) => acc + curr, 0);
+  const weeklyDifference = userTotalWeekly - classTotalWeekly;
 
+  const getWeeklyFeedback = () => {
+    if (userTotalWeekly === 0 && classTotalWeekly > 0) {
+      return {
+        text: "Kamu belum ada aktivitas minggu ini. Ayo mulai belajar!",
+        icon: <TrendingDown className="w-5 h-5 text-red-500" />,
+        color: "text-red-600 dark:text-red-400",
+        bgColor: "bg-red-50 dark:bg-red-900/20",
+        borderColor: "border-red-100 dark:border-red-800/50"
+      };
+    }
+    if (weeklyDifference > 3600) { // Lebih dari 1 jam di atas rata-rata
+      return {
+        text: "Luar biasa! Aktivitas belajarmu jauh di atas rata-rata. Pertahankan!",
+        icon: <TrendingUp className="w-5 h-5 text-green-500" />,
+        color: "text-green-600 dark:text-green-400",
+        bgColor: "bg-green-50 dark:bg-green-900/20",
+        borderColor: "border-green-100 dark:border-green-800/50"
+      };
+    }
+    if (weeklyDifference > 0) {
+      return {
+        text: "Bagus! Aktivitas belajarmu sudah di atas rata-rata kelas.",
+        icon: <TrendingUp className="w-5 h-5 text-blue-500" />,
+        color: "text-blue-600 dark:text-blue-400",
+        bgColor: "bg-blue-50 dark:bg-blue-900/20",
+        borderColor: "border-blue-100 dark:border-blue-800/50"
+      };
+    }
+    return {
+      text: "Ayo tingkatkan lagi! Aktivitas belajarmu masih di bawah rata-rata.",
+      icon: <AlertTriangle className="w-5 h-5 text-yellow-500" />,
+      color: "text-yellow-600 dark:text-yellow-400",
+      bgColor: "bg-yellow-50 dark:bg-yellow-900/20",
+      borderColor: "border-yellow-100 dark:border-yellow-800/50"
+    };
+  };
+
+  // --- Logic for Competency Map Pagination ---
+  const [itemsPerPage, setItemsPerPage] = useState(6);
+  useEffect(() => {
+    const updateItemsPerPage = () => {
+      setItemsPerPage(window.innerWidth < 768 ? 3 : 6);
+    };
+    updateItemsPerPage();
+    window.addEventListener('resize', updateItemsPerPage);
+    return () => window.removeEventListener('resize', updateItemsPerPage);
+  }, []);
   return (
     <div className="space-y-10 mt-22">
       {/* RINGKASAN */}
@@ -443,112 +529,232 @@ export default function AnalitikBelajarPage() {
           <LayoutDashboard className="w-6 h-6" />
           Ringkasan Kemajuan
         </h2>
-        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5" >
+        <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-5" >
           {/* Card 1 */}
-          <div className="flex items-center gap-4 bg-gradient-to-br from-blue-50 to-blue-100 dark:from-gray-800 dark:to-gray-900 text-gray-800 dark:text-gray-100 rounded-2xl p-5 shadow-md hover:scale-[1.02] transition-transform dark:shadow-lg dark:shadow-gray-800/40">
-            <div className="flex-shrink-0">
-              <Image
-                src="/modules2.png"
-                alt="Modul Icon"
-                width={256}
-                height={256}
-                className="w-18 h-auto rounded-xl bg-blue-100 dark:bg-gray-700 p-2"
-              />
-            </div>
-            <div>
-              <p className="text-sm text-gray-600 dark:text-gray-400">Modul Selesai</p>
+          <div className="flex flex-col gap-2 bg-gradient-to-br from-blue-50 to-blue-100 dark:from-gray-800 dark:to-gray-900 text-gray-800 dark:text-gray-100 rounded-2xl p-4 shadow-md hover:scale-[1.02] transition-transform dark:shadow-lg dark:shadow-gray-800/40">
+            <p className="text-sm text-gray-600 dark:text-gray-400">Modul Selesai</p>
+            <div className="flex items-center gap-3">
+              <div className="flex-shrink-0">
+                <Image src="/modules2.png" alt="Modul Icon" width={48} height={48} className="w-12 h-12 rounded-lg bg-blue-100 dark:bg-gray-700 p-1" />
+              </div>
               {loading || !summary ? (
-                <div className="h-12 w-32 bg-blue-100/50 dark:bg-gray-700/50 rounded-md animate-pulse mt-1"></div>
+                <div className="h-8 w-24 bg-blue-100/50 dark:bg-gray-700/50 rounded-md animate-pulse"></div>
               ) : (
-                <>
-                  <h2 className="text-3xl font-bold text-blue-600 dark:text-blue-400 mt-1">{animatedCompletedModules} / {animatedTotalModules}</h2>
-                  <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-                    Kamu telah menyelesaikan {summary.totalModules > 0 ? Math.round((summary.completedModules / summary.totalModules) * 100) : 0}%
-                  </p>
-                </>
+                <h2 className="text-3xl font-bold text-blue-600 dark:text-blue-400">{animatedCompletedModules} / {animatedTotalModules}</h2>
               )}
             </div>
+            {loading || !summary ? (
+              <div className="h-4 w-full bg-blue-100/50 dark:bg-gray-700/50 rounded-md animate-pulse"></div>
+            ) : (
+              <p className="text-xs text-gray-500 dark:text-gray-400">
+                Kamu telah menyelesaikan {summary.totalModules > 0 ? Math.round((summary.completedModules / summary.totalModules) * 100) : 0}%
+              </p>
+            )}
           </div>
 
           {/* Card 2 */}
-          <div className="flex items-center gap-4 bg-gradient-to-br from-green-50 to-green-100 dark:from-gray-800 dark:to-gray-900 text-gray-800 dark:text-gray-100 rounded-2xl p-5 shadow-md hover:scale-[1.02] transition-transform dark:shadow-lg dark:shadow-gray-800/40">
-            <div className="flex-shrink-0">
-              <Image src="/star.png" alt="Score Icon" width={256} height={256} className="w-18 h-auto rounded-xl bg-green-100 dark:bg-gray-700 p-2" />
-            </div>
-            <div>
-              <p className="text-sm text-gray-600 dark:text-gray-400">Rata-rata Nilai</p>
+          <div className="flex flex-col gap-2 bg-gradient-to-br from-green-50 to-green-100 dark:from-gray-800 dark:to-gray-900 text-gray-800 dark:text-gray-100 rounded-2xl p-4 shadow-md hover:scale-[1.02] transition-transform dark:shadow-lg dark:shadow-gray-800/40">
+            <p className="text-sm text-gray-600 dark:text-gray-400">Rata-rata Nilai</p>
+            <div className="flex items-center gap-3">
+              <div className="flex-shrink-0">
+                <Image src="/star.png" alt="Score Icon" width={48} height={48} className="w-12 h-12 rounded-lg bg-green-100 dark:bg-gray-700 p-1" />
+              </div>
               {loading || !summary ? (
-                <div className="h-12 w-24 bg-green-100/50 dark:bg-gray-700/50 rounded-md animate-pulse mt-1"></div>
+                <div className="h-8 w-20 bg-green-100/50 dark:bg-gray-700/50 rounded-md animate-pulse"></div>
               ) : (
-                <>
-                  <h2 className="text-3xl font-bold text-green-600 dark:text-green-400 mt-1">{animatedAverageScore}%</h2>
-                  <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">Dari semua tes setiap topik</p>
-                </>
+                <h2 className="text-3xl font-bold text-green-600 dark:text-green-400">{animatedAverageScore}%</h2>
               )}
             </div>
+            {loading || !summary ? (
+              <div className="h-4 w-full bg-green-100/50 dark:bg-gray-700/50 rounded-md animate-pulse"></div>
+            ) : (
+              <p className="text-xs text-gray-500 dark:text-gray-400">Dari semua tes setiap topik</p>
+            )}
           </div>
 
           {/* Card 3 */}
-          <div className="flex items-center gap-4 bg-gradient-to-br from-purple-50 to-purple-100 dark:from-gray-800 dark:to-gray-900 text-gray-800 dark:text-gray-100 rounded-2xl p-5 shadow-md hover:scale-[1.02] transition-transform dark:shadow-lg dark:shadow-gray-800/40">
-            <div className="flex-shrink-0">
-              <Image
-              
-                src="/study.png"
-                alt="Time Icon"
-                width={256}
-                height={256}
-                className="w-18 h-auto rounded-xl bg-purple-100 dark:bg-gray-700 p-2"
-              />
-            </div>
-            <div>
-              <p className="text-sm text-gray-600 dark:text-gray-400">Total Waktu Belajar</p>
+          <div className="flex flex-col gap-2 bg-gradient-to-br from-purple-50 to-purple-100 dark:from-gray-800 dark:to-gray-900 text-gray-800 dark:text-gray-100 rounded-2xl p-4 shadow-md hover:scale-[1.02] transition-transform dark:shadow-lg dark:shadow-gray-800/40">
+            <p className="text-sm text-gray-600 dark:text-gray-400">Total Waktu Belajar</p>
+            <div className="flex items-center gap-3">
+              <div className="flex-shrink-0">
+                <Image src="/study.png" alt="Time Icon" width={48} height={48} className="w-12 h-12 rounded-lg bg-purple-100 dark:bg-gray-700 p-1" />
+              </div>
               {loading || !summary ? (
-                <div className="h-12 w-32 bg-purple-100/50 dark:bg-gray-700/50 rounded-md animate-pulse mt-1"></div>
+                <div className="h-8 w-24 bg-purple-100/50 dark:bg-gray-700/50 rounded-md animate-pulse"></div>
               ) : (
-                <>
-                  <h2 className="text-3xl font-bold text-purple-600 dark:text-purple-400 mt-1">{animatedStudyHours} jam</h2>
-                  <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">{summary.studyMinutes} menit</p>
-                </>
+                <div className="flex items-baseline gap-1.5 flex-wrap">
+                  <h2 className="text-3xl font-bold text-purple-600 dark:text-purple-400 leading-none">{animatedStudyHours}</h2>
+                  <span className="text-xl font-semibold text-purple-500 dark:text-purple-300">jam</span>
+                  <p className="text-base text-purple-500 dark:text-purple-400">{summary.studyMinutes} menit</p>                </div>
               )}
             </div>
+            {loading || !summary ? (
+              <div className="h-4 w-full bg-purple-100/50 dark:bg-gray-700/50 rounded-md animate-pulse"></div>
+            ) : (
+              null
+            )}
           </div>
 
           {/* Card 4 */}
-          <div className="flex items-center gap-4 bg-gradient-to-br from-orange-50 to-orange-100 dark:from-gray-800 dark:to-gray-900 text-gray-800 dark:text-gray-100 rounded-2xl p-5 shadow-md hover:scale-[1.02] transition-transform dark:shadow-lg dark:shadow-gray-800/40">
-            <div className="flex-shrink-0">
-              <Image src="/streak.png" alt="Streak Icon" width={256} height={256} className="w-18 h-auto rounded-xl bg-orange-100 dark:bg-gray-700 p-2" />
-            </div>
-            <div>
-              <p className="text-sm text-gray-600 dark:text-gray-400">Streak Harian</p>
+          <div className="flex flex-col gap-2 bg-gradient-to-br from-orange-50 to-orange-100 dark:from-gray-800 dark:to-gray-900 text-gray-800 dark:text-gray-100 rounded-2xl p-4 shadow-md hover:scale-[1.02] transition-transform dark:shadow-lg dark:shadow-gray-800/40">
+            <p className="text-sm text-gray-600 dark:text-gray-400">Streak Harian</p>
+            <div className="flex items-center gap-3">
+              <div className="flex-shrink-0">
+                <Image src="/streak.png" alt="Streak Icon" width={48} height={48} className="w-12 h-12 rounded-lg bg-orange-100 dark:bg-gray-700 p-1" />
+              </div>
               {loading || !summary ? (
-                <div className="h-12 w-20 bg-orange-100/50 dark:bg-gray-700/50 rounded-md animate-pulse mt-1"></div>
+                <div className="h-8 w-16 bg-orange-100/50 dark:bg-gray-700/50 rounded-md animate-pulse"></div>
               ) : (
-                <>
-                  <h2 className="text-3xl font-bold text-orange-600 dark:text-orange-400 mt-1">{animatedDailyStreak}</h2>
-                  <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">Hari berturut-turut aktif</p>
-                </>
+                <h2 className="text-3xl font-bold text-orange-600 dark:text-orange-400">{animatedDailyStreak}</h2>
               )}
             </div>
+            {loading || !summary ? (
+              <div className="h-4 w-full bg-orange-100/50 dark:bg-gray-700/50 rounded-md animate-pulse"></div>
+            ) : (
+              <p className="text-xs text-gray-500 dark:text-gray-400">Hari berturut-turut aktif</p>
+            )}
           </div>
         </div>
+      </section>
+
+      {/* TOPIK YANG PERLU DIPERKUAT */}
+      <section className="bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-md">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 gap-3">
+          <div>
+            <h3 className="font-semibold text-gray-700 dark:text-gray-200 flex items-center gap-2">
+              <AlertTriangle className="w-5 h-5 text-yellow-500" />
+              Topik yang Perlu Diperkuat
+            </h3>
+            <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">Ini adalah daftar topik di mana skormu masih di bawah standar. Fokuskan belajarmu di sini untuk meningkatkan pemahaman.</p>
+          </div>
+          <div className="relative w-full sm:w-auto">
+            <input
+              type="text"
+              placeholder="Cari topik..."
+              value={weakTopicSearch}
+              onChange={(e) => {
+                setWeakTopicSearch(e.target.value);
+                setCurrentPage(1); // Reset ke halaman pertama saat mencari
+              }}
+              className="w-full sm:w-64 pl-4 pr-2 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-700 focus:ring-2 focus:ring-blue-500 outline-none text-sm"
+            />
+          </div>
+        </div>
+
+        <div className="overflow-x-auto min-h-auto">
+          <table className="w-full text-left border-collapse">
+            <thead className="bg-gray-100 dark:bg-gray-700 text-sm text-gray-600 dark:text-gray-400 whitespace-nowrap">
+              <tr>
+                <th className="p-3 font-medium rounded-l-lg">Topik</th>
+                <th className="p-3 font-medium text-center" style={{ width: '120px' }}>Nilai Terakhir</th>
+                <th className="p-3 font-medium" style={{ width: '40%' }}>Rekomendasi Perbaikan</th>
+                <th className="p-3 font-medium rounded-r-lg">Aksi</th>
+              </tr>
+            </thead>
+            <tbody>
+              {loading ? (
+                [...Array(3)].map((_, i) => (
+                  <tr key={i} className="border-b dark:border-gray-700">
+                    <td className="p-3"><div className="h-5 w-3/4 bg-gray-200 dark:bg-gray-700 rounded animate-pulse"></div></td>
+                    <td className="p-3"><div className="h-5 w-1/4 bg-gray-200 dark:bg-gray-700 rounded animate-pulse mx-auto"></div></td>
+                    <td className="p-3"><div className="h-5 w-2/3 bg-gray-200 dark:bg-gray-700 rounded animate-pulse"></div></td>
+                    <td className="p-3 text-center"><div className="h-8 w-24 bg-gray-200 dark:bg-gray-700 rounded animate-pulse mx-auto"></div></td>
+                  </tr>
+                ))
+              ) : paginatedWeakTopics.length > 0 ? (
+                paginatedWeakTopics.map((topic) => (
+                  <tr key={topic.topicTitle} className="border-b dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
+                    <td className="p-3 font-medium text-gray-800 dark:text-gray-200">{topic.topicTitle.replace(/^\d+\.?\s*/, '')}</td>
+                    <td className="p-3 text-gray-600 dark:text-gray-300 text-center">{topic.score}%</td>
+                    <td className="p-3 text-sm text-gray-600 dark:text-gray-400">
+                      {topic.weakSubTopics && topic.weakSubTopics.length > 0 ? (
+                        <ul className="list-disc list-inside space-y-1">
+                          {topic.weakSubTopics.map((sub, subIndex) => (
+                            <li key={subIndex}>{sub.title.replace(/^\d+\.?\s*/, '')}</li>
+                          ))}
+                        </ul>
+                      ) : (
+                        "-"
+                      )}
+                    </td>
+                    <td className="p-3 text-center">
+                      <button
+                        onClick={() => handleRowClick(topic)}
+                        className="px-3 py-1.5 bg-blue-500 text-white text-xs font-semibold rounded-lg hover:bg-blue-600 transition-colors shadow-sm hover:shadow-md disabled:opacity-50 disabled:cursor-not-allowed"
+                        disabled={!topic.weakSubTopics || topic.weakSubTopics.length === 0}
+                      >
+                        Pelajari Lagi
+                      </button>
+                    </td>
+                  </tr>
+                ))
+              ) : (
+                <tr className="border-b dark:border-gray-700">
+                  <td colSpan={4} className="p-4 text-center text-gray-500 dark:text-gray-400">
+                    {weakTopicSearch ? "Tidak ada topik yang cocok dengan pencarian." : "Kerja bagus! Tidak ada topik yang perlu diperkuat saat ini."}
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
+        {/* Pagination */}
+        {totalPages > 1 && (
+          <div className="flex justify-between items-center mt-4 text-sm">
+            <button
+              onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+              disabled={currentPage === 1}
+              className="px-3 py-1 border rounded-md disabled:opacity-50 disabled:cursor-not-allowed bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600"
+            >
+              Sebelumnya
+            </button>
+            <span className="text-gray-600 dark:text-gray-400">
+              Halaman {currentPage} dari {totalPages}
+            </span>
+            <button
+              onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+              disabled={currentPage === totalPages}
+              className="px-3 py-1 border rounded-md disabled:opacity-50 disabled:cursor-not-allowed bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600"
+            >
+              Berikutnya
+            </button>
+          </div>
+        )}
       </section>
 
       {/* GRAFIK */}
       <section className="grid lg:grid-cols-2 gap-8">
         <div className="bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-md">
-          <h3 className="font-semibold text-gray-700 dark:text-gray-200 mb-3 flex items-center gap-2">
+          <h3 className="font-semibold text-gray-700 dark:text-gray-200 flex items-center gap-2">
             <Activity className="w-5 h-5" />
-            Aktivitas Mingguan
+            Aktivitas Belajar Mingguan
           </h3>
-          <canvas ref={chartAktivitasRef}></canvas>
+          <p className="text-xs text-gray-500 dark:text-gray-400 mb-3">Lihat seberapa aktif kamu belajar minggu ini! Grafik ini membandingkan total waktu belajarmu setiap hari dengan rata-rata peserta lain.</p>
+          <div className="relative">
+            <canvas ref={chartAktivitasRef}></canvas>
+          </div>
+          <div className="mt-4 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 text-sm">
+            <div className="flex items-center gap-4 flex-shrink-0">
+              <div className="flex items-center gap-2"><span className="w-3 h-3 rounded-full bg-blue-500"></span><span className="text-gray-600 dark:text-gray-400">Aktivitas Kamu</span></div>
+              <div className="flex items-center gap-2"><span className="w-3 h-3 rounded-full bg-gray-400"></span><span className="text-gray-600 dark:text-gray-400">Rata-rata Kelas</span></div>
+            </div>
+
+          </div>
+          {!loading && weeklyActivity.length > 0 && (
+            <div className={`flex items-center gap-3 p-2.5 mt-5 rounded-lg w-full sm:w-auto ${getWeeklyFeedback().bgColor} ${getWeeklyFeedback().borderColor} border`}>
+              {getWeeklyFeedback().icon}
+              <p className={`text-xs font-medium ${getWeeklyFeedback().color}`}>{getWeeklyFeedback().text}</p>
+            </div>
+          )}
         </div>
 
         {/* PERBANDINGAN DENGAN KELAS */}
         <div className="bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-md">
-          <h2 className="font-semibold text-gray-700 dark:text-gray-200 flex items-center gap-2 mb-2">
+          <h3 className="font-semibold text-gray-700 dark:text-gray-200 flex items-center gap-2">
             <Users className="w-5 h-5" />
-            Perbandingan Kelas
-          </h2>
+            Perbandingan Nilai per Modul
+          </h3>
+          <p className="text-xs text-gray-500 dark:text-gray-400 mb-2">Bagaimana performa nilaimu dibandingkan teman-teman sekelas? Lihat perbandingan skormu dengan rata-rata kelas di setiap modul.</p>
           <div className="flex flex-col lg:flex-row gap-4 items-center">
             <div className="lg:w-3/5 w-full flex justify-center">
               <canvas ref={chartPerbandinganRef}></canvas>
@@ -591,150 +797,99 @@ export default function AnalitikBelajarPage() {
       </section>
 
       {/* PETA KOMPETENSI */}
-      <section className="bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-md">
-        <div className="bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-md">
-          <h3 className="font-semibold text-gray-700 dark:text-gray-200 mb-1 flex items-center gap-2">
-            <Target className="w-5 h-5 text-indigo-500" />
-            Peta Kompetensi Individu
-          </h3>
-          <p className="text-xs text-gray-500 dark:text-gray-400 mb-4">Visualisasi tingkat penguasaanmu pada setiap kompetensi inti yang diukur dari setiap tes yang dikerjakan.</p>
-          
-          <div className="space-y-4">
-            {competencyData && competencyData.labels.map((label, index) => {
-              const score = Math.round(competencyData.userScores[index]);
-              const feedback = getCompetencyFeedback(score);
-              return (
-                <div key={index}>
-                  <div className="flex justify-between items-center mb-1">
-                    <span className="text-sm font-medium text-gray-700 dark:text-gray-300">{label}</span>
-                    <span className={`text-sm font-bold ${feedback.textColor}`}>{score}%</span>
-                  </div>
-                  <div className="h-2.5 w-full bg-gray-200 dark:bg-gray-700 rounded-full">
-                    <div 
-                      className={`h-full rounded-full transition-all duration-500 ease-out ${feedback.color}`}
-                      style={{ width: `${score}%` }}
-                    ></div>
-                  </div>
-                  <p className={`text-xs mt-1 font-medium ${feedback.textColor}`}>{feedback.level}</p>
+      <section className="bg-gradient-to-br from-violet-50 to-indigo-100 dark:from-gray-800 dark:to-slate-800 p-6 rounded-2xl shadow-md">
+        <h3 className="font-semibold text-gray-700 dark:text-gray-200 mb-1 flex items-center gap-2">
+          <Target className="w-5 h-5 text-indigo-500" />
+          Peta Kompetensi Individu
+        </h3>
+        <p className="text-xs text-gray-500 dark:text-gray-400 mb-4">Lihat penguasaanmu pada setiap kompetensi yang diukur dari tes yang telah dikerjakan, dikelompokkan per modul.</p>
+
+        {(() => {
+          const competencyTotalPages = Math.ceil(competencyData.length / itemsPerPage);
+          const paginatedCompetencyData = competencyData.slice(
+            (competencyCurrentPage - 1) * itemsPerPage,
+            competencyCurrentPage * itemsPerPage
+          );
+          return <>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {loading ? (
+            [...Array(4)].map((_, i) => <div key={i} className="h-40 bg-white/30 dark:bg-gray-800/30 rounded-xl animate-pulse"></div>)
+          ) : paginatedCompetencyData.length > 0 ? (
+            paginatedCompetencyData.map((modul) => (
+              <div key={modul.moduleSlug} className="bg-white dark:bg-gray-800 p-5 rounded-xl shadow-lg shadow-indigo-100/50 dark:shadow-slate-900/50 transition-all hover:shadow-xl hover:shadow-indigo-200/50 dark:hover:shadow-slate-900/60 flex flex-col">
+                <div className="flex items-center gap-3 mb-4 border-b border-gray-200 dark:border-gray-700 pb-3">
+                  {modul.moduleIcon && (
+                    <Image
+                      src={`${process.env.NEXT_PUBLIC_API_URL}/uploads/${modul.moduleIcon}`}
+                      alt={`${modul.moduleTitle} icon`}
+                      width={40}
+                      height={40}
+                      className="w-10 h-10 object-contain bg-slate-100 dark:bg-slate-700 p-1 rounded-lg"
+                    />
+                  )}
+                  <h4 className="font-bold text-gray-800 dark:text-gray-200 flex-1">{modul.moduleTitle}</h4>
                 </div>
-              );
-            })}
-          </div>
+                <div className="space-y-4">
+                  {modul.features.map((feature, index) => {
+                    const score = Math.round(feature.score);
+                    const feedback = getCompetencyFeedback(score);
+                    return (
+                      <div key={index} className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+                        <div className="flex-1">
+                          <div className="flex justify-between items-center mb-1">
+                            <span className="text-sm font-medium text-gray-700 dark:text-gray-300">{feature.name}</span>
+                            <span className={`text-sm font-bold ${feedback.textColor}`}>{score}%</span>
+                          </div>
+                          <div className="h-2 w-full bg-gray-200 dark:bg-gray-700 rounded-full">
+                            <div className={`h-full rounded-full transition-all duration-500 ease-out ${feedback.color}`} style={{ width: `${score}%` }}></div>
+                          </div>
+                        </div>
+                        {score < 70 && (
+                          <button onClick={() => router.push(`/modul/${modul.moduleSlug}`)} 
+                          disabled={modul.isLocked}
+                          className="mt-2 sm:mt-0 sm:ml-4 flex-shrink-0 text-xs font-semibold text-indigo-600 dark:text-indigo-400 bg-indigo-100 dark:bg-indigo-900/50 px-3 py-1.5 rounded-lg hover:bg-indigo-200 dark:hover:bg-indigo-800/70 transition-colors disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-gray-100 dark:disabled:bg-gray-700/50 disabled:text-gray-500">
+                            Tingkatkan
+                          </button>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            ))
+          ) : <p className="text-center text-sm text-gray-600 dark:text-gray-400 py-8">Data kompetensi belum tersedia. Kerjakan pre-test untuk melihatnya.</p>}
         </div>
-      </section>
-
-      {/* TOPIK YANG PERLU DIPERKUAT (Tidak berubah) */}
-      <section className="bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-md">
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 gap-3">
-          <h3 className="font-semibold text-gray-700 dark:text-gray-200 flex items-center gap-2">
-            <AlertTriangle className="w-5 h-5 text-yellow-500" />
-            Topik yang Perlu Diperkuat
-          </h3>
-          <div className="relative w-full sm:w-auto">
-            <input
-              type="text"
-              placeholder="Cari topik..."
-              value={weakTopicSearch}
-              onChange={(e) => {
-                setWeakTopicSearch(e.target.value);
-                setCurrentPage(1); // Reset ke halaman pertama saat mencari
-              }}
-              className="w-full sm:w-64 pl-4 pr-2 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-700 focus:ring-2 focus:ring-blue-500 outline-none text-sm"
-            />
-          </div>
-        </div>
-
-        <div className="overflow-x-auto min-h-auto">
-          <table className="w-full text-left border-collapse">
-            <thead className="bg-gray-100 dark:bg-gray-700 text-sm text-gray-600 dark:text-gray-400 whitespace-nowrap">
-              <tr>
-                <th className="p-3 font-medium rounded-l-lg">Topik</th>
-                <th className="p-3 font-medium text-center">Nilai Terakhir</th>
-                <th className="p-3 font-medium text-center">Status</th>
-                <th className="p-3 font-medium">Rekomendasi Perbaikan</th>
-                <th className="p-3 font-medium rounded-r-lg">Aksi</th>
-              </tr>
-            </thead>
-            <tbody>
-              {loading ? (
-                [...Array(3)].map((_, i) => (
-                  <tr key={i} className="border-b dark:border-gray-700">
-                    <td className="p-3"><div className="h-5 w-3/4 bg-gray-200 dark:bg-gray-700 rounded animate-pulse"></div></td>
-                    <td className="p-3"><div className="h-5 w-1/4 bg-gray-200 dark:bg-gray-700 rounded animate-pulse"></div></td>
-                    <td className="p-3"><div className="h-5 w-1/2 bg-gray-200 dark:bg-gray-700 rounded animate-pulse"></div></td>
-                    <td className="p-3"><div className="h-5 w-2/3 bg-gray-200 dark:bg-gray-700 rounded animate-pulse"></div></td>
-                  </tr>
-                ))
-              ) : paginatedWeakTopics.length > 0 ? (
-                paginatedWeakTopics.map((topic) => (
-                  <tr key={topic.topicTitle} className="border-b dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
-                    <td className="p-3 font-medium text-gray-800 dark:text-gray-200">{topic.topicTitle.replace(/^\d+\.?\s*/, '')}</td>
-                    <td className="p-3 text-gray-600 dark:text-gray-300 text-center">{topic.score}%</td>
-                    <td className="p-3 text-center">
-                      {topic.status === "Perlu review" && <span className="bg-red-100 text-red-700 text-xs px-2 py-1 rounded-full">Perlu review</span>}
-                      {topic.status === "Butuh latihan" && <span className="bg-yellow-100 text-yellow-700 text-xs px-2 py-1 rounded-full">Butuh latihan</span>}
-                    </td>
-                    <td className="p-3 text-sm text-gray-600 dark:text-gray-400">
-                      {topic.weakSubTopics && topic.weakSubTopics.length > 0 ? (
-                        <ul className="list-disc list-inside space-y-1">
-                          {topic.weakSubTopics.map((sub, subIndex) => (
-                            <li key={subIndex}>{sub.title.replace(/^\d+\.?\s*/, '')}</li>
-                          ))}
-                        </ul>
-                      ) : (
-                        "-"
-                      )}
-                    </td>
-                    <td className="p-3 text-center">
-                      <button
-                        onClick={() => handleRowClick(topic)}
-                        className="px-3 py-1.5 bg-blue-500 text-white text-xs font-semibold rounded-lg hover:bg-blue-600 transition-colors shadow-sm hover:shadow-md disabled:opacity-50 disabled:cursor-not-allowed"
-                        disabled={!topic.weakSubTopics || topic.weakSubTopics.length === 0}
-                      >
-                        Pelajari Lagi
-                      </button>
-                    </td>
-                  </tr>
-                ))
-              ) : (
-                <tr className="border-b dark:border-gray-700">
-                  <td colSpan={5} className="p-4 text-center text-gray-500 dark:text-gray-400">
-                    {weakTopicSearch ? "Tidak ada topik yang cocok dengan pencarian." : "Kerja bagus! Tidak ada topik yang perlu diperkuat saat ini."}
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
-        </div>
-        {/* Pagination */}
-        {totalPages > 1 && (
-          <div className="flex justify-between items-center mt-4 text-sm">
+        {/* Pagination untuk Peta Kompetensi */}
+        {competencyTotalPages > 1 && (
+          <div className="flex justify-between items-center mt-6 text-sm">
             <button
-              onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
-              disabled={currentPage === 1}
-              className="px-3 py-1 border rounded-md disabled:opacity-50 disabled:cursor-not-allowed bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600"
+              onClick={() => setCompetencyCurrentPage(prev => Math.max(prev - 1, 1))}
+              disabled={competencyCurrentPage === 1}
+              className="px-3 py-1 border rounded-md disabled:opacity-50 disabled:cursor-not-allowed bg-white/50 dark:bg-gray-700/50 border-gray-300 dark:border-gray-600"
             >
               Sebelumnya
             </button>
             <span className="text-gray-600 dark:text-gray-400">
-              Halaman {currentPage} dari {totalPages}
+              Halaman {competencyCurrentPage} dari {competencyTotalPages}
             </span>
             <button
-              onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
-              disabled={currentPage === totalPages}
-              className="px-3 py-1 border rounded-md disabled:opacity-50 disabled:cursor-not-allowed bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600"
+              onClick={() => setCompetencyCurrentPage(prev => Math.min(prev + 1, competencyTotalPages))}
+              disabled={competencyCurrentPage === competencyTotalPages}
+              className="px-3 py-1 border rounded-md disabled:opacity-50 disabled:cursor-not-allowed bg-white/50 dark:bg-gray-700/50 border-gray-300 dark:border-gray-600"
             >
               Berikutnya
             </button>
           </div>
         )}
+        </>
+        })()}
       </section>
 
       {/* REKOMENDASI */}
       <section className="bg-gradient-to-br from-blue-50 via-blue-100 to-gray-100 dark:from-gray-800 dark:via-gray-800 dark:to-gray-900 text-gray-800 dark:text-gray-100 p-6 rounded-2xl shadow-md">
         <div className="flex items-center justify-between mb-4">
           <h3 className="text-xl font-bold tracking-wide flex items-center gap-2">
-           
+
             Rekomendasi Pembelajaran
           </h3>
           <span className="text-xs sm:text-sm bg-blue-200/60 dark:bg-gray-700/50 px-3 py-1 rounded-full text-gray-700 dark:text-gray-300">

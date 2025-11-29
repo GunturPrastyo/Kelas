@@ -365,7 +365,7 @@ export default function PreTestPage() {
                         </div>
                     </div>
                     {/* Tambahan: Tampilan Skor per Fitur */}
-                    {result.featureScores && result.featureScores.length > 0 && (
+                    {/* {result.featureScores && result.featureScores.length > 0 && (
                         <div className="mt-6">
                             <h3 className="text-base font-semibold mb-4 text-slate-800 dark:text-slate-200">Rincian Skor Indikator</h3>
                             <div className="space-y-4">
@@ -397,7 +397,7 @@ export default function PreTestPage() {
                                 })}
                             </div>
                         </div>
-                    )}
+                    )} */}
                     <div className="mt-6 flex gap-2">
                         <button onClick={handleRetake} className="bg-transparent text-blue-600 dark:text-blue-400 border border-blue-500/20 dark:border-blue-400/20 px-3.5 py-2.5 rounded-lg cursor-pointer hover:bg-blue-50 dark:hover:bg-blue-900/20 transition">Ulangi Pre-test</button>
                         <Link href="/modul" className="bg-blue-600 hover:bg-blue-700 text-white border-none px-3.5 py-2.5 rounded-lg cursor-pointer">Lihat Rekomendasi Modul</Link>

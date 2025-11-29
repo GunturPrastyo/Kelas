@@ -117,12 +117,14 @@ export default function Navbar() {
           {/* Ganti notifikasi placeholder dengan komponen fungsional */}
           <NotificationBell />
              {/* Sambutan Pengguna */}
-        {mounted && user && (
-          <p className="hidden md:block text-sm text-gray-600 dark:text-gray-300 whitespace-nowrap">
-            {" "}
-            {greeting.text}, <span className="font-semibold">{user.name.split(" ").slice(0, 2).join(" ")}!</span>
-          </p>
-        )}
+          {mounted && user && (
+            <div className="hidden md:flex items-center gap-2">
+              {greeting.icon}
+              <p className="text-sm text-gray-600 dark:text-gray-300 whitespace-nowrap">
+                {greeting.text}, <span className="font-semibold">{user.name.split(" ").slice(0, 2).join(" ")}!</span>
+              </p>
+            </div>
+          )}
         </div>
 
         <UserDropdown />
