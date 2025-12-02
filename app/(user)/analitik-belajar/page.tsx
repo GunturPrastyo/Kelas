@@ -927,9 +927,9 @@ export default function AnalitikBelajarPage() {
                       Ulangi <b>{recommendations.repeatModule.moduleTitle}</b>
                     </p>
                     <p className="text-sm opacity-80">
-                      Nilai post-test akhirmu masih {recommendations.repeatModule.moduleScore}.
+                      Nilai test akhirmu masih {recommendations.repeatModule.moduleScore}.
                       {recommendations.repeatModule.allTopicsMastered ? (
-                        " Semua topik sudah bagus, coba kerjakan ulang post-test akhir dengan lebih teliti."
+                        " Semua topik sudah bagus, coba kerjakan ulang test akhir dengan lebih teliti."
                       ) : recommendations.repeatModule.weakestTopic ? (
                         ` Fokus pada topik ${recommendations.repeatModule.weakestTopic}.`
                       ) : null}
