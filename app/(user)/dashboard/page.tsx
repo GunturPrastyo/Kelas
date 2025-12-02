@@ -443,7 +443,7 @@ export default function DashboardPage() {
               alt="Quiz Illustration"
               width={140}
               height={120}
-              className="w-28 h-28 sm:w-28 sm:h-28 object-contain"
+              className="w-28 h-28 sm:w-40 sm:h-40 object-contain"
             />
           </div>
         </div>

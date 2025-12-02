@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <title>Admin Dashboard</title>
+</head>
+
+<body class="bg-gray-100 p-8">
+  <div class="max-w-7xl mx-auto">
+    
+    <!-- HEADER -->
+    <h1 class="text-3xl font-bold mb-6">Dashboard Admin</h1>
+
+    <!-- TOP STATS -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+      
+      <!-- Total Students -->
+      <div class="bg-white p-6 shadow rounded-xl">
+        <h2 class="text-sm text-gray-500">Total Siswa</h2>
+        <p class="text-3xl font-bold mt-1">128</p>
+        <span class="text-green-600 text-sm">+12 minggu ini</span>
+      </div>
+
+      <!-- Avg Completion Time -->
+      <div class="bg-white p-6 shadow rounded-xl">
+        <h2 class="text-sm text-gray-500">Rata-rata Waktu Penyelesaian Modul</h2>
+        <p class="text-3xl font-bold mt-1">42 menit</p>
+        <span class="text-blue-600 text-sm">↓ lebih cepat 5%</span>
+      </div>
+
+      <!-- Most Difficult Module -->
+      <div class="bg-white p-6 shadow rounded-xl">
+        <h2 class="text-sm text-gray-500">Modul Tersulit</h2>
+        <p class="text-xl font-semibold mt-1">Variabel & Tipe Data</p>
+        <span class="px-2 py-1 text-xs bg-red-100 text-red-600 rounded">Kesulitan tinggi</span>
+      </div>
+
+    </div>
+
+    <!-- CHART PLACEHOLDERS -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-10">
+      
+      <!-- Learning Speed Chart -->
+      <div class="bg-white shadow rounded-xl p-6">
+        <h2 class="text-lg font-semibold mb-4">Kecepatan Belajar Siswa per Modul</h2>
+        <div class="bg-gray-200 h-48 rounded flex items-center justify-center text-gray-500">
+          (Chart Placeholder)
+        </div>
+      </div>
+
+      <!-- Difficulty Prediction -->
+      <div class="bg-white shadow rounded-xl p-6">
+        <h2 class="text-lg font-semibold mb-4">Prediksi Kesulitan Modul</h2>
+        <div class="bg-gray-200 h-48 rounded flex items-center justify-center text-gray-500">
+          (Chart Placeholder)
+        </div>
+      </div>
+
+    </div>
+
+    <!-- TABLE: MODULE ANALYTICS -->
+    <div class="bg-white shadow rounded-xl p-6">
+      <h2 class="text-xl font-semibold mb-4">Analitik Per Modul</h2>
+      
+      <table class="w-full text-sm">
+        <thead>
+          <tr class="text-left border-b">
+            <th class="pb-3">Modul</th>
+            <th class="pb-3">Rata-rata Waktu</th>
+            <th class="pb-3">Rata-rata Nilai</th>
+            <th class="pb-3">Tingkat Kesulitan</th>
+            <th class="pb-3">Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="border-b">
+            <td class="py-3">Pengenalan Komputasi</td>
+            <td>25 menit</td>
+            <td>82%</td>
+            <td><span class="px-2 py-1 bg-green-100 text-green-700 rounded">Mudah</span></td>
+            <td><span class="px-2 py-1 bg-green-200 text-green-700 rounded">Baik</span></td>
+          </tr>
+          <tr class="border-b">
+            <td class="py-3">Variabel & Tipe Data</td>
+            <td>58 menit</td>
+            <td>61%</td>
+            <td><span class="px-2 py-1 bg-red-100 text-red-700 rounded">Sulit</span></td>
+            <td><span class="px-2 py-1 bg-red-200 text-red-700 rounded">Butuh Evaluasi</span></td>
+          </tr>
+          <tr>
+            <td class="py-3">Percabangan</td>
+            <td>35 menit</td>
+            <td>77%</td>
+            <td><span class="px-2 py-1 bg-yellow-100 text-yellow-700 rounded">Sedang</span></td>
+            <td><span class="px-2 py-1 bg-yellow-200 text-yellow-700 rounded">Perlu Dipantau</span></td>
+          </tr>
+        </tbody>
+      </table>
+
+    </div>
+
+  </div>
+</body>
+</html>
