@@ -62,7 +62,7 @@ export default function ModulCard({ modul, onDelete }: Props) {
         {/* Tombol Aksi di Kanan Atas */}
         <div className="absolute top-3 right-3 flex items-center space-x-1">
           <button
-            title="Atur Kompetensi Modul"
+            title="Atur Bobot Kompetensi"
             onClick={(e) => { e.stopPropagation(); setIsFeatureModalOpen(true); }}
             className="p-2 rounded-lg text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-700"
           >

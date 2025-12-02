@@ -7,7 +7,9 @@ import ModulCard from "@/components/ModulCard"; // Card untuk setiap modul
 import { Button } from "@/components/ui/button"; // Import Button
 import { Edit, PlusCircle, List, LayoutGrid } from "lucide-react"; // Import ikon
 import { authFetch } from "@/lib/authFetch";
-import ModulOrder from "@/components/ModulOrder";
+import ModulOrder from "@/components/ModulOrder"; 
+import FeatureManager from "@/components/FeatureManager";
+import { Feature } from "@/components/featureModal";
 
 interface Modul {
   _id: string;
@@ -26,6 +28,7 @@ export default function ModulPage() {
   const [error, setError] = useState<string | null>(null); // State untuk menyimpan pesan error
   const [hasPreTest, setHasPreTest] = useState<boolean | null>(null);
   const [view, setView] = useState<"grid" | "order">("grid");
+  const [availableFeatures, setAvailableFeatures] = useState<Feature[]>([]);
 
   useEffect(() => {
     setLoading(true);
@@ -63,6 +66,22 @@ export default function ModulPage() {
     checkPreTest();
   }, []);
 
+  // Efek untuk memuat fitur yang tersedia saat komponen dimuat
+  useEffect(() => {
+    const fetchAvailableFeatures = async () => {
+      try {
+        const res = await authFetch(`${process.env.NEXT_PUBLIC_API_URL}/api/features`);
+        if (res.ok) {
+          const data = await res.json();
+          setAvailableFeatures(data);
+        }
+      } catch (error) {
+        console.error("Gagal memuat fitur yang tersedia:", error);
+      }
+    };
+    fetchAvailableFeatures();
+  }, []);
+
   const handleDeleteModul = async (modulId: string) => {
     if (confirm("Apakah Anda yakin ingin menghapus modul ini? Semua topik, materi, dan soal di dalamnya akan ikut terhapus secara permanen.")) {
       try {
@@ -97,6 +116,7 @@ export default function ModulPage() {
       <div className="block sm:flex justify-between items-center mb-6">
         <h1 className="mb-5 sm:m-0 text-2xl font-bold">Manajemen Modul dan Tes</h1>
         <div className="flex items-center gap-4">
+            <FeatureManager onFeaturesUpdate={setAvailableFeatures} />
           {/* Tombol Ganti Tampilan */}
           <div className="flex items-center gap-1 bg-gray-100 dark:bg-gray-700 p-1 rounded-lg">
             <button
@@ -129,6 +149,39 @@ export default function ModulPage() {
           </Link>
         </div>
       </div>
+
+      {/* Tampilan Pengelompokan Fitur */}
+      {availableFeatures.length > 0 && (
+        <div className="mb-6 p-4 bg-white dark:bg-gray-800 border dark:border-gray-700 rounded-lg">
+          <h3 className="text-md font-semibold mb-3">Ringkasan Pengelompokan Indikator</h3>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {(['Dasar', 'Menengah', 'Lanjutan'] as const).map(group => {
+              const featuresInGroup = availableFeatures.filter(f => f.group === group);
+              return (
+                <div key={group} className={`p-3 rounded-lg border ${
+                  group === 'Dasar' ? 'bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-700' :
+                  group === 'Menengah' ? 'bg-yellow-50 dark:bg-yellow-900/20 border-yellow-200 dark:border-yellow-700' :
+                  'bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-700'
+                }`}>
+                  <h4 className={`font-semibold mb-2 ${
+                    group === 'Dasar' ? 'text-green-800 dark:text-green-300' :
+                    group === 'Menengah' ? 'text-yellow-800 dark:text-yellow-300' :
+                    'text-red-800 dark:text-red-300'
+                  }`}>{group}</h4>
+                  {featuresInGroup.length > 0 ? (
+                    <ul className="text-sm list-disc list-inside space-y-1 text-gray-700 dark:text-gray-300">
+                      {featuresInGroup.map(f => <li key={f._id}>{f.name}</li>)}
+                    </ul>
+                  ) : (
+                    <p className="text-xs text-gray-500">Belum ada indikator.</p>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
 
       {view === "grid" ? (
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5 grid-auto-rows-fr">
