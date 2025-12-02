@@ -16,8 +16,6 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { PlusCircle, Trash2, CheckCircle2, Edit3, Save, Settings2 } from "lucide-react";
 import { authFetch } from "@/lib/authFetch";
-import FeatureManager from "./FeatureManager";
-import { Feature } from "./featureModal"; // Impor tipe Feature
 
 // Impor TiptapEditor secara dinamis
 const TiptapEditor = dynamic(() => import("@/components/TiptapEditor"), {
@@ -32,6 +30,12 @@ const TiptapEditor = dynamic(() => import("@/components/TiptapEditor"), {
 export interface FeatureWeight {
   featureId: string;
   weight: number;
+}
+
+export interface Feature {
+  _id: string;
+  name: string;
+  group: 'Dasar' | 'Menengah' | 'Lanjutan';
 }
 
 interface Question {
@@ -287,45 +291,6 @@ export default function TestForm({
 
   return (
     <>
-      {/* Tombol untuk mengelola fitur/indikator */}
-      {testType === "pre-test-global" && (
-        <div className="mb-6 p-4 bg-slate-50 dark:bg-gray-800 border dark:border-gray-700 rounded-lg flex justify-between items-center">
-          <p className="text-sm text-gray-600 dark:text-gray-300">Gunakan tombol ini untuk menambah atau mengubah daftar indikator yang akan dinilai.</p>
-          <FeatureManager onFeaturesUpdate={setAvailableFeatures} />
-        </div>
-      )}
-      {/* Tampilan Pengelompokan Fitur */}
-      {testType === "pre-test-global" && availableFeatures.length > 0 && (
-        <div className="mb-6 p-4 bg-white dark:bg-gray-800 border dark:border-gray-700 rounded-lg">
-          <h3 className="text-md font-semibold mb-3">Ringkasan Pengelompokan Indikator</h3>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            {(['Dasar', 'Menengah', 'Lanjutan'] as const).map(group => {
-              const featuresInGroup = availableFeatures.filter(f => f.group === group);
-              return (
-                <div key={group} className={`p-3 rounded-lg border ${
-                  group === 'Dasar' ? 'bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-700' :
-                  group === 'Menengah' ? 'bg-yellow-50 dark:bg-yellow-900/20 border-yellow-200 dark:border-yellow-700' :
-                  'bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-700'
-                }`}>
-                  <h4 className={`font-semibold mb-2 ${
-                    group === 'Dasar' ? 'text-green-800 dark:text-green-300' :
-                    group === 'Menengah' ? 'text-yellow-800 dark:text-yellow-300' :
-                    'text-red-800 dark:text-red-300'
-                  }`}>{group}</h4>
-                  {featuresInGroup.length > 0 ? (
-                    <ul className="text-sm list-disc list-inside space-y-1 text-gray-700 dark:text-gray-300">
-                      {featuresInGroup.map(f => <li key={f._id}>{f.name}</li>)}
-                    </ul>
-                  ) : (
-                    <p className="text-xs text-gray-500">Belum ada indikator.</p>
-                  )}
-                </div>
-              );
-            })}
-          </div>
-        </div>
-      )}
-
       {questions.map((q, qIndex) => (
         <Card
           key={q._id || qIndex}
