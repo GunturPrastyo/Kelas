@@ -217,7 +217,7 @@ const ProfilePage = () => {
   if (!user) return <div className="p-6 text-center text-gray-500">Silakan login untuk melihat profil.</div>;
 
   return (
-    <div className="w-full font-sans p-2 mt-22">
+    <div className="w-full font-sans p-2 mt-20">
       <Breadcrumb paths={[{ name: "Dashboard", href: "/dashboard" }, { name: "Profil", href: "#" }]} />
       <h1 className="text-3xl font-bold text-gray-800 dark:text-gray-100 mt-6 mb-6">
     

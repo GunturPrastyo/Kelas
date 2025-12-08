@@ -1,13 +1,13 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Label } from "@/components/ui/label";
 import dynamic from "next/dynamic";
 import { useRouter } from "next/navigation";
+import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
-import {
+import { 
   DropdownMenu,
   DropdownMenuContent, 
   DropdownMenuLabel,
@@ -44,7 +44,7 @@ interface Question {
   options: string[];
   answer: string;
   topikId?: string;
-  // Tambahkan 'features' ke tipe Question
+  modulId?: string; // Ganti 'features' dengan 'modulId'
   features?: FeatureWeight[];
   durationPerQuestion?: number;
   subMateriId?: string;
@@ -56,6 +56,12 @@ interface SubMateri {
 }
 
 interface Topik {
+  _id: string;
+  title: string;
+}
+
+// Definisikan tipe untuk Modul
+interface Modul {
   _id: string;
   title: string;
 }
@@ -93,6 +99,7 @@ export default function TestForm({
   const [durationPerQuestion, setDurationPerQuestion] = useState(initialDuration);
   const [fetching, setFetching] = useState(isEditing);
   const [availableFeatures, setAvailableFeatures] = useState<Feature[]>([]);
+  const [availableModules, setAvailableModules] = useState<Modul[]>([]); // State untuk menyimpan daftar modul
 
   // state untuk melacak editor opsi mana yang aktif
   const [activeOption, setActiveOption] = useState<{
@@ -102,13 +109,13 @@ export default function TestForm({
 
   useEffect(() => {
     if (isEditing) {
-      // Pastikan setiap soal memiliki array 'features'
-      const questionsWithFeatures = initialQuestions.map(q => ({ ...q, features: q.features || [] }));
-      setQuestions(questionsWithFeatures);
+      // Pastikan setiap soal memiliki modulId jika ada
+      const questionsWithModul = initialQuestions.map(q => ({ ...q, modulId: q.modulId || "" }));
+      setQuestions(questionsWithModul);
       setDurationPerQuestion(initialDuration);
       setFetching(false);
     } else {
-      setQuestions([{ questionText: "", options: [""], answer: "", topikId: "", features: [], durationPerQuestion: 60, subMateriId: "" }]);
+      setQuestions([{ questionText: "", options: [""], answer: "", topikId: "", modulId: "", durationPerQuestion: 60, subMateriId: "" }]);
     }
   }, [isEditing, initialQuestions, initialDuration]);
 
@@ -127,32 +134,27 @@ export default function TestForm({
     };
     fetchAvailableFeatures();
   }, []);
-  // Efek untuk menyinkronkan fitur pada setiap soal ketika daftar fitur yang tersedia berubah
+
+  // Efek untuk memuat modul yang tersedia
   useEffect(() => {
-    if (availableFeatures.length > 0) {
-      setQuestions(currentQuestions =>
-        currentQuestions.map(q => {
-          const existingFeaturesMap = new Map(q.features?.map(f => [f.featureId, f.weight]));
-
-          // Buat array fitur baru yang sinkron dengan availableFeatures
-          const syncedFeatures: FeatureWeight[] = availableFeatures.map(availableFeature => ({
-            featureId: availableFeature._id,
-            weight: existingFeaturesMap.get(availableFeature._id) ?? 0, // Gunakan bobot yang ada atau default 0
-          }));
-
-          // (Opsional) Urutkan berdasarkan nama fitur untuk konsistensi tampilan
-          syncedFeatures.sort((a, b) => {
-            const nameA = availableFeatures.find(f => f._id === a.featureId)?.name || '';
-            const nameB = availableFeatures.find(f => f._id === b.featureId)?.name || '';
-            return nameA.localeCompare(nameB);
-          });
-          return { ...q, features: syncedFeatures };
-        })
-      );
+    const fetchAvailableModules = async () => {
+      try {
+        const res = await authFetch(`${process.env.NEXT_PUBLIC_API_URL}/api/modul`);
+        if (res.ok) {
+          const data = await res.json();
+          setAvailableModules(data);
+        }
+      } catch (error) {
+        console.error("Gagal memuat modul yang tersedia:", error);
+      }
+    };
+    // Hanya muat modul jika testType adalah pre-test-global
+    if (testType === "pre-test-global") {
+      fetchAvailableModules();
     }
-  }, [availableFeatures]);
+  }, [testType]);
   const handleAddQuestion = () => {
-    setQuestions([...questions, { questionText: "", options: [""], answer: "", topikId: "", features: [], durationPerQuestion: 60, subMateriId: "" }]);
+    setQuestions([...questions, { questionText: "", options: [""], answer: "", topikId: "", modulId: "", durationPerQuestion: 60, subMateriId: "" }]);
   };
 
   const handleRemoveQuestion = (index: number) => {
@@ -191,16 +193,11 @@ export default function TestForm({
     setQuestions(updated);
   };
 
-  const handleWeightChange = (qIndex: number, featureId: string, weight: number) => {
+  const handleModuleChange = (qIndex: number, newModulId: string) => {
     const updated = [...questions];
-    const questionFeatures = updated[qIndex].features || [];
-    const featureIndex = questionFeatures.findIndex(f => f.featureId === featureId);
-
-    if (featureIndex !== -1) {
-      updated[qIndex].features![featureIndex].weight = isNaN(weight) || weight < 0 ? 0 : weight;
-    }
+    updated[qIndex].modulId = newModulId;
     setQuestions(updated);
-  };
+  }
 
   const handleSubmit = async () => {
     setLoading(true);
@@ -223,7 +220,7 @@ export default function TestForm({
       questionText: q.questionText,
       options: q.options,
       answer: q.answer,
-      features: q.features || [], // Pastikan features dikirim
+      modulId: q.modulId || null, // Kirim modulId
       topikId: q.topikId || null,
       durationPerQuestion: q.durationPerQuestion || 60,
       subMateriId: q.subMateriId || null
@@ -387,46 +384,26 @@ export default function TestForm({
               />
             </div>
 
-            {/* Bagian Fitur dan Bobot */}
-            {testType === "pre-test-global" && availableFeatures.length > 0 && (
+            {/* Bagian Pemilihan Modul untuk bobot indikator */}
+            {testType === "pre-test-global" && availableModules.length > 0 && (
               <div className="mt-4 pt-4 border-t dark:border-gray-700">
-                <Label className="font-semibold text-base mb-2 block">Indikator Penilaian</Label>
-                <p className="text-xs text-gray-500 mb-3">Atur bobot untuk setiap indikator yang diukur oleh soal ini melalui menu pengaturan.</p>
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button variant="outline" className="flex items-center gap-2">
-                      <Settings2 size={16} />
-                      Atur Bobot Indikator
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent className="w-80" align="start">
-                    <DropdownMenuLabel>Bobot Indikator Soal Ini</DropdownMenuLabel>
-                    <DropdownMenuSeparator />
-                    <div className="p-2 max-h-80 overflow-y-auto space-y-2">
-                      {q.features?.map((featureWeight) => {
-                        const feature = availableFeatures.find(f => f._id === featureWeight.featureId);
-                        if (!feature) return null;
-
-                        return (
-                          <div key={feature._id} className="flex items-center justify-between gap-4">
-                            <Label htmlFor={`weight-dd-${qIndex}-${feature._id}`} className="flex-grow text-sm font-normal">
-                              {feature.name}
-                            </Label>
-                            <select
-                              id={`weight-dd-${qIndex}-${feature._id}`}
-                              value={featureWeight.weight}
-                              onChange={(e) => handleWeightChange(qIndex, feature._id, parseFloat(e.target.value))}
-                              className="w-24 h-8 text-xs text-center bg-gray-50 border border-gray-300 text-gray-900 rounded-md focus:ring-blue-500 focus:border-blue-500 block dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-                            >
-                              {[...Array(11)].map((_, i) => <option key={i} value={i / 10}>{(i / 10).toFixed(1)}</option>)}
-                            </select>
-                          </div>
-                        );
-                      })}
-                      {q.features?.length === 0 && <p className="text-xs text-center text-gray-500 py-2">Tidak ada indikator.</p>}
-                        </div>
-                  </DropdownMenuContent>
-                </DropdownMenu>
+                <div className="grid w-full max-w-xs items-center gap-1.5">
+                  <Label htmlFor={`modul-${qIndex}`}>Modul Penilaian</Label>
+                  <p className="text-xs text-gray-500 mb-2">Pilih modul untuk menentukan bobot indikator yang akan digunakan pada soal ini.</p>
+                  <select
+                    id={`modul-${qIndex}`}
+                    value={q.modulId || ""}
+                    onChange={(e) => handleModuleChange(qIndex, e.target.value)}
+                    className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                  >
+                    <option value="">-- Pilih Modul --</option>
+                    {availableModules.map((modul) => (
+                      <option key={modul._id} value={modul._id}>
+                        {modul.title}
+                      </option>
+                    ))}
+                  </select>
+                </div>
               </div>
             )}
 

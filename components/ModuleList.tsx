@@ -56,17 +56,11 @@ const getCategoryBadge = (category: string) => {
   const base = "inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-1 rounded-full shadow-sm";
   switch (category) {
     case "mudah":
-      return (
-        <span className={`${base} bg-green-100 text-green-700 dark:bg-green-900/40 dark:text-green-300`}>Dasar</span>
-      );
+      return <span className={`${base} bg-amber-100 text-amber-800 dark:bg-amber-900/40 dark:text-amber-300`}>Dasar</span>;
     case "sedang":
-      return (
-        <span className={`${base} bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-300`}>Menengah</span>
-      );
+      return <span className={`${base} bg-blue-100 text-blue-800 dark:bg-blue-900/40 dark:text-blue-300`}>Menengah</span>;
     case "sulit":
-      return (
-        <span className={`${base} bg-red-100 text-red-700 dark:bg-red-900/40 dark:text-red-300`}>Lanjut</span>
-      );
+      return <span className={`${base} bg-green-100 text-green-800 dark:bg-green-900/40 dark:text-green-300`}>Lanjut</span>;
     default: return null;
   }
 };
@@ -110,7 +104,7 @@ export default function ModuleList({ title, allModules, filter }: ModuleListProp
   if (modules.length === 0) return null;
 
   return (
-    <section className="bg-gradient-to-br from-indigo-100 via-blue-100 to-sky-200 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 p-7 rounded-3xl shadow-xl border border-white/20 backdrop-blur-xl transition-all">
+    <section className="bg-gradient-to-br from-indigo-100 via-blue-100 to-sky-200 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 p-7 rounded-2xl shadow-xl border border-white/20 backdrop-blur-xl transition-all">
       {/* Header */}
       <div className="flex justify-between items-center mb-6">
         <h2 className="text-xl font-semibold text-gray-800 dark:text-gray-100 flex items-center gap-2">

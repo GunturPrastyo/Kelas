@@ -137,41 +137,24 @@ export default function DashboardPage() {
       try {
         setLoading(true);
 
+        // Ambil data pengguna dari localStorage untuk menentukan level
+        const userRaw = localStorage.getItem('user');
+        if (userRaw) {
+          const parsedUser = JSON.parse(userRaw);
+          const learningLevel = parsedUser.learningLevel?.toLowerCase();
+          if (learningLevel) {
+            setHasTakenPreTest(true); // Anggap sudah pre-test jika learningLevel ada
+            setUserLevel(learningLevel);
+          }
+        }
+
         // Mengambil semua data yang dibutuhkan secara paralel
-        const [preTestRes, modulesRes, studyTimeRes, analyticsRes, recommendationsRes] = await Promise.all([
-          authFetch(`${process.env.NEXT_PUBLIC_API_URL}/api/results/latest-by-type/pre-test-global`),
+        const [modulesRes, studyTimeRes, analyticsRes, recommendationsRes] = await Promise.all([
           authFetch(`${process.env.NEXT_PUBLIC_API_URL}/api/modul/progress`),
           authFetch(`${process.env.NEXT_PUBLIC_API_URL}/api/results/study-time`),
           authFetch(`${process.env.NEXT_PUBLIC_API_URL}/api/results/analytics`),
           authFetch(`${process.env.NEXT_PUBLIC_API_URL}/api/results/recommendations`), // <-- Fetch rekomendasi
         ]);
-
-        // Memproses data pre-test
-        if (preTestRes.ok) {
-          const preTestResult = await preTestRes.json();
-          if (preTestResult) {
-            setHasTakenPreTest(true);
-            // Gunakan learningPath dari backend, bukan skor
-            const learningPath = preTestResult.learningPath?.toLowerCase(); // 'Lanjutan' -> 'lanjutan'
-            if (learningPath === 'lanjutan') {
-              setUserLevel('lanjut');
-            } else if (learningPath === 'menengah') {
-              setUserLevel('menengah');
-            } else {
-              setUserLevel('dasar'); // Default ke dasar jika tidak ada atau tidak valid
-            }
-
-            // Sinkronkan ke localStorage untuk akses cepat
-            const userRaw = localStorage.getItem('user');
-            if (userRaw) {
-              const parsedUser = JSON.parse(userRaw);
-              const resultKey = `pretest_result_${parsedUser._id}`;
-              localStorage.setItem(resultKey, JSON.stringify(preTestResult));
-            }
-          }
-        } else {
-          console.error(`Error fetching pre-test data: ${preTestRes.status} ${preTestRes.statusText}`);
-        }
 
         // Memproses data modul
         if (modulesRes.ok) {

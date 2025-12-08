@@ -647,7 +647,7 @@ export default function ModulDetailPage() {
         const totalQuestions = activeTest.questions.length;
 
         return (
-            <div className="fixed inset-0 bg-black bg-opacity-60 z-50 flex justify-center items-center p-4">
+            <div className="w-full max-full fixed inset-0 bg-black bg-opacity-60 z-50 flex justify-center items-center p-4">
                 <div className="bg-white dark:bg-gray-800 rounded-xl shadow-2xl w-full max-w-3xl max-h-[90vh] flex flex-col">
                     {/* Header */}
                     <header className="p-4 border-b border-gray-200 dark:border-gray-700 flex justify-between items-center">
@@ -975,7 +975,7 @@ export default function ModulDetailPage() {
 
     // --- RENDER MAIN PAGE ---
     return (
-        <div className="max-w-full mx-auto px-1.5 sm:px-5 pb-5 pt-0 mt-25">
+        <div className="max-w-full mx-auto px-1.5 sm:px-5 pb-5 pt-0 mt-20">
             {/* 
               Menambahkan style global untuk menangani overflow pada code block di dalam .prose.
               Ini memastikan hanya code block yang bisa di-scroll horizontal, bukan seluruh kontainer soal.
@@ -1068,7 +1068,7 @@ export default function ModulDetailPage() {
                                 <div className={`transition-all duration-500 ease-in-out overflow-hidden ${isOpen && !isLocked ? 'max-h-[2000px]' : 'max-h-0'}`}>
                                     {/* Daftar Isi Sub Topik */}
                                     {isOpen && !isLocked && topik.materi && topik.materi.subMateris.length > 0 && (
-                                        <div className="pt-2 pb-2 px-2">
+                                        <div className="pt-2 pb-2 px-2 sm:px-10">
                                             <div className="bg-slate-50 dark:bg-gray-900/50 border border-slate-200 dark:border-gray-700/50 rounded-xl p-5 shadow-sm">
                                                 <h4 className="text-lg font-bold text-gray-800 dark:text-gray-100 mb-5 flex items-center gap-2">
                                                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-blue-500"><line x1="8" y1="6" x2="21" y2="6"></line><line x1="8" y1="12" x2="21" y2="12"></line><line x1="8" y1="18" x2="21" y2="18"></line><line x1="3" y1="6" x2="3.01" y2="6"></line><line x1="3" y1="12" x2="3.01" y2="12"></line><line x1="3" y1="18" x2="3.01" y2="18"></line></svg>
