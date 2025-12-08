@@ -52,13 +52,13 @@ export default function Sidebar() {
   return (
     <aside
       id="sidebar"
-      className={`fixed top-0 left-0 z-50 h-screen bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 transition-all duration-300 ease-in-out flex flex-col
+      className={`fixed top-0 left-0 z-50 h-screen bg-slate-50 dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 transition-all duration-300 ease-in-out flex flex-col
         ${isSidebarCollapsed ? 'w-20' : 'w-64'}
         ${isMobileDrawerOpen ? 'translate-x-0' : '-translate-x-full'}
         md:translate-x-0`}
     >
       {/* Sidebar Header */}
-      <div className={`px-4 h-20 flex items-center gap-3 flex-shrink-0 ${isSidebarCollapsed ? 'justify-center' : 'justify-start'}`}>
+      <div className={`px-4 h-20 flex items-center gap-3 flex-shrink-0 ${isSidebarCollapsed ? 'justify-center ml-4' : 'justify-start'}`}>
         <button
           id="sidebar-toggle"
           type="button"
@@ -66,7 +66,7 @@ export default function Sidebar() {
           onClick={toggleSidebar}
         >
           <span className="sr-only">Toggle sidebar</span>
-          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16" />
           </svg>
         </button>
@@ -85,7 +85,7 @@ export default function Sidebar() {
             <Link
               key={link.href}
               href={link.href}
-              className={`nav-link flex items-center gap-4 p-3 rounded-lg transition-colors ${active ? 'bg-blue-50 dark:bg-gray-700' : 'hover:bg-gray-100 dark:hover:bg-gray-700'}`}
+              className={`nav-link flex items-center gap-4 p-3 rounded-lg transition-colors ${active ? 'bg-blue-100 dark:bg-gray-700 text-blue-600 dark:text-white' : 'hover:bg-gray-200/50 dark:hover:bg-gray-700'}`}
             >
               <Image src={link.icon} alt={link.alt} width={128} height={128} className="w-8 h-auto flex-shrink-0" />
               <span className={`sidebar-text whitespace-nowrap transition-opacity duration-300 ${isSidebarCollapsed ? 'opacity-0 hidden' : 'opacity-100'} ${active ? 'text-blue-600 dark:text-white font-semibold' : 'text-gray-600 dark:text-gray-300'}`}>

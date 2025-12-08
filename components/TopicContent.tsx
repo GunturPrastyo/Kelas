@@ -52,20 +52,20 @@ export default function TopicContent({ topik, onStartTest, onViewScore, hasAttem
     const subMateris = topik?.materi?.subMateris || [];
 
     return (
-        <div className="px-2 pb-5 pt-4 border-t border-gray-200 dark:border-gray-700 max-h-[70vh] overflow-y-auto">
+        <div className="px-1 sm:px-10 pb-5 pt-4 border-t border-gray-200 dark:border-gray-700 max-h-[80vh] overflow-y-auto">
             {embedUrl && (
-                <div className="aspect-video mb-6 rounded-lg overflow-hidden">
+                <div className="aspect-video mb-6 rounded-lg overflow-hidden max-w-3xl mx-auto">
                     <iframe src={embedUrl} title={`Video untuk ${topik.title}`} allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowFullScreen className="w-full h-full"></iframe>
                 </div>
             )}
 
-            <div className="prose dark:prose-invert max-w-full space-y-4">
+            <div className="prose dark:prose-invert max-w-none space-y-4">
                 {subMateris.length > 0 ? (
                     subMateris.map((sub, index) => (
                         <div
                         key={sub._id || index}
                         id={sub._id} // ID unik untuk target scroll
-                        className="max-w-full w-full scroll-mt-24 bg-slate-50 dark:bg-gray-800/50 p-4 rounded-xl border border-slate-200 dark:border-gray-700/60 shadow-sm border-l-4 border-l-blue-500"
+                        className="max-w-full w-full scroll-mt-24 bg-slate-50 dark:bg-gray-800/50 p-5 rounded-xl border border-slate-200 dark:border-gray-700/60 shadow-sm border-l-4 border-l-blue-500"
                         >
                             <h4 className="font-bold text-lg !mb-2 text-gray-800 dark:text-gray-100">{sub.title}</h4>
                             <div dangerouslySetInnerHTML={{ __html: sub.content }} />

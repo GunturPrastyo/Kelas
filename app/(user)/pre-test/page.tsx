@@ -364,40 +364,43 @@ export default function PreTestPage() {
                             </div>
                         </div>
                     </div>
-                    {/* Tambahan: Tampilan Skor per Fitur */}
-                    {/* {result.featureScores && result.featureScores.length > 0 && (
+                    {/* Tampilan Skor per Fitur per Modul */}
+                    {result.featureScoresByModule && result.featureScoresByModule.length > 0 && (
                         <div className="mt-6">
-                            <h3 className="text-base font-semibold mb-4 text-slate-800 dark:text-slate-200">Rincian Skor Indikator</h3>
+                            <h3 className="text-base font-semibold mb-4 text-slate-800 dark:text-slate-200">Rincian Skor Indikator per Modul</h3>
                             <div className="space-y-4">
-                                {result.featureScores.map((fs: any) => {
-                                    const score = Math.round(fs.score);
-                                    let progressBarClass;
-                                    if (score < 40) {
-                                        progressBarClass = 'bg-gradient-to-r from-red-400 to-red-500';
-                                    } else if (score < 70) {
-                                        progressBarClass = 'bg-gradient-to-r from-yellow-400 to-amber-500';
-                                    } else {
-                                        progressBarClass = 'bg-gradient-to-r from-green-400 to-green-500';
-                                    }
-
-                                    return (
-                                        <div key={fs.featureId}>
-                                            <div className="flex justify-between items-center mb-1">
-                                                <span className="text-sm font-medium text-gray-700 dark:text-gray-300">{fs.featureName}</span>
-                                                <span className="text-sm font-semibold text-gray-600 dark:text-gray-400">{score}%</span>
+                                {result.featureScoresByModule.map((moduleResult: any) => (
+                                    <div key={moduleResult.moduleId} className="p-4 border border-slate-200 dark:border-gray-700 rounded-lg">
+                                        <h4 className="font-semibold text-sm mb-3 text-slate-700 dark:text-slate-300">{moduleResult.moduleTitle}</h4>
+                                        <div className="space-y-3">
+                                            {moduleResult.features.map((fs: any) => {
+                                                const score = Math.round(fs.score);
+                                                let progressBarClass;
+                                                if (score < 40) {
+                                                    progressBarClass = 'bg-red-500';
+                                                } else if (score < 70) {
+                                                    progressBarClass = 'bg-yellow-500';
+                                                } else {
+                                                    progressBarClass = 'bg-green-500';
+                                                }
+                                                return (
+                                                    <div key={fs.featureId}>
+                                                        <div className="flex justify-between items-center mb-1">
+                                                            <span className="text-xs font-medium text-gray-600 dark:text-gray-400">{fs.featureName}</span>
+                                                            <span className="text-xs font-semibold text-gray-500 dark:text-gray-300">{score}%</span>
+                                                        </div>
+                                                        <div className="w-full bg-gray-200 dark:bg-gray-600 rounded-full h-1.5">
+                                                            <div className={`${progressBarClass} h-1.5 rounded-full`} style={{ width: `${score}%` }}></div>
+                                                        </div>
+                                                    </div>
+                                                );
+                                            })}
                                             </div>
-                                            <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
-                                                <div
-                                                    className={`${progressBarClass} h-2 rounded-full transition-all duration-500`}
-                                                    style={{ width: `${score}%` }}
-                                                ></div>
-                                            </div>
-                                        </div>
-                                    );
-                                })}
+                                    </div>
+                                ))}
                             </div>
                         </div>
-                    )} */}
+                    )}
                     <div className="mt-6 flex gap-2">
                         <button onClick={handleRetake} className="bg-transparent text-blue-600 dark:text-blue-400 border border-blue-500/20 dark:border-blue-400/20 px-3.5 py-2.5 rounded-lg cursor-pointer hover:bg-blue-50 dark:hover:bg-blue-900/20 transition">Ulangi Pre-test</button>
                         <Link href="/modul" className="bg-blue-600 hover:bg-blue-700 text-white border-none px-3.5 py-2.5 rounded-lg cursor-pointer">Lihat Rekomendasi Modul</Link>

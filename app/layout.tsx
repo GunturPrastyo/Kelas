@@ -32,7 +32,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       suppressHydrationWarning
       className={`${poppins.variable} bg-gray-50 dark:bg-gray-900`}
     >
-      <body suppressHydrationWarning className="font-sans text-gray-900 dark:text-gray-100">
+      <body suppressHydrationWarning className="font-poppins text-gray-900 dark:text-gray-100">
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
           {children}
         </ThemeProvider>

@@ -49,52 +49,41 @@ export default function ModulPage() {
         const userRaw = localStorage.getItem('user');
         if (userRaw) {
             const parsedUser = JSON.parse(userRaw);
-            setUser(parsedUser);
+            setUser(parsedUser); // Simpan data user ke state
 
-            // Ambil hasil pre-test yang spesifik untuk user ini
-            const resultKey = `pretest_result_${parsedUser._id}`;
-            const resultRaw = localStorage.getItem(resultKey);
-            if (resultRaw) {
-                try {
-                    // Perubahan: Gunakan 'learningPath' dari backend, bukan 'score'
-                    const parsedResult = JSON.parse(resultRaw);
-                    const learningPath = parsedResult.learningPath?.toLowerCase(); // 'Lanjutan' -> 'lanjutan'
+            // Ambil level pengguna langsung dari field 'learningLevel' di objek user
+            const learningLevel = parsedUser.learningLevel?.toLowerCase();
 
-                    if (learningPath === 'lanjutan') {
-                        setUserLevel('lanjut'); // Sesuaikan dengan nilai state 'lanjut'
-                        setRecommendation({
-                            title: 'Jalur Belajar: Lanjut',
-                            description: 'Pemahamanmu sudah kuat. Kamu siap untuk tantangan materi tingkat lanjut!',
-                            icon: '/lanjut.png',
-                            bgClass: 'from-green-100 to-emerald-200 dark:from-gray-800 dark:to-emerald-900',
-                            textClass: 'text-green-800 dark:text-green-300'
-                        });
-                    } else if (learningPath === 'menengah') {
-                        setUserLevel('menengah');
-                        setRecommendation({
-                            title: 'Jalur Belajar: Menengah',
-                            description: 'Dasar-dasarmu sudah cukup. Mari perdalam dengan manipulasi DOM dan event.',
-                            icon: '/menengah.png',
-                            bgClass: 'from-blue-100 to-sky-200 dark:from-gray-800 dark:to-sky-900',
-                            textClass: 'text-blue-800 dark:text-blue-300'
-                        });
-                    } else if (learningPath === 'dasar') {
-                        setUserLevel('dasar');
-                        setRecommendation({
-                            title: 'Jalur Belajar: Dasar',
-                            description: 'Mari kita mulai dari awal untuk membangun fondasi JavaScript yang kokoh.',
-                            icon: '/dasar.png',
-                            bgClass: 'from-yellow-100 to-amber-200 dark:from-gray-800 dark:to-amber-900',
-                            textClass: 'text-yellow-800 dark:text-yellow-300'
-                        });
-                    } else {
-                        // Fallback jika 'learningPath' tidak ada atau tidak valid
-                        setUserLevel(null);
-                    }
-                } catch (e) {
-                    console.warn('Gagal memuat hasil pre-test untuk personalisasi.', e);
-                    setUserLevel(null); // Reset jika data rusak
-                }
+            if (learningLevel === 'lanjut') {
+                setUserLevel('lanjut');
+                setRecommendation({
+                    title: 'Jalur Belajar: Lanjut',
+                    description: 'Pemahamanmu sudah kuat. Kamu siap untuk tantangan materi tingkat lanjut!',
+                    icon: '/lanjut.png',
+                    bgClass: 'from-green-100 to-emerald-200 dark:from-gray-800 dark:to-emerald-900',
+                    textClass: 'text-green-800 dark:text-green-300'
+                });
+            } else if (learningLevel === 'menengah') {
+                setUserLevel('menengah');
+                setRecommendation({
+                    title: 'Jalur Belajar: Menengah',
+                    description: 'Dasar-dasarmu sudah cukup. Mari perdalam dengan manipulasi DOM dan event.',
+                    icon: '/menengah.png',
+                    bgClass: 'from-blue-100 to-sky-200 dark:from-gray-800 dark:to-sky-900',
+                    textClass: 'text-blue-800 dark:text-blue-300'
+                });
+            } else if (learningLevel === 'dasar') {
+                setUserLevel('dasar');
+                setRecommendation({
+                    title: 'Jalur Belajar: Dasar',
+                    description: 'Mari kita mulai dari awal untuk membangun fondasi JavaScript yang kokoh.',
+                    icon: '/dasar.png',
+                    bgClass: 'from-yellow-100 to-amber-200 dark:from-gray-800 dark:to-amber-900',
+                    textClass: 'text-yellow-800 dark:text-yellow-300'
+                });
+            } else {
+                // Jika 'learningLevel' tidak ada atau tidak valid, set ke null
+                setUserLevel(null);
             }
         }
 

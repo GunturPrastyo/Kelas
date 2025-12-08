@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { authFetch } from "@/lib/authFetch";
 import { useRouter } from "next/navigation";
-import { Award, TrendingUp, TrendingDown, LayoutDashboard, Activity, BarChartHorizontal, AlertTriangle, Users, Target, Play } from "lucide-react";
+import { Award, TrendingUp, TrendingDown, LayoutDashboard, Activity, BarChartHorizontal, AlertTriangle, Users, Target, Play, Rocket } from "lucide-react";
 import { Chart, registerables } from "chart.js";
 Chart.register(...registerables);
 
@@ -36,12 +36,14 @@ interface CompetencyFeature {
   name: string;
   score: number;
 }
-interface CompetencyMapDataByModule {
-  moduleTitle: string;
-  moduleSlug: string;
-  moduleIcon?: string;
-  isLocked: boolean;
-  features: CompetencyFeature[];
+// Definisikan tipe untuk modul yang akan ditingkatkan
+interface ModuleForCompetencyMap {
+  slug: string;
+}
+
+// Definisikan tipe untuk data kompetensi yang dikelompokkan
+interface GroupedCompetencyData {
+  [level: string]: CompetencyFeature[];
 }
 
 interface RecommendationData {
@@ -184,7 +186,7 @@ export default function AnalitikBelajarPage() {
   const [summary, setSummary] = useState<SummaryData | null>(null);
   const [weeklyActivity, setWeeklyActivity] = useState<number[]>([]);
   const [classWeeklyActivity, setClassWeeklyActivity] = useState<number[]>([]);  
-  const [competencyData, setCompetencyData] = useState<CompetencyMapDataByModule[]>([]);
+  const [competencyData, setCompetencyData] = useState<(GroupedCompetencyData & { nextModuleToImprove?: ModuleForCompetencyMap | null }) | null>(null);
   const [comparisonData, setComparisonData] = useState<ComparisonData | null>(null);
   const [recommendations, setRecommendations] = useState<RecommendationData | null>(null);
   const [weakTopics, setWeakTopics] = useState<WeakTopicData[]>([]);
@@ -194,6 +196,7 @@ export default function AnalitikBelajarPage() {
   const [competencyCurrentPage, setCompetencyCurrentPage] = useState(1);
   const ITEMS_PER_PAGE = 5;
 
+  const [userLearningLevel, setUserLearningLevel] = useState<string | null>(null);
   // Definisikan ref dan state inView untuk chart aktivitas di sini
   const [chartAktivitasRef, isChartAktivitasInView] = useInView({ threshold: 0.5, triggerOnce: true }) as [React.RefObject<HTMLCanvasElement>, boolean];
 
@@ -203,31 +206,43 @@ export default function AnalitikBelajarPage() {
       try {
         setLoading(true);
 
+
         const [progressRes, analyticsRes, weeklyActivityRes, classWeeklyActivityRes, competencyMapRes, comparisonRes, recommendationsRes, weakTopicsRes] =
           await Promise.all([
             authFetch(`${process.env.NEXT_PUBLIC_API_URL}/api/modul/progress`),
             authFetch(`${process.env.NEXT_PUBLIC_API_URL}/api/results/analytics`),
             authFetch(`${process.env.NEXT_PUBLIC_API_URL}/api/results/weekly-activity`),
             authFetch(`${process.env.NEXT_PUBLIC_API_URL}/api/results/class-weekly-activity`),
-            authFetch(`${process.env.NEXT_PUBLIC_API_URL}/api/results/competency-map`), // Mengganti module-scores dengan competency-map
+            authFetch(`${process.env.NEXT_PUBLIC_API_URL}/api/results/competency-map`), // Endpoint yang benar, data user diambil dari token
             authFetch(`${process.env.NEXT_PUBLIC_API_URL}/api/results/comparison-analytics`),
             authFetch(`${process.env.NEXT_PUBLIC_API_URL}/api/results/recommendations`),
             authFetch(`${process.env.NEXT_PUBLIC_API_URL}/api/results/topics-to-reinforce`),
           ]);
 
-        // Handle potential errors from individual fetches
-        if (!progressRes.ok || !analyticsRes.ok || !weeklyActivityRes.ok || !classWeeklyActivityRes.ok || !competencyMapRes.ok || !comparisonRes.ok || !recommendationsRes.ok || !weakTopicsRes.ok) {
-          throw new Error("Satu atau lebih permintaan data gagal.");
+        // --- Penanganan Error yang Lebih Baik ---
+        const checkResponse = (res: Response, name: string) => {
+          if (!res.ok) {
+            console.error(`Gagal memuat ${name}:`, res.status, res.statusText);
+            return null; // Kembalikan null jika gagal
+          }
+          return res.json();
+        };
+
+        // Ambil data user untuk mendapatkan learningLevel
+        const userRaw = localStorage.getItem('user');
+        if (userRaw) {
+          const parsedUser = JSON.parse(userRaw);
+          setUserLearningLevel(parsedUser.learningLevel);
         }
 
-        const progressData = await progressRes.json();
-        const analyticsData = await analyticsRes.json();
-        const weeklyActivityData = await weeklyActivityRes.json();
-        const classWeeklyActivityData = await classWeeklyActivityRes.json();
-        const competencyMapData = await competencyMapRes.json();
-        const comparisonData = await comparisonRes.json();
-        const recommendationsData: RecommendationData = await recommendationsRes.json();
-        const weakTopicsData = await weakTopicsRes.json();
+        const progressData = await checkResponse(progressRes, 'progress');
+        const analyticsData = await checkResponse(analyticsRes, 'analytics');
+        const weeklyActivityData = await checkResponse(weeklyActivityRes, 'weekly activity');
+        const classWeeklyActivityData = await checkResponse(classWeeklyActivityRes, 'class weekly activity');
+        const competencyMapData = await checkResponse(competencyMapRes, 'competency map');
+        const comparisonData = await checkResponse(comparisonRes, 'comparison');
+        const recommendationsData: RecommendationData | null = await checkResponse(recommendationsRes, 'recommendations');
+        const weakTopicsData = await checkResponse(weakTopicsRes, 'weak topics');
 
         const completedModules = progressData.filter((m: ModulProgress) => m.progress === 100).length;
         const totalModules = progressData.length;
@@ -252,14 +267,29 @@ export default function AnalitikBelajarPage() {
         const weeklySeconds = weeklyActivityData.weeklySeconds || Array(7).fill(0);
         setWeeklyActivity(weeklySeconds); // Simpan dalam detik, konversi akan dilakukan di chart options
         setClassWeeklyActivity(classWeeklyActivityData.weeklyAverages || Array(7).fill(0));
+        
+        // --- Logika untuk Tombol Tingkatkan di Peta Kompetensi ---
+        let nextModuleToImprove = null;
+        if (progressData && userLearningLevel) {
+          const levelMap = { 'Dasar': 'mudah', 'Menengah': 'sedang', 'Lanjutan': 'sulit' };
+          const targetCategory = levelMap[userLearningLevel as keyof typeof levelMap];
 
-        // Gabungkan data kompetensi dengan status 'isLocked' dari progressData
-        const mergedCompetencyData = competencyMapData.map((compModul: CompetencyMapDataByModule) => {
-          const progressModul = progressData.find((progModul: ModulProgress) => progModul.title === compModul.moduleTitle);
-          return { ...compModul, isLocked: progressModul?.isLocked ?? true }; // Default ke true jika tidak ditemukan
-        });
+          // Cari modul pertama yang belum dimulai pada level pengguna saat ini
+          const firstUnstartedModuleInLevel = progressData
+            .filter((m: any) => m.category === targetCategory && m.progress === 0 && !m.isLocked)
+            .sort((a: any, b: any) => a.order - b.order)[0];
 
-        setCompetencyData(mergedCompetencyData);
+          if (firstUnstartedModuleInLevel) {
+            nextModuleToImprove = firstUnstartedModuleInLevel;
+          }
+        }
+
+        // Simpan data kompetensi yang sudah dikelompokkan dari backend
+        if (competencyMapData) {
+          // Tambahkan modul yang akan ditingkatkan ke data kompetensi
+          setCompetencyData({ ...competencyMapData as GroupedCompetencyData, nextModuleToImprove });
+        }
+
         setComparisonData(updatedComparisonData);
         setRecommendations(recommendationsData);
 
@@ -804,85 +834,98 @@ export default function AnalitikBelajarPage() {
         </h3>
         <p className="text-xs text-gray-500 dark:text-gray-400 mb-4">Lihat penguasaanmu pada setiap kompetensi yang diukur dari tes yang telah dikerjakan, dikelompokkan per modul.</p>
 
-        {(() => {
-          const competencyTotalPages = Math.ceil(competencyData.length / itemsPerPage);
-          const paginatedCompetencyData = competencyData.slice(
-            (competencyCurrentPage - 1) * itemsPerPage,
-            competencyCurrentPage * itemsPerPage
-          );
-          return <>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {loading ? (
-            [...Array(4)].map((_, i) => <div key={i} className="h-40 bg-white/30 dark:bg-gray-800/30 rounded-xl animate-pulse"></div>)
-          ) : paginatedCompetencyData.length > 0 ? (
-            paginatedCompetencyData.map((modul) => (
-              <div key={modul.moduleSlug} className="bg-white dark:bg-gray-800 p-5 rounded-xl shadow-lg shadow-indigo-100/50 dark:shadow-slate-900/50 transition-all hover:shadow-xl hover:shadow-indigo-200/50 dark:hover:shadow-slate-900/60 flex flex-col">
-                <div className="flex items-center gap-3 mb-4 border-b border-gray-200 dark:border-gray-700 pb-3">
-                  {modul.moduleIcon && (
-                    <Image
-                      src={`${process.env.NEXT_PUBLIC_API_URL}/uploads/${modul.moduleIcon}`}
-                      alt={`${modul.moduleTitle} icon`}
-                      width={40}
-                      height={40}
-                      className="w-10 h-10 object-contain bg-slate-100 dark:bg-slate-700 p-1 rounded-lg"
-                    />
-                  )}
-                  <h4 className="font-bold text-gray-800 dark:text-gray-200 flex-1">{modul.moduleTitle}</h4>
-                </div>
-                <div className="space-y-4">
-                  {modul.features.map((feature, index) => {
-                    const score = Math.round(feature.score);
-                    const feedback = getCompetencyFeedback(score);
-                    return (
-                      <div key={index} className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
-                        <div className="flex-1">
-                          <div className="flex justify-between items-center mb-1">
-                            <span className="text-sm font-medium text-gray-700 dark:text-gray-300">{feature.name}</span>
-                            <span className={`text-sm font-bold ${feedback.textColor}`}>{score}%</span>
-                          </div>
-                          <div className="h-2 w-full bg-gray-200 dark:bg-gray-700 rounded-full">
-                            <div className={`h-full rounded-full transition-all duration-500 ease-out ${feedback.color}`} style={{ width: `${score}%` }}></div>
+        {loading ? (
+          <div className="h-60 bg-white/30 dark:bg-gray-800/30 rounded-xl animate-pulse"></div>
+        ) : competencyData && (Object.keys(competencyData).length > 1) ? (
+          (() => {
+            const validLevels = Object.entries(competencyData).filter(([level, features]) => level !== 'nextModuleToImprove' && Array.isArray(features) && features.length > 0);
+            const totalCards = validLevels.length;
+            const userCurrentLevel = userLearningLevel;
+
+            return (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                {validLevels.map(([level, features], index) => {
+                  const isLastItem = index === totalCards - 1;
+                  const isOddCount = totalCards % 2 !== 0;
+                  const cardClassName = (isLastItem && isOddCount) ? 'md:col-span-2' : '';
+
+                  const avgScore = (features as CompetencyFeature[]).length > 0 ? Math.round((features as CompetencyFeature[]).reduce((acc, f) => acc + f.score, 0) / (features as CompetencyFeature[]).length) : 0;
+
+                  const levelInfo = {
+                    'Dasar': {
+                      title: 'Kompetensi Dasar',
+                      unlockInfo: `Skor rata-rata Dasar <b class="${avgScore >= 75 ? 'text-green-500' : 'text-red-500'}">(${avgScore}%)</b> harus ≥ 75% untuk membuka level Menengah.`,
+                      icon: '/dasar.png'
+                    },
+                    'Menengah': {
+                      title: 'Kompetensi Menengah',
+                      unlockInfo: `Skor rata-rata Menengah <b class="${avgScore >= 75 ? 'text-green-500' : 'text-red-500'}">(${avgScore}%)</b> harus ≥ 75% untuk membuka level Lanjutan.`,
+                      icon: '/menengah.png'
+                    },
+                    'Lanjutan': {
+                      title: 'Kompetensi Lanjutan',
+                      unlockInfo: 'Kamu telah mencapai level tertinggi. Terus asah kemampuanmu!',
+                      icon: '/lanjut.png'
+                    },
+                  };
+
+                  const info = levelInfo[level as keyof typeof levelInfo];
+                  const isCurrentUserLevel = userCurrentLevel?.toLowerCase() === level.toLowerCase();
+
+                  return (
+                    <div key={level} className={`bg-white dark:bg-gray-800 p-5 rounded-xl shadow-lg shadow-indigo-100/50 dark:shadow-slate-900/50 flex flex-col ${cardClassName}`}>
+                      <div className="flex items-start justify-between gap-3 mb-4 border-b border-gray-200 dark:border-gray-700 pb-3">
+                        <div className="flex items-center gap-3">
+                          <Image src={info.icon} alt={`${info.title} icon`} width={40} height={40} className="w-10 h-10 object-contain bg-slate-100 dark:bg-slate-700 p-1 rounded-lg" />
+                          <div>
+                            <h4 className="font-bold text-gray-800 dark:text-gray-200">{info.title}</h4>
+                            <p className="text-xs text-gray-500 dark:text-gray-400" dangerouslySetInnerHTML={{ __html: info.unlockInfo }} />
                           </div>
                         </div>
-                        {score < 70 && (
-                          <button onClick={() => router.push(`/modul/${modul.moduleSlug}`)} 
-                          disabled={modul.isLocked}
-                          className="mt-2 sm:mt-0 sm:ml-4 flex-shrink-0 text-xs font-semibold text-indigo-600 dark:text-indigo-400 bg-indigo-100 dark:bg-indigo-900/50 px-3 py-1.5 rounded-lg hover:bg-indigo-200 dark:hover:bg-indigo-800/70 transition-colors disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-gray-100 dark:disabled:bg-gray-700/50 disabled:text-gray-500">
-                            Tingkatkan
-                          </button>
+                        {isCurrentUserLevel && (
+                          <span className="text-xs font-semibold px-2.5 py-1 bg-blue-100 text-blue-800 dark:bg-blue-900/50 dark:text-blue-300 rounded-full flex-shrink-0">
+                            Level Kamu
+                          </span>
                         )}
                       </div>
-                    );
-                  })}
-                </div>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4 flex-grow">
+                        {(features as CompetencyFeature[]).map((feature, index) => {
+                          const score = Math.round(feature.score);
+                          const feedback = getCompetencyFeedback(score);
+                          return (
+                            <div key={index}>
+                              <div className="flex justify-between items-center mb-1">
+                                <span className="text-sm font-medium text-gray-700 dark:text-gray-300">{feature.name}</span>
+                                <span className={`text-sm font-bold ${feedback.textColor}`}>{score}%</span>
+                              </div>
+                              <div className="h-2 w-full bg-gray-200 dark:bg-gray-700 rounded-full">
+                                <div className={`h-full rounded-full transition-all duration-500 ease-out ${feedback.color}`} style={{ width: `${score}%` }}></div>
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  );
+                })}
               </div>
-            ))
-          ) : <p className="text-center text-sm text-gray-600 dark:text-gray-400 py-8">Data kompetensi belum tersedia. Kerjakan pre-test untuk melihatnya.</p>}
-        </div>
-        {/* Pagination untuk Peta Kompetensi */}
-        {competencyTotalPages > 1 && (
-          <div className="flex justify-between items-center mt-6 text-sm">
+            );
+          })()
+        ) : (
+          <p className="text-center text-sm text-gray-600 dark:text-gray-400 py-8">Data kompetensi belum tersedia. Kerjakan pre-test untuk melihatnya.</p>
+        )}
+        {/* Tombol Tingkatkan dipindahkan ke luar dari pengecekan loading */}
+        {!loading && competencyData?.nextModuleToImprove && (
+          <div className="mt-8 text-center md:text-left">
             <button
-              onClick={() => setCompetencyCurrentPage(prev => Math.max(prev - 1, 1))}
-              disabled={competencyCurrentPage === 1}
-              className="px-3 py-1 border rounded-md disabled:opacity-50 disabled:cursor-not-allowed bg-white/50 dark:bg-gray-700/50 border-gray-300 dark:border-gray-600"
+              onClick={() => router.push(`/modul/${competencyData.nextModuleToImprove.slug}`)}
+              className="inline-flex items-center gap-2 px-5 py-2.5 bg-blue-500 text-white font-semibold rounded-lg shadow-md hover:bg-blue-600 transition-all transform hover:scale-105 text-sm md:text-base"
             >
-              Sebelumnya
-            </button>
-            <span className="text-gray-600 dark:text-gray-400">
-              Halaman {competencyCurrentPage} dari {competencyTotalPages}
-            </span>
-            <button
-              onClick={() => setCompetencyCurrentPage(prev => Math.min(prev + 1, competencyTotalPages))}
-              disabled={competencyCurrentPage === competencyTotalPages}
-              className="px-3 py-1 border rounded-md disabled:opacity-50 disabled:cursor-not-allowed bg-white/50 dark:bg-gray-700/50 border-gray-300 dark:border-gray-600"
-            >
-              Berikutnya
+              <Rocket className="w-5 h-5" />
+              Tingkatkan Kompetensi di Modul Selanjutnya
             </button>
           </div>
         )}
-        </>
-        })()}
       </section>
 
       {/* REKOMENDASI */}
