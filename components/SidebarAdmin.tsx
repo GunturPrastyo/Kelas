@@ -11,7 +11,7 @@ const adminNavLinks = [
   { href: "/admin/dashboard", label: "Dashboard", icon: "/dashboard.png", alt: "Dashboard Icon" },
   { href: "/admin/modul", label: "Modul dan Tes", icon: "/modules.png", alt: "Modul Icon" },
   { href: "/admin/manajemen-pengguna", label: "Manajemen Pengguna", icon: "/profile.png", alt: "Users Icon" },
-  { href: "/admin/analitik", label: "Analitik", icon: "/analitik.png", alt: "Analitik Icon" },
+  { href: "/admin/analitik", label: "Analitik Pembelajaran", icon: "/analitik.png", alt: "Analitik Icon" },
   // { href: "/admin/profil", label: "Profil", icon: "/profile.png", alt: "Profil Icon" },
 ];
 

@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import ModulCard from "@/components/ModulCard"; // Card untuk setiap modul
 import { Button } from "@/components/ui/button"; // Import Button
-import { Edit, PlusCircle, List, LayoutGrid } from "lucide-react"; // Import ikon
+import { Edit, PlusCircle, List, LayoutGrid, Info, Shield, Zap, Trophy, CheckCircle2 } from "lucide-react"; // Import ikon
 import { authFetch } from "@/lib/authFetch";
 import ModulOrder from "@/components/ModulOrder"; 
 import FeatureManager from "@/components/FeatureManager";
@@ -112,7 +112,7 @@ export default function ModulPage() {
   }
 
   return (
-    <div className="p-6 mt-22">
+    <div className="mt-22">
       <div className="block sm:flex justify-between items-center mb-6">
         <h1 className="mb-5 sm:m-0 text-2xl font-bold">Manajemen Modul dan Tes</h1>
         <div className="flex items-center gap-4">
@@ -152,29 +152,91 @@ export default function ModulPage() {
 
       {/* Tampilan Pengelompokan Fitur */}
       {availableFeatures.length > 0 && (
-        <div className="mb-6 p-4 bg-white dark:bg-gray-800 border dark:border-gray-700 rounded-lg">
-          <h3 className="text-md font-semibold mb-3">Ringkasan Pengelompokan Indikator</h3>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="mb-8">
+          <div className="flex items-center gap-2 mb-4">
+            <h3 className="text-xl font-bold text-gray-800 dark:text-gray-200">Peta Indikator Kompetensi</h3>
+            <div className="group relative">
+              <Info size={18} className="text-gray-400 cursor-help" />
+              <div className="absolute left-0 bottom-full mb-2 hidden w-64 p-2 text-xs text-white bg-gray-800 rounded shadow-lg group-hover:block z-10">
+                Indikator ini digunakan untuk menentukan level pengguna (Dasar, Menengah, Lanjutan) berdasarkan hasil Tes.
+              </div>
+            </div>
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {(['Dasar', 'Menengah', 'Lanjutan'] as const).map(group => {
               const featuresInGroup = availableFeatures.filter(f => f.group === group);
+              
+              let groupStyles = {
+                icon: Shield,
+                color: "text-green-600 dark:text-green-400",
+                bgColor: "bg-green-50 dark:bg-green-900/20",
+                borderColor: "border-green-200 dark:border-green-800",
+                badgeBg: "bg-green-100 dark:bg-green-800",
+                badgeText: "text-green-700 dark:text-green-200",
+                
+              };
+
+              if (group === 'Menengah') {
+                groupStyles = {
+                  icon: Zap,
+                  color: "text-yellow-600 dark:text-yellow-400",
+                  bgColor: "bg-yellow-50 dark:bg-yellow-900/20",
+                  borderColor: "border-yellow-200 dark:border-yellow-800",
+                  badgeBg: "bg-yellow-100 dark:bg-yellow-800",
+                  badgeText: "text-yellow-700 dark:text-yellow-200",
+                 
+                };
+              } else if (group === 'Lanjutan') {
+                groupStyles = {
+                  icon: Trophy,
+                  color: "text-red-600 dark:text-red-400",
+                  bgColor: "bg-red-50 dark:bg-red-900/20",
+                  borderColor: "border-red-200 dark:border-red-800",
+                  badgeBg: "bg-red-100 dark:bg-red-800",
+                  badgeText: "text-red-700 dark:text-red-200",
+
+                };
+              }
+
+              const Icon = groupStyles.icon;
+
               return (
-                <div key={group} className={`p-3 rounded-lg border ${
-                  group === 'Dasar' ? 'bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-700' :
-                  group === 'Menengah' ? 'bg-yellow-50 dark:bg-yellow-900/20 border-yellow-200 dark:border-yellow-700' :
-                  'bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-700'
-                }`}>
-                  <h4 className={`font-semibold mb-2 ${
-                    group === 'Dasar' ? 'text-green-800 dark:text-green-300' :
-                    group === 'Menengah' ? 'text-yellow-800 dark:text-yellow-300' :
-                    'text-red-800 dark:text-red-300'
-                  }`}>{group}</h4>
-                  {featuresInGroup.length > 0 ? (
-                    <ul className="text-sm list-disc list-inside space-y-1 text-gray-700 dark:text-gray-300">
-                      {featuresInGroup.map(f => <li key={f._id}>{f.name}</li>)}
-                    </ul>
-                  ) : (
-                    <p className="text-xs text-gray-500">Belum ada indikator.</p>
-                  )}
+                <div key={group} className={`relative flex flex-col p-5 rounded-xl border-2 transition-all hover:shadow-md ${groupStyles.bgColor} ${groupStyles.borderColor}`}>
+                  {/* Header */}
+                  <div className="flex justify-between items-start mb-4">
+                    <div className="flex items-center gap-3">
+                      <div className={`p-2 rounded-lg bg-white dark:bg-gray-800 shadow-sm ${groupStyles.color}`}>
+                        <Icon size={24} />
+                      </div>
+                      <div>
+                        <h4 className={`font-bold text-lg ${groupStyles.color}`}>{group}</h4>
+                        <span className={`text-xs font-medium px-2 py-0.5 rounded-full ${groupStyles.badgeBg} ${groupStyles.badgeText}`}>
+                          {featuresInGroup.length} Indikator
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+
+             
+
+                  {/* List */}
+                  <div className="flex-grow bg-white/60 dark:bg-gray-800/60 rounded-lg p-3">
+                    {featuresInGroup.length > 0 ? (
+                      <ul className="space-y-2">
+                        {featuresInGroup.map(f => (
+                          <li key={f._id} className="flex items-start gap-2 text-sm text-gray-700 dark:text-gray-200">
+                            <CheckCircle2 size={16} className={`mt-0.5 flex-shrink-0 ${groupStyles.color}`} />
+                            <span className="leading-tight">{f.name}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    ) : (
+                      <div className="flex flex-col items-center justify-center h-full py-4 text-gray-400">
+                        <span className="text-xs text-center">Belum ada indikator</span>
+                      </div>
+                    )}
+                  </div>
                 </div>
               );
             })}

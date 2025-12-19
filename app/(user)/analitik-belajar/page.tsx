@@ -206,14 +206,13 @@ export default function AnalitikBelajarPage() {
       try {
         setLoading(true);
 
-
-        const [progressRes, analyticsRes, weeklyActivityRes, classWeeklyActivityRes, competencyMapRes, comparisonRes, recommendationsRes, weakTopicsRes] =
+        const [progressRes, analyticsRes, weeklyActivityRes, classWeeklyActivityRes, competencyProfileRes, comparisonRes, recommendationsRes, weakTopicsRes] =
           await Promise.all([
             authFetch(`${process.env.NEXT_PUBLIC_API_URL}/api/modul/progress`),
             authFetch(`${process.env.NEXT_PUBLIC_API_URL}/api/results/analytics`),
             authFetch(`${process.env.NEXT_PUBLIC_API_URL}/api/results/weekly-activity`),
             authFetch(`${process.env.NEXT_PUBLIC_API_URL}/api/results/class-weekly-activity`),
-            authFetch(`${process.env.NEXT_PUBLIC_API_URL}/api/results/competency-map`), // Endpoint yang benar, data user diambil dari token
+            authFetch(`${process.env.NEXT_PUBLIC_API_URL}/api/users/competency-profile`), // Endpoint khusus untuk competencyProfile
             authFetch(`${process.env.NEXT_PUBLIC_API_URL}/api/results/comparison-analytics`),
             authFetch(`${process.env.NEXT_PUBLIC_API_URL}/api/results/recommendations`),
             authFetch(`${process.env.NEXT_PUBLIC_API_URL}/api/results/topics-to-reinforce`),
@@ -239,7 +238,7 @@ export default function AnalitikBelajarPage() {
         const analyticsData = await checkResponse(analyticsRes, 'analytics');
         const weeklyActivityData = await checkResponse(weeklyActivityRes, 'weekly activity');
         const classWeeklyActivityData = await checkResponse(classWeeklyActivityRes, 'class weekly activity');
-        const competencyMapData = await checkResponse(competencyMapRes, 'competency map');
+        const competencyProfileData = await checkResponse(competencyProfileRes, 'competency profile');
         const comparisonData = await checkResponse(comparisonRes, 'comparison');
         const recommendationsData: RecommendationData | null = await checkResponse(recommendationsRes, 'recommendations');
         const weakTopicsData = await checkResponse(weakTopicsRes, 'weak topics');
@@ -285,9 +284,9 @@ export default function AnalitikBelajarPage() {
         }
 
         // Simpan data kompetensi yang sudah dikelompokkan dari backend
-        if (competencyMapData) {
+        if (competencyProfileData && competencyProfileData.competencyProfile) {
           // Tambahkan modul yang akan ditingkatkan ke data kompetensi
-          setCompetencyData({ ...competencyMapData as GroupedCompetencyData, nextModuleToImprove });
+          setCompetencyData({ ...competencyProfileData.competencyProfile as GroupedCompetencyData, nextModuleToImprove });
         }
 
         setComparisonData(updatedComparisonData);
