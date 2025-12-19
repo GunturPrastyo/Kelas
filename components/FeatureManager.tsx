@@ -75,7 +75,7 @@ export default function FeatureManager({ onFeaturesUpdate }: FeatureManagerProps
 
     return (
         <>
-            <Button variant="outline" onClick={handleOpenModal} className="flex items-center gap-2">
+            <Button variant="outline" onClick={handleOpenModal} className="flex items-center gap-2 ">
                 <Settings size={16} />
                 Kelola Indikator
             </Button>
