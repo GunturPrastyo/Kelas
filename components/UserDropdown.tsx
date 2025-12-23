@@ -5,7 +5,7 @@ import { useTheme } from 'next-themes';
 import Avatar from './Avatar'; // Import the Avatar component
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { LogOut, User as UserIcon, Sun, Cloud, Sunset, Moon, BookUp, Award, Settings, HelpCircle, ChevronRight, Info, Download } from 'lucide-react';
+import { LogOut, User as UserIcon, Sun, Cloud, Sunset, Moon, BookUp, Award, Settings, HelpCircle, ChevronRight, Info, Download, LayoutDashboard } from 'lucide-react';
 import { authFetch } from '@/lib/authFetch';
 import HelpModal from './HelpModal'; // Impor modal bantuan
 import { useAlert } from '@/context/AlertContext'; // 1. Impor useAlert
@@ -14,6 +14,7 @@ interface User {
     name: string;
     email: string;
     avatar?: string;
+    role?: 'user' | 'admin' | 'super_admin';
 }
 interface Module {
     _id: string;
@@ -82,8 +83,10 @@ export default function UserDropdown() {
         // Ambil data pengguna dari localStorage
         const userRaw = localStorage.getItem('user');
         if (userRaw) {
-            setUser(JSON.parse(userRaw));
-            fetchDropdownData();
+            const userData = JSON.parse(userRaw);
+            setUser(userData);
+            // Hanya fetch data progress jika user adalah siswa
+            if (userData.role === 'user') fetchDropdownData();
         }
 
         // Tambahkan event listener untuk menutup dropdown saat klik di luar
@@ -169,12 +172,18 @@ export default function UserDropdown() {
                             <div className="flex-1 min-w-0">
                                 <p className="font-semibold text-sm text-gray-800 dark:text-gray-200 truncate" title={user.name}>{user.name}</p>
                                 <p className="text-xs text-gray-500 dark:text-gray-400 truncate" title={user.email}>{user.email}</p>
+                                {user.role && user.role !== 'user' && (
+                                    <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300 mt-1 capitalize">
+                                        {user.role.replace('_', ' ')}
+                                    </span>
+                                )}
                             </div>
                         </div>
                     </div>
 
                     {/* Progress Belajar */}
-                    <div className="p-3 border-b border-gray-200 dark:border-gray-700">
+                    {user.role === 'user' && (
+                        <div className="p-3 border-b border-gray-200 dark:border-gray-700">
                         <div className="flex justify-between items-center mb-1">
                             <label className="text-xs font-medium text-gray-500 dark:text-gray-400">Progress Belajar</label>
                             <span className="text-xs font-semibold text-blue-600 dark:text-blue-400">{overallProgress}%</span>
@@ -183,22 +192,33 @@ export default function UserDropdown() {
                             <div className="h-1.5 bg-blue-500 rounded-full" style={{ width: `${overallProgress}%` }}></div>
                         </div>
                     </div>
+                    )}
 
                     {/* Menu Items */}
                     <div className="p-2">
-                        {lastModule && (
+                        {user.role !== 'user' && (
+                            <Link href="/admin/dashboard" onClick={() => setIsOpen(false)} className="w-full text-left flex items-center gap-3 px-3 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700/50 rounded-md transition-colors">
+                                <LayoutDashboard className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+                                <span>Dashboard Admin</span>
+                            </Link>
+                        )}
+
+                        {user.role === 'user' && lastModule && (
                             <Link href={`/modul/${lastModule.slug}`} onClick={() => setIsOpen(false)} className="w-full text-left flex items-center gap-3 px-3 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700/50 rounded-md transition-colors">
                                 <BookUp className="w-5 h-5 text-blue-500" />
                                 <span className="flex-1 truncate">Lanjutkan: {lastModule.title}</span>
                                 <ChevronRight className="w-4 h-4 text-gray-400" />
                             </Link>
                         )}
-                        <Link href="/profil" onClick={() => setIsOpen(false)} className="w-full text-left flex items-center gap-3 px-3 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700/50 rounded-md transition-colors">
-                            <UserIcon className="w-5 h-5" />
-                            <span>Profil Saya</span>
-                        </Link>
+                        {user.role === 'user' && (
+                            <Link href="/profil" onClick={() => setIsOpen(false)} className="w-full text-left flex items-center gap-3 px-3 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700/50 rounded-md transition-colors">
+                                <UserIcon className="w-5 h-5" />
+                                <span>Profil Saya</span>
+                            </Link>
+                        )}
                         {/* 4. Modifikasi Link Sertifikat */}
-                        <div className={`flex items-center justify-between px-3 py-2 rounded-md transition-colors ${overallProgress === 100 ? 'hover:bg-gray-100 dark:hover:bg-gray-700/50' : ''}`}>
+                        {user.role === 'user' && (
+                            <div className={`flex items-center justify-between px-3 py-2 rounded-md transition-colors ${overallProgress === 100 ? 'hover:bg-gray-100 dark:hover:bg-gray-700/50' : ''}`}>
                             <Link
                                 href={overallProgress === 100 ? "/sertifikat" : "#"}
                                 onClick={(e) => {
@@ -220,6 +240,7 @@ export default function UserDropdown() {
                                 </button>
                             )}
                         </div>
+                        )}
                         <button onClick={handleSettingsClick} className="w-full text-left flex items-center gap-3 px-3 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700/50 rounded-md transition-colors cursor-not-allowed opacity-60">
                             <Settings className="w-5 h-5" />
                             <span>Pengaturan</span>
@@ -233,10 +254,12 @@ export default function UserDropdown() {
                             </span>
                             <span className="text-xs font-medium text-gray-500 dark:text-gray-400">{theme === 'dark' ? 'Terang' : 'Gelap'}</span>
                         </button>
-                        <button onClick={() => { setIsHelpModalOpen(true); setIsOpen(false); }} className="w-full text-left flex items-center gap-3 px-3 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700/50 rounded-md transition-colors">
-                            <HelpCircle className="w-5 h-5" />
-                            <span>Bantuan</span>
-                        </button>
+                        {user.role === 'user' && (
+                            <button onClick={() => { setIsHelpModalOpen(true); setIsOpen(false); }} className="w-full text-left flex items-center gap-3 px-3 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700/50 rounded-md transition-colors">
+                                <HelpCircle className="w-5 h-5" />
+                                <span>Bantuan</span>
+                            </button>
+                        )}
                     </div>
                     <div className="p-2 border-t border-gray-200 dark:border-gray-700">
                         <button

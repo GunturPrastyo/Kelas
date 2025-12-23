@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback, FormEvent } from 'react';
+import { useRouter } from 'next/navigation';
 import { authFetch } from '../../../lib/authFetch';
 import { Trash2, UserPlus, Users, AlertCircle, CheckCircle } from 'lucide-react';
 import Image from 'next/image';
@@ -9,7 +10,7 @@ interface User {
     _id: string;
     name: string;
     email: string;
-    role: 'user' | 'admin';
+    role: 'user' | 'admin' | 'super_admin';
     avatar?: string;
     createdAt: string;
 }
@@ -39,6 +40,7 @@ const getAvatarUrl = (user: User): string => {
 };
 
 export default function ManajemenPenggunaPage() {
+    const router = useRouter();
     const [users, setUsers] = useState<User[]>([]);
     const [loading, setLoading] = useState(true);
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -48,7 +50,7 @@ export default function ManajemenPenggunaPage() {
     const [accountType, setAccountType] = useState<'google' | 'manual'>('google');
     const [newName, setNewName] = useState('');
     const [newEmail, setNewEmail] = useState('');
-    const [newRole, setNewRole] = useState<'user' | 'admin'>('user');
+    const [newRole, setNewRole] = useState<'user' | 'admin' | 'super_admin'>('user');
     const [isSubmitting, setIsSubmitting] = useState(false);
 
     const fetchUsers = useCallback(async () => {
@@ -71,6 +73,26 @@ export default function ManajemenPenggunaPage() {
     useEffect(() => {
         fetchUsers();
     }, [fetchUsers]);
+
+    // Proteksi Halaman: Hanya Super Admin yang boleh akses
+    useEffect(() => {
+        const verifyAccess = async () => {
+            try {
+                // Pastikan endpoint ini sesuai dengan API Anda (misal: /api/auth/me atau /api/users/profile)
+                const response = await authFetch(`${process.env.NEXT_PUBLIC_API_URL}/api/auth/me`);
+                if (response.ok) {
+                    const userData = await response.json();
+                    if (userData.role !== 'super_admin') {
+                        setNotification({ type: 'error', message: 'Akses ditolak. Halaman ini khusus Super Admin.' });
+                        setTimeout(() => router.push('/admin/dashboard'), 2000);
+                    }
+                }
+            } catch (error) {
+                console.error('Gagal memverifikasi akses:', error);
+            }
+        };
+        verifyAccess();
+    }, [router]);
 
     const showNotification = (type: 'success' | 'error', message: string) => {
         setNotification({ type, message });
@@ -117,7 +139,12 @@ export default function ManajemenPenggunaPage() {
         }
     };
 
-    const handleDeleteUser = async (userId: string, userName: string) => {
+    const handleDeleteUser = async (userId: string, userName: string, userRole: string) => {
+        if (userRole === 'super_admin') {
+            showNotification('error', 'Anda tidak dapat menghapus Super Admin.');
+            return;
+        }
+
         if (window.confirm(`Apakah Anda yakin ingin menghapus pengguna "${userName}"? Tindakan ini tidak dapat dibatalkan.`)) {
             try {
                 const response = await authFetch(`${process.env.NEXT_PUBLIC_API_URL}/api/users/${userId}`, {
@@ -153,7 +180,7 @@ export default function ManajemenPenggunaPage() {
             <header className="flex justify-between items-center mb-6">
                 <h1 className="text-2xl font-bold text-gray-800 dark:text-white flex items-center gap-3">
                     <Users />
-                    Manajemen User
+                    Manajemen Pengguna
                 </h1>
                 <button
                     onClick={() => setIsModalOpen(true)}
@@ -219,11 +246,12 @@ export default function ManajemenPenggunaPage() {
                                 <select
                                     id="role"
                                     value={newRole}
-                                    onChange={(e) => setNewRole(e.target.value as 'user' | 'admin')}
+                                    onChange={(e) => setNewRole(e.target.value as 'user' | 'admin' | 'super_admin')}
                                     className="mt-1 block w-full px-3 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500" required
                                 >
-                                    <option value="user">User</option>
-                                    <option value="admin">Admin</option>
+                                    <option value="user">User (Siswa)</option>
+                                    <option value="admin">Admin (Guru)</option>
+                                    <option value="super_admin">Super Admin</option>
                                 </select>
                                 <p className="text-xs text-gray-500 mt-2">
                                     {accountType === 'manual' ? 'Password akan diatur ke default `password123`.' : 'Pengguna akan login menggunakan akun Google-nya.'}
@@ -290,21 +318,29 @@ export default function ManajemenPenggunaPage() {
                                             </div>
                                         </td>
                                         <td className="px-6 py-4 whitespace-nowrap">
-                                            <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${user.role === 'admin' ? 'bg-red-100 text-red-800 dark:bg-red-900/50 dark:text-red-300' : 'bg-green-100 text-green-800 dark:bg-green-900/50 dark:text-green-300'}`}>
-                                                {user.role}
+                                            <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
+                                                user.role === 'super_admin' 
+                                                    ? 'bg-purple-100 text-purple-800 dark:bg-purple-900/50 dark:text-purple-300' 
+                                                    : user.role === 'admin' 
+                                                        ? 'bg-blue-100 text-blue-800 dark:bg-blue-900/50 dark:text-blue-300' 
+                                                        : 'bg-green-100 text-green-800 dark:bg-green-900/50 dark:text-green-300'
+                                            }`}>
+                                                {user.role === 'user' ? 'Siswa' : user.role === 'admin' ? 'Guru' : 'Super Admin'}
                                             </span>
                                         </td>
                                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
                                             {new Date(user.createdAt).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })}
                                         </td>
                                         <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                                            <button
-                                                onClick={() => handleDeleteUser(user._id, user.name)}
-                                                className="text-red-600 hover:text-red-900 dark:text-red-500 dark:hover:text-red-400"
-                                                title={`Hapus ${user.name}`}
-                                            >
-                                                <Trash2 size={18} />
-                                            </button>
+                                            {user.role !== 'super_admin' && (
+                                                <button
+                                                    onClick={() => handleDeleteUser(user._id, user.name, user.role)}
+                                                    className="text-red-600 hover:text-red-900 dark:text-red-500 dark:hover:text-red-400"
+                                                    title={`Hapus ${user.name}`}
+                                                >
+                                                    <Trash2 size={18} />
+                                                </button>
+                                            )}
                                         </td>
                                     </tr>
                                 ))

@@ -170,47 +170,44 @@ export default function ModulPage() {
               let groupStyles = {
                 icon: Shield,
                 color: "text-green-600 dark:text-green-400",
-                bgColor: "bg-green-50 dark:bg-green-900/20",
+                iconBg: "bg-green-50 dark:bg-green-900/20",
                 borderColor: "border-green-200 dark:border-green-800",
-                badgeBg: "bg-green-100 dark:bg-green-800",
-                badgeText: "text-green-700 dark:text-green-200",
-                
+                badgeBg: "bg-green-100 dark:bg-green-900/30",
+                badgeText: "text-green-700 dark:text-green-300",
               };
 
               if (group === 'Menengah') {
                 groupStyles = {
                   icon: Zap,
                   color: "text-yellow-600 dark:text-yellow-400",
-                  bgColor: "bg-yellow-50 dark:bg-yellow-900/20",
+                  iconBg: "bg-yellow-50 dark:bg-yellow-900/20",
                   borderColor: "border-yellow-200 dark:border-yellow-800",
-                  badgeBg: "bg-yellow-100 dark:bg-yellow-800",
-                  badgeText: "text-yellow-700 dark:text-yellow-200",
-                 
+                  badgeBg: "bg-yellow-100 dark:bg-yellow-900/30",
+                  badgeText: "text-yellow-700 dark:text-yellow-300",
                 };
               } else if (group === 'Lanjutan') {
                 groupStyles = {
                   icon: Trophy,
                   color: "text-red-600 dark:text-red-400",
-                  bgColor: "bg-red-50 dark:bg-red-900/20",
+                  iconBg: "bg-red-50 dark:bg-red-900/20",
                   borderColor: "border-red-200 dark:border-red-800",
-                  badgeBg: "bg-red-100 dark:bg-red-800",
-                  badgeText: "text-red-700 dark:text-red-200",
-
+                  badgeBg: "bg-red-100 dark:bg-red-900/30",
+                  badgeText: "text-red-700 dark:text-red-300",
                 };
               }
 
               const Icon = groupStyles.icon;
 
               return (
-                <div key={group} className={`relative flex flex-col p-5 rounded-xl border-2 transition-all hover:shadow-md ${groupStyles.bgColor} ${groupStyles.borderColor}`}>
+                <div key={group} className={`relative flex flex-col p-5 rounded-xl border transition-all hover:shadow-md bg-white dark:bg-gray-800 ${groupStyles.borderColor}`}>
                   {/* Header */}
                   <div className="flex justify-between items-start mb-4">
                     <div className="flex items-center gap-3">
-                      <div className={`p-2 rounded-lg bg-white dark:bg-gray-800 shadow-sm ${groupStyles.color}`}>
+                      <div className={`p-2 rounded-lg ${groupStyles.iconBg} ${groupStyles.color}`}>
                         <Icon size={24} />
                       </div>
                       <div>
-                        <h4 className={`font-bold text-lg ${groupStyles.color}`}>{group}</h4>
+                        <h4 className="font-bold text-lg text-gray-800 dark:text-white">{group}</h4>
                         <span className={`text-xs font-medium px-2 py-0.5 rounded-full ${groupStyles.badgeBg} ${groupStyles.badgeText}`}>
                           {featuresInGroup.length} Indikator
                         </span>
@@ -218,14 +215,12 @@ export default function ModulPage() {
                     </div>
                   </div>
 
-             
-
                   {/* List */}
-                  <div className="flex-grow bg-white/60 dark:bg-gray-800/60 rounded-lg p-3">
+                  <div className="flex-grow bg-gray-50 dark:bg-gray-900/50 rounded-lg p-3 border border-gray-100 dark:border-gray-700">
                     {featuresInGroup.length > 0 ? (
                       <ul className="space-y-2">
                         {featuresInGroup.map(f => (
-                          <li key={f._id} className="flex items-start gap-2 text-sm text-gray-700 dark:text-gray-200">
+                          <li key={f._id} className="flex items-start gap-2 text-sm text-gray-600 dark:text-gray-300">
                             <CheckCircle2 size={16} className={`mt-0.5 flex-shrink-0 ${groupStyles.color}`} />
                             <span className="leading-tight">{f.name}</span>
                           </li>

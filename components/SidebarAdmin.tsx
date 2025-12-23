@@ -1,11 +1,12 @@
 "use client"
 
 import Link from "next/link"
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import Image from "next/image";
 import { usePathname, useRouter } from 'next/navigation';
 import { useUI } from "@/context/UIContext"
 import { LogOut } from "lucide-react";
+import { authFetch } from "@/lib/authFetch";
 
 const adminNavLinks = [
   { href: "/admin/dashboard", label: "Dashboard", icon: "/dashboard.png", alt: "Dashboard Icon" },
@@ -15,16 +16,41 @@ const adminNavLinks = [
   // { href: "/admin/profil", label: "Profil", icon: "/profile.png", alt: "Profil Icon" },
 ];
 
+interface User {
+  role: 'user' | 'admin' | 'super_admin';
+}
+
 export default function SidebarAdmin() {
   const { isSidebarCollapsed, isMobileDrawerOpen, toggleSidebar } = useUI()
   const pathname = usePathname();
   const router = useRouter();
   const [mounted, setMounted] = useState(false);
+  const [user, setUser] = useState<User | null>(null);
 
   useEffect(() => {
     setMounted(true);
+    const userRaw = localStorage.getItem('user');
+    if (userRaw) {
+      try {
+        const parsedUser: User = JSON.parse(userRaw);
+        setUser(parsedUser);
+      } catch (e) {
+        console.error("Gagal mengurai pengguna dari localStorage", e);
+      }
+    }
   }, []);
 
+  const visibleNavLinks = useMemo(() => {
+    if (!user) {
+      return [];
+    }
+    return adminNavLinks.filter(link => {
+      if (link.href === "/admin/manajemen-pengguna") {
+        return user.role === 'super_admin';
+      }
+      return true;
+    });
+  }, [user]);
 
   const isActive = (href: string) => {
     if (href === "/admin/dashboard") return pathname === href;
@@ -33,9 +59,8 @@ export default function SidebarAdmin() {
 
   const handleLogout = async () => {
     try {
-      await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/users/logout`, {
+      await authFetch(`${process.env.NEXT_PUBLIC_API_URL}/api/users/logout`, {
         method: "POST",
-        credentials: "include", // Penting untuk mengirim cookie
       });
     } catch (error) {
       console.error("Gagal melakukan logout di server:", error);
@@ -75,7 +100,7 @@ export default function SidebarAdmin() {
 
       {/* Navigasi Sidebar */}
       <nav className="flex-1 space-y-2 px-4 overflow-y-auto">
-        {adminNavLinks.map((link) => {
+        {visibleNavLinks.map((link) => {
           const active = isActive(link.href);
           return (
           <Link key={link.href} href={link.href} className={`flex items-center gap-4 p-3 rounded-lg transition-colors ${active ? 'bg-blue-50 dark:bg-gray-700' : 'hover:bg-gray-100 dark:hover:bg-gray-700'}`}>

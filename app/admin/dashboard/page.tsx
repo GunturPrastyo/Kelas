@@ -1,9 +1,33 @@
 "use client";
 
-import { useEffect, useState, useMemo } from "react";
+import { useEffect, useState, useMemo, useRef } from "react";
 import Link from "next/link"
+import Image from "next/image";
 import { Users, BookOpen, GraduationCap, Activity, Plus, ArrowRight, BarChart3, Zap, TrendingUp } from "lucide-react";
 import { authFetch } from "@/lib/authFetch";
+import { Chart, registerables } from "chart.js";
+
+Chart.register(...registerables);
+
+interface User {
+    _id: string;
+    name: string;
+    email: string;
+    role: 'user' | 'admin' | 'super_admin';
+    avatar?: string;
+    createdAt: string;
+}
+
+const getAvatarUrl = (user: User): string => {
+    if (user.avatar && user.avatar.startsWith('http')) {
+        return user.avatar;
+    }
+    if (user.avatar) {
+        return `${process.env.NEXT_PUBLIC_API_URL}/uploads/${user.avatar}`;
+    }
+    const encodedName = encodeURIComponent(user.name);
+    return `https://ui-avatars.com/api/?name=${encodedName}&background=random&color=fff&rounded=true`;
+};
 
 export default function DashboardPage() {
   const [stats, setStats] = useState({
@@ -11,11 +35,13 @@ export default function DashboardPage() {
     totalModules: 0,
     averageScore: 0,
     activeUsers: 0,
-    recentUsers: [] as any[],
+    recentUsers: [] as User[],
     moduleStats: [] as any[]
   });
   const [loading, setLoading] = useState(true);
   const [adminName, setAdminName] = useState("Admin");
+  const chartRef = useRef<HTMLCanvasElement>(null);
+  const chartInstance = useRef<Chart | null>(null);
 
   // Greeting logic
   const greeting = useMemo(() => {
@@ -39,20 +65,28 @@ export default function DashboardPage() {
     const fetchStats = async () => {
       try {
         // Fetch data real dari API
-        const [usersRes, modulesRes] = await Promise.all([
+        const [usersRes, modulesRes, analyticsRes] = await Promise.all([
             authFetch(`${process.env.NEXT_PUBLIC_API_URL}/api/users`),
-            authFetch(`${process.env.NEXT_PUBLIC_API_URL}/api/modul`)
+            authFetch(`${process.env.NEXT_PUBLIC_API_URL}/api/modul`),
+            authFetch(`${process.env.NEXT_PUBLIC_API_URL}/api/analytics/admin-analytics`)
         ]);
 
         let userCount = 0;
         let moduleCount = 0;
-        let recentUsersList: any[] = [];
+        let recentUsersList: User[] = [];
         let moduleStatsData: any[] = [];
+        let avgScore = 0;
 
         if (usersRes.ok) {
             const usersData = await usersRes.json();
-            const users = Array.isArray(usersData) ? usersData : (usersData.data || []);
-            userCount = users.length;
+            let users: User[] = Array.isArray(usersData) ? usersData : (usersData.data || []);
+            
+            // Filter admin agar tidak tampil di list siswa terbaru
+            users = users.filter((u: User) => u.role !== 'admin');
+            
+            // Urutkan user berdasarkan tanggal pembuatan (terbaru paling atas)
+            users.sort((a: User, b: User) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+
             // Ambil 5 user terakhir
             recentUsersList = users.slice(0, 5); 
         }
@@ -62,11 +96,26 @@ export default function DashboardPage() {
             const modulesArray = Array.isArray(modules) ? modules : [];
             moduleCount = modulesArray.length;
 
-            // Simulasi data jumlah siswa per modul (karena endpoint mungkin belum menyediakan count)
-            moduleStatsData = modulesArray.map((m: any, index: number) => ({
-                name: m.judul || `Modul ${index + 1}`,
-                count: Math.floor(Math.random() * (userCount > 0 ? userCount : 20)) // Mock data
-            })).slice(0, 7); // Ambil 7 modul pertama agar grafik rapi
+            // Fallback: inisialisasi moduleStatsData dengan data modul (count 0)
+            // Ini memastikan chart tetap muncul dengan nama modul meskipun belum ada data analitik
+            moduleStatsData = modulesArray.map((m: any) => ({
+                name: m.title,
+                count: 0
+            }));
+        }
+
+        if (analyticsRes.ok) {
+            const analyticsData = await analyticsRes.json();
+            userCount = analyticsData.totalUsers || 0;
+            avgScore = analyticsData.overallAverageScore || 0;
+
+            // Gunakan data real dari moduleAnalytics jika tersedia dan tidak kosong
+            if (analyticsData.moduleAnalytics && Array.isArray(analyticsData.moduleAnalytics) && analyticsData.moduleAnalytics.length > 0) {
+                moduleStatsData = analyticsData.moduleAnalytics.map((m: any) => ({
+                    name: m.moduleTitle,
+                    count: m.totalStudents
+                }));
+            }
         }
 
         // Simulasi user online (random 5-15% dari total user)
@@ -75,7 +124,7 @@ export default function DashboardPage() {
         setStats({
             totalUsers: userCount,
             totalModules: moduleCount,
-            averageScore: 78, // Placeholder/Mock nilai rata-rata global
+            averageScore: avgScore,
             activeUsers: simulatedOnline,
             recentUsers: recentUsersList,
             moduleStats: moduleStatsData
@@ -91,6 +140,64 @@ export default function DashboardPage() {
     fetchStats();
   }, []);
 
+  // Chart.js initialization
+  useEffect(() => {
+    if (chartRef.current && stats.moduleStats.length > 0) {
+      if (chartInstance.current) {
+        chartInstance.current.destroy();
+      }
+
+      const ctx = chartRef.current.getContext("2d");
+      if (ctx) {
+        chartInstance.current = new Chart(ctx, {
+          type: "bar",
+          data: {
+            labels: stats.moduleStats.map((m: any) => m.name),
+            datasets: [
+              {
+                label: "Partisipasi Siswa",
+                data: stats.moduleStats.map((m: any) => m.count),
+                backgroundColor: "rgba(59, 130, 246, 0.6)",
+                borderColor: "rgb(59, 130, 246)",
+                borderWidth: 0,
+                borderRadius: 4,
+                barThickness: 20,
+              },
+            ],
+          },
+          options: {
+            indexAxis: 'y',
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              legend: {
+                display: false,
+              },
+              tooltip: {
+                callbacks: {
+                  label: (context) => `${context.raw} Siswa`,
+                },
+              },
+            },
+            scales: {
+              x: {
+                beginAtZero: true,
+                ticks: {
+                  stepSize: 1,
+                },
+              },
+              y: {
+                grid: {
+                  display: false,
+                },
+              },
+            },
+          },
+        });
+      }
+    }
+  }, [stats.moduleStats]);
+
   return (
     <div className="space-y-8 mt-20">
       
@@ -98,35 +205,36 @@ export default function DashboardPage() {
        
 
       {/* Stats Grid yang Lebih Detail */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-6">
         {/* User Online - Realtime feel */}
-        <div className="bg-white dark:bg-gray-800 p-5 rounded-2xl shadow-sm border border-blue-100 dark:border-blue-800 flex flex-col justify-between h-full relative overflow-hidden">
-            <div className="flex justify-between items-start mb-4 relative z-10">
+        <div className="relative overflow-hidden bg-blue-50 dark:bg-blue-900/10 p-4 md:p-6 rounded-2xl shadow-sm  group hover:shadow-lg transition-all duration-300">
+            <div className="absolute -right-6 -top-6 w-24 h-24 rounded-full bg-blue-100 dark:bg-blue-900/30 opacity-50 group-hover:scale-150 transition-transform duration-500 ease-out"></div>
+            <div className="relative z-10 flex items-start justify-between">
                 <div>
-                    <p className="text-sm font-medium text-gray-500 dark:text-gray-400">User Online</p>
-                    <h3 className="text-3xl font-bold text-gray-800 dark:text-white mt-1 flex items-center gap-2">
+                    <p className="text-xs md:text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">User Online</p>
+                    <h3 className="text-2xl md:text-3xl font-bold text-gray-800 dark:text-white flex items-center gap-2 tracking-tight">
                         {loading ? "..." : stats.activeUsers}
                         <span className="relative flex h-3 w-3">
                           <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
                           <span className="relative inline-flex rounded-full h-3 w-3 bg-green-500"></span>
                         </span>
                     </h3>
+                    <p className="text-[10px] md:text-xs text-green-600 dark:text-green-400 font-medium mt-2 flex items-center gap-1">
+                        <Zap size={12} fill="currentColor" />
+                        Sedang aktif belajar
+                    </p>
                 </div>
-                <div className="p-3 rounded-xl bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400">
-                    <Zap className="w-6 h-6" />
+                <div className="p-2 md:p-3 rounded-xl bg-gradient-to-br from-blue-500 to-blue-600 text-white shadow-md">
+                    <Zap className="w-5 h-5 md:w-6 md:h-6" />
                 </div>
             </div>
-            <p className="text-xs text-green-600 dark:text-green-400 font-medium relative z-10">
-                Sedang aktif belajar sekarang
-            </p>
         </div>
 
         <StatCard 
             title="Total Siswa" 
             value={loading ? "..." : stats.totalUsers.toString()} 
-            icon={<Users className="w-6 h-6 text-indigo-600 dark:text-indigo-400" />}
-            bgClass="bg-indigo-50 dark:bg-indigo-900/20"
-            borderClass="border-indigo-100 dark:border-indigo-800"
+            icon={<Users className="w-5 h-5 md:w-6 md:h-6" />}
+            color="indigo"
             trend="+12% bulan ini"
             trendUp={true}
         />
@@ -134,18 +242,16 @@ export default function DashboardPage() {
         <StatCard 
             title="Modul Materi" 
             value={loading ? "..." : stats.totalModules.toString()} 
-            icon={<BookOpen className="w-6 h-6 text-purple-600 dark:text-purple-400" />}
-            bgClass="bg-purple-50 dark:bg-purple-900/20"
-            borderClass="border-purple-100 dark:border-purple-800"
+            icon={<BookOpen className="w-5 h-5 md:w-6 md:h-6" />}
+            color="purple"
             subtext={`${stats.totalModules} modul aktif dipublikasikan`}
         />
 
         <StatCard 
             title="Rata-rata Nilai" 
             value={loading ? "..." : `${stats.averageScore}`} 
-            icon={<GraduationCap className="w-6 h-6 text-orange-600 dark:text-orange-400" />}
-            bgClass="bg-orange-50 dark:bg-orange-900/20"
-            borderClass="border-orange-100 dark:border-orange-800"
+            icon={<GraduationCap className="w-5 h-5 md:w-6 md:h-6" />}
+            color="orange"
             trend="+2.4 poin"
             trendUp={true}
         />
@@ -155,35 +261,23 @@ export default function DashboardPage() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         
         {/* Kolom Kiri: Chart Statistik Modul */}
-        <div className="lg:col-span-2 bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-200 dark:border-gray-700 p-6 flex flex-col">
+        <div className="lg:col-span-2 bg-indigo-50 dark:bg-indigo-900/10 rounded-2xl shadow-sm p-6 flex flex-col">
             <div className="flex items-center justify-between mb-6">
                 <h2 className="text-lg font-bold text-gray-800 dark:text-white flex items-center gap-2">
                     <BarChart3 size={20} className="text-blue-600" />
                     Partisipasi Siswa per Modul
                 </h2>
-                <span className="text-xs font-medium px-2 py-1 bg-gray-100 dark:bg-gray-700 rounded text-gray-600 dark:text-gray-300">
+                <span className="text-xs font-medium px-2 py-1 bg-indigo-100 dark:bg-indigo-800 rounded text-indigo-600 dark:text-indigo-300">
                     Real-time
                 </span>
             </div>
             
-            {/* Simple CSS Bar Chart */}
-            <div className="flex-1 flex items-end gap-2 sm:gap-4 h-64 w-full pb-2">
+            {/* Chart.js Bar Chart */}
+            <div className="flex-1 w-full h-64 relative">
                 {loading ? (
                     <div className="w-full h-full flex items-center justify-center text-gray-400">Memuat data grafik...</div>
                 ) : stats.moduleStats.length > 0 ? (
-                    stats.moduleStats.map((item: any, idx: number) => {
-                        const maxCount = Math.max(...stats.moduleStats.map((s: any) => s.count)) || 1;
-                        const heightPercentage = (item.count / maxCount) * 100;
-                        return (
-                            <div key={idx} className="flex-1 flex flex-col items-center group relative">
-                                <div className="w-full bg-blue-100 dark:bg-blue-900/30 rounded-t-lg relative overflow-hidden transition-all duration-500 hover:bg-blue-200 dark:hover:bg-blue-800/40" style={{ height: `${heightPercentage}%`, minHeight: '10%' }}>
-                                    <div className="absolute bottom-0 left-0 w-full bg-blue-500/80 dark:bg-blue-500/60 h-full opacity-80 group-hover:opacity-100 transition-opacity"></div>
-                                    <div className="absolute -top-8 left-1/2 -translate-x-1/2 bg-gray-800 text-white text-xs py-1 px-2 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-10 pointer-events-none">{item.count} Siswa</div>
-                                </div>
-                                <p className="text-xs text-gray-500 dark:text-gray-400 mt-2 text-center truncate w-full px-1" title={item.name}>{item.name.length > 10 ? item.name.substring(0, 8) + '..' : item.name}</p>
-                            </div>
-                        )
-                    })
+                    <canvas ref={chartRef}></canvas>
                 ) : (
                     <div className="w-full h-full flex items-center justify-center text-gray-400">Belum ada data modul</div>
                 )}
@@ -192,26 +286,30 @@ export default function DashboardPage() {
 
         {/* Kolom Kanan: Aktivitas Terbaru (Mocked/Real) */}
         <div className="space-y-6">
-            <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-200 dark:border-gray-700 p-6 h-full">
+            <div className="bg-teal-50 dark:bg-teal-900/10 rounded-2xl shadow-sm p-6 h-full">
                 <h3 className="font-bold text-gray-800 dark:text-white mb-4 flex items-center justify-between">
                     <span>Siswa Terbaru</span>
-                    <Link href="/admin/manajemen-pengguna" className="text-xs text-blue-600 hover:underline font-normal">Lihat Semua</Link>
+                    <Link href="/admin/analitik#analitik-siswa" className="text-xs text-blue-600 hover:underline font-normal">Lihat Analitik</Link>
                 </h3>
                 
                 <div className="space-y-4">
                     {loading ? (
                         <p className="text-sm text-gray-500">Memuat...</p>
                     ) : stats.recentUsers.length > 0 ? (
-                        stats.recentUsers.map((user: any, idx: number) => (
-                            <div key={user._id || idx} className="flex items-center gap-3 pb-3 border-b border-gray-100 dark:border-gray-700 last:border-0 last:pb-0">
-                                <div className="w-10 h-10 rounded-full bg-gray-100 dark:bg-gray-700 flex items-center justify-center text-gray-600 dark:text-gray-300 font-bold text-sm">
-                                    {user.name ? user.name.charAt(0).toUpperCase() : "?"}
-                                </div>
+                        stats.recentUsers.map((user, idx) => (
+                            <div key={user._id || idx} className="flex items-center gap-3 pb-3 border-b border-teal-100 dark:border-teal-800 last:border-0 last:pb-0">
+                                <Image
+                                    src={getAvatarUrl(user)}
+                                    alt={user.name}
+                                    width={40}
+                                    height={40}
+                                    className="w-10 h-10 rounded-full object-cover"
+                                />
                                 <div className="flex-1 min-w-0">
                                     <p className="text-sm font-medium text-gray-800 dark:text-white truncate">{user.name}</p>
                                     <p className="text-xs text-gray-500 dark:text-gray-400 truncate">{user.email}</p>
                                 </div>
-                                <div className="text-xs text-gray-400">Baru</div>
+                                <div className="text-xs text-gray-400 whitespace-nowrap">{getTimeAgo(user.createdAt)}</div>
                             </div>
                         ))
                     ) : (
@@ -225,25 +323,63 @@ export default function DashboardPage() {
   )
 }
 
-function StatCard({ title, value, icon, bgClass, borderClass, subtext, trend, trendUp }: any) {
+function StatCard({ title, value, icon, color = "blue", subtext, trend, trendUp }: any) {
+    const colorStyles: any = {
+        blue: {
+            bg: "bg-blue-100 dark:bg-blue-900/30",
+            cardBg: "bg-blue-50 dark:bg-blue-900/10",
+            border: "border-blue-200 dark:border-blue-800",
+            gradient: "from-blue-500 to-blue-600",
+        },
+        indigo: {
+            bg: "bg-indigo-100 dark:bg-indigo-900/30",
+            cardBg: "bg-indigo-50 dark:bg-indigo-900/10",
+            border: "border-indigo-200 dark:border-indigo-800",
+            gradient: "from-indigo-500 to-indigo-600",
+        },
+        purple: {
+            bg: "bg-purple-100 dark:bg-purple-900/30",
+            cardBg: "bg-purple-50 dark:bg-purple-900/10",
+            border: "border-purple-200 dark:border-purple-800",
+            gradient: "from-purple-500 to-purple-600",
+        },
+        orange: {
+            bg: "bg-orange-100 dark:bg-orange-900/30",
+            cardBg: "bg-orange-50 dark:bg-orange-900/10",
+            border: "border-orange-200 dark:border-orange-800",
+            gradient: "from-orange-500 to-orange-600",
+        },
+        green: {
+            bg: "bg-green-100 dark:bg-green-900/30",
+            cardBg: "bg-green-50 dark:bg-green-900/10",
+            border: "border-green-200 dark:border-green-800",
+            gradient: "from-green-500 to-green-600",
+        }
+    };
+
+    const style = colorStyles[color] || colorStyles.blue;
+
     return (
-        <div className={`bg-white dark:bg-gray-800 p-5 rounded-2xl shadow-sm border ${borderClass} flex flex-col justify-between h-full transition-all hover:shadow-md`}>
-            <div className="flex justify-between items-start mb-4">
+        <div className={`relative overflow-hidden ${style.cardBg} p-4 md:p-6 rounded-2xl shadow-sm group hover:shadow-lg transition-all duration-300`}>
+            <div className={`absolute -right-6 -top-6 w-24 h-24 rounded-full ${style.bg} opacity-50 group-hover:scale-150 transition-transform duration-500 ease-out`}></div>
+            
+            <div className="relative z-10 flex items-start justify-between">
                 <div>
-                    <p className="text-sm font-medium text-gray-500 dark:text-gray-400">{title}</p>
-                    <h3 className="text-3xl font-bold text-gray-800 dark:text-white mt-1">{value}</h3>
+                    <p className="text-xs md:text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">{title}</p>
+                    <h3 className="text-2xl md:text-3xl font-bold text-gray-800 dark:text-white tracking-tight">{value}</h3>
+                    <div className="flex items-center gap-2 mt-2">
+                        {trend && (
+                            <span className={`text-xs font-bold px-2 py-0.5 rounded-full flex items-center gap-1 ${trendUp ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400' : 'bg-red-100 text-red-700'}`}>
+                                {trendUp ? <TrendingUp size={12} /> : <TrendingUp size={12} className="rotate-180" />}
+                                {trend}
+                            </span>
+                        )}
+                        {subtext && <p className="text-[10px] md:text-xs text-gray-400 dark:text-gray-500">{subtext}</p>}
+                    </div>
                 </div>
-                <div className={`p-3 rounded-xl ${bgClass}`}>
+                <div className={`p-2 md:p-3 rounded-xl text-white shadow-md bg-gradient-to-br ${style.gradient}`}>
                     {icon}
                 </div>
-            </div>
-            <div className="flex items-center gap-2">
-                {trend && (
-                    <span className={`text-xs font-medium px-2 py-0.5 rounded-full ${trendUp ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400' : 'bg-red-100 text-red-700'}`}>
-                        {trend}
-                    </span>
-                )}
-                {subtext && <p className="text-xs text-gray-400 dark:text-gray-500">{subtext}</p>}
             </div>
         </div>
     )
@@ -257,7 +393,7 @@ function QuickActionCard({ href, title, description, icon, color }: any) {
     };
 
     return (
-        <Link href={href} className={`flex flex-col p-4 rounded-xl border transition-all ${colorClasses[color]}`}>
+        <Link href={href} className={`flex flex-col p-4 rounded-xl transition-all ${colorClasses[color]}`}>
             <div className="flex items-center gap-2 mb-1.5 font-bold text-sm sm:text-base">
                 {icon}
                 <span>{title}</span>
@@ -265,4 +401,23 @@ function QuickActionCard({ href, title, description, icon, color }: any) {
             <p className="text-xs sm:text-sm opacity-80 leading-relaxed">{description}</p>
         </Link>
     )
+}
+
+function getTimeAgo(dateString: string) {
+    if (!dateString) return "";
+    const date = new Date(dateString);
+    const now = new Date();
+    const seconds = Math.floor((now.getTime() - date.getTime()) / 1000);
+
+    let interval = seconds / 31536000;
+    if (interval > 1) return Math.floor(interval) + " thn lalu";
+    interval = seconds / 2592000;
+    if (interval > 1) return Math.floor(interval) + " bln lalu";
+    interval = seconds / 86400;
+    if (interval > 1) return Math.floor(interval) + " hr lalu";
+    interval = seconds / 3600;
+    if (interval > 1) return Math.floor(interval) + " jam lalu";
+    interval = seconds / 60;
+    if (interval > 1) return Math.floor(interval) + " mnt lalu";
+    return "Baru saja";
 }

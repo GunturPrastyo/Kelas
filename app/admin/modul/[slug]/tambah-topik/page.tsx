@@ -62,7 +62,7 @@ export default function TambahTopikPage({
 
   return (
     // Anda perlu mendapatkan isSidebarCollapsed dari context di sini
-    <div className={`p-6 mx-auto transition-all duration-300 max-w-7xl`}>
+    <div className={`mt-20 p-6 mx-auto transition-all duration-300 max-w-7xl`}>
       <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-8">
         <h1 className="text-2xl font-bold mb-6 text-gray-900 dark:text-white">Tambah Topik Baru</h1>
         {error && <p className="text-red-500 mb-4">{error}</p>}
@@ -73,7 +73,7 @@ export default function TambahTopikPage({
             <p className="mt-2 text-xs text-gray-500 dark:text-gray-400">Slug akan dibuat secara otomatis dari judul.</p>
           </div>
           <div className="flex justify-between items-center">
-            <Link href={`/admin/modul/${modulSlug}`} className="text-sm text-blue-600 hover:underline">
+            <Link href={`/admin/modul`} className="text-sm text-blue-600 hover:underline">
               &larr; Kembali ke Modul
             </Link>
             <button type="submit" disabled={loading} className="px-6 py-2 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 transition-colors disabled:opacity-50">
