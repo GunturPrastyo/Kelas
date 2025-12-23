@@ -100,7 +100,7 @@ function EditModulForm({ isSidebarCollapsed }: { isSidebarCollapsed?: boolean })
   if (loading) return <p className="p-6 text-center">Memuat data modul...</p>;
 
   return (
-    <div className={`mt-22 p-6 mx-auto transition-all duration-300 ${isSidebarCollapsed ? 'max-w-full' : 'max-w-7xl'}`}>
+    <div className={`mt-20 p-6 mx-auto transition-all duration-300 ${isSidebarCollapsed ? 'max-w-full' : 'max-w-7xl'}`}>
       <div className="mb-6">
         <Breadcrumb
           paths={[

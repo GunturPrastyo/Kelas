@@ -3,7 +3,7 @@
 import { useEffect, useState, Fragment } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { Pencil, PlusCircle, Trash2, Edit3, Target } from "lucide-react";
+import { Pencil, PlusCircle, Trash2, Edit3, Target, List } from "lucide-react";
 import { authFetch } from "@/lib/authFetch";
 import { Button } from "@/components/ui/button";
 import ModuleFeatureModal from "./ModuleFeatureModal"; // Impor modal baru
@@ -135,9 +135,16 @@ export default function ModulCard({ modul, onDelete }: Props) {
 
         {/* Tombol Post Test */}
         <div
-          className="px-5 pb-5 mt-auto"
+          className="px-5 pb-5 mt-auto grid grid-cols-2 gap-2"
           onClick={(e) => e.stopPropagation()}
         >
+          <Link href={`/admin/modul/${modul.slug}`}>
+            <Button variant="outline" className="w-full flex items-center gap-2">
+              <List size={16} />
+              Topik
+            </Button>
+          </Link>
+
           {hasPostTest === null ? (
             <div className="w-full h-10 bg-gray-200 dark:bg-gray-700 rounded-lg animate-pulse"></div>
           ) : hasPostTest ? (
@@ -146,7 +153,7 @@ export default function ModulCard({ modul, onDelete }: Props) {
             >
               <Button className="w-full flex items-center gap-2 bg-yellow-600 hover:bg-yellow-700 text-white">
                 <Edit3 size={16} />
-                Edit Post Test
+                Post Test
               </Button>
             </Link>
           ) : (
@@ -155,7 +162,7 @@ export default function ModulCard({ modul, onDelete }: Props) {
             >
               <Button className="w-full flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white">
                 <PlusCircle size={16} />
-                Tambah Post Test
+                Post Test
               </Button>
             </Link>
           )}

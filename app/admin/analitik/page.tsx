@@ -1,9 +1,9 @@
 "use client";
 
-import React, { useEffect, useMemo, useState, FC, ReactNode } from 'react';
+import React, { useEffect, useMemo, useState, FC, ReactNode, useRef } from 'react';
 import { BarChart as RechartsBarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar } from 'recharts';
 import { authFetch } from '@/lib/authFetch';
-import { BarChart as BarChartIcon, Users, Clock, Percent, Activity, TrendingUp, TrendingDown, AlertTriangle, CheckCircle, PieChart, UserCheck, ChevronDown, ChevronRight, BookOpen, Target, BarChart2 } from 'lucide-react';
+import { BarChart as BarChartIcon, Users, Clock, Percent, Activity, TrendingUp, TrendingDown, AlertTriangle, CheckCircle, PieChart, UserCheck, ChevronDown, ChevronRight, BookOpen, Target, BarChart2, Search, ChevronUp } from 'lucide-react';
 
 interface AdminAnalyticsData {
     totalUsers?: number;
@@ -119,31 +119,44 @@ const formatSecondsToMinutesAndSeconds = (totalSeconds: number) => {
     return `${minutes} mnt ${seconds} dtk`;
 };
 
-const StatCard = ({ title, value, icon, change, changeType, unit, subtext }: { title: string, value: string | number, icon: React.ReactNode, change?: string, changeType?: 'increase' | 'decrease' | 'neutral', unit?: string, subtext?: string }) => {
-    const isIncrease = changeType === 'increase';
-    const isDecrease = changeType === 'decrease';
+const StatCard = ({ title, value, icon, change, changeType, unit, subtext, color = "blue" }: { title: string, value: string | number, icon: React.ReactNode, change?: string, changeType?: 'increase' | 'decrease' | 'neutral', unit?: string, subtext?: string, color?: string }) => {
+    const colorStyles: Record<string, { border: string, bg: string, text: string, cardBg: string }> = {
+        blue: { border: "border-blue-500", bg: "bg-blue-100 dark:bg-blue-900/30", text: "text-blue-600 dark:text-blue-400", cardBg: "bg-blue-50 dark:bg-blue-900/10" },
+        yellow: { border: "border-yellow-500", bg: "bg-yellow-100 dark:bg-yellow-900/30", text: "text-yellow-600 dark:text-yellow-400", cardBg: "bg-yellow-50 dark:bg-yellow-900/10" },
+        green: { border: "border-green-500", bg: "bg-green-100 dark:bg-green-900/30", text: "text-green-600 dark:text-green-400", cardBg: "bg-green-50 dark:bg-green-900/10" },
+        indigo: { border: "border-indigo-500", bg: "bg-indigo-100 dark:bg-indigo-900/30", text: "text-indigo-600 dark:text-indigo-400", cardBg: "bg-indigo-50 dark:bg-indigo-900/10" },
+        purple: { border: "border-purple-500", bg: "bg-purple-100 dark:bg-purple-900/30", text: "text-purple-600 dark:text-purple-400", cardBg: "bg-purple-50 dark:bg-purple-900/10" },
+    };
 
-    const changeColor = isIncrease ? 'text-green-600' : isDecrease ? 'text-blue-600' : 'text-indigo-600';
+    const style = colorStyles[color] || colorStyles.blue;
 
-    return ( // Updated StatCard to have gradient background
-        <div className={`p-4 md:p-6 shadow-lg rounded-xl ${changeType === 'increase' ? 'bg-gradient-to-br from-green-50 to-emerald-50 dark:from-gray-800 dark:to-green-900/30' : changeType === 'decrease' ? 'bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-gray-800 dark:to-blue-900/30' : 'bg-gradient-to-br from-violet-50 to-purple-50 dark:from-gray-800 dark:to-purple-900/30'}`}>
-            <div className="flex flex-col md:flex-row md:items-center gap-2 md:gap-4">
-                <div className="bg-gray-100 dark:bg-gray-700 p-3 rounded-lg self-start">
-                    {icon}
+    return (
+        <div className={`${style.cardBg} p-6 shadow-lg rounded-xl border-l-4 ${style.border} flex flex-col justify-between transition-all hover:shadow-xl`}>
+            <div>
+                <div className="flex justify-between items-start mb-2">
+                    <h2 className="text-sm font-medium text-gray-500 dark:text-gray-400">{title}</h2>
+                    <div className={`p-2 rounded-lg ${style.bg} ${style.text}`}>
+                        {icon}
+                    </div>
                 </div>
-                <h2 className="text-sm font-medium text-gray-500 dark:text-gray-400">{title}</h2>
-            </div>
-            <div className="mt-3 md:mt-4">
                 <p className="text-3xl font-bold mt-1 text-gray-800 dark:text-gray-200">
-                    {value}{unit && <span className="text-xl">{unit}</span>}
+                    {value}{unit && <span className="text-xl text-gray-500 dark:text-gray-400 ml-1">{unit}</span>}
                 </p>
-                {change && (
-                    <span className={`${changeColor} text-sm font-medium block`}>{change}</span>
-                )}
-                {subtext && (
-                    <span className="text-indigo-600 text-sm block">{subtext}</span>
-                )}
             </div>
+            {(change || subtext) && (
+                <div className="mt-4">
+                     {change && (
+                        <div className="flex items-center text-xs font-medium">
+                             <span className={`${changeType === 'increase' ? 'text-green-600 dark:text-green-400' : changeType === 'decrease' ? 'text-red-600 dark:text-red-400' : 'text-gray-600 dark:text-gray-400'}`}>
+                                {change}
+                            </span>
+                        </div>
+                    )}
+                    {subtext && (
+                        <span className="text-xs text-gray-400 dark:text-gray-500 mt-1 block">{subtext}</span>
+                    )}
+                </div>
+            )}
         </div>
     );
 };
@@ -224,6 +237,12 @@ export default function AdminAnalyticsPage() {
     const [studentAnalytics, setStudentAnalytics] = useState<StudentAnalyticsData | null>(null); // ... (rest of the state variables)
     const [studentLoading, setStudentLoading] = useState(false); // ... (rest of the state variables)
     const [studentError, setStudentError] = useState<string | null>(null); // ... (rest of the state variables)
+    
+    // State untuk Dropdown Siswa Custom
+    const [isStudentDropdownOpen, setIsStudentDropdownOpen] = useState(false);
+    const [studentSearchTerm, setStudentSearchTerm] = useState('');
+    const [studentDropdownPage, setStudentDropdownPage] = useState(1);
+    const studentDropdownRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
         const fetchAnalytics = async () => {
@@ -279,6 +298,31 @@ export default function AdminAnalyticsPage() {
         return () => window.removeEventListener('resize', handleResize);
     }, []);
 
+    // Fix: Scroll otomatis ke section (hash) setelah loading selesai
+    useEffect(() => {
+        if (!loading && window.location.hash) {
+            const id = window.location.hash.substring(1); // Hapus tanda #
+            // Beri sedikit jeda agar rendering DOM benar-benar selesai
+            setTimeout(() => {
+                const element = document.getElementById(id);
+                if (element) {
+                    element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            }, 300);
+        }
+    }, [loading]);
+
+    // Handle click outside untuk menutup dropdown siswa
+    useEffect(() => {
+        const handleClickOutside = (event: MouseEvent) => {
+            if (studentDropdownRef.current && !studentDropdownRef.current.contains(event.target as Node)) {
+                setIsStudentDropdownOpen(false);
+            }
+        };
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => document.removeEventListener('mousedown', handleClickOutside);
+    }, []);
+
     useEffect(() => {
         const fetchStudentAnalytics = async () => {
             if (!selectedStudentId) return;
@@ -291,7 +335,18 @@ export default function AdminAnalyticsPage() {
                     throw new Error('Gagal memuat data analitik siswa.');
                 }
                 const data: StudentAnalyticsData = await res.json();
-                setStudentAnalytics(data);
+
+                // Fallback logic to ensure progress data is always available, in case the API doesn't provide it.
+                const totalSystemModules = analytics.moduleAnalytics?.length ?? 0;
+                const studentCompletedModules = data.detailedPerformance?.filter(p => p.moduleScore >= 0).length ?? 0; // A module is complete if there's a score (even 0)
+                const calculatedProgress = totalSystemModules > 0 ? Math.round((studentCompletedModules / totalSystemModules) * 100) : 0;
+
+                setStudentAnalytics({
+                    ...data,
+                    totalModules: data.totalModules ?? totalSystemModules,
+                    completedModules: data.completedModules ?? studentCompletedModules,
+                    progress: data.progress ?? calculatedProgress,
+                });
             } catch (err: any) {
                 setStudentError(err.message);
             } finally {
@@ -341,6 +396,21 @@ export default function AdminAnalyticsPage() {
     const totalPages = Math.ceil(filteredData.length / modulesPerPage);
     const paginate = (pageNumber: number) => setCurrentPage(pageNumber);
 
+    // Logika Filter & Paginasi untuk Dropdown Siswa
+    const studentsPerPage = 10;
+    const filteredStudents = useMemo(() => {
+        return allUsers.filter(user => user.name.toLowerCase().includes(studentSearchTerm.toLowerCase()));
+    }, [allUsers, studentSearchTerm]);
+
+    const paginatedStudents = useMemo(() => {
+        const start = (studentDropdownPage - 1) * studentsPerPage;
+        return filteredStudents.slice(start, start + studentsPerPage);
+    }, [filteredStudents, studentDropdownPage, studentsPerPage]);
+
+    const totalStudentPages = Math.ceil(filteredStudents.length / studentsPerPage);
+
+    // Reset halaman dropdown saat pencarian berubah
+    useEffect(() => setStudentDropdownPage(1), [studentSearchTerm]);
 
     const radarChartInsight = useMemo(() => {
         const data = analytics.moduleScoreDistribution;
@@ -404,22 +474,27 @@ export default function AdminAnalyticsPage() {
             <h2 className="text-xl font-bold mb-4 text-gray-700 dark:text-gray-300">Ringkasan Analitik</h2>
 
             <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-                <StatCard title="Jumlah Siswa" value={analytics.totalUsers ?? 0} icon={<Users className="text-blue-500" />} change="+12 minggu ini" changeType="decrease" />
-                <StatCard title="Rata-rata Waktu Belajar" value={42} unit=" menit" icon={<Clock className="text-yellow-500" />} change="↓ 5% lebih cepat" changeType="neutral" />
-                <StatCard title="Rata-rata Nilai" value={analytics.overallAverageScore ?? 0} unit="%" icon={<Percent className="text-green-500" />} change="+3% minggu ini" changeType="increase" />
-                <StatCard title="Siswa Aktif 7 Hari Ini" value={analytics.activeUsers ?? 0} icon={<UserCheck className="text-indigo-500" />} subtext={`${analytics.totalUsers ? Math.round((analytics.activeUsers! / analytics.totalUsers) * 100) : 0}% dari total siswa`} changeType="decrease"/>
+                <StatCard title="Jumlah Siswa" value={analytics.totalUsers ?? 0} icon={<Users size={20} />} color="blue" change="+12 minggu ini" changeType="increase" />
+                <StatCard title="Rata-rata Waktu" value={42} unit=" mnt" icon={<Clock size={20} />} color="yellow" change="↓ 5% lebih cepat" changeType="neutral" />
+                <StatCard title="Rata-rata Nilai" value={analytics.overallAverageScore ?? 0} unit="%" icon={<Percent size={20} />} color="green" change="+3% minggu ini" changeType="increase" />
+                <StatCard title="Siswa Aktif" value={analytics.activeUsers ?? 0} icon={<UserCheck size={20} />} color="indigo" subtext={`${analytics.totalUsers ? Math.round((analytics.activeUsers! / analytics.totalUsers) * 100) : 0}% dari total siswa`} changeType="decrease"/>
             </div>
 
 
 
             {/* SECTION 3: ANALITIK PER MODUL & TOPIK */}
-            <div className="bg-gradient-to-br from-gray-50 to-blue-100 dark:from-gray-800 dark:to-gray-900 shadow-lg rounded-xl p-6 mb-12">
+            <div className="bg-white dark:bg-gray-800 shadow-lg rounded-xl p-6 mb-12 border border-gray-100 dark:border-gray-700">
                 <h2 className="text-xl font-bold mb-2 text-gray-800 dark:text-gray-200">Analitik Per Modul & Topik</h2>
                 <p className="text-sm text-gray-500 dark:text-gray-400 mb-6">Data performa siswa berdasarkan hasil tes topik dan tes akhir modul. Gunakan untuk mengidentifikasi modul atau topik yang memerlukan perhatian lebih.</p>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8 border-b border-gray-200 dark:border-gray-700 pb-8">
-                    <div className="bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm shadow-lg rounded-xl p-6">
-                        <h2 className="text-lg font-semibold mb-4 text-gray-800 dark:text-gray-200">Kecepatan Belajar per Modul</h2>
+                    <div className="bg-blue-50 dark:bg-blue-900/10 shadow-lg rounded-xl p-6 border-l-4 border-blue-500">
+                        <div className="flex justify-between items-start mb-4">
+                            <h2 className="text-lg font-bold text-gray-800 dark:text-gray-200">Kecepatan Belajar</h2>
+                            <div className="p-2 bg-blue-100 dark:bg-blue-900/30 rounded-lg text-blue-600 dark:text-blue-400">
+                                <Clock size={20} />
+                            </div>
+                        </div>
                         <div className="h-96 rounded flex items-center justify-center text-gray-500">
                             <ResponsiveContainer width="100%" height="100%">
                                 <RechartsBarChart
@@ -457,8 +532,13 @@ export default function AdminAnalyticsPage() {
                             </ResponsiveContainer>
                         </div>
                     </div>
-                    <div className="bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm shadow-lg rounded-xl p-6">
-                        <h2 className="text-lg font-semibold mb-4 text-gray-800 dark:text-gray-200">Distribusi Nilai Siswa</h2>
+                    <div className="bg-purple-50 dark:bg-purple-900/10 shadow-lg rounded-xl p-6 border-l-4 border-purple-500">
+                        <div className="flex justify-between items-start mb-4">
+                            <h2 className="text-lg font-bold text-gray-800 dark:text-gray-200">Distribusi Nilai</h2>
+                            <div className="p-2 bg-purple-100 dark:bg-purple-900/30 rounded-lg text-purple-600 dark:text-purple-400">
+                                <PieChart size={20} />
+                            </div>
+                        </div>
                         <div className="h-96 rounded flex items-center justify-center text-gray-500">
                             <ResponsiveContainer width="100%" height="100%">
                                 <RadarChart cx="50%" cy="50%" outerRadius="80%" data={analytics.moduleScoreDistribution}>
@@ -505,11 +585,16 @@ export default function AdminAnalyticsPage() {
                     <p className="text-xs text-gray-500 dark:text-gray-400 ">Menampilkan data rata-rata hasil tes akhir setiap modul yang dikerjakan siswa.</p>
                     {currentModules.length > 0 ? (
                         currentModules.map((modul) => (
-                            <div key={modul.moduleTitle} className="bg-gradient-to-tr from-white to-gray-50 dark:from-gray-800 dark:to-gray-800/80 border border-gray-200 dark:border-gray-700 shadow-md rounded-xl overflow-hidden transition-all duration-300">
+                            <div key={modul.moduleTitle} className={`${modul.weightedScore >= 1.4 ? 'bg-red-50 dark:bg-red-900/10' : modul.weightedScore >= 0.7 ? 'bg-yellow-50 dark:bg-yellow-900/10' : 'bg-green-50 dark:bg-green-900/10'} border-l-4 ${modul.weightedScore >= 1.4 ? 'border-red-500' : modul.weightedScore >= 0.7 ? 'border-yellow-500' : 'border-green-500'} shadow-md rounded-xl overflow-hidden transition-all duration-300 hover:shadow-lg`}>
 
                                 <div className="p-5">
                                     <div className="flex justify-between items-start">
-                                        <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-200 pr-4">{modul.moduleTitle}</h3>
+                                        <div className="flex items-center gap-3">
+                                            <div className={`p-2 rounded-lg ${modul.weightedScore >= 1.4 ? 'bg-red-100 text-red-600' : modul.weightedScore >= 0.7 ? 'bg-yellow-100 text-yellow-600' : 'bg-green-100 text-green-600'} dark:bg-gray-700`}>
+                                                <BookOpen size={20} />
+                                            </div>
+                                            <h3 className="text-lg font-bold text-gray-800 dark:text-gray-200 pr-4">{modul.moduleTitle}</h3>
+                                        </div>
                                         {getStatusBadge(modul.weightedScore)}
                                     </div>
                                     <div className="grid grid-cols-3 gap-4 mt-4 text-center border-t border-b border-gray-200 dark:border-gray-700 py-3">
@@ -627,21 +712,89 @@ export default function AdminAnalyticsPage() {
             </div>
 
             {/* SECTION 4: ANALITIK SISWA */}
-            <div className="bg-gradient-to-br from-gray-50 to-green-100 dark:from-gray-800 dark:to-gray-900 shadow-lg rounded-xl p-6 mb-12">
+            <div id="analitik-siswa" className="bg-white dark:bg-gray-800 shadow-lg rounded-xl p-6 mb-12 border border-gray-100 dark:border-gray-700">
                 <div className="flex flex-col md:flex-row justify-between md:items-center mb-6">
                     <h2 className="text-xl font-bold text-gray-800 dark:text-gray-200">Analitik Siswa Individual</h2>
-                    <div className="mt-4 md:mt-0 md:w-1/3">
-                        <label htmlFor="student-select" className="sr-only">Pilih Siswa</label>
-                        <select
-                            id="student-select"
-                            value={selectedStudentId}
-                            onChange={(e) => setSelectedStudentId(e.target.value)}
-                            className="p-2 border border-gray-300 dark:border-gray-600 rounded-lg w-full bg-gray-50 dark:bg-gray-700 text-gray-800 dark:text-gray-200 focus:ring-blue-500 focus:border-blue-500"
+                    
+                    {/* Custom Dropdown dengan Search & Pagination */}
+                    <div className="mt-4 md:mt-0 md:w-1/3 relative" ref={studentDropdownRef}>
+                        <label className="sr-only">Pilih Siswa</label>
+                        <button
+                            type="button"
+                            onClick={() => setIsStudentDropdownOpen(!isStudentDropdownOpen)}
+                            className="flex items-center justify-between w-full p-2.5 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-700 text-gray-800 dark:text-gray-200 focus:ring-2 focus:ring-blue-500 transition-colors"
                         >
-                            {allUsers.map(user => (
-                                <option key={user._id} value={user._id}>{user.name}</option>
-                            ))}
-                        </select>
+                            <span className="truncate font-medium">
+                                {allUsers.find(u => u._id === selectedStudentId)?.name || "Pilih Siswa"}
+                            </span>
+                            {isStudentDropdownOpen ? <ChevronUp size={18} className="text-gray-500" /> : <ChevronDown size={18} className="text-gray-500" />}
+                        </button>
+
+                        {isStudentDropdownOpen && (
+                            <div className="absolute z-20 w-full mt-1 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg shadow-xl overflow-hidden animate-in fade-in zoom-in-95 duration-100">
+                                {/* Search Bar */}
+                                <div className="p-2 border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800">
+                                    <div className="relative">
+                                        <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-gray-400" />
+                                        <input
+                                            type="text"
+                                            placeholder="Cari nama siswa..."
+                                            value={studentSearchTerm}
+                                            onChange={(e) => setStudentSearchTerm(e.target.value)}
+                                            className="w-full pl-9 pr-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-200 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                                            autoFocus
+                                        />
+                                    </div>
+                                </div>
+
+                                {/* List Siswa */}
+                                <ul className="max-h-60 overflow-y-auto">
+                                    {paginatedStudents.length > 0 ? (
+                                        paginatedStudents.map(user => (
+                                            <li key={user._id}>
+                                                <button
+                                                    type="button"
+                                                    onClick={() => {
+                                                        setSelectedStudentId(user._id);
+                                                        setIsStudentDropdownOpen(false);
+                                                    }}
+                                                    className={`w-full text-left px-4 py-2.5 text-sm hover:bg-blue-50 dark:hover:bg-gray-700 transition-colors ${selectedStudentId === user._id ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 font-semibold' : 'text-gray-700 dark:text-gray-300'}`}
+                                                >
+                                                    {user.name}
+                                                </button>
+                                            </li>
+                                        ))
+                                    ) : (
+                                        <li className="px-4 py-8 text-sm text-gray-500 text-center italic">
+                                            Siswa tidak ditemukan
+                                        </li>
+                                    )}
+                                </ul>
+
+                                {/* Pagination Controls */}
+                                {totalStudentPages > 1 && (
+                                    <div className="flex justify-between items-center p-2 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800">
+                                        <button
+                                            onClick={() => setStudentDropdownPage(p => Math.max(1, p - 1))}
+                                            disabled={studentDropdownPage === 1}
+                                            className="px-3 py-1 text-xs font-medium text-gray-600 dark:text-gray-400 hover:text-blue-600 hover:bg-gray-200 dark:hover:bg-gray-700 rounded disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                                        >
+                                            Sebelumnya
+                                        </button>
+                                        <span className="text-xs font-medium text-gray-500 dark:text-gray-400">
+                                            {studentDropdownPage} / {totalStudentPages}
+                                        </span>
+                                        <button
+                                            onClick={() => setStudentDropdownPage(p => Math.min(totalStudentPages, p + 1))}
+                                            disabled={studentDropdownPage === totalStudentPages}
+                                            className="px-3 py-1 text-xs font-medium text-gray-600 dark:text-gray-400 hover:text-blue-600 hover:bg-gray-200 dark:hover:bg-gray-700 rounded disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                                        >
+                                            Selanjutnya
+                                        </button>
+                                    </div>
+                                )}
+                            </div>
+                        )}
                     </div>
                 </div>
 
@@ -653,63 +806,123 @@ export default function AdminAnalyticsPage() {
                     <div className="space-y-8">
                         {/* Kartu Statistik Siswa */}
                         <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-6 items-stretch">
-                            <div className="bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm p-6 shadow-lg rounded-xl flex flex-col justify-between">
+                            <div className="bg-blue-50 dark:bg-blue-900/10 backdrop-blur-sm p-6 shadow-lg rounded-xl border-l-4 border-blue-500 flex flex-col justify-between">
                                 <div>
-                                    <h2 className="text-sm text-gray-500 dark:text-gray-400">Progress Belajar</h2>
+                                    <div className="flex justify-between items-start mb-2">
+                                        <h2 className="text-sm text-gray-500 dark:text-gray-400 font-medium">Progress Belajar</h2>
+                                        <div className="p-2 bg-blue-100 dark:bg-blue-900/30 rounded-lg text-blue-600 dark:text-blue-400">
+                                            <BookOpen size={20} />
+                                        </div>
+                                    </div>
                                     <p className="text-3xl font-bold mt-1 text-gray-800 dark:text-gray-200">
-                                        {studentAnalytics.completedModules ?? 0}<span className="text-xl">/{studentAnalytics.totalModules ?? 0}</span>
-                                        <span className="text-base font-medium ml-1">Modul</span>
+                                        {studentAnalytics.completedModules ?? 0}<span className="text-xl text-gray-500 dark:text-gray-400">/{studentAnalytics.totalModules ?? 0}</span>
+                                        <span className="text-sm font-medium ml-1 text-gray-500 dark:text-gray-400">Modul</span>
                                     </p>
                                 </div>
-                                <div className="mt-3">
-                                    <div className="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700">
-                                        <div className="bg-blue-600 h-2.5 rounded-full" style={{ width: `${studentAnalytics.progress}%` }}></div>
+                                <div className="mt-4">
+                                    <div className="flex justify-between text-xs mb-1.5">
+                                        <span className="text-gray-500 dark:text-gray-400">Kelengkapan</span>
+                                        <span className="font-bold text-blue-600 dark:text-blue-400">{studentAnalytics.progress}%</span>
                                     </div>
-                                    <p className="text-right text-xs font-semibold text-blue-600 dark:text-blue-400 mt-1">{studentAnalytics.progress}% Selesai</p>
+                                    <div className="w-full bg-gray-200 rounded-full h-2 dark:bg-gray-700 overflow-hidden">
+                                        <div className="bg-blue-500 h-2 rounded-full transition-all duration-500" style={{ width: `${studentAnalytics.progress}%` }}></div>
+                                    </div>
                                 </div>
                             </div>
 
-                            <div className="bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm p-6 shadow-lg rounded-xl">
-                                <h2 className="text-sm text-gray-500 dark:text-gray-400">Rata-rata Nilai</h2>
-                                <p className="text-3xl font-bold mt-1 text-gray-800 dark:text-gray-200">{studentAnalytics.detailedPerformance.reduce((acc, p) => acc + p.moduleScore, 0) / studentAnalytics.detailedPerformance.length || 0}%</p>
-                                <ComparisonIndicator
-                                    student={studentAnalytics.detailedPerformance.reduce((acc, p) => acc + p.moduleScore, 0) / studentAnalytics.detailedPerformance.length}
-                                    average={overallClassAverageScore}
-                                    type="score"
-                                />
-                                <span className="text-xs text-gray-400"> vs. rata-rata kelas ({overallClassAverageScore}%)</span>
+                            <div className="bg-green-50 dark:bg-green-900/10 backdrop-blur-sm p-6 shadow-lg rounded-xl border-l-4 border-green-500 flex flex-col justify-between">
+                                <div>
+                                    <div className="flex justify-between items-start mb-2">
+                                        <h2 className="text-sm text-gray-500 dark:text-gray-400 font-medium">Rata-rata Nilai</h2>
+                                        <div className="p-2 bg-green-100 dark:bg-green-900/30 rounded-lg text-green-600 dark:text-green-400">
+                                            <Target size={20} />
+                                        </div>
+                                    </div>
+                                    <p className="text-3xl font-bold mt-1 text-gray-800 dark:text-gray-200">
+                                        {Math.round(studentAnalytics.detailedPerformance.reduce((acc, p) => acc + p.moduleScore, 0) / (studentAnalytics.detailedPerformance.length || 1))}%
+                                    </p>
+                                </div>
+                                <div className="mt-4 flex items-center gap-2">
+                                    <ComparisonIndicator
+                                        student={studentAnalytics.detailedPerformance.reduce((acc, p) => acc + p.moduleScore, 0) / (studentAnalytics.detailedPerformance.length || 1)}
+                                        average={overallClassAverageScore}
+                                        type="score"
+                                    />
+                                    <span className="text-xs text-gray-400">vs. kelas ({overallClassAverageScore}%)</span>
+                                </div>
                             </div>
 
-                            <div className="hidden sm:block bg-red-100/50 dark:bg-red-900/30 backdrop-blur-sm p-6 shadow-lg rounded-xl border border-red-200 dark:border-red-800/50">
-                                <div className="flex items-center gap-2 mb-1">
-                                    <Target className="text-red-500" />
-                                    <h2 className="text-sm text-red-700 dark:text-red-300">Topik Terlemah</h2>
+                            <div className="hidden sm:flex bg-red-50 dark:bg-red-900/10 backdrop-blur-sm p-6 shadow-lg rounded-xl border-l-4 border-red-500 flex-col justify-between">
+                                <div>
+                                    <div className="flex justify-between items-start mb-2">
+                                        <h2 className="text-sm text-gray-500 dark:text-gray-400 font-medium">Topik Perlu Perhatian</h2>
+                                        <div className="p-2 bg-red-100 dark:bg-red-900/30 rounded-lg text-red-600 dark:text-red-400">
+                                            <AlertTriangle size={20} />
+                                        </div>
+                                    </div>
+                                    <p className="text-lg font-bold text-gray-800 dark:text-gray-200 line-clamp-2 leading-tight">
+                                        {studentAnalytics.weakestTopic?.topicTitle ?? 'Belum ada data'}
+                                    </p>
                                 </div>
-                                <p className="text-xl font-semibold mt-1 text-red-900 dark:text-red-200">{studentAnalytics.weakestTopic?.topicTitle ?? 'N/A'}</p>
-                                {studentAnalytics.weakestTopic &&
-                                    <span className="text-red-600 dark:text-red-400 text-sm">
-                                        Nilai: {studentAnalytics.weakestTopic.score}%
-                                    </span>}
+                                
+                                {studentAnalytics.weakestTopic && (
+                                    <div className="mt-4">
+                                        <div className="flex justify-between text-xs mb-1.5">
+                                            <span className="text-gray-500 dark:text-gray-400">Skor Penguasaan</span>
+                                            <span className="font-bold text-red-600 dark:text-red-400">{studentAnalytics.weakestTopic.score}%</span>
+                                        </div>
+                                        <div className="w-full bg-gray-200 rounded-full h-2 dark:bg-gray-700 overflow-hidden">
+                                            <div 
+                                                className="bg-red-500 h-2 rounded-full transition-all duration-500" 
+                                                style={{ width: `${studentAnalytics.weakestTopic.score}%` }}
+                                            ></div>
+                                        </div>
+                                    </div>
+                                )}
                             </div>
                         </div>
 
-                        <div className="block sm:hidden bg-red-100/50 dark:bg-red-900/30 backdrop-blur-sm p-6 shadow-lg rounded-xl border border-red-200 dark:border-red-800/50">
-                            <div className="flex items-center gap-2 mb-1">
-                                <Target className="text-red-500" />
-                                <h2 className="text-sm text-red-700 dark:text-red-300">Topik Terlemah</h2>
+                        <div className="block sm:hidden bg-red-50 dark:bg-red-900/10 backdrop-blur-sm p-6 shadow-lg rounded-xl border-l-4 border-red-500">
+                            <div className="flex justify-between items-start mb-3">
+                                <div>
+                                    <h2 className="text-sm text-gray-500 dark:text-gray-400 font-medium">Topik Perlu Perhatian</h2>
+                                    <p className="text-lg font-bold mt-1 text-gray-800 dark:text-gray-200 line-clamp-2">
+                                        {studentAnalytics.weakestTopic?.topicTitle ?? 'Belum ada data'}
+                                    </p>
+                                </div>
+                                <div className="p-2 bg-red-100 dark:bg-red-900/30 rounded-lg text-red-600 dark:text-red-400 flex-shrink-0 ml-2">
+                                    <AlertTriangle size={20} />
+                                </div>
                             </div>
-                            <p className="text-xl font-semibold mt-1 text-red-900 dark:text-red-200">{studentAnalytics.weakestTopic?.topicTitle ?? 'N/A'}</p>
-                            {studentAnalytics.weakestTopic &&
-                                <span className="text-red-600 dark:text-red-400 text-sm">
-                                    Nilai: {studentAnalytics.weakestTopic.score}%
-                                </span>}
+                            
+                            {studentAnalytics.weakestTopic && (
+                                <div className="mt-2">
+                                    <div className="flex justify-between text-xs mb-1.5">
+                                        <span className="text-gray-500 dark:text-gray-400">Skor Penguasaan</span>
+                                        <span className="font-bold text-red-600 dark:text-red-400">{studentAnalytics.weakestTopic.score}%</span>
+                                    </div>
+                                    <div className="w-full bg-gray-200 rounded-full h-2 dark:bg-gray-700 overflow-hidden">
+                                        <div 
+                                            className="bg-red-500 h-2 rounded-full transition-all duration-500" 
+                                            style={{ width: `${studentAnalytics.weakestTopic.score}%` }}
+                                        ></div>
+                                    </div>
+                                </div>
+                            )}
                         </div>
 
                         {/* Detail Performa & Grafik */}
                         <div className="grid grid-cols-1 lg:grid-cols-5 gap-8">
-                            <div className="lg:col-span-5 bg-white/30 dark:bg-gray-800/30 backdrop-blur-sm p-6 rounded-lg shadow-lg">
-                                <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-200">Detail Performa per Modul</h3>
-                                <p className="text-xs text-gray-500 dark:text-gray-400 mb-4">Menampilkan data hasil tes akhir setiap modul yang dikerjakan.</p>
+                            <div className="lg:col-span-5 bg-indigo-50 dark:bg-indigo-900/10 backdrop-blur-sm p-6 shadow-lg rounded-xl border-l-4 border-indigo-500">
+                                <div className="flex justify-between items-start mb-4">
+                                    <div>
+                                        <h3 className="text-lg font-bold text-gray-800 dark:text-gray-200">Detail Performa per Modul</h3>
+                                        <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">Menampilkan data hasil tes akhir setiap modul yang dikerjakan.</p>
+                                    </div>
+                                    <div className="p-2 bg-indigo-100 dark:bg-indigo-900/30 rounded-lg text-indigo-600 dark:text-indigo-400">
+                                        <Activity size={20} />
+                                    </div>
+                                </div>
                                 <div className="overflow-x-auto">
                                     <table className="w-full text-sm text-left text-gray-600 dark:text-gray-400">
                                         <thead className="text-xs text-gray-700 uppercase bg-white/60 dark:bg-gray-700/60 dark:text-gray-300">
@@ -738,8 +951,16 @@ export default function AdminAnalyticsPage() {
                                 </div>
                             </div>
                             {studentComparisonChartData.length > 0 && (
-                                <div className="lg:col-span-5 bg-white/30 dark:bg-gray-800/30 backdrop-blur-sm p-6 rounded-lg shadow-lg">
-                                    <h3 className="text-lg font-semibold mb-4 text-gray-800 dark:text-gray-200">Perbandingan Nilai Siswa vs. Rata-rata Kelas</h3>
+                                <div className="lg:col-span-5 bg-orange-50 dark:bg-orange-900/10 backdrop-blur-sm p-6 shadow-lg rounded-xl border-l-4 border-orange-500">
+                                    <div className="flex justify-between items-start mb-4">
+                                        <div>
+                                            <h3 className="text-lg font-bold text-gray-800 dark:text-gray-200">Perbandingan Nilai</h3>
+                                            <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">Perbandingan nilai siswa dengan rata-rata kelas.</p>
+                                        </div>
+                                        <div className="p-2 bg-orange-100 dark:bg-orange-900/30 rounded-lg text-orange-600 dark:text-orange-400">
+                                            <BarChart2 size={20} />
+                                        </div>
+                                    </div>
                                     <ResponsiveContainer width="100%" height={400}>
                                         <RechartsBarChart
                                             data={studentComparisonChartData}
