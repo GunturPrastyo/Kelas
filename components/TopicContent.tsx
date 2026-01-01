@@ -54,7 +54,7 @@ export default function TopicContent({ topik, onStartTest, onViewScore, hasAttem
     return (
         <div className="px-1 sm:px-10 pb-5 pt-4 border-t border-gray-200 dark:border-gray-700 max-h-[80vh] overflow-y-auto">
             {embedUrl && (
-                <div className="aspect-video mb-6 rounded-lg overflow-hidden max-w-3xl mx-auto">
+                <div className="aspect-video mb-6 rounded-lg overflow-hidden w-76 max-w-96 sm:max-w-3xl mx-auto">
                     <iframe src={embedUrl} title={`Video untuk ${topik.title}`} allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowFullScreen className="w-full h-full"></iframe>
                 </div>
             )}
@@ -65,7 +65,7 @@ export default function TopicContent({ topik, onStartTest, onViewScore, hasAttem
                         <div
                         key={sub._id || index}
                         id={sub._id} // ID unik untuk target scroll
-                        className="max-w-full w-full scroll-mt-24 bg-slate-50 dark:bg-gray-800/50 p-5 rounded-xl border border-slate-200 dark:border-gray-700/60 shadow-sm border-l-4 border-l-blue-500"
+                        className="max-w-full w-full scroll-mt-24 bg-slate-50 dark:bg-gray-800/50 p-5 rounded-xl border border-slate-300 dark:border-gray-700/60 shadow-sm border-l-4 border-l-blue-500"
                         >
                             <h4 className="font-bold text-lg !mb-2 text-gray-800 dark:text-gray-100">{sub.title}</h4>
                             <div dangerouslySetInnerHTML={{ __html: sub.content }} />
@@ -88,7 +88,7 @@ export default function TopicContent({ topik, onStartTest, onViewScore, hasAttem
                             height={256}
                             className="w-24 h-24 sm:w-28 sm:h-28 object-contain flex-shrink-0"
                         />
-                        <div className="text-left flex-1">
+                        <div className="text-left flex-1 border-slate-300">
                             <h4 className="text-base sm:text-xl font-bold text-gray-800 dark:text-gray-100">
                                 Waktunya Uji Pemahaman!
                             </h4>

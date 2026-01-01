@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation"; import Link from "next/link";
 import { useState, FormEvent } from "react";
 import validator from "validator";
 import { Eye, EyeOff } from "lucide-react";
+import { Turnstile } from "@marsidev/react-turnstile";
 
 export default function RegisterPage() {
   const router = useRouter();
@@ -16,6 +17,7 @@ export default function RegisterPage() {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const [turnstileToken, setTurnstileToken] = useState("");
 
   const handleGoogleRegister = async (credentialResponse: CredentialResponse) => {
     setIsLoading(true);
@@ -97,12 +99,18 @@ export default function RegisterPage() {
       return;
     }
 
+    if (!turnstileToken) {
+      setError("Mohon selesaikan verifikasi keamanan (CAPTCHA).");
+      setIsLoading(false);
+      return;
+    }
+
 
     try {
       const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/users/register`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, email, password, confirmPassword }),
+        body: JSON.stringify({ name, email, password, confirmPassword, cfTurnstileToken: turnstileToken }),
       });
 
       const data = await res.json();
@@ -223,6 +231,15 @@ export default function RegisterPage() {
                     {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
                   </button>
                 </div>
+              </div>
+
+              {/* Cloudflare Turnstile Widget */}
+              <div className="flex justify-center pt-2">
+                <Turnstile
+                  siteKey={process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY || ""}
+                  onSuccess={(token) => setTurnstileToken(token)}
+                  onError={() => setError("Gagal memuat verifikasi keamanan.")}
+                />
               </div>
 
               <button

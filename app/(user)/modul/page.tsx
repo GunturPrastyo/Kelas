@@ -320,7 +320,7 @@ export default function ModulPage() {
                                 {(modul.userCount !== undefined) && (
                                     <div className="flex items-center gap-1.5">
                                         <Users size={14} />
-                                        <span>{modul.userCount} Pengguna</span>
+                                        <span>{modul.userCount} Bergabung</span>
                                     </div>
                                 )}
                                 {modul.totalDuration !== undefined && (
