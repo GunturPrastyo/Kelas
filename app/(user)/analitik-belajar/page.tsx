@@ -6,6 +6,7 @@ import { authFetch } from "@/lib/authFetch";
 import { useRouter } from "next/navigation";
 import { Award, TrendingUp, TrendingDown, LayoutDashboard, Activity, BarChartHorizontal, AlertTriangle, Users, Target, Play, Rocket } from "lucide-react";
 import { Chart, registerables } from "chart.js";
+import { ChevronDown } from "lucide-react";
 Chart.register(...registerables);
 
 interface SummaryData {
@@ -195,6 +196,7 @@ export default function AnalitikBelajarPage() {
   const [currentPage, setCurrentPage] = useState(1);
   const [competencyCurrentPage, setCompetencyCurrentPage] = useState(1);
   const ITEMS_PER_PAGE = 5;
+  const [openCompetency, setOpenCompetency] = useState<string | null>(null);
 
   const [userLearningLevel, setUserLearningLevel] = useState<string | null>(null);
   // Definisikan ref dan state inView untuk chart aktivitas di sini
@@ -232,6 +234,12 @@ export default function AnalitikBelajarPage() {
         if (userRaw) {
           const parsedUser = JSON.parse(userRaw);
           setUserLearningLevel(parsedUser.learningLevel);
+          // Buka accordion level pengguna saat ini secara default
+          if (parsedUser.learningLevel) {
+            const formattedLevel = parsedUser.learningLevel.charAt(0).toUpperCase() + parsedUser.learningLevel.slice(1);
+            setOpenCompetency(formattedLevel);
+          }
+
         }
 
         const progressData = await checkResponse(progressRes, 'progress');
@@ -870,39 +878,70 @@ export default function AnalitikBelajarPage() {
 
                   const info = levelInfo[level as keyof typeof levelInfo];
                   const isCurrentUserLevel = userCurrentLevel?.toLowerCase() === level.toLowerCase();
+                  const isOpen = openCompetency === level;
+                  
+                  // Warna border berdasarkan level
+                  const levelColors = {
+                    'Dasar': 'border-l-4 border-l-green-500',
+                    'Menengah': 'border-l-4 border-l-blue-500',
+                    'Lanjutan': 'border-l-4 border-l-purple-500',
+                  };
+                  const borderColor = levelColors[level as keyof typeof levelColors] || 'border-l-4 border-l-gray-500';
 
                   return (
-                    <div key={level} className={`bg-white dark:bg-gray-800 p-5 rounded-xl shadow-lg shadow-indigo-100/50 dark:shadow-slate-900/50 flex flex-col ${cardClassName}`}>
-                      <div className="flex items-start justify-between gap-3 mb-4 border-b border-gray-200 dark:border-gray-700 pb-3">
-                        <div className="flex items-center gap-3">
-                          <Image src={info.icon} alt={`${info.title} icon`} width={40} height={40} className="w-10 h-10 object-contain bg-slate-100 dark:bg-slate-700 p-1 rounded-lg" />
+                    <div key={level} className={`bg-white dark:bg-gray-800 rounded-xl shadow-sm hover:shadow-md border border-gray-100 dark:border-gray-700 overflow-hidden transition-all duration-300 ${cardClassName} ${borderColor}`}>
+                      <button 
+                        onClick={() => setOpenCompetency(prev => prev === level ? null : level)} 
+                        className={`flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-5 w-full text-left transition-colors ${isOpen ? 'bg-gray-50 dark:bg-gray-700/30' : 'hover:bg-gray-50 dark:hover:bg-gray-700/30'}`}
+                      >
+                        <div className="flex items-center gap-4">
+                          <div className={`p-1.5 rounded-xl ${level === 'Dasar' ? 'bg-green-100 dark:bg-green-900/30' : level === 'Menengah' ? 'bg-blue-100 dark:bg-blue-900/30' : 'bg-purple-100 dark:bg-purple-900/30'}`}>
+                            <Image src={info.icon} alt={`${info.title} icon`} width={128} height={128} className="w-24 sm:w-12 h-auto object-contain" />
+                          </div>
                           <div>
-                            <h4 className="font-bold text-gray-800 dark:text-gray-200">{info.title}</h4>
-                            <p className="text-xs text-gray-500 dark:text-gray-400" dangerouslySetInnerHTML={{ __html: info.unlockInfo }} />
+                            <h4 className="font-bold text-md text-gray-800 dark:text-gray-100">{info.title}</h4>
+                            <p className="text-xs text-gray-500 dark:text-gray-400 mt-1 leading-relaxed max-w-md" dangerouslySetInnerHTML={{ __html: info.unlockInfo }} />
                           </div>
                         </div>
-                        {isCurrentUserLevel && (
-                          <span className="text-xs font-semibold px-2.5 py-1 bg-blue-100 text-blue-800 dark:bg-blue-900/50 dark:text-blue-300 rounded-full flex-shrink-0">
-                            Level Kamu
-                          </span>
-                        )}
-                      </div>
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4 flex-grow">
-                        {(features as CompetencyFeature[]).map((feature, index) => {
-                          const score = Math.round(feature.score);
-                          const feedback = getCompetencyFeedback(score);
-                          return (
-                            <div key={index}>
-                              <div className="flex justify-between items-center mb-1">
-                                <span className="text-sm font-medium text-gray-700 dark:text-gray-300">{feature.name}</span>
-                                <span className={`text-sm font-bold ${feedback.textColor}`}>{score}%</span>
-                              </div>
-                              <div className="h-2 w-full bg-gray-200 dark:bg-gray-700 rounded-full">
-                                <div className={`h-full rounded-full transition-all duration-500 ease-out ${feedback.color}`} style={{ width: `${score}%` }}></div>
-                              </div>
-                            </div>
-                          );
-                        })}
+                        
+                        <div className="flex items-center gap-3 self-end sm:self-center">
+                          {isCurrentUserLevel && (
+                            <span className="flex sm:inline-flex items-center justify-center px-3 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200 border border-blue-200 dark:border-blue-800">
+                              <Target className="w-3 h-3 mr-1.5" />
+                              Level Kamu
+                            </span>
+                          )}
+                          <div className={`p-1 rounded-full transition-transform duration-300 ${isOpen ? 'rotate-180 bg-gray-200 dark:bg-gray-600' : ''}`}>
+                            <ChevronDown className="w-5 h-5 text-gray-500 dark:text-gray-400" />
+                          </div>
+                        </div>
+                      </button>
+                      
+                      <div className={`transition-all duration-500 ease-in-out ${isOpen ? 'max-h-[1000px] opacity-100' : 'max-h-0 opacity-0'}`}>
+                        <div className="p-6 border-t border-gray-100 dark:border-gray-700 bg-white dark:bg-gray-800">
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6">
+                            {(features as CompetencyFeature[]).map((feature, index) => {
+                              const score = Math.round(feature.score);
+                              const feedback = getCompetencyFeedback(score);
+                              return (
+                                <div key={index} className="group">
+                                  <div className="flex justify-between items-end mb-2">
+                                    <span className="text-sm font-medium text-gray-700 dark:text-gray-300 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">{feature.name}</span>
+                                    <div className="text-right">
+                                      <span className={`text-sm font-bold ${feedback.textColor}`}>{score}%</span>
+                                      <p className={`text-[10px] font-medium ${feedback.textColor} opacity-80`}>{feedback.level}</p>
+                                    </div>
+                                  </div>
+                                  <div className="h-2.5 w-full bg-gray-100 dark:bg-gray-700 rounded-full overflow-hidden">
+                                    <div className={`h-full rounded-full transition-all duration-1000 ease-out ${feedback.color} relative`} style={{ width: `${score}%` }}>
+                                      <div className="absolute inset-0 bg-white/20 animate-pulse"></div>
+                                    </div>
+                                  </div>
+                                </div>
+                              );
+                            })}
+                          </div>
+                        </div>
                       </div>
                     </div>
                   );
@@ -955,20 +994,20 @@ export default function AnalitikBelajarPage() {
           <ul className="space-y-3">
             {/* REPEAT MODULE */}
             {recommendations?.repeatModule && (
-              <li className="flex items-center justify-between gap-4 p-4 bg-white/60 dark:bg-gray-700/40 rounded-xl hover:bg-white/80 dark:hover:bg-gray-600/50 transition-all shadow-sm" key="repeat-module">
-                <div className="flex items-center gap-4">
+              <li className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 bg-white/60 dark:bg-gray-700/40 rounded-xl hover:bg-white/80 dark:hover:bg-gray-600/50 transition-all shadow-sm" key="repeat-module">
+                <div className="flex items-center gap-4 w-full sm:w-auto">
                   <Image
                     src={`${process.env.NEXT_PUBLIC_API_URL}/uploads/${recommendations.repeatModule.moduleIcon}`}
                     width={256}
                     height={256}
-                    className="w-16 h-16 rounded-lg object-contain bg-white/30 dark:bg-gray-700/40 p-1"
+                    className="w-16 h-16 rounded-lg object-contain bg-white/30 dark:bg-gray-700/40 p-1 flex-shrink-0"
                     alt="gambar modul"
                   />
-                  <div>
+                  <div className="flex-1 sm:flex-none">
                     <p className="font-semibold">
                       Ulangi <b>{recommendations.repeatModule.moduleTitle}</b>
                     </p>
-                    <p className="text-sm opacity-80">
+                    <p className="text-sm opacity-80 hidden sm:block">
                       Nilai test akhirmu masih {recommendations.repeatModule.moduleScore}.
                       {recommendations.repeatModule.allTopicsMastered ? (
                         " Semua topik sudah bagus, coba kerjakan ulang test akhir dengan lebih teliti."
@@ -978,86 +1017,108 @@ export default function AnalitikBelajarPage() {
                     </p>
                   </div>
                 </div>
-                <button
-                  onClick={() => {
-                    const slug = recommendations.repeatModule?.moduleSlug;
-                    if (recommendations.repeatModule?.allTopicsMastered) {
-                      router.push(`/modul/${slug}/post-test`);
-                    } else {
-                      const hash = recommendations.repeatModule?.weakestTopicDetails ? '#' + recommendations.repeatModule.weakestTopicDetails._id : '';
-                      router.push(`/modul/${slug}${hash}`);
-                    }
-                  }}
-                  className="flex-shrink-0 flex items-center justify-center w-10 h-10 rounded-full bg-blue-500 hover:bg-blue-600 transition text-white shadow-md"
-                >
-                  <Play className="w-5 h-5" />
-                </button>
+                <div className="flex items-center justify-between gap-4 w-full sm:w-auto">
+                  <p className="text-sm opacity-80 sm:hidden">
+                    Nilai test akhirmu masih {recommendations.repeatModule.moduleScore}.
+                    {recommendations.repeatModule.allTopicsMastered ? (
+                      " Semua topik sudah bagus, coba kerjakan ulang test akhir dengan lebih teliti."
+                    ) : recommendations.repeatModule.weakestTopic ? (
+                      ` Fokus pada topik ${recommendations.repeatModule.weakestTopic}.`
+                    ) : null}
+                  </p>
+                  <button
+                    onClick={() => {
+                      const slug = recommendations.repeatModule?.moduleSlug;
+                      if (recommendations.repeatModule?.allTopicsMastered) {
+                        router.push(`/modul/${slug}/post-test`);
+                      } else {
+                        const hash = recommendations.repeatModule?.weakestTopicDetails ? '#' + recommendations.repeatModule.weakestTopicDetails._id : '';
+                        router.push(`/modul/${slug}${hash}`);
+                      }
+                    }}
+                    className="flex-shrink-0 flex items-center justify-center w-10 h-10 rounded-full bg-blue-500 hover:bg-blue-600 transition text-white shadow-md"
+                  >
+                    <Play className="w-5 h-5" />
+                  </button>
+                </div>
               </li>
             )}
 
             {/* DEEPEN TOPIC */}
             {recommendations?.deepenTopic && (
-              <li className="flex items-center justify-between gap-4 p-4 bg-white/60 dark:bg-gray-700/40 rounded-xl hover:bg-white/80 dark:hover:bg-gray-600/50 transition-all shadow-sm" key="deepen-topic">
-                <div className="flex items-center gap-4">
+              <li className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 bg-white/60 dark:bg-gray-700/40 rounded-xl hover:bg-white/80 dark:hover:bg-gray-600/50 transition-all shadow-sm" key="deepen-topic">
+                <div className="flex items-center gap-4 w-full sm:w-auto">
                   <Image
                     src="/reading-book.png"
                     width={256}
                     height={256}
-                    className="w-16 h-16 rounded-lg object-contain bg-white/30 dark:bg-gray-700/40 p-1"
+                    className="w-16 h-16 rounded-lg object-contain bg-white/30 dark:bg-gray-700/40 p-1 flex-shrink-0"
                     alt="Perdalam Topik"
                   />
-                  <div>
+                  <div className="flex-1 sm:flex-none">
                     <p className="font-semibold">
                       Perdalam topik <b>{recommendations.deepenTopic.topicTitle || 'Tidak Diketahui'}</b>
                     </p>
-                    <p className="text-sm opacity-80">
+                    <p className="text-sm opacity-80 hidden sm:block">
                       Coba latihan tambahan agar lebih memahami topik ini secara mendalam.
                     </p>
                   </div>
                 </div>
-                <button
-                  onClick={() =>
-                    recommendations.deepenTopic?.modulSlug && recommendations.deepenTopic?.topicSlug && router.push(
-                      `/modul/${recommendations.deepenTopic.modulSlug}#${recommendations.deepenTopic.topicId}`
-                    )
-                  }
-                  className="flex-shrink-0 flex items-center justify-center w-10 h-10 rounded-full bg-blue-500 hover:bg-blue-600 transition text-white shadow-md"
-                >
-                  <Play className="w-5 h-5" />
-                </button>
+                <div className="flex items-center justify-between gap-4 w-full sm:w-auto">
+                  <p className="text-sm opacity-80 sm:hidden">
+                    Coba latihan tambahan agar lebih memahami topik ini secara mendalam.
+                  </p>
+                  <button
+                    onClick={() =>
+                      recommendations.deepenTopic?.modulSlug && recommendations.deepenTopic?.topicSlug && router.push(
+                        `/modul/${recommendations.deepenTopic.modulSlug}#${recommendations.deepenTopic.topicId}`
+                      )
+                    }
+                    className="flex-shrink-0 flex items-center justify-center w-10 h-10 rounded-full bg-blue-500 hover:bg-blue-600 transition text-white shadow-md"
+                  >
+                    <Play className="w-5 h-5" />
+                  </button>
+                </div>
               </li>
             )}
 
             {/* CONTINUE MODULE */}
             {recommendations?.continueToModule ? (
-              <li className="flex items-center justify-between gap-4 p-4 bg-white/60 dark:bg-gray-700/40 rounded-xl hover:bg-white/80 dark:hover:bg-gray-600/50 transition-all shadow-sm" key="continue-module">
-                <div className="flex items-center gap-4">
+              <li className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 bg-white/60 dark:bg-gray-700/40 rounded-xl hover:bg-white/80 dark:hover:bg-gray-600/50 transition-all shadow-sm" key="continue-module">
+                <div className="flex items-center gap-4 w-full sm:w-auto">
                   <Image
                     src={`${process.env.NEXT_PUBLIC_API_URL}/uploads/${recommendations.continueToModule.moduleIcon}`}
                     width={256}
                     height={256}
-                    className="w-16 h-16 rounded-lg object-contain bg-white/30 dark:bg-gray-700/40 p-1"
+                    className="w-16 h-16 rounded-lg object-contain bg-white/30 dark:bg-gray-700/40 p-1 flex-shrink-0"
                     alt="gambar modul"
                   />
-                  <div>
+                  <div className="flex-1 sm:flex-none">
                     <p className="font-semibold">
                       Lanjutkan ke <b>{recommendations.continueToModule.moduleTitle}</b>
                     </p>
-                    <p className="text-sm opacity-80">
+                    <p className="text-sm opacity-80 hidden sm:block">
                       {recommendations.continueToModule.nextTopic
                         ? `Kamu sudah siap untuk materi lanjutan tentang ${recommendations.continueToModule.nextTopic.title}.`
                         : "Lanjutkan progres belajarmu di modul ini."}
                     </p>
                   </div>
                 </div>
-                <button
-                  onClick={() =>
-                    router.push(`/modul/${recommendations.continueToModule?.moduleSlug}${recommendations.continueToModule?.nextTopic ? `#${recommendations.continueToModule.nextTopic.id}` : ''}`)
-                  }
-                  className="flex-shrink-0 flex items-center justify-center w-10 h-10 rounded-full bg-blue-500 hover:bg-blue-600 transition text-white shadow-md"
-                >
-                  <Play className="w-5 h-5" />
-                </button>
+                <div className="flex items-center justify-between gap-4 w-full sm:w-auto">
+                  <p className="text-sm opacity-80 sm:hidden">
+                    {recommendations.continueToModule.nextTopic
+                      ? `Kamu sudah siap untuk materi lanjutan tentang ${recommendations.continueToModule.nextTopic.title}.`
+                      : "Lanjutkan progres belajarmu di modul ini."}
+                  </p>
+                  <button
+                    onClick={() =>
+                      router.push(`/modul/${recommendations.continueToModule?.moduleSlug}${recommendations.continueToModule?.nextTopic ? `#${recommendations.continueToModule.nextTopic.id}` : ''}`)
+                    }
+                    className="flex-shrink-0 flex items-center justify-center w-10 h-10 rounded-full bg-blue-500 hover:bg-blue-600 transition text-white shadow-md"
+                  >
+                    <Play className="w-5 h-5" />
+                  </button>
+                </div>
               </li>
             ) : (
               <p className="p-4 text-center text-gray-700 dark:text-gray-300">

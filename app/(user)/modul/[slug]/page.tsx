@@ -1069,7 +1069,7 @@ export default function ModulDetailPage() {
                                     {/* Daftar Isi Sub Topik */}
                                     {isOpen && !isLocked && topik.materi && topik.materi.subMateris.length > 0 && (
                                         <div className="pt-2 pb-2 px-2 sm:px-10">
-                                            <div className="bg-slate-50 dark:bg-gray-900/50 border border-slate-200 dark:border-gray-700/50 rounded-xl p-5 shadow-sm">
+                                            <div className="bg-slate-50 dark:bg-gray-900/50 border border-slate-300 dark:border-gray-700/50 rounded-xl p-5 shadow-sm">
                                                 <h4 className="text-lg font-bold text-gray-800 dark:text-gray-100 mb-5 flex items-center gap-2">
                                                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-blue-500"><line x1="8" y1="6" x2="21" y2="6"></line><line x1="8" y1="12" x2="21" y2="12"></line><line x1="8" y1="18" x2="21" y2="18"></line><line x1="3" y1="6" x2="3.01" y2="6"></line><line x1="3" y1="12" x2="3.01" y2="12"></line><line x1="3" y1="18" x2="3.01" y2="18"></line></svg>
                                                     Daftar Isi Materi
@@ -1115,29 +1115,29 @@ export default function ModulDetailPage() {
                 const isPostTestLocked = modul.progress < 100;
                 const hasCompletedModulPostTest = modul.hasCompletedModulPostTest;
                 return ( // Kartu ini akan muncul jika `hasModulPostTest` bernilai true
-                    <section className={`bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-lg mt-5 transition-all border border-slate-200 dark:border-slate-700 ${isPostTestLocked ? 'opacity-60 cursor-not-allowed' : ''}`}>
-                        <div className="flex flex-col md:flex-row items-center md:items-start gap-6 lg:p-2">
+                    <section className={`bg-white dark:bg-gray-800 p-4 sm:p-6 rounded-2xl shadow-lg mt-5 transition-all border border-slate-200 dark:border-slate-700 ${isPostTestLocked ? 'opacity-60 cursor-not-allowed' : ''}`}>
+                        <div className="grid grid-cols-2 md:flex md:flex-row items-center md:items-start gap-4 sm:gap-6 lg:p-2">
                             {/* Konten Teks */}
-                            <div className="flex-1 text-center md:text-left">
-                                <h2 className="text-xl lg:text-2xl font-bold text-gray-800 dark:text-gray-100 mb-2">
+                            <div className="flex-1 text-left w-full order-last md:order-first col-span-1">
+                                <h2 className="text-sm sm:text-xl lg:text-2xl font-bold text-gray-800 dark:text-gray-100 mb-1 sm:mb-2">
                                     Post Test Akhir
                                 </h2>
                                 {isPostTestLocked ? (
-                                    <p className="text-sm lg:text-base text-gray-500 dark:text-gray-400 mb-6">
+                                    <p className="text-xs sm:text-sm lg:text-base text-gray-500 dark:text-gray-400 mb-3 sm:mb-6">
                                         Selesaikan semua topik di modul ini untuk membuka post-test akhir.
                                     </p>
                                 ) : (
-                                    <p className="text-sm lg:text-base text-gray-600 dark:text-gray-400 mb-6">
+                                    <p className="text-xs sm:text-sm lg:text-base text-gray-600 dark:text-gray-400 mb-3 sm:mb-6">
                                         {hasCompletedModulPostTest
-                                            ? "Kerja bagus! Anda telah menyelesaikan post-test untuk modul ini. Anda dapat melihat kembali hasil Anda."
-                                            : "Selamat! Anda telah menyelesaikan semua topik. Uji pemahaman akhir Anda untuk menyelesaikan modul ini."}
+                                            ? "Kerja bagus! Kamu telah menyelesaikan post-test untuk modul ini."
+                                            : "Selamat! Kamu telah menyelesaikan semua topik. Uji pemahaman akhir Kamu untuk menyelesaikan modul ini."}
                                     </p>
                                 )}
 
                                 <Link
                                     href={!isPostTestLocked ? `/modul/${slug}/post-test` : '#'}
                                     passHref
-                                    className={`inline-block px-6 py-3 font-semibold rounded-xl shadow-md transition-all ${isPostTestLocked
+                                    className={`w-full sm:w-auto inline-flex justify-center px-3 py-2 sm:px-6 sm:py-3 text-xs sm:text-base font-semibold rounded-xl shadow-md transition-all ${isPostTestLocked
                                         ? 'bg-gray-300 text-gray-500 cursor-not-allowed dark:bg-gray-600 dark:text-gray-400'
                                         : 'bg-yellow-400 hover:bg-yellow-300 text-black transform hover:scale-105'
                                         }`}
@@ -1146,16 +1146,16 @@ export default function ModulDetailPage() {
                                         if (isPostTestLocked) e.preventDefault()
                                     }}
                                 >
-                                    <div className="flex items-center gap-2">
-                                        {isPostTestLocked ? <Lock size={16} /> : hasCompletedModulPostTest ? <Award size={16} /> : <Rocket size={16} />}
-                                        <span>{isPostTestLocked ? 'Terkunci' : (hasCompletedModulPostTest ? 'Lihat Hasil' : 'Mulai Post Test')}</span>
+                                    <div className="flex items-center gap-1.5 sm:gap-2">
+                                        {isPostTestLocked ? <Lock size={14} className="sm:w-4 sm:h-4" /> : hasCompletedModulPostTest ? <Award size={14} className="sm:w-4 sm:h-4" /> : <Rocket size={14} className="sm:w-4 sm:h-4" />}
+                                        <span>{isPostTestLocked ? 'Terkunci' : (hasCompletedModulPostTest ? 'Lihat Hasil' : 'Mulai')}</span>
                                     </div>
                                 </Link>
                             </div>
 
                             {/* Gambar (akan muncul di atas pada mobile, di kanan pada desktop) */}
-                            <div className="flex w-full md:w-1/3 justify-center items-center mt-4 md:mt-0 order-first md:order-last">
-                                <Image src={hasCompletedModulPostTest ? "/post-test-akhir.png" : "/post-test.png"} alt="Post Test" width={256} height={256} className="w-48 h-48 md:w-60 md:h-60 object-contain" unoptimized />
+                            <div className="flex w-full md:w-1/3 justify-center items-center order-first md:order-last col-span-1">
+                                <Image src={hasCompletedModulPostTest ? "/post-test-akhir.png" : "/post-test.png"} alt="Post Test" width={256} height={256} className="w-full h-auto max-w-[140px] sm:max-w-[180px] md:w-60 md:h-60 object-contain" unoptimized />
                             </div>
                         </div>
                     </section>
