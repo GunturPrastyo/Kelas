@@ -295,7 +295,7 @@ export default function ModulPage() {
                             <div className="flex items-start justify-between mb-3">
                                 <div className="flex items-center gap-3">
                                     <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${modul.isHighlighted ? 'bg-blue-100 dark:bg-blue-900/50' : 'bg-gray-100 dark:bg-gray-700'}`}>
-                                        <Image className="w-6 h-6 object-cover" src={modul.icon.startsWith('http') ? modul.icon : `${process.env.NEXT_PUBLIC_API_URL}/uploads/${modul.icon}`} alt={modul.title} width={128} height={128} />
+                                        <img className="w-6 h-6 object-cover" src={modul.icon.startsWith('http') ? modul.icon : `${process.env.NEXT_PUBLIC_API_URL}/uploads/${modul.icon}`} alt={modul.title} />
                                     </div>
                                 <div>
                                     {/* Nomor urut untuk tampilan desktop/tablet */}
