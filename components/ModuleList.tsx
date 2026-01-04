@@ -1,7 +1,6 @@
 "use client";
 
 import { useMemo, useRef } from "react";
-import Image from "next/image";
 import Link from "next/link";
 import { Route, CheckCircle2, Activity, Rocket, Lock } from "lucide-react";
 
@@ -146,11 +145,9 @@ export default function ModuleList({ title, allModules, filter }: ModuleListProp
                 }
           `}
             >
-              <Image
+              <img
                 src={`${process.env.NEXT_PUBLIC_API_URL}/uploads/${modul.icon}`}
                 alt={`${modul.title} icon`}
-                width={128}
-                height={128}
                 className="object-contain w-10 h-10"
               />
             </div>
