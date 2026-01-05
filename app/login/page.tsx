@@ -146,12 +146,15 @@ export default function LoginPage() {
           <div className="p-10 md:p-14 bg-[#EAF0FF] dark:bg-gray-900 rounded-4xl z-30 -mt-5 sm:m-0">
 
             <div className="flex justify-center mb-6">
-              <Image src="/logo1.png" alt="Logo" width={256} height={256} className="w-20 h-auto drop-shadow-md" />
+              <Image src="/logo1.png" alt="Logo" width={256} height={256} className="w-18 h-auto drop-shadow-md" />
             </div>
 
-            <h2 className="text-xl font-extrabold text-center text-gray-800 dark:text-white mb-3">
-              Selamat Datang!
+            <h2 className="text-2xl font-bold text-center text-gray-900 dark:text-white mb-2">
+              Selamat Datang 
             </h2>
+            <p className="text-center text-gray-500 dark:text-gray-400 text-sm mb-6">
+              Silakan masuk ke akun kamu
+            </p>
 
             {error && (
               <div className="text-red-700 bg-red-100 p-3 text-center rounded-lg mb-4 text-sm border border-red-300">
@@ -201,6 +204,11 @@ export default function LoginPage() {
                   >
                     {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
                   </button>
+                </div>
+                <div className="flex justify-end mt-2">
+                  <a href="/forgot-password" className="text-sm font-medium text-blue-600 hover:text-blue-500 dark:text-blue-400 hover:underline">
+                    Lupa Password?
+                  </a>
                 </div>
               </div>
 
