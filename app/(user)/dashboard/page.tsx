@@ -6,7 +6,8 @@ import Image from "next/image";
 import Link from "next/link"
 import { authFetch } from "@/lib/authFetch";
 import ModuleList from "@/components/ModuleList"
-import { BarChart2, ClipboardCheck, Clock, TrendingUp, Target, PlayCircle, Rocket, X } from "lucide-react";
+import PreTestModal from "@/components/PreTestModal";
+import { BarChart2, Clock, TrendingUp, Target, PlayCircle, Rocket, ClipboardCheck } from "lucide-react";
 
 
 type ModuleStatus = 'Selesai' | 'Berjalan' | 'Terkunci' | 'Belum Mulai';
@@ -138,16 +139,30 @@ export default function DashboardPage() {
       try {
         setLoading(true);
 
-        // Ambil data pengguna dari localStorage untuk menentukan level
-        const userRaw = localStorage.getItem('user');
-        if (userRaw) {
-          const parsedUser = JSON.parse(userRaw);
-          const learningLevel = parsedUser.learningLevel?.toLowerCase();
-          if (learningLevel) {
-            setHasTakenPreTest(true); // Anggap sudah pre-test jika learningLevel ada
-            setUserLevel(learningLevel);
+        // 1. Cek status Pre-Test dari API (Source of Truth)
+        const preTestRes = await authFetch(`${process.env.NEXT_PUBLIC_API_URL}/api/results/check-pre-test`);
+        
+        if (preTestRes.ok) {
+          const data = await preTestRes.json();
+          if (data.hasTakenPreTest) {
+            setHasTakenPreTest(true);
+            setUserLevel(data.learningLevel);
           } else {
+            setHasTakenPreTest(false);
             setShowPreTestModal(true);
+          }
+        } else {
+          // Fallback ke localStorage jika API gagal
+          const userRaw = localStorage.getItem('user');
+          if (userRaw) {
+            const parsedUser = JSON.parse(userRaw);
+            const learningLevel = parsedUser.learningLevel?.toLowerCase();
+            if (learningLevel) {
+              setHasTakenPreTest(true);
+              setUserLevel(learningLevel);
+            } else {
+              setShowPreTestModal(true);
+            }
           }
         }
 
@@ -525,46 +540,10 @@ export default function DashboardPage() {
       )}
 
       {/* Modal Pop-up Pre-Test */}
-      {showPreTestModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm transition-opacity">
-          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl max-w-md w-full p-6 relative animate-in fade-in zoom-in duration-300 border border-gray-100 dark:border-gray-700">
-            <button 
-              onClick={() => setShowPreTestModal(false)}
-              className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition-colors"
-              aria-label="Tutup"
-            >
-              <X className="w-6 h-6" />
-            </button>
-            
-            <div className="flex flex-col items-center text-center">
-              <div className="w-40 h-40 mb-4 relative">
-                 <Image
-                  src="/pre-tes.png" 
-                  alt="Ilustrasi Pre-Test"
-                  fill
-                  className="object-contain"
-                />
-              </div>
-              
-              <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
-                Yuk, Mulai Perjalananmu!
-              </h3>
-              
-              <p className="text-gray-600 dark:text-gray-300 mb-6 text-sm leading-relaxed">
-                Kamu belum mengerjakan Pre-Test. Ikuti tes singkat ini untuk mengetahui level kemampuanmu dan dapatkan rekomendasi belajar yang paling pas buat kamu.
-              </p>
-              
-              <Link
-                href="/pre-test"
-                className="w-full py-3 px-6 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl transition-all shadow-lg hover:shadow-blue-500/30 flex items-center justify-center gap-2"
-              >
-                <ClipboardCheck className="w-5 h-5" />
-                Mulai Pre-Test Sekarang
-              </Link>
-            </div>
-          </div>
-        </div>
-      )}
+      <PreTestModal
+        isOpen={showPreTestModal} 
+        onClose={() => setShowPreTestModal(false)} 
+      />
     </>
   )
 }
