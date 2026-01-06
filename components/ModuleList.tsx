@@ -2,7 +2,7 @@
 
 import { useMemo, useRef } from "react";
 import Link from "next/link";
-import { Route, CheckCircle2, Activity, Rocket, Lock } from "lucide-react";
+import { Route, CheckCircle2, Activity, Rocket, Lock, Users, Clock } from "lucide-react";
 
 interface Module {
   _id: string;
@@ -13,6 +13,8 @@ interface Module {
   order: number;
   category: string; // Menambahkan category
   icon: string;
+  userCount?: number;
+  totalDuration?: number;
 }
 
 interface ModuleListProps {
@@ -103,7 +105,7 @@ export default function ModuleList({ title, allModules, filter }: ModuleListProp
   if (modules.length === 0) return null;
 
   return (
-    <section className="bg-gradient-to-br from-indigo-100 via-blue-100 to-sky-200 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 p-7 rounded-2xl shadow-xl border border-white/20 dark:border-gray-800 backdrop-blur-xl transition-all">
+    <section className="bg-gradient-to-br from-indigo-200 via-blue-200 to-sky-300 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 p-7 rounded-2xl shadow-xl border border-white/20 dark:border-gray-800 backdrop-blur-xl transition-all">
       {/* Header */}
       <div className="flex justify-between items-center mb-6">
         <h2 className="text-xl font-semibold text-gray-800 dark:text-gray-100 flex items-center gap-2">
@@ -116,7 +118,7 @@ export default function ModuleList({ title, allModules, filter }: ModuleListProp
       <div
         ref={scrollRef}
         onMouseDown={handleMouseDown}
-        className="grid grid-flow-col auto-cols-[240px] sm:auto-cols-[260px] gap-7 overflow-x-auto scroll-smooth pb-4 scrollbar-hidden snap-x snap-mandatory cursor-grab active:cursor-grabbing select-none px-1"
+        className="grid grid-flow-col auto-cols-[260px] sm:auto-cols-[300px] gap-6 overflow-x-auto scroll-smooth pb-8 scrollbar-hidden snap-x snap-mandatory cursor-grab active:cursor-grabbing select-none px-1"
       >
         {modules.map((modul) => (
           <Link
@@ -124,60 +126,82 @@ export default function ModuleList({ title, allModules, filter }: ModuleListProp
             href={modul.status !== "Terkunci" ? `/modul/${modul.slug}` : "#"}
             onClick={(e) => modul.status === "Terkunci" && e.preventDefault()}
             className={`
-          relative p-6 rounded-3xl flex flex-col items-start 
-          bg-white/80 dark:bg-gray-900/60 
-          border border-gray-200/50 dark:border-gray-700/60 
-          backdrop-blur-lg shadow-md 
-          transition-all duration-300 snap-start flex-shrink-0
-          ${modul.status === "Terkunci"
-                ? "opacity-50 cursor-not-allowed"
-                : "hover:-translate-y-2 hover:shadow-2xl"
+              group relative flex flex-col justify-between
+              w-full h-[240px]
+              rounded-2xl overflow-hidden
+              bg-slate-50 dark:bg-gray-800
+              border border-slate-200 dark:border-gray-700
+              border-l-[6px] ${
+                modul.status === 'Terkunci' ? 'border-l-gray-300 dark:border-l-gray-600' :
+                modul.progress === 100 ? 'border-l-green-500' : 'border-l-blue-500'
               }
-        `}
-          >
-            {/* Icon */}
-            <div
-              className={`
-            w-16 h-16 mb-4 rounded-2xl flex items-center justify-center transition-all shadow-sm ring-1 
-            ${modul.progress === 100
-                  ? "bg-green-50 dark:bg-green-900/40 ring-green-200/60"
-                  : "bg-blue-50 dark:bg-blue-900/40 ring-blue-200/60"
-                }
-          `}
-            >
-              <img
-                src={`${process.env.NEXT_PUBLIC_API_URL}/uploads/${modul.icon}`}
-                alt={`${modul.title} icon`}
-                className="object-contain w-10 h-10"
-              />
-            </div>
-
-            {/* Title */}
-            <h3 className="font-semibold text-lg mb-3 text-gray-800 dark:text-gray-100 line-clamp-2 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">
-              {modul.title}
-            </h3>
-
-            {/* Progress Bar */}
-            <div className="w-full bg-gray-200/70 dark:bg-gray-700/70 rounded-full h-2 mb-4">
-              <div
-                className={`
-              h-2 rounded-full transition-all duration-500 ease-out
-              ${modul.progress === 100 ? "bg-green-500" : "bg-indigo-500"}
+              shadow-sm hover:shadow-xl hover:-translate-y-1
+              transition-all duration-300 snap-start
+              ${modul.status === "Terkunci" ? "grayscale opacity-70 cursor-not-allowed" : ""}
             `}
-                style={{ width: `${modul.progress}%` }}
-              ></div>
-            </div>
+          >
+            {/* Decorative Background */}
+            <div className={`absolute top-0 right-0 w-32 h-32 bg-gradient-to-br ${
+                modul.progress === 100 ? "from-green-50/80 to-transparent dark:from-green-900/20" : "from-blue-200/80 to-transparent dark:from-blue-800/20"
+            } rounded-bl-[80px] -mr-8 -mt-8 transition-transform duration-500 group-hover:scale-110`} />
 
-            {/* Badge */}
-            <div className="flex items-center gap-2 mt-auto">
-              {getStatusBadge(modul.status, modul.progress)}
-              {getCategoryBadge(modul.category)}
-            </div>
+            <div className="relative p-5 flex flex-col h-full z-10">
+                {/* Header */}
+                <div className="flex justify-between items-start mb-3">
+                    <div className={`
+                        w-12 h-12 rounded-xl flex items-center justify-center shadow-sm border border-white/50 dark:border-gray-600
+                        ${modul.progress === 100 ? "bg-green-100/50 dark:bg-green-900/30" : "bg-blue-100/50 dark:bg-blue-900/30"}
+                        backdrop-blur-sm
+                    `}>
+                        <img
+                            src={`${process.env.NEXT_PUBLIC_API_URL}/uploads/${modul.icon}`}
+                            alt={modul.title}
+                            className="w-7 h-7 object-contain"
+                        />
+                    </div>
+                    <div className="transform translate-x-2 -translate-y-2 scale-90">
+                        {getCategoryBadge(modul.category)}
+                    </div>
+                </div>
 
-            {/* Glow Hover */}
-            {modul.status !== "Terkunci" && (
-              <div className="absolute inset-0 rounded-3xl pointer-events-none bg-gradient-to-br from-indigo-400/0 via-blue-300/0 to-blue-400/10 opacity-0 group-hover:opacity-100 transition duration-300 blur-xl"></div>
-            )}
+                {/* Title */}
+                <h3 className="font-bold text-base text-gray-800 dark:text-gray-100 leading-snug line-clamp-2 mb-2 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+                    {modul.title}
+                </h3>
+
+                {/* Info Row */}
+                <div className="flex items-center gap-4 text-[10px] font-medium text-gray-500 dark:text-gray-400 mb-auto">
+                  <div className="flex items-center gap-1.5">
+                    <Users size={12} className="text-indigo-500" />
+                    <span>{modul.userCount ?? 0} Bergabung</span>
+                  </div>
+                  <div className="flex items-center gap-1.5">
+                    <Clock size={12} className="text-amber-500" />
+                    <span>{modul.totalDuration ? `${modul.totalDuration} Menit` : "-"}</span>
+                  </div>
+                </div>
+
+                {/* Footer */}
+                <div className="mt-3 pt-3 border-t border-slate-200 dark:border-gray-700/50">
+                    <div className="flex justify-between items-center mb-2">
+                        <span className="text-[10px] font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide">
+                            {modul.status === 'Selesai' ? 'Selesai' : modul.status === 'Terkunci' ? 'Terkunci' : `${modul.progress}% Selesai`}
+                        </span>
+                        <div className="scale-90 origin-right">
+                            {getStatusBadge(modul.status, modul.progress)}
+                        </div>
+                    </div>
+                    <div className="w-full bg-gray-100 dark:bg-gray-700 rounded-full h-1.5 overflow-hidden">
+                        <div 
+                            className={`h-full rounded-full transition-all duration-500 ${
+                                modul.status === 'Terkunci' ? 'bg-gray-300 dark:bg-gray-600' :
+                                modul.progress === 100 ? 'bg-green-500' : 'bg-blue-600'
+                            }`} 
+                            style={{ width: `${modul.progress}%` }} 
+                        />
+                    </div>
+                </div>
+            </div>
           </Link>
         ))}
       </div>

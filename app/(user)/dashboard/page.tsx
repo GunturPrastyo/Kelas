@@ -141,7 +141,7 @@ export default function DashboardPage() {
 
         // 1. Cek status Pre-Test dari API (Source of Truth)
         const preTestRes = await authFetch(`${process.env.NEXT_PUBLIC_API_URL}/api/results/check-pre-test`);
-        
+
         if (preTestRes.ok) {
           const data = await preTestRes.json();
           if (data.hasTakenPreTest) {
@@ -256,7 +256,7 @@ export default function DashboardPage() {
   }, [modules, userLevel]);
 
   // Hitung modul yang selesai setelah personalizedModules dihitung
-  useEffect(() => {    
+  useEffect(() => {
     const completedCount = personalizedModules.filter(m => m.status === 'Selesai').length;
     setAnalytics(prev => ({ ...prev, completedModulesCount: completedCount }));
   }, [personalizedModules]);
@@ -264,7 +264,7 @@ export default function DashboardPage() {
   const overallProgress = useMemo(() => {
     if (modules.length === 0) return 0;
     const totalAllTopics = modules.reduce((sum, module) => sum + (module.totalTopics || 0), 0);
-    const totalCompletedTopics = modules.reduce((sum, module) => sum + (module.completedTopics || 0), 0);    
+    const totalCompletedTopics = modules.reduce((sum, module) => sum + (module.completedTopics || 0), 0);
     if (totalAllTopics === 0) return 0;
     return Math.round((totalCompletedTopics / totalAllTopics) * 100);
   }, [modules]);
@@ -303,6 +303,14 @@ export default function DashboardPage() {
               </div>
               <p className="text-sm font-medium text-blue-600 dark:text-blue-400 flex-shrink-0">{animatedOverallProgress}%</p>
             </div>
+            <p className="text-xs text-gray-600 dark:text-gray-400 mt-2">
+              {overallProgress === 0 ? "Belum ada progres, yuk mulai!" :
+                overallProgress < 25 ? "Awal yang baik, lanjutkan!" :
+                  overallProgress < 50 ? "Semangat! Kamu sudah melangkah jauh." :
+                    overallProgress < 75 ? "Hebat! Sudah lebih dari setengah jalan." :
+                      overallProgress < 100 ? "Sedikit lagi! Kamu hampir menyelesaikannya." :
+                        "Luar biasa! Semua materi telah selesai."}
+            </p>
           </div>
 
           {/* Gambar */}
@@ -354,7 +362,7 @@ export default function DashboardPage() {
                 <Image src="/target.png" width={128} height={128} className="w-full h-full object-contain p-1" alt="" />
               </div>
               <h2 className="text-lg font-bold text-gray-900 dark:text-white">
-                Rekomendasi
+                Rekomendasi Belajar
               </h2>
             </div>
 
@@ -365,10 +373,10 @@ export default function DashboardPage() {
                     ? `/modul/${recommendation.continueToModule.moduleSlug}#${recommendation.continueToModule.nextTopic.id}`
                     : `/modul/${recommendation.continueToModule.moduleSlug}`
                 }
-                className="block p-2 border border-green-200 dark:border-gray-700 rounded-2xl bg-white dark:bg-gray-800 hover:bg-green-50/60 dark:hover:bg-gray-700 cursor-pointer transition-all group shadow-sm hover:shadow-md"
+                className="block p-3 border border-slate-200 dark:border-slate-800 border-l-[5px] border-l-green-500 dark:border-l-gray-600 rounded-2xl bg-white dark:bg-gray-800 hover:bg-green-50/60 dark:hover:bg-gray-700 cursor-pointer transition-all group shadow-sm hover:shadow-md"
               >
                 <div className="flex items-start gap-2">
-                  <PlayCircle className="w-8 h-8 text-green-600/70 dark:text-green-400/70 group-hover:text-green-600 dark:group-hover:text-green-400 transition-colors flex-shrink-0 mt-3" />
+
                   <div className="flex-1 min-w-0">
                     <h3 className="font-bold text-green-700 dark:text-green-400 group-hover:text-green-800 dark:group-hover:text-green-300 transition-colors">
                       Mulai : {recommendation.continueToModule.moduleTitle}
@@ -381,12 +389,13 @@ export default function DashboardPage() {
                       </span>.
                     </p>
                   </div>
+                  <PlayCircle className="w-10 h-10 text-green-800/70 dark:text-green-400/70 group-hover:text-green-600 dark:group-hover:text-green-400 transition-colors flex-shrink-0 mt-2" />
                 </div>
               </Link>
             ) : (
-              <div className="p-4 border border-gray-200 dark:border-gray-700 rounded-2xl bg-white/60 dark:bg-gray-900/50 text-center shadow-sm">
+              <div className="p-4 border border-slate-200 dark:border-slate-800 border-l-[5px] border-l-green-500 dark:border-l-gray-600 rounded-2xl bg-white/60 dark:bg-gray-900/50 text-center shadow-sm">
                 <h3 className="font-semibold text-gray-700 dark:text-gray-300">
-                  Semua modul rekomendasi telah kamu mulai 
+                  Semua modul rekomendasi telah kamu mulai
                 </h3>
                 <p className="text-xs text-gray-600 dark:text-gray-400 mt-1">
                   Mantap! Lanjutkan progres belajarmu dan eksplor topik-topik baru yang menantang.
@@ -423,7 +432,7 @@ export default function DashboardPage() {
                 />
               </div>
               <h2 className="text-base sm:text-lg font-bold text-gray-900 dark:text-white">
-                Pre-Test 
+                Pre-Test
               </h2>
             </div>
             <p className="text-gray-600 dark:text-gray-300 mb-3 text-xs sm:text-sm leading-relaxed">
@@ -469,7 +478,7 @@ export default function DashboardPage() {
                 {/* Wrapper untuk 2 kartu atas */}
                 <div className="col-span-2 grid grid-cols-2 gap-6">
                   {/* Modul Selesai */}
-                  <div className="p-4 rounded-lg bg-gradient-to-br from-blue-100 to-blue-200 dark:from-gray-700 dark:to-gray-800 shadow-md hover:shadow-lg transition">
+                  <div className="  border border-slate-200 dark:border-slate-800 border-l-[6px] border-l-blue-500 dark:border-l-gray-600 p-4 rounded-lg bg-gradient-to-br from-blue-100 to-blue-200 dark:from-gray-700 dark:to-gray-800 shadow-md hover:shadow-lg transition">
                     <div className="flex flex-col items-center gap-2">
                       <div className="bg-blue-600 rounded-full w-10 h-10 flex items-center justify-center">
                         <Image src="/book.png" width={256} height={256} className="w-full h-full object-contain p-1" alt="" />
@@ -481,7 +490,7 @@ export default function DashboardPage() {
                     </div>
                   </div>
                   {/* Rata-rata Skor */}
-                  <div className="p-4 rounded-lg bg-gradient-to-br from-green-100 to-green-200 dark:from-gray-700 dark:to-gray-800 shadow-md hover:shadow-lg transition">
+                  <div className="border border-slate-200 dark:border-slate-800 border-l-[6px] border-l-green-500 dark:border-l-gray-600 p-4 rounded-lg bg-gradient-to-br from-green-100 to-green-200 dark:from-gray-700 dark:to-gray-800 shadow-md hover:shadow-lg transition">
                     <div className="flex flex-col items-center gap-2">
                       <div className="bg-green-600 rounded-full w-10 h-10 flex items-center justify-center">
                         <Image src="/score.png" width={256} height={256} className="w-full h-full object-contain p-1" alt="" />
@@ -495,7 +504,7 @@ export default function DashboardPage() {
                 {/* Topik Terlemah */}
                 <Link
                   href={analytics.weakestTopic ? `/modul/${analytics.weakestTopic.modulSlug}#${analytics.weakestTopic.topicId}` : "#"}
-                  className={`col-span-2 sm:col-span-1 max-w-full p-4 rounded-lg bg-gradient-to-br from-red-100 to-red-200 dark:from-gray-700 dark:to-gray-800 shadow-md transition ${analytics.weakestTopic ? "hover:shadow-lg cursor-pointer" : "cursor-default"}`}
+                  className={`border border-slate-200 dark:border-slate-800 border-l-[6px] border-l-red-500 dark:border-l-gray-600 col-span-2 sm:col-span-1 max-w-full p-4 rounded-lg bg-gradient-to-br from-red-100 to-red-200 dark:from-gray-700 dark:to-gray-800 shadow-md transition ${analytics.weakestTopic ? "hover:shadow-lg cursor-pointer" : "cursor-default"}`}
                 >
                   <div className="flex flex-col items-center justify-center gap-2 break-words h-full text-center">
                     <div className="bg-red-600 rounded-full w-10 h-10 flex items-center justify-center flex-shrink-0">
@@ -541,8 +550,8 @@ export default function DashboardPage() {
 
       {/* Modal Pop-up Pre-Test */}
       <PreTestModal
-        isOpen={showPreTestModal} 
-        onClose={() => setShowPreTestModal(false)} 
+        isOpen={showPreTestModal}
+        onClose={() => setShowPreTestModal(false)}
       />
     </>
   )

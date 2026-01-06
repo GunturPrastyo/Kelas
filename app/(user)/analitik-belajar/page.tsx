@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { authFetch } from "@/lib/authFetch";
 import { useRouter } from "next/navigation";
-import { Award, TrendingUp, TrendingDown, LayoutDashboard, Activity, BarChartHorizontal, AlertTriangle, Users, Target, Play, Rocket } from "lucide-react";
+import { Award, TrendingUp, TrendingDown, LayoutDashboard, Activity, BarChartHorizontal, AlertTriangle, Users, Target, Play, Rocket, Sparkles } from "lucide-react";
 import { Chart, registerables } from "chart.js";
 import { ChevronDown } from "lucide-react";
 Chart.register(...registerables);
@@ -560,6 +560,11 @@ export default function AnalitikBelajarPage() {
   }, []);
   return (
     <div className="space-y-10 mt-22">
+      <style jsx global>{`
+        html {
+          scroll-behavior: smooth;
+        }
+      `}</style>
       {/* RINGKASAN */}
       <section>
         <h2 ref={summaryCardRef} className="text-xl font-semibold text-gray-700 dark:text-gray-200 mb-3 flex items-center gap-2">
@@ -568,95 +573,112 @@ export default function AnalitikBelajarPage() {
         </h2>
         <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-5" >
           {/* Card 1 */}
-          <div className="flex flex-col gap-2 bg-gradient-to-br from-blue-50 to-blue-100 dark:from-gray-800 dark:to-gray-900 text-gray-800 dark:text-gray-100 rounded-2xl p-4 shadow-md hover:scale-[1.02] transition-transform dark:shadow-lg dark:shadow-gray-800/40">
-            <p className="text-sm text-gray-600 dark:text-gray-400">Modul Selesai</p>
-            <div className="flex items-center gap-3">
-              <div className="flex-shrink-0">
-                <Image src="/modules2.png" alt="Modul Icon" width={48} height={48} className="w-12 h-12 rounded-lg bg-blue-100 dark:bg-gray-700 p-1" />
+          <div className="relative overflow-hidden bg-gradient-to-br from-blue-50 to-blue-100 dark:from-gray-800 dark:to-gray-900 text-gray-800 dark:text-gray-100 rounded-2xl p-4 shadow-md hover:scale-[1.02] transition-transform dark:shadow-lg dark:shadow-gray-800/40 border border-slate-200 dark:border-slate-700 border-l-[6px] border-l-blue-500">
+            <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-br from-blue-200/60 to-transparent dark:from-blue-900/20 rounded-bl-[60px] -mr-4 -mt-4" />
+            <div className="relative z-10 flex flex-col gap-2">
+              <p className="text-sm text-gray-600 dark:text-gray-400">Modul Selesai</p>
+              <div className="flex items-center gap-3">
+                <div className="flex-shrink-0">
+                  <Image src="/modules2.png" alt="Modul Icon" width={48} height={48} className="w-12 h-12 rounded-lg bg-blue-100 dark:bg-gray-700 p-1" />
+                </div>
+                {loading || !summary ? (
+                  <div className="h-8 w-24 bg-blue-100/50 dark:bg-gray-700/50 rounded-md animate-pulse"></div>
+                ) : (
+                  <h2 className="text-3xl font-bold text-blue-600 dark:text-blue-400">{animatedCompletedModules} / {animatedTotalModules}</h2>
+                )}
               </div>
               {loading || !summary ? (
-                <div className="h-8 w-24 bg-blue-100/50 dark:bg-gray-700/50 rounded-md animate-pulse"></div>
+                <div className="h-4 w-full bg-blue-100/50 dark:bg-gray-700/50 rounded-md animate-pulse"></div>
               ) : (
-                <h2 className="text-3xl font-bold text-blue-600 dark:text-blue-400">{animatedCompletedModules} / {animatedTotalModules}</h2>
+                <p className="text-xs text-gray-500 dark:text-gray-400">
+                  Kamu telah menyelesaikan {summary.totalModules > 0 ? Math.round((summary.completedModules / summary.totalModules) * 100) : 0}%
+                </p>
               )}
             </div>
-            {loading || !summary ? (
-              <div className="h-4 w-full bg-blue-100/50 dark:bg-gray-700/50 rounded-md animate-pulse"></div>
-            ) : (
-              <p className="text-xs text-gray-500 dark:text-gray-400">
-                Kamu telah menyelesaikan {summary.totalModules > 0 ? Math.round((summary.completedModules / summary.totalModules) * 100) : 0}%
-              </p>
-            )}
           </div>
 
           {/* Card 2 */}
-          <div className="flex flex-col gap-2 bg-gradient-to-br from-green-50 to-green-100 dark:from-gray-800 dark:to-gray-900 text-gray-800 dark:text-gray-100 rounded-2xl p-4 shadow-md hover:scale-[1.02] transition-transform dark:shadow-lg dark:shadow-gray-800/40">
-            <p className="text-sm text-gray-600 dark:text-gray-400">Rata-rata Nilai</p>
-            <div className="flex items-center gap-3">
-              <div className="flex-shrink-0">
-                <Image src="/star.png" alt="Score Icon" width={48} height={48} className="w-12 h-12 rounded-lg bg-green-100 dark:bg-gray-700 p-1" />
+          <div className="relative overflow-hidden bg-gradient-to-br from-green-50 to-green-100 dark:from-gray-800 dark:to-gray-900 text-gray-800 dark:text-gray-100 rounded-2xl p-4 shadow-md hover:scale-[1.02] transition-transform dark:shadow-lg dark:shadow-gray-800/40 border border-slate-200 dark:border-slate-700 border-l-[6px] border-l-green-500">
+            <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-br from-green-200/60 to-transparent dark:from-green-900/20 rounded-bl-[60px] -mr-4 -mt-4" />
+            <div className="relative z-10 flex flex-col gap-2">
+              <p className="text-sm text-gray-600 dark:text-gray-400">Rata-rata Nilai</p>
+              <div className="flex items-center gap-3">
+                <div className="flex-shrink-0">
+                  <Image src="/star.png" alt="Score Icon" width={48} height={48} className="w-12 h-12 rounded-lg bg-green-100 dark:bg-gray-700 p-1" />
+                </div>
+                {loading || !summary ? (
+                  <div className="h-8 w-20 bg-green-100/50 dark:bg-gray-700/50 rounded-md animate-pulse"></div>
+                ) : (
+                  <h2 className="text-3xl font-bold text-green-600 dark:text-green-400">{animatedAverageScore}%</h2>
+                )}
               </div>
               {loading || !summary ? (
-                <div className="h-8 w-20 bg-green-100/50 dark:bg-gray-700/50 rounded-md animate-pulse"></div>
+                <div className="h-4 w-full bg-green-100/50 dark:bg-gray-700/50 rounded-md animate-pulse"></div>
               ) : (
-                <h2 className="text-3xl font-bold text-green-600 dark:text-green-400">{animatedAverageScore}%</h2>
+                <p className="text-xs text-gray-500 dark:text-gray-400">Dari semua tes setiap topik</p>
               )}
             </div>
-            {loading || !summary ? (
-              <div className="h-4 w-full bg-green-100/50 dark:bg-gray-700/50 rounded-md animate-pulse"></div>
-            ) : (
-              <p className="text-xs text-gray-500 dark:text-gray-400">Dari semua tes setiap topik</p>
-            )}
           </div>
 
           {/* Card 3 */}
-          <div className="flex flex-col gap-2 bg-gradient-to-br from-purple-50 to-purple-100 dark:from-gray-800 dark:to-gray-900 text-gray-800 dark:text-gray-100 rounded-2xl p-4 shadow-md hover:scale-[1.02] transition-transform dark:shadow-lg dark:shadow-gray-800/40">
-            <p className="text-sm text-gray-600 dark:text-gray-400">Total Waktu Belajar</p>
-            <div className="flex items-center gap-3">
-              <div className="flex-shrink-0">
-                <Image src="/study.png" alt="Time Icon" width={48} height={48} className="w-12 h-12 rounded-lg bg-purple-100 dark:bg-gray-700 p-1" />
+          <div className="relative overflow-hidden bg-gradient-to-br from-purple-50 to-purple-100 dark:from-gray-800 dark:to-gray-900 text-gray-800 dark:text-gray-100 rounded-2xl p-4 shadow-md hover:scale-[1.02] transition-transform dark:shadow-lg dark:shadow-gray-800/40 border border-slate-200 dark:border-slate-700 border-l-[6px] border-l-purple-500">
+            <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-br from-purple-200/60 to-transparent dark:from-purple-900/20 rounded-bl-[60px] -mr-4 -mt-4" />
+            <div className="relative z-10 flex flex-col gap-2">
+              <p className="text-sm text-gray-600 dark:text-gray-400">Total Waktu Belajar</p>
+              <div className="flex items-center gap-3">
+                <div className="flex-shrink-0">
+                  <Image src="/study.png" alt="Time Icon" width={48} height={48} className="w-12 h-12 rounded-lg bg-purple-100 dark:bg-gray-700 p-1" />
+                </div>
+                {loading || !summary ? (
+                  <div className="h-8 w-24 bg-purple-100/50 dark:bg-gray-700/50 rounded-md animate-pulse"></div>
+                ) : (
+                  <div className="flex items-baseline gap-1.5 flex-wrap">
+                    <h2 className="text-3xl font-bold text-purple-600 dark:text-purple-400 leading-none">{animatedStudyHours}</h2>
+                    <span className="text-xl font-semibold text-purple-500 dark:text-purple-300">jam</span>
+                    <p className="text-base text-purple-500 dark:text-purple-400">{summary.studyMinutes} menit</p>                </div>
+                )}
               </div>
               {loading || !summary ? (
-                <div className="h-8 w-24 bg-purple-100/50 dark:bg-gray-700/50 rounded-md animate-pulse"></div>
+                <div className="h-4 w-full bg-purple-100/50 dark:bg-gray-700/50 rounded-md animate-pulse"></div>
               ) : (
-                <div className="flex items-baseline gap-1.5 flex-wrap">
-                  <h2 className="text-3xl font-bold text-purple-600 dark:text-purple-400 leading-none">{animatedStudyHours}</h2>
-                  <span className="text-xl font-semibold text-purple-500 dark:text-purple-300">jam</span>
-                  <p className="text-base text-purple-500 dark:text-purple-400">{summary.studyMinutes} menit</p>                </div>
+                null
               )}
             </div>
-            {loading || !summary ? (
-              <div className="h-4 w-full bg-purple-100/50 dark:bg-gray-700/50 rounded-md animate-pulse"></div>
-            ) : (
-              null
-            )}
           </div>
 
           {/* Card 4 */}
-          <div className="flex flex-col gap-2 bg-gradient-to-br from-orange-50 to-orange-100 dark:from-gray-800 dark:to-gray-900 text-gray-800 dark:text-gray-100 rounded-2xl p-4 shadow-md hover:scale-[1.02] transition-transform dark:shadow-lg dark:shadow-gray-800/40">
-            <p className="text-sm text-gray-600 dark:text-gray-400">Streak Harian</p>
-            <div className="flex items-center gap-3">
-              <div className="flex-shrink-0">
-                <Image src="/streak.png" alt="Streak Icon" width={48} height={48} className="w-12 h-12 rounded-lg bg-orange-100 dark:bg-gray-700 p-1" />
+          <div className="relative overflow-hidden bg-gradient-to-br from-orange-50 to-orange-100 dark:from-gray-800 dark:to-gray-900 text-gray-800 dark:text-gray-100 rounded-2xl p-4 shadow-md hover:scale-[1.02] transition-transform dark:shadow-lg dark:shadow-gray-800/40 border border-slate-200 dark:border-slate-700 border-l-[6px] border-l-orange-500">
+            <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-br from-orange-200/60 to-transparent dark:from-orange-900/20 rounded-bl-[60px] -mr-4 -mt-4" />
+            <div className="relative z-10 flex flex-col gap-2">
+              <p className="text-sm text-gray-600 dark:text-gray-400">Streak Harian</p>
+              <div className="flex items-center gap-3">
+                <div className="flex-shrink-0">
+                  <Image src="/streak.png" alt="Streak Icon" width={48} height={48} className="w-12 h-12 rounded-lg bg-orange-100 dark:bg-gray-700 p-1" />
+                </div>
+                {loading || !summary ? (
+                  <div className="h-8 w-16 bg-orange-100/50 dark:bg-gray-700/50 rounded-md animate-pulse"></div>
+                ) : (
+                  <h2 className="text-3xl font-bold text-orange-600 dark:text-orange-400">{animatedDailyStreak}</h2>
+                )}
               </div>
               {loading || !summary ? (
-                <div className="h-8 w-16 bg-orange-100/50 dark:bg-gray-700/50 rounded-md animate-pulse"></div>
+                <div className="h-4 w-full bg-orange-100/50 dark:bg-gray-700/50 rounded-md animate-pulse"></div>
               ) : (
-                <h2 className="text-3xl font-bold text-orange-600 dark:text-orange-400">{animatedDailyStreak}</h2>
+                <p className="text-xs text-gray-500 dark:text-gray-400">Hari berturut-turut aktif</p>
               )}
             </div>
-            {loading || !summary ? (
-              <div className="h-4 w-full bg-orange-100/50 dark:bg-gray-700/50 rounded-md animate-pulse"></div>
-            ) : (
-              <p className="text-xs text-gray-500 dark:text-gray-400">Hari berturut-turut aktif</p>
-            )}
           </div>
         </div>
       </section>
 
       {/* TOPIK YANG PERLU DIPERKUAT */}
-      <section className="bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-md">
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 gap-3">
+      <section className="relative overflow-hidden bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-md border-l-4 border-yellow-500">
+        {/* Dekorasi Latar Belakang: Watermark Icon */}
+        <div className="absolute -top-12 -right-12 opacity-[0.04] pointer-events-none select-none">
+          <AlertTriangle className="w-64 h-64 text-yellow-600 dark:text-yellow-400 transform rotate-12" />
+        </div>
+
+        <div className="relative z-10 flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 gap-3">
           <div>
             <h3 className="font-semibold text-gray-700 dark:text-gray-200 flex items-center gap-2">
               <AlertTriangle className="w-5 h-5 text-yellow-500" />
@@ -678,7 +700,7 @@ export default function AnalitikBelajarPage() {
           </div>
         </div>
 
-        <div className="overflow-x-auto min-h-auto">
+        <div className="relative z-10 overflow-x-auto min-h-auto">
           <table className="w-full text-left border-collapse">
             <thead className="bg-gray-100 dark:bg-gray-700 text-sm text-gray-600 dark:text-gray-400 whitespace-nowrap">
               <tr>
@@ -700,7 +722,11 @@ export default function AnalitikBelajarPage() {
                 ))
               ) : paginatedWeakTopics.length > 0 ? (
                 paginatedWeakTopics.map((topic) => (
-                  <tr key={topic.topicTitle} className="border-b dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
+                  <tr 
+                    key={topic.topicTitle} 
+                    className={`border-b dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors ${topic.weakSubTopics && topic.weakSubTopics.length > 0 ? 'cursor-pointer' : ''}`}
+                    onClick={() => handleRowClick(topic)}
+                  >
                     <td className="p-3 font-medium text-gray-800 dark:text-gray-200">{topic.topicTitle.replace(/^\d+\.?\s*/, '')}</td>
                     <td className="p-3 text-gray-600 dark:text-gray-300 text-center">{topic.score}%</td>
                     <td className="p-3 text-sm text-gray-600 dark:text-gray-400">
@@ -716,7 +742,10 @@ export default function AnalitikBelajarPage() {
                     </td>
                     <td className="p-3 text-center">
                       <button
-                        onClick={() => handleRowClick(topic)}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleRowClick(topic);
+                        }}
                         className="px-3 py-1.5 bg-blue-500 text-white text-xs font-semibold rounded-lg hover:bg-blue-600 transition-colors shadow-sm hover:shadow-md disabled:opacity-50 disabled:cursor-not-allowed"
                         disabled={!topic.weakSubTopics || topic.weakSubTopics.length === 0}
                       >
@@ -737,7 +766,7 @@ export default function AnalitikBelajarPage() {
         </div>
         {/* Pagination */}
         {totalPages > 1 && (
-          <div className="flex justify-between items-center mt-4 text-sm">
+          <div className="relative z-10 flex justify-between items-center mt-4 text-sm">
             <button
               onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
               disabled={currentPage === 1}
@@ -761,73 +790,86 @@ export default function AnalitikBelajarPage() {
 
       {/* GRAFIK */}
       <section className="grid lg:grid-cols-2 gap-8">
-        <div className="bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-md">
-          <h3 className="font-semibold text-gray-700 dark:text-gray-200 flex items-center gap-2">
-            <Activity className="w-5 h-5" />
-            Aktivitas Belajar Mingguan
-          </h3>
-          <p className="text-xs text-gray-500 dark:text-gray-400 mb-3">Lihat seberapa aktif kamu belajar minggu ini! Grafik ini membandingkan total waktu belajarmu setiap hari dengan rata-rata peserta lain.</p>
-          <div className="relative">
-            <canvas ref={chartAktivitasRef}></canvas>
+        <div className="relative overflow-hidden bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-md border-l-4 border-blue-500">
+          {/* Dekorasi Latar Belakang: Watermark Icon */}
+          <div className="absolute -top-6 -right-6 opacity-[0.04] pointer-events-none select-none">
+            <Activity className="w-64 h-64 text-blue-600 dark:text-blue-400 transform -rotate-12" />
           </div>
-          <div className="mt-4 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 text-sm">
-            <div className="flex items-center gap-4 flex-shrink-0">
-              <div className="flex items-center gap-2"><span className="w-3 h-3 rounded-full bg-blue-500"></span><span className="text-gray-600 dark:text-gray-400">Aktivitas Kamu</span></div>
-              <div className="flex items-center gap-2"><span className="w-3 h-3 rounded-full bg-gray-400"></span><span className="text-gray-600 dark:text-gray-400">Rata-rata Kelas</span></div>
-            </div>
 
-          </div>
-          {!loading && weeklyActivity.length > 0 && (
-            <div className={`flex items-center gap-3 p-2.5 mt-5 rounded-lg w-full sm:w-auto ${getWeeklyFeedback().bgColor} ${getWeeklyFeedback().borderColor} border`}>
-              {getWeeklyFeedback().icon}
-              <p className={`text-xs font-medium ${getWeeklyFeedback().color}`}>{getWeeklyFeedback().text}</p>
+          <div className="relative z-10">
+            <h3 className="font-semibold text-gray-700 dark:text-gray-200 flex items-center gap-2">
+              <Activity className="w-5 h-5 text-blue-500" />
+              Aktivitas Belajar Mingguan
+            </h3>
+            <p className="text-xs text-gray-500 dark:text-gray-400 mb-3">Lihat seberapa aktif kamu belajar minggu ini! Grafik ini membandingkan total waktu belajarmu setiap hari dengan rata-rata peserta lain.</p>
+            <div className="relative">
+              <canvas ref={chartAktivitasRef}></canvas>
             </div>
-          )}
+            <div className="mt-4 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 text-sm">
+              <div className="flex items-center gap-4 flex-shrink-0">
+                <div className="flex items-center gap-2"><span className="w-3 h-3 rounded-full bg-blue-500"></span><span className="text-gray-600 dark:text-gray-400">Aktivitas Kamu</span></div>
+                <div className="flex items-center gap-2"><span className="w-3 h-3 rounded-full bg-gray-400"></span><span className="text-gray-600 dark:text-gray-400">Rata-rata Kelas</span></div>
+              </div>
+            </div>
+            {!loading && weeklyActivity.length > 0 && (
+              <div className={`flex items-center gap-3 p-2.5 mt-5 rounded-lg w-full sm:w-auto ${getWeeklyFeedback().bgColor} ${getWeeklyFeedback().borderColor} border`}>
+                {getWeeklyFeedback().icon}
+                <p className={`text-xs font-medium ${getWeeklyFeedback().color}`}>{getWeeklyFeedback().text}</p>
+              </div>
+            )}
+          </div>
         </div>
 
         {/* PERBANDINGAN DENGAN KELAS */}
-        <div className="bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-md">
-          <h3 className="font-semibold text-gray-700 dark:text-gray-200 flex items-center gap-2">
-            <Users className="w-5 h-5" />
-            Perbandingan Nilai per Modul
-          </h3>
-          <p className="text-xs text-gray-500 dark:text-gray-400 mb-2">Bagaimana performa nilaimu dibandingkan teman-teman sekelas? Lihat perbandingan skormu dengan rata-rata kelas di setiap modul.</p>
-          <div className="flex flex-col lg:flex-row gap-4 items-center">
-            <div className="lg:w-3/5 w-full flex justify-center">
-              <canvas ref={chartPerbandinganRef}></canvas>
-            </div>
-            <div className="lg:w-2/5 w-full space-y-3 text-gray-800 dark:text-gray-200">
-              {loading || !comparisonData ? (
-                <>
-                  <div className="h-16 w-full bg-gray-200 dark:bg-gray-700 rounded-lg animate-pulse"></div>
-                  <div className="h-16 w-full bg-gray-200 dark:bg-gray-700 rounded-lg animate-pulse"></div>
-                </>
-              ) : (
-                <>
-                  <div className="flex items-center gap-4 p-3 bg-blue-50 dark:bg-gray-700/50 rounded-lg border border-blue-100 dark:border-gray-700">
-                    <Award className="w-8 h-8 text-blue-500 flex-shrink-0" />
-                    <div>
-                      <p className="text-xs text-gray-600 dark:text-gray-400">Peringkat Kamu</p>
-                      <p className="font-bold text-base">
-                        {comparisonData.rank} <span className="text-xs font-normal">dari {comparisonData.totalParticipants} peserta</span>
-                      </p>
+        <div className="relative overflow-hidden bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-md border-l-4 border-indigo-500">
+          {/* Dekorasi Latar Belakang: Watermark Icon */}
+          <div className="absolute -top-6 -right-6 opacity-[0.04] pointer-events-none select-none">
+            <Users className="w-64 h-64 text-indigo-600 dark:text-indigo-400 transform rotate-12" />
+          </div>
+
+          <div className="relative z-10">
+            <h3 className="font-semibold text-gray-700 dark:text-gray-200 flex items-center gap-2">
+              <Users className="w-5 h-5 text-indigo-500" />
+              Perbandingan Nilai per Modul
+            </h3>
+            <p className="text-xs text-gray-500 dark:text-gray-400 mb-2">Bagaimana performa nilaimu dibandingkan teman-teman sekelas? Lihat perbandingan skormu dengan rata-rata kelas di setiap modul.</p>
+            <div className="flex flex-col lg:flex-row gap-4 items-center">
+              <div className="lg:w-3/5 w-full flex justify-center">
+                <canvas ref={chartPerbandinganRef}></canvas>
+              </div>
+              <div className="lg:w-2/5 w-full space-y-3 text-gray-800 dark:text-gray-200">
+                {loading || !comparisonData ? (
+                  <>
+                    <div className="h-16 w-full bg-gray-200 dark:bg-gray-700 rounded-lg animate-pulse"></div>
+                    <div className="h-16 w-full bg-gray-200 dark:bg-gray-700 rounded-lg animate-pulse"></div>
+                  </>
+                ) : (
+                  <>
+                    <div className="flex items-center gap-4 p-3 bg-blue-50 dark:bg-gray-700/50 rounded-lg border border-blue-100 dark:border-gray-700">
+                      <Award className="w-8 h-8 text-blue-500 flex-shrink-0" />
+                      <div>
+                        <p className="text-xs text-gray-600 dark:text-gray-400">Peringkat Kamu</p>
+                        <p className="font-bold text-base">
+                          {comparisonData.rank} <span className="text-xs font-normal">dari {comparisonData.totalParticipants} peserta</span>
+                        </p>
+                      </div>
                     </div>
-                  </div>
-                  <div className={`flex items-center gap-4 p-3 rounded-lg border ${comparisonData.scoreDifference > 0 ? 'bg-green-50 dark:bg-green-900/30 border-green-100 dark:border-green-800' : 'bg-yellow-50 dark:bg-yellow-900/30 border-yellow-100 dark:border-yellow-800'}`}>
-                    {comparisonData.scoreDifference > 0 ? (
-                      <TrendingUp className="w-8 h-8 text-green-500 flex-shrink-0" />
-                    ) : (
-                      <TrendingDown className="w-8 h-8 text-yellow-500 flex-shrink-0" />
-                    )}
-                    <div>
-                      <p className="text-xs text-gray-600 dark:text-gray-400">Performa Nilai</p>
-                      <p className="font-bold text-base">
-                        {comparisonData.scoreDifference > 0 ? `Lebih Tinggi ${comparisonData.scoreDifference}%` : comparisonData.scoreDifference < 0 ? `Lebih Rendah ${Math.abs(comparisonData.scoreDifference)}%` : 'Setara'}
-                      </p>
+                    <div className={`flex items-center gap-4 p-3 rounded-lg border ${comparisonData.scoreDifference > 0 ? 'bg-green-50 dark:bg-green-900/30 border-green-100 dark:border-green-800' : 'bg-yellow-50 dark:bg-yellow-900/30 border-yellow-100 dark:border-yellow-800'}`}>
+                      {comparisonData.scoreDifference > 0 ? (
+                        <TrendingUp className="w-8 h-8 text-green-500 flex-shrink-0" />
+                      ) : (
+                        <TrendingDown className="w-8 h-8 text-yellow-500 flex-shrink-0" />
+                      )}
+                      <div>
+                        <p className="text-xs text-gray-600 dark:text-gray-400">Performa Nilai</p>
+                        <p className="font-bold text-base">
+                          {comparisonData.scoreDifference > 0 ? `Lebih Tinggi ${comparisonData.scoreDifference}%` : comparisonData.scoreDifference < 0 ? `Lebih Rendah ${Math.abs(comparisonData.scoreDifference)}%` : 'Setara'}
+                        </p>
+                      </div>
                     </div>
-                  </div>
-                </>
-              )}
+                  </>
+                )}
+              </div>
             </div>
           </div>
         </div>
@@ -887,59 +929,70 @@ export default function AnalitikBelajarPage() {
                     'Lanjutan': 'border-l-4 border-l-purple-500',
                   };
                   const borderColor = levelColors[level as keyof typeof levelColors] || 'border-l-4 border-l-gray-500';
+                  const bubbleColors = {
+                    'Dasar': 'from-green-100 dark:from-green-900/30',
+                    'Menengah': 'from-blue-100 dark:from-blue-900/30',
+                    'Lanjutan': 'from-purple-100 dark:from-purple-900/30',
+                  };
+                  const bubbleColor = bubbleColors[level as keyof typeof bubbleColors] || 'from-gray-100 dark:from-gray-700/30';
 
                   return (
-                    <div key={level} className={`bg-white dark:bg-gray-800 rounded-xl shadow-sm hover:shadow-md border border-gray-100 dark:border-gray-700 overflow-hidden transition-all duration-300 ${cardClassName} ${borderColor}`}>
-                      <button 
-                        onClick={() => setOpenCompetency(prev => prev === level ? null : level)} 
-                        className={`flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-5 w-full text-left transition-colors ${isOpen ? 'bg-gray-50 dark:bg-gray-700/30' : 'hover:bg-gray-50 dark:hover:bg-gray-700/30'}`}
-                      >
-                        <div className="flex items-center gap-4">
-                          <div className={`p-1.5 rounded-xl ${level === 'Dasar' ? 'bg-green-100 dark:bg-green-900/30' : level === 'Menengah' ? 'bg-blue-100 dark:bg-blue-900/30' : 'bg-purple-100 dark:bg-purple-900/30'}`}>
-                            <Image src={info.icon} alt={`${info.title} icon`} width={128} height={128} className="w-24 sm:w-12 h-auto object-contain" />
+                    <div key={level} className={`relative bg-white dark:bg-gray-800 rounded-xl shadow-sm hover:shadow-md border border-gray-100 dark:border-gray-700 overflow-hidden transition-all duration-300 ${cardClassName} ${borderColor}`}>
+                      {/* Bubble Decoration */}
+                      <div className={`absolute -top-8 -right-8 w-32 h-32 bg-gradient-to-br ${bubbleColor} to-transparent rounded-bl-full opacity-60 dark:opacity-40 pointer-events-none`} />
+
+                      <div className="relative"> {/* Wrapper to keep content above decoration */}
+                        <button
+                          onClick={() => setOpenCompetency(prev => prev === level ? null : level)}
+                          className={`flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-5 w-full text-left transition-colors ${isOpen ? 'bg-gray-50/50 dark:bg-gray-700/30' : 'hover:bg-gray-50/50 dark:hover:bg-gray-700/30'} bg-transparent`}
+                        >
+                          <div className="flex items-center gap-4">
+                            <div className={`p-1.5 rounded-xl ${level === 'Dasar' ? 'bg-green-100 dark:bg-green-900/30' : level === 'Menengah' ? 'bg-blue-100 dark:bg-blue-900/30' : 'bg-purple-100 dark:bg-purple-900/30'}`}>
+                              <Image src={info.icon} alt={`${info.title} icon`} width={128} height={128} className="w-24 sm:w-12 h-auto object-contain" />
+                            </div>
+                            <div>
+                              <h4 className="font-bold text-md text-gray-800 dark:text-gray-100">{info.title}</h4>
+                              <p className="text-xs text-gray-500 dark:text-gray-400 mt-1 leading-relaxed max-w-md" dangerouslySetInnerHTML={{ __html: info.unlockInfo }} />
+                            </div>
                           </div>
-                          <div>
-                            <h4 className="font-bold text-md text-gray-800 dark:text-gray-100">{info.title}</h4>
-                            <p className="text-xs text-gray-500 dark:text-gray-400 mt-1 leading-relaxed max-w-md" dangerouslySetInnerHTML={{ __html: info.unlockInfo }} />
+
+                          <div className="flex items-center gap-3 self-end sm:self-center">
+                            {isCurrentUserLevel && (
+                              <span className="flex sm:inline-flex items-center justify-center px-3 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200 border border-blue-200 dark:border-blue-800">
+                                <Target className="w-3 h-3 mr-1.5" />
+                                Level Kamu
+                              </span>
+                            )}
+                            <div className={`p-1 rounded-full transition-transform duration-300 ${isOpen ? 'rotate-180 bg-gray-200 dark:bg-gray-600' : ''}`}>
+                              <ChevronDown className="w-5 h-5 text-gray-500 dark:text-gray-400" />
+                            </div>
                           </div>
-                        </div>
-                        
-                        <div className="flex items-center gap-3 self-end sm:self-center">
-                          {isCurrentUserLevel && (
-                            <span className="flex sm:inline-flex items-center justify-center px-3 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200 border border-blue-200 dark:border-blue-800">
-                              <Target className="w-3 h-3 mr-1.5" />
-                              Level Kamu
-                            </span>
-                          )}
-                          <div className={`p-1 rounded-full transition-transform duration-300 ${isOpen ? 'rotate-180 bg-gray-200 dark:bg-gray-600' : ''}`}>
-                            <ChevronDown className="w-5 h-5 text-gray-500 dark:text-gray-400" />
-                          </div>
-                        </div>
-                      </button>
-                      
-                      <div className={`transition-all duration-500 ease-in-out ${isOpen ? 'max-h-[1000px] opacity-100' : 'max-h-0 opacity-0'}`}>
-                        <div className="p-6 border-t border-gray-100 dark:border-gray-700 bg-white dark:bg-gray-800">
-                          <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6">
-                            {(features as CompetencyFeature[]).map((feature, index) => {
-                              const score = Math.round(feature.score);
-                              const feedback = getCompetencyFeedback(score);
-                              return (
-                                <div key={index} className="group">
-                                  <div className="flex justify-between items-end mb-2">
-                                    <span className="text-sm font-medium text-gray-700 dark:text-gray-300 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">{feature.name}</span>
-                                    <div className="text-right">
-                                      <span className={`text-sm font-bold ${feedback.textColor}`}>{score}%</span>
-                                      <p className={`text-[10px] font-medium ${feedback.textColor} opacity-80`}>{feedback.level}</p>
+                        </button>
+
+                        <div className={`transition-all duration-500 ease-in-out ${isOpen ? 'max-h-[1000px] opacity-100' : 'max-h-0 opacity-0'}`}>
+                          <div className="p-6 border-t border-gray-100 dark:border-gray-700 bg-white dark:bg-gray-800">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6">
+                              {(features as CompetencyFeature[]).map((feature, index) => {
+                                const score = Math.round(feature.score);
+                                const feedback = getCompetencyFeedback(score);
+                                return (
+                                  <div key={index} className="group">
+                                    <div className="flex justify-between items-end mb-2">
+                                      <span className="text-sm font-medium text-gray-700 dark:text-gray-300 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">{feature.name}</span>
+                                      <div className="text-right">
+                                        <span className={`text-sm font-bold ${feedback.textColor}`}>{score}%</span>
+                                        <p className={`text-[10px] font-medium ${feedback.textColor} opacity-80`}>{feedback.level}</p>
+                                      </div>
+                                    </div>
+                                    <div className="h-2.5 w-full bg-gray-100 dark:bg-gray-700 rounded-full overflow-hidden">
+                                      <div className={`h-full rounded-full transition-all duration-1000 ease-out ${feedback.color} relative`} style={{ width: `${score}%` }}>
+                                        <div className="absolute inset-0 bg-white/20 animate-pulse"></div>
+                                      </div>
                                     </div>
                                   </div>
-                                  <div className="h-2.5 w-full bg-gray-100 dark:bg-gray-700 rounded-full overflow-hidden">
-                                    <div className={`h-full rounded-full transition-all duration-1000 ease-out ${feedback.color} relative`} style={{ width: `${score}%` }}>
-                                      <div className="absolute inset-0 bg-white/20 animate-pulse"></div>
-                                    </div>
-                                  </div>
-                                </div>
-                              );
-                            })}
+                                );
+                              })}
+                            </div>
                           </div>
                         </div>
                       </div>
@@ -967,18 +1020,24 @@ export default function AnalitikBelajarPage() {
       </section>
 
       {/* REKOMENDASI */}
-      <section className="bg-gradient-to-br from-blue-50 via-blue-100 to-gray-100 dark:from-gray-800 dark:via-gray-800 dark:to-gray-900 text-gray-800 dark:text-gray-100 p-6 rounded-2xl shadow-md">
-        <div className="flex items-center justify-between mb-4">
-          <h3 className="text-xl font-bold tracking-wide flex items-center gap-2">
-
-            Rekomendasi Pembelajaran
-          </h3>
-          <span className="text-xs sm:text-sm bg-blue-200/60 dark:bg-gray-700/50 px-3 py-1 rounded-full text-gray-700 dark:text-gray-300">
-            Diperbarui hari ini
-          </span>
+      <section className="relative overflow-hidden bg-gradient-to-br from-blue-50 via-blue-100 to-gray-100 dark:from-gray-800 dark:via-gray-800 dark:to-gray-900 text-gray-800 dark:text-gray-100 p-6 rounded-2xl shadow-md border-l-4 border-purple-500">
+        {/* Dekorasi Latar Belakang: Watermark Icon */}
+        <div className="absolute -top-6 -right-6 opacity-[0.04] pointer-events-none select-none">
+          <Sparkles className="w-64 h-64 text-purple-600 dark:text-purple-400 transform rotate-12" />
         </div>
 
-        {loading || !recommendations ? (
+        <div className="relative z-10">
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-xl font-bold tracking-wide flex items-center gap-2">
+              <Sparkles className="w-6 h-6 text-purple-500" />
+              Rekomendasi Pembelajaran
+            </h3>
+            <span className="text-xs sm:text-sm bg-blue-200/60 dark:bg-gray-700/50 px-3 py-1 rounded-full text-gray-700 dark:text-gray-300">
+              Diperbarui hari ini
+            </span>
+          </div>
+
+          {loading || !recommendations ? (
           <div className="space-y-3">
             {[...Array(3)].map((_, i) => (
               <div key={i} className="flex items-center gap-4 p-4 bg-white/40 dark:bg-gray-700/40 rounded-xl animate-pulse">
@@ -994,12 +1053,22 @@ export default function AnalitikBelajarPage() {
           <ul className="space-y-3">
             {/* REPEAT MODULE */}
             {recommendations?.repeatModule && (
-              <li className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 bg-white/60 dark:bg-gray-700/40 rounded-xl hover:bg-white/80 dark:hover:bg-gray-600/50 transition-all shadow-sm" key="repeat-module">
+              <li 
+                className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 bg-white/60 dark:bg-gray-700/40 rounded-xl hover:bg-white/80 dark:hover:bg-gray-600/50 transition-all shadow-sm cursor-pointer group" 
+                key="repeat-module"
+                onClick={() => {
+                  const slug = recommendations.repeatModule?.moduleSlug;
+                  if (recommendations.repeatModule?.allTopicsMastered) {
+                    router.push(`/modul/${slug}/post-test`);
+                  } else {
+                    const hash = recommendations.repeatModule?.weakestTopicDetails ? '#' + recommendations.repeatModule.weakestTopicDetails._id : '';
+                    router.push(`/modul/${slug}${hash}`);
+                  }
+                }}
+              >
                 <div className="flex items-center gap-4 w-full sm:w-auto">
-                  <Image
+                  <img
                     src={`${process.env.NEXT_PUBLIC_API_URL}/uploads/${recommendations.repeatModule.moduleIcon}`}
-                    width={256}
-                    height={256}
                     className="w-16 h-16 rounded-lg object-contain bg-white/30 dark:bg-gray-700/40 p-1 flex-shrink-0"
                     alt="gambar modul"
                   />
@@ -1027,16 +1096,7 @@ export default function AnalitikBelajarPage() {
                     ) : null}
                   </p>
                   <button
-                    onClick={() => {
-                      const slug = recommendations.repeatModule?.moduleSlug;
-                      if (recommendations.repeatModule?.allTopicsMastered) {
-                        router.push(`/modul/${slug}/post-test`);
-                      } else {
-                        const hash = recommendations.repeatModule?.weakestTopicDetails ? '#' + recommendations.repeatModule.weakestTopicDetails._id : '';
-                        router.push(`/modul/${slug}${hash}`);
-                      }
-                    }}
-                    className="flex-shrink-0 flex items-center justify-center w-10 h-10 rounded-full bg-blue-500 hover:bg-blue-600 transition text-white shadow-md"
+                    className="flex-shrink-0 flex items-center justify-center w-10 h-10 rounded-full bg-blue-500 group-hover:bg-blue-600 transition text-white shadow-md"
                   >
                     <Play className="w-5 h-5" />
                   </button>
@@ -1046,12 +1106,18 @@ export default function AnalitikBelajarPage() {
 
             {/* DEEPEN TOPIC */}
             {recommendations?.deepenTopic && (
-              <li className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 bg-white/60 dark:bg-gray-700/40 rounded-xl hover:bg-white/80 dark:hover:bg-gray-600/50 transition-all shadow-sm" key="deepen-topic">
+              <li 
+                className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 bg-white/60 dark:bg-gray-700/40 rounded-xl hover:bg-white/80 dark:hover:bg-gray-600/50 transition-all shadow-sm cursor-pointer group" 
+                key="deepen-topic"
+                onClick={() =>
+                  recommendations.deepenTopic?.modulSlug && recommendations.deepenTopic?.topicSlug && router.push(
+                    `/modul/${recommendations.deepenTopic.modulSlug}#${recommendations.deepenTopic.topicId}`
+                  )
+                }
+              >
                 <div className="flex items-center gap-4 w-full sm:w-auto">
-                  <Image
+                  <img
                     src="/reading-book.png"
-                    width={256}
-                    height={256}
                     className="w-16 h-16 rounded-lg object-contain bg-white/30 dark:bg-gray-700/40 p-1 flex-shrink-0"
                     alt="Perdalam Topik"
                   />
@@ -1069,12 +1135,7 @@ export default function AnalitikBelajarPage() {
                     Coba latihan tambahan agar lebih memahami topik ini secara mendalam.
                   </p>
                   <button
-                    onClick={() =>
-                      recommendations.deepenTopic?.modulSlug && recommendations.deepenTopic?.topicSlug && router.push(
-                        `/modul/${recommendations.deepenTopic.modulSlug}#${recommendations.deepenTopic.topicId}`
-                      )
-                    }
-                    className="flex-shrink-0 flex items-center justify-center w-10 h-10 rounded-full bg-blue-500 hover:bg-blue-600 transition text-white shadow-md"
+                    className="flex-shrink-0 flex items-center justify-center w-10 h-10 rounded-full bg-blue-500 group-hover:bg-blue-600 transition text-white shadow-md"
                   >
                     <Play className="w-5 h-5" />
                   </button>
@@ -1084,12 +1145,16 @@ export default function AnalitikBelajarPage() {
 
             {/* CONTINUE MODULE */}
             {recommendations?.continueToModule ? (
-              <li className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 bg-white/60 dark:bg-gray-700/40 rounded-xl hover:bg-white/80 dark:hover:bg-gray-600/50 transition-all shadow-sm" key="continue-module">
+              <li 
+                className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 bg-white/60 dark:bg-gray-700/40 rounded-xl hover:bg-white/80 dark:hover:bg-gray-600/50 transition-all shadow-sm cursor-pointer group" 
+                key="continue-module"
+                onClick={() =>
+                  router.push(`/modul/${recommendations.continueToModule?.moduleSlug}${recommendations.continueToModule?.nextTopic ? `#${recommendations.continueToModule.nextTopic.id}` : ''}`)
+                }
+              >
                 <div className="flex items-center gap-4 w-full sm:w-auto">
-                  <Image
+                  <img
                     src={`${process.env.NEXT_PUBLIC_API_URL}/uploads/${recommendations.continueToModule.moduleIcon}`}
-                    width={256}
-                    height={256}
                     className="w-16 h-16 rounded-lg object-contain bg-white/30 dark:bg-gray-700/40 p-1 flex-shrink-0"
                     alt="gambar modul"
                   />
@@ -1111,10 +1176,7 @@ export default function AnalitikBelajarPage() {
                       : "Lanjutkan progres belajarmu di modul ini."}
                   </p>
                   <button
-                    onClick={() =>
-                      router.push(`/modul/${recommendations.continueToModule?.moduleSlug}${recommendations.continueToModule?.nextTopic ? `#${recommendations.continueToModule.nextTopic.id}` : ''}`)
-                    }
-                    className="flex-shrink-0 flex items-center justify-center w-10 h-10 rounded-full bg-blue-500 hover:bg-blue-600 transition text-white shadow-md"
+                    className="flex-shrink-0 flex items-center justify-center w-10 h-10 rounded-full bg-blue-500 group-hover:bg-blue-600 transition text-white shadow-md"
                   >
                     <Play className="w-5 h-5" />
                   </button>
@@ -1127,6 +1189,7 @@ export default function AnalitikBelajarPage() {
             )}
           </ul>
         )}
+        </div>
       </section>
 
 

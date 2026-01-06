@@ -12,24 +12,34 @@ interface AccordionItemProps {
 
 const AccordionItem = ({ title, children, isOpen, onClick }: AccordionItemProps) => {
     return (
-        <div className="border-b border-gray-200 dark:border-gray-700 py-1">
+        <div className={`border rounded-xl mb-3 overflow-hidden transition-all duration-200 ${
+            isOpen 
+                ? 'bg-white dark:bg-gray-800 border-blue-200 dark:border-blue-800 shadow-md ring-1 ring-blue-100 dark:ring-blue-900/30' 
+                : 'bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 hover:border-blue-300 dark:hover:border-blue-700 hover:shadow-sm'
+        }`}>
             <button
                 onClick={onClick}
-                className="w-full flex justify-between items-center text-left py-3 px-1 group"
+                className="w-full flex justify-between items-center text-left p-4 group"
             >
-                <span className="font-medium text-gray-800 dark:text-gray-200 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">{title}</span>
-                <ChevronDown
-                    className={`w-5 h-5 text-gray-500 transform transition-transform duration-300 ${isOpen ? 'rotate-180' : ''
-                        }`}
-                />
+                <span className={`font-medium text-sm sm:text-base transition-colors ${
+                    isOpen ? 'text-blue-700 dark:text-blue-300' : 'text-gray-700 dark:text-gray-200 group-hover:text-blue-600 dark:group-hover:text-blue-400'
+                }`}>
+                    {title}
+                </span>
+                <div className={`p-1 rounded-full transition-all duration-300 flex-shrink-0 ml-3 ${
+                    isOpen 
+                        ? 'bg-blue-100 dark:bg-blue-900/50 text-blue-600 dark:text-blue-300 rotate-180' 
+                        : 'bg-gray-100 dark:bg-gray-700 text-gray-500 group-hover:bg-blue-50 dark:group-hover:bg-blue-900/30 group-hover:text-blue-500'
+                }`}>
+                    <ChevronDown className="w-4 h-4" />
+                </div>
             </button>
             <div
-                className={`grid transition-all duration-300 ease-in-out ${isOpen ? 'grid-rows-[1fr] opacity-100' : 'grid-rows-[0fr] opacity-0'
-                    }`}
+                className={`grid transition-all duration-300 ease-in-out ${isOpen ? 'grid-rows-[1fr] opacity-100' : 'grid-rows-[0fr] opacity-0'}`}
             >
                 <div className="overflow-hidden">
-                    <div className="prose prose-sm dark:prose-invert max-w-none text-gray-600 dark:text-gray-300 pb-4 pt-1 px-1">
-                        {children}
+                    <div className="prose prose-sm dark:prose-invert max-w-none text-gray-600 dark:text-gray-300 px-4 pb-5 pt-0 leading-relaxed border-t border-gray-100 dark:border-gray-700/50 mt-1">
+                        <div className="pt-3">{children}</div>
                     </div>
                 </div>
             </div>
@@ -95,33 +105,46 @@ export default function HelpModal({ isOpen, onClose }: HelpModalProps) {
     if (!isOpen) return null;
 
     const handleAccordionClick = (id: string) => {
-        setOpenAccordion(openAccordion === id ? id : id);
+        setOpenAccordion(openAccordion === id ? null : id);
     };
 
     return (
-        <div className="fixed inset-0 bg-black bg-opacity-60 z-[99] flex justify-center items-start md:items-center p-4" onClick={onClose}>
+        <div className="fixed inset-0 md:top-16  backdrop-blur-3xl bg-transparent z-[1000] flex justify-center items-start p-4" onClick={onClose}>
             <div
-                className="bg-white dark:bg-gray-800 rounded-xl shadow-2xl w-full max-w-2xl max-h-[90vh] flex flex-col mt-8 md:mt-0 animate-in fade-in-0 zoom-in-95"
+                className="bg-gray-50 dark:bg-gray-900 rounded-2xl shadow-2xl w-full max-w-2xl md:max-w-3xl max-h-[85vh] flex flex-col mt-8 md:mt-0 animate-in fade-in-0 zoom-in-95 border border-gray-200 dark:border-gray-700 overflow-hidden"
                 onClick={(e) => e.stopPropagation()}
             >
-                <div className="flex justify-between items-center p-4 border-b border-gray-200 dark:border-gray-700 flex-shrink-0">
-                    <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Pusat Bantuan</h2>
-                    <button onClick={onClose} className="p-1 rounded-full text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700">
+                <div className="flex justify-between items-center p-5 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 flex-shrink-0">
+                    <div className="flex items-center gap-3">
+                        <div className="p-2.5 bg-blue-50 dark:bg-blue-900/20 rounded-xl text-blue-600 dark:text-blue-400">
+                            <HelpCircle className="w-6 h-6" />
+                        </div>
+                        <div>
+                            <h2 className="text-xl font-bold text-gray-900 dark:text-white tracking-tight">Pusat Bantuan</h2>
+                            <p className="text-xs text-gray-500 dark:text-gray-400 font-medium">Temukan jawaban untuk pertanyaanmu</p>
+                        </div>
+                    </div>
+                    <button onClick={onClose} className="p-2 rounded-full text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-gray-600 dark:hover:text-gray-200 transition-all">
                         <X size={20} />
                     </button>
                 </div>
 
-                <div className="p-6 overflow-y-auto">
+                <div className="p-4 sm:p-6 overflow-y-auto">
                     {Object.values(helpData).map((section, sectionIndex) => (
                         <div key={sectionIndex} className="mb-8 last:mb-0">
-                            <h3 className="flex items-center gap-3 text-xl font-bold text-gray-800 dark:text-gray-200 mb-4">
-                                <section.icon className="w-6 h-6 text-blue-600 dark:text-blue-400" />
-                                {section.title}
-                            </h3>
+                            <div className="flex items-center gap-3 mb-4 px-1">
+                                <div className="p-1.5 rounded-lg bg-white dark:bg-gray-800 shadow-sm border border-gray-200 dark:border-gray-700 text-blue-600 dark:text-blue-400">
+                                    <section.icon className="w-5 h-5" />
+                                </div>
+                                <h3 className="text-lg font-bold text-gray-800 dark:text-gray-200">
+                                    {section.title}
+                                </h3>
+                            </div>
                             {section.categories.map((category, catIndex) => (
                                 <div key={catIndex} className="mb-6 last:mb-0">
-                                    <h4 className="text-base font-semibold text-gray-500 dark:text-gray-400 mb-2 uppercase tracking-wider">{category.title}</h4>
-                                    {category.items.map((item, itemIndex) => {
+                                    <h4 className="text-xs font-bold text-gray-400 dark:text-gray-500 mb-3 uppercase tracking-wider px-1 ml-1">{category.title}</h4>
+                                    <div className="space-y-1">
+                                        {category.items.map((item, itemIndex) => {
                                         const accordionId = `${sectionIndex}-${catIndex}-${itemIndex}`;
                                         return (
                                             <AccordionItem
@@ -134,6 +157,7 @@ export default function HelpModal({ isOpen, onClose }: HelpModalProps) {
                                             </AccordionItem>
                                         );
                                     })}
+                                    </div>
                                 </div>
                             ))}
                         </div>
