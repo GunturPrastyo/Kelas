@@ -235,7 +235,7 @@ export default function PostTestPage() {
         showAlert({
             type: 'confirm',
             title: 'Ulangi Post-Test?',
-            message: 'Apakah Anda yakin ingin mengulang post-test untuk modul ini? Hasil sebelumnya akan tetap tersimpan jika skor Anda saat ini lebih rendah.',
+            message: 'Apakah kamu yakin ingin mengulang post-test untuk modul ini? Hasil sebelumnya akan tetap tersimpan jika skormu saat ini lebih rendah.',
             confirmText: 'Ya, Ulangi',
             onConfirm: async () => {
                 try {
@@ -561,7 +561,7 @@ export default function PostTestPage() {
                                 onClick={() => showAlert({
                                     type: 'confirm',
                                     title: 'Kirim Jawaban?',
-                                    message: 'Apakah Anda yakin ingin mengirimkan jawaban dan melihat hasilnya?',
+                                    message: 'Apakah kamu yakin ingin mengirimkan jawaban dan melihat hasilnya?',
                                     confirmText: 'Ya, Kirim',
                                     cancelText: 'Batal',
                                     onConfirm: gradeTest,

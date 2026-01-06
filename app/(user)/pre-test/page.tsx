@@ -92,7 +92,7 @@ export default function PreTestPage() {
 
                 // Buat notifikasi
                 createNotification(
-                    `Anda telah menyelesaikan Pre-Test dengan skor ${resultData.data.score}%.`,
+                    `Kamu telah menyelesaikan Pre-Test dengan skor ${resultData.data.score}%.`,
                     '/profil' // Arahkan ke halaman profil/hasil
                 );
 
@@ -211,7 +211,7 @@ export default function PreTestPage() {
             if (left === 0) {
                 showAlert({
                     title: 'Waktu Habis',
-                    message: 'Waktu pengerjaan telah berakhir. Jawaban Anda akan dikirim secara otomatis.',
+                    message: 'Waktu pengerjaan telah berakhir. Jawabanmu akan dikirim secara otomatis.',
                     onConfirm: grade,
                 });
                 grade();
@@ -228,7 +228,7 @@ export default function PreTestPage() {
         localStorage.setItem(stateKey, JSON.stringify(snapshot));
         showAlert({
             title: 'Progress Tersimpan',
-            message: 'Jawaban Anda telah disimpan di perangkat ini. Anda dapat melanjutkannya nanti.',
+            message: 'Jawabanmu telah disimpan di perangkat ini. Anda dapat melanjutkannya nanti.',
         });
     };
 
@@ -237,7 +237,7 @@ export default function PreTestPage() {
         showAlert({
             type: 'confirm',
             title: 'Konfirmasi',
-            message: 'Apakah Anda yakin ingin memulai ulang pre-test? Semua progress dan hasil sebelumnya akan dihapus.',
+            message: 'Apakah kamu yakin ingin memulai ulang pre-test? Semua progress dan hasil sebelumnya akan dihapus.',
             confirmText: 'Ya, Ulangi',
             cancelText: 'Batal',
             onConfirm: () => {
@@ -278,17 +278,17 @@ export default function PreTestPage() {
             level = 'lanjut';
             levelBadge = 'Level: Lanjut';
             badgeClasses = 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300';
-            profileDesc = 'Penguasaan materi Anda sangat baik. Anda direkomendasikan untuk langsung menuju materi tingkat lanjut.';
+            profileDesc = 'Penguasaan materi kamu sangat baik. Kamu direkomendasikan untuk langsung menuju materi tingkat lanjut.';
         } else if (learningPath === 'Menengah') {
             level = 'menengah';
             levelBadge = 'Level: Menengah';
             badgeClasses = 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300';
-            profileDesc = 'Anda telah menguasai materi dasar. Anda dapat melewati modul dasar dan memulai dari level menengah.';
+            profileDesc = 'Kamu telah menguasai materi dasar. Kamu dapat melewati modul dasar dan memulai dari level menengah.';
         } else { // Default ke "Dasar"
             level = 'dasar';
             levelBadge = 'Level: Dasar';
             badgeClasses = 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300';
-            profileDesc = 'Sebaiknya Anda memulai dari materi dasar untuk memperkuat pemahaman fundamental Anda.';
+            profileDesc = 'Sebaiknya Kamu memulai dari materi dasar untuk memperkuat pemahaman fundamental kamu.';
         }
 
         const categoryMap = { mudah: 'dasar', sedang: 'menengah', sulit: 'lanjut' };
@@ -615,14 +615,14 @@ export default function PreTestPage() {
                                     if (Object.keys(answers).length < total) {
                                         showAlert({
                                             title: 'Jawaban Belum Lengkap',
-                                            message: `Anda baru menjawab ${Object.keys(answers).length} dari ${total} soal. Silakan lengkapi semua jawaban sebelum mengirim.`,
+                                            message: `Kamu baru menjawab ${Object.keys(answers).length} dari ${total} soal. Silakan lengkapi semua jawaban sebelum mengirim.`,
                                         });
                                     } else {
                                         // Jika sudah lengkap, tampilkan konfirmasi
                                         showAlert({
                                             type: 'confirm',
                                             title: 'Kirim Jawaban?',
-                                            message: 'Apakah Anda yakin ingin mengirimkan jawaban dan melihat hasilnya?',
+                                            message: 'Apakah kamu yakin ingin mengirimkan jawaban dan melihat hasilnya?',
                                             confirmText: 'Ya, Kirim',
                                             cancelText: 'Batal',
                                             onConfirm: grade,

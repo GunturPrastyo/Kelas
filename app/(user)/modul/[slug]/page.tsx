@@ -167,7 +167,7 @@ export default function ModulDetailPage() {
             if (err instanceof Error && err.message.includes("401")) {
                 showAlert({
                     title: "Sesi Habis",
-                    message: "Sesi Anda telah berakhir. Silakan login kembali.",
+                    message: "Sesimu telah berakhir. Silakan login kembali.",
                     onConfirm: () => {
                         // Hapus data user dan redirect ke login
                         localStorage.removeItem('user');
@@ -210,6 +210,9 @@ export default function ModulDetailPage() {
             // Fallback: jika hash adalah ID topik
             if (modul.topics.some(t => t._id === hashId)) {
                 setOpenTopicId(hashId);
+                setTimeout(() => {
+                    document.getElementById(`topic-card-${hashId}`)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }, 500);
             }
         }
     }, [modul]);
@@ -447,8 +450,8 @@ export default function ModulDetailPage() {
 
             // Buat notifikasi berdasarkan hasil tes topik
             const notifMessage = finalResult.score >= 70
-                ? `Selamat! Anda lulus post-test "${activeTest.title}" dengan skor ${finalResult.score}.`
-                : `Anda mendapatkan skor ${finalResult.score}% untuk post-test "${activeTest.title}". Coba lagi!`;
+                ? `Selamat! Kamu lulus post-test "${activeTest.title}" dengan skor ${finalResult.score}.`
+                : `Kamu mendapatkan skor ${finalResult.score}% untuk post-test "${activeTest.title}". Coba lagi!`;
             createNotification(notifMessage, `/modul/${modul?.slug}#${activeTest._id}`);
 
 
@@ -471,7 +474,7 @@ export default function ModulDetailPage() {
 
                     // Jika semua topik selesai, kirim notifikasi penyelesaian modul
                     if (newProgress === 100) {
-                        createNotification(`Hebat! Anda telah menyelesaikan semua topik di modul "${prevModul.title}".`, `/modul/${prevModul.slug}`);
+                        createNotification(`Hebat! Kamu telah menyelesaikan semua topik di modul "${prevModul.title}".`, `/modul/${prevModul.slug}`);
                     }
 
                     return {
@@ -524,7 +527,7 @@ export default function ModulDetailPage() {
             if (left === 0) {
                 showAlert({
                     title: 'Waktu Habis',
-                    message: 'Waktu pengerjaan telah berakhir. Jawaban Anda akan dikirim secara otomatis.',
+                    message: 'Waktu pengerjaan telah berakhir. Jawabanmu akan dikirim secara otomatis.',
                     onConfirm: submitTest,
                 });
                 submitTest();
@@ -948,7 +951,7 @@ export default function ModulDetailPage() {
                                                 onClick={() => showAlert({
                                                     type: 'confirm',
                                                     title: 'Kirim Jawaban?',
-                                                    message: 'Apakah Anda yakin ingin mengirimkan jawaban dan melihat hasilnya?',
+                                                    message: 'Apakah kamu yakin ingin mengirimkan jawaban dan melihat hasilnya?',
                                                     confirmText: 'Ya, Kirim',
                                                     cancelText: 'Batal',
                                                     onConfirm: submitTest,
@@ -1022,14 +1025,14 @@ export default function ModulDetailPage() {
             {/* Header Modul */}
             <header className="bg-gradient-to-r from-indigo-500 to-blue-600 rounded-xl p-6 mt-6 shadow-md text-white flex flex-col items-start gap-2 mb-8 md:flex-row md:items-center md:gap-4">
                 {/* Ikon untuk desktop (di kiri) */}
-                <Image src={`${process.env.NEXT_PUBLIC_API_URL}/uploads/${modul.icon}`} alt={modul.title} width={256} height={256} className="hidden md:block h-20 w-20 rounded-lg object-cover bg-white/20 p-1" />
+                <img src={`${process.env.NEXT_PUBLIC_API_URL}/uploads/${modul.icon}`} alt={modul.title} className="hidden md:block h-20 w-20 rounded-lg object-cover bg-white/20 p-1" />
 
                 <div className="flex-1 text-left w-full"> {/* Wrapper untuk teks dan ikon mobile */}
                     <span className="text-xs font-semibold uppercase tracking-wider text-blue-200">{modul.category}</span>
                     <h1 className="text-3xl font-bold text-white mt-1 mb-2">{modul.title}</h1>
 
                     {/* Ikon untuk mobile (di bawah judul, di tengah) */}
-                    <Image src={`${process.env.NEXT_PUBLIC_API_URL}/uploads/${modul.icon}`} alt={modul.title} width={256} height={256} className="hidden h-20 w-20 rounded-lg object-cover bg-white/20 p-1 mb-4 mx-auto" />
+                    <img src={`${process.env.NEXT_PUBLIC_API_URL}/uploads/${modul.icon}`} alt={modul.title} className="hidden h-20 w-20 rounded-lg object-cover bg-white/20 p-1 mb-4 mx-auto" />
 
                     <p className="text-sm text-white/90 mb-2">{modul.overview}</p>
                     <div className="w-full bg-white/30 rounded-full h-2.5">
