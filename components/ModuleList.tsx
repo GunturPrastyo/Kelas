@@ -15,6 +15,8 @@ interface Module {
   icon: string;
   userCount?: number;
   totalDuration?: number;
+  completedTopics: number;
+  totalTopics: number;
 }
 
 interface ModuleListProps {
@@ -23,7 +25,7 @@ interface ModuleListProps {
   filter: (module: Module) => boolean;
 }
 
-const getStatusBadge = (status: Module["status"], progress: number | undefined) => {
+const getStatusBadge = (status: Module["status"], progress: number | undefined, completedTopics?: number, totalTopics?: number) => {
   const base = "inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-1 rounded-full shadow-sm transition-all";
   switch (status) {
     case "Selesai":
@@ -35,7 +37,7 @@ const getStatusBadge = (status: Module["status"], progress: number | undefined) 
     case "Berjalan":
       return (
         <span className={`${base} bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300`}>
-          <Activity size={14} /> {progress}%
+         {completedTopics ?? 0} dari {totalTopics ?? 0} topik
         </span>
       );
     case "Belum Mulai":
@@ -131,8 +133,7 @@ export default function ModuleList({ title, allModules, filter }: ModuleListProp
               rounded-2xl overflow-hidden
               bg-slate-50 dark:bg-gray-800
               border border-slate-200 dark:border-gray-700
-              border-l-[6px] ${
-                modul.status === 'Terkunci' ? 'border-l-gray-300 dark:border-l-gray-600' :
+              border-l-[6px] ${modul.status === 'Terkunci' ? 'border-l-gray-300 dark:border-l-gray-600' :
                 modul.progress === 100 ? 'border-l-green-500' : 'border-l-blue-500'
               }
               shadow-sm hover:shadow-xl hover:-translate-y-1
@@ -141,66 +142,64 @@ export default function ModuleList({ title, allModules, filter }: ModuleListProp
             `}
           >
             {/* Decorative Background */}
-            <div className={`absolute top-0 right-0 w-32 h-32 bg-gradient-to-br ${
-                modul.progress === 100 ? "from-green-50/80 to-transparent dark:from-green-900/20" : "from-blue-200/80 to-transparent dark:from-blue-800/20"
-            } rounded-bl-[80px] -mr-8 -mt-8 transition-transform duration-500 group-hover:scale-110`} />
+            <div className={`absolute top-0 right-0 w-32 h-32 bg-gradient-to-br ${modul.progress === 100 ? "from-green-200/80 to-transparent dark:from-green-800/20" : "from-blue-200/80 to-transparent dark:from-blue-800/20"
+              } rounded-bl-[80px] -mr-8 -mt-8 transition-transform duration-500 group-hover:scale-110`} />
 
             <div className="relative p-5 flex flex-col h-full z-10">
-                {/* Header */}
-                <div className="flex justify-between items-start mb-3">
-                    <div className={`
+              {/* Header */}
+              <div className="flex justify-between items-start mb-3">
+                <div className={`
                         w-12 h-12 rounded-xl flex items-center justify-center shadow-sm border border-white/50 dark:border-gray-600
                         ${modul.progress === 100 ? "bg-green-100/50 dark:bg-green-900/30" : "bg-blue-100/50 dark:bg-blue-900/30"}
                         backdrop-blur-sm
                     `}>
-                        <img
-                            src={`${process.env.NEXT_PUBLIC_API_URL}/uploads/${modul.icon}`}
-                            alt={modul.title}
-                            className="w-7 h-7 object-contain"
-                        />
-                    </div>
-                    <div className="transform translate-x-2 -translate-y-2 scale-90">
-                        {getCategoryBadge(modul.category)}
-                    </div>
+                  <img
+                    src={`${process.env.NEXT_PUBLIC_API_URL}/uploads/${modul.icon}`}
+                    alt={modul.title}
+                    className="w-7 h-7 object-contain"
+                  />
                 </div>
+                <div className="transform translate-x-2 -translate-y-2 scale-90">
+                  {getCategoryBadge(modul.category)}
+                </div>
+              </div>
 
-                {/* Title */}
-                <h3 className="font-bold text-base text-gray-800 dark:text-gray-100 leading-snug line-clamp-2 mb-2 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
-                    {modul.title}
-                </h3>
+              {/* Title */}
+              <h3 className="font-bold text-base text-gray-800 dark:text-gray-100 leading-snug line-clamp-2 mb-2 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+                {modul.title}
+              </h3>
 
-                {/* Info Row */}
-                <div className="flex items-center gap-4 text-[10px] font-medium text-gray-500 dark:text-gray-400 mb-auto">
-                  <div className="flex items-center gap-1.5">
-                    <Users size={12} className="text-indigo-500" />
-                    <span>{modul.userCount ?? 0} Bergabung</span>
+              {/* Info Row */}
+              <div className="flex items-center gap-4 text-[10px] font-medium text-gray-500 dark:text-gray-400 mb-auto">
+                <div className="flex items-center gap-1.5">
+                  <Users size={12} className="text-indigo-500" />
+                  <span>{modul.userCount ?? 0} Bergabung</span>
+                </div>
+                <div className="flex items-center gap-1.5">
+                  <Clock size={12} className="text-amber-500" />
+                  <span>{modul.totalDuration ? `${modul.totalDuration} Menit` : "-"}</span>
+                </div>
+              </div>
+
+              {/* Footer */}
+              <div className="mt-3 pt-3 border-t border-slate-200 dark:border-gray-700/50">
+                <div className="flex justify-between items-center mb-2">
+                  <span className="text-[10px] font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide">
+                    {modul.status === 'Selesai' ? 'Selesai' : modul.status === 'Terkunci' ? 'Terkunci' : `${modul.progress}% Selesai`}
+                  </span>
+                  <div className="scale-90 origin-right">
+                    {getStatusBadge(modul.status, modul.progress, modul.completedTopics, modul.totalTopics)}
                   </div>
-                  <div className="flex items-center gap-1.5">
-                    <Clock size={12} className="text-amber-500" />
-                    <span>{modul.totalDuration ? `${modul.totalDuration} Menit` : "-"}</span>
-                  </div>
                 </div>
-
-                {/* Footer */}
-                <div className="mt-3 pt-3 border-t border-slate-200 dark:border-gray-700/50">
-                    <div className="flex justify-between items-center mb-2">
-                        <span className="text-[10px] font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide">
-                            {modul.status === 'Selesai' ? 'Selesai' : modul.status === 'Terkunci' ? 'Terkunci' : `${modul.progress}% Selesai`}
-                        </span>
-                        <div className="scale-90 origin-right">
-                            {getStatusBadge(modul.status, modul.progress)}
-                        </div>
-                    </div>
-                    <div className="w-full bg-gray-100 dark:bg-gray-700 rounded-full h-1.5 overflow-hidden">
-                        <div 
-                            className={`h-full rounded-full transition-all duration-500 ${
-                                modul.status === 'Terkunci' ? 'bg-gray-300 dark:bg-gray-600' :
-                                modul.progress === 100 ? 'bg-green-500' : 'bg-blue-600'
-                            }`} 
-                            style={{ width: `${modul.progress}%` }} 
-                        />
-                    </div>
+                <div className="w-full bg-gray-100 dark:bg-gray-700 rounded-full h-1.5 overflow-hidden">
+                  <div
+                    className={`h-full rounded-full transition-all duration-500 ${modul.status === 'Terkunci' ? 'bg-gray-300 dark:bg-gray-600' :
+                        modul.progress === 100 ? 'bg-green-500' : 'bg-blue-600'
+                      }`}
+                    style={{ width: `${modul.progress}%` }}
+                  />
                 </div>
+              </div>
             </div>
           </Link>
         ))}

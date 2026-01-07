@@ -25,6 +25,8 @@ interface Module {
   isHighlighted?: boolean;
   firstTopicTitle?: string; // Menambahkan properti yang hilang
   order: number;
+  completedTopics: number;
+  totalTopics: number;
 }
 
 interface AnalyticsData {
@@ -330,6 +332,7 @@ export default function DashboardPage() {
           ref={studyTimeCardRef}
           className="bg-gradient-to-br from-purple-100 to-purple-200 dark:from-gray-900 dark:to-gray-800 p-4 sm:p-5 rounded-xl shadow flex items-center justify-between overflow-hidden border border-slate-200 dark:border-slate-800"
         >
+          
           <div className="flex flex-col justify-center flex-1 min-w-0">
             <div className="flex items-center gap-3 mb-3">
               <div className="bg-purple-600 rounded-lg w-10 h-10 flex items-center justify-center">
@@ -355,8 +358,13 @@ export default function DashboardPage() {
         </div>
 
         {/* Rekomendasi */}
-        <div className="bg-gradient-to-br from-green-100 to-green-200 dark:from-gray-900 dark:to-gray-800 p-4 sm:p-5 rounded-xl shadow flex items-center justify-between md:col-span-2 lg:col-span-1 overflow-hidden border border-slate-200 dark:border-slate-800">
-          <div className="flex flex-col justify-center flex-1 min-w-0">
+        <div className="relative bg-gradient-to-br border border-slate-200 dark:border-slate-800 border-r-[5px] border-r-green-500 dark:border-r-gray-600 from-green-100 to-green-200 dark:from-gray-900 dark:to-gray-800 p-4 sm:p-5 rounded-xl shadow flex items-center justify-between md:col-span-2 lg:col-span-1 overflow-hidden ">
+          {/* Decorative Bubbles */}
+          {/* <div className="absolute top-0 right-0 w-28 h-32 bg-gradient-to-br from-green-400/80 to-transparent dark:from-green-800/20 rounded-bl-[80px] -mr-8 -mt-8 transition-transform duration-500 group-hover:scale-110" /> */}
+          <div className="absolute -top-12 -right-12 w-32 h-32 bg-green-200 dark:bg-green-500/10 rounded-full blur-2xl pointer-events-none"></div>
+          <div className="absolute -bottom-12 -left-12 w-32 h-32 bg-emerald-200 dark:bg-emerald-500/10 rounded-full blur-2xl pointer-events-none"></div>
+
+          <div className="relative z-10 flex flex-col justify-center flex-1 min-w-0">
             <div className="flex items-center gap-3 mb-3">
               <div className="bg-green-600 rounded-lg w-10 h-10 flex items-center justify-center">
                 <Image src="/target.png" width={128} height={128} className="w-full h-full object-contain p-1" alt="" />
@@ -470,10 +478,14 @@ export default function DashboardPage() {
               ref={analyticsCardRef}
               className="max-w-full bg-gradient-to-br from-indigo-200 via-purple-200 to-violet-300 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 p-6 rounded-xl shadow border border-slate-200 dark:border-slate-800"
             >
-              <h2 className="text-xl font-bold mb-6 flex items-center gap-2">
-                <BarChart2 className="w-6 h-6 text-indigo-800 dark:text-indigo-300" />
-                Analitik Belajar
-              </h2>
+              <div className="flex items-center gap-3 mb-6">
+                <div className="bg-indigo-600 rounded-lg w-10 h-10 flex items-center justify-center">
+                  <Image src="/analisis.png" width={128} height={128} className="w-full h-full object-contain p-1" alt="" />
+                </div>
+                <h2 className="text-xl font-bold text-gray-900 dark:text-white">
+                  Analitik Belajar
+                </h2>
+              </div>
               <div className="grid grid-cols-2 sm:grid-cols-3 gap-6 text-center">
                 {/* Wrapper untuk 2 kartu atas */}
                 <div className="col-span-2 grid grid-cols-2 gap-6">

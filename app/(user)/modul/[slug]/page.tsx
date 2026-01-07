@@ -14,6 +14,7 @@ import { useAlert } from '@/context/AlertContext';
 import TopicContent from '@/components/TopicContent';
 import { Home, CheckCircle2, Lock, Rocket, Award, AlertTriangle, Star, Lightbulb, Target, Clock3, Activity, Eye } from 'lucide-react';
 import { motion } from "framer-motion";
+import CodePlayground from '@/components/CodePlayground';
 
 
 // --- Interface Definitions ---
@@ -103,6 +104,7 @@ export default function ModulDetailPage() {
     const [answerChangesCount, setAnswerChangesCount] = useState(0); // Tetap gunakan nama ini untuk konsistensi, tapi ubah cara kerjanya
     const [changedQuestionIds, setChangedQuestionIds] = useState<Set<string>>(new Set()); // State baru untuk melacak ID unik
     const [tabExitCount, setTabExitCount] = useState(0);
+    const [isPlaygroundOpen, setIsPlaygroundOpen] = useState(false);
 
     const { showAlert } = useAlert();
     const persistTimeoutRef = useRef<NodeJS.Timeout | null>(null);
@@ -1023,11 +1025,12 @@ export default function ModulDetailPage() {
             </nav>
 
             {/* Header Modul */}
-            <header className="bg-gradient-to-r from-indigo-500 to-blue-600 rounded-xl p-6 mt-6 shadow-md text-white flex flex-col items-start gap-2 mb-8 md:flex-row md:items-center md:gap-4">
+            <header className="relative overflow-hidden bg-gradient-to-r from-indigo-500 to-blue-600 rounded-xl p-6 mt-6 shadow-md text-white flex flex-col items-start gap-2 mb-8 md:flex-row md:items-center md:gap-4">
+               
                 {/* Ikon untuk desktop (di kiri) */}
-                <img src={`${process.env.NEXT_PUBLIC_API_URL}/uploads/${modul.icon}`} alt={modul.title} className="hidden md:block h-20 w-20 rounded-lg object-cover bg-white/20 p-1" />
+                <img src={`${process.env.NEXT_PUBLIC_API_URL}/uploads/${modul.icon}`} alt={modul.title} className="relative z-10 hidden md:block h-20 w-20 rounded-lg object-cover bg-white/20 p-1" />
 
-                <div className="flex-1 text-left w-full"> {/* Wrapper untuk teks dan ikon mobile */}
+                <div className="relative z-10 flex-1 text-left w-full"> {/* Wrapper untuk teks dan ikon mobile */}
                     <span className="text-xs font-semibold uppercase tracking-wider text-blue-200">{modul.category}</span>
                     <h1 className="text-3xl font-bold text-white mt-1 mb-2">{modul.title}</h1>
 
@@ -1118,10 +1121,10 @@ export default function ModulDetailPage() {
                 const isPostTestLocked = modul.progress < 100;
                 const hasCompletedModulPostTest = modul.hasCompletedModulPostTest;
                 return ( // Kartu ini akan muncul jika `hasModulPostTest` bernilai true
-                    <section className={`bg-white dark:bg-gray-800 p-4 sm:p-6 rounded-2xl shadow-lg mt-5 transition-all border border-slate-200 dark:border-slate-700 ${isPostTestLocked ? 'opacity-60 cursor-not-allowed' : ''}`}>
-                        <div className="grid grid-cols-2 md:flex md:flex-row items-center md:items-start gap-4 sm:gap-6 lg:p-2">
+                    <section className={`bg-white dark:bg-gray-800 p-4 rounded-2xl shadow-lg mt-5 transition-all border border-slate-200 dark:border-slate-700 ${isPostTestLocked ? 'opacity-60 cursor-not-allowed' : ''}`}>
+                        <div className="grid grid-cols-2 md:flex md:flex-row items-center md:items-start gap-4">
                             {/* Konten Teks */}
-                            <div className="flex-1 text-left w-full order-last md:order-first col-span-1">
+                            <div className="flex-1 p-0 sm:p-10  text-left w-full order-last md:order-first col-span-1">
                                 <h2 className="text-sm sm:text-xl lg:text-2xl font-bold text-gray-800 dark:text-gray-100 mb-1 sm:mb-2">
                                     Post Test Akhir
                                 </h2>
@@ -1164,6 +1167,40 @@ export default function ModulDetailPage() {
                     </section>
                 );
             })()}
+
+            {/* Floating Action Button for Code Playground */}
+            <button
+                onClick={() => setIsPlaygroundOpen(true)}
+                className=" fixed bottom-6 right-6 z-50 flex flex-col items-center justify-center   bg-white/90 dark:bg-slate-800/90 backdrop-blur-sm border border-indigo-100 dark:border-indigo-500/30 rounded-4xl shadow-2xl shadow-indigo-500/20 dark:shadow-indigo-900/40 hover:scale-105 hover:border-indigo-300 dark:hover:border-indigo-400 transition-all duration-300 group"
+                title="Buka Code Playground"
+            >
+                <div className="relative w-12 h-12 flex items-center justify-center">
+                    {/* Decorative Wave/Circle Background */}
+                    <div className="absolute inset-0 bg-indigo-100 dark:bg-indigo-500/20 rounded-full group-hover:scale-110 transition-transform duration-500"></div>
+                    <div className="absolute inset-0 bg-indigo-200 dark:bg-indigo-500/10 rounded-full animate-ping opacity-20"></div>
+                    
+                    <div className="relative w-12 h-12 transition-transform duration-300 group-hover:rotate-12">
+                        <Image 
+                            src="/coding.png" 
+                            alt="Live Code" 
+                            width={64} 
+                            height={64} 
+                            className="object-contain"
+                        />
+                    </div>
+                </div>
+                
+                <span className="bg-indigo-100 dark:bg-indigo-500/20 rounded-2xl font-bold text-xs leading-tight text-slate-600 dark:text-slate-200 text-center">
+                    Live Code
+                </span>
+
+                <div className="hidden md:block absolute right-full mr-4 px-4 py-2 bg-slate-900 dark:bg-white text-white dark:text-slate-900 text-sm font-bold rounded-xl opacity-0 group-hover:opacity-100 translate-x-4 group-hover:translate-x-0 transition-all duration-300 whitespace-nowrap shadow-xl pointer-events-none">
+                    Coba Coding Yuk! 🚀
+                    <div className="absolute top-1/2 -right-1 -translate-y-1/2 border-4 border-transparent border-l-slate-900 dark:border-l-white"></div>
+                </div>
+            </button>
+
+            <CodePlayground isOpen={isPlaygroundOpen} onClose={() => setIsPlaygroundOpen(false)} />
         </div>
     );
 }

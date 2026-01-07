@@ -293,7 +293,7 @@ export default function ModulPage() {
                         <div className={`group relative overflow-hidden bg-white dark:bg-gray-800 rounded-xl shadow-md p-5 flex flex-col transition-all duration-300 ml-12 sm:ml-0 h-full ${modul.isHighlighted ? 'ring-2 ring-blue-500 shadow-blue-500/20' : 'hover:-translate-y-1 hover:shadow-lg'} ${modul.status === 'Terkunci' ? 'opacity-60 bg-gray-50 dark:bg-gray-800/50' : ''}`}>
                             {/* Decorative Background */}
                             <div className={`absolute top-0 right-0 w-42 h-32 bg-gradient-to-br ${
-                                modul.progress === 100 ? "from-green-50/80 to-transparent dark:from-green-900/20" : "from-blue-200/80 to-transparent dark:from-blue-800/20"
+                                modul.progress === 100 ? "from-green-200/80 to-transparent dark:from-green-800/20" : "from-blue-200/80 to-transparent dark:from-blue-800/20"
                             } rounded-bl-[80px] -mr-8 -mt-8 transition-transform duration-500 group-hover:scale-110`} />
 
                             <div className="relative z-10 flex items-start justify-between mb-3">

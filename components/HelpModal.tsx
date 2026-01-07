@@ -15,7 +15,7 @@ const AccordionItem = ({ title, children, isOpen, onClick }: AccordionItemProps)
         <div className={`border rounded-xl mb-3 overflow-hidden transition-all duration-200 ${
             isOpen 
                 ? 'bg-white dark:bg-gray-800 border-blue-200 dark:border-blue-800 shadow-md ring-1 ring-blue-100 dark:ring-blue-900/30' 
-                : 'bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 hover:border-blue-300 dark:hover:border-blue-700 hover:shadow-sm'
+                : 'bg-white dark:bg-gray-800 border-gray-100 dark:border-gray-700 hover:border-blue-300 dark:hover:border-blue-700 hover:shadow-sm'
         }`}>
             <button
                 onClick={onClick}
