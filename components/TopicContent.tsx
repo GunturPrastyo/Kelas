@@ -54,7 +54,7 @@ export default function TopicContent({ topik, onStartTest, onViewScore, hasAttem
     return (
         <div className="px-1 sm:px-10 pb-5 pt-4 border-t border-gray-200 dark:border-gray-700 max-h-[80vh] overflow-y-auto">
             {embedUrl && (
-                <div className="aspect-video mb-6 rounded-lg overflow-hidden w-76 max-w-96 sm:max-w-3xl mx-auto">
+                <div className="aspect-video mb-6 rounded-lg overflow-hidden w-76 sm:w-2xl max-w-96 sm:max-w-full mx-auto">
                     <iframe src={embedUrl} title={`Video untuk ${topik.title}`} allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowFullScreen className="w-full h-full"></iframe>
                 </div>
             )}
@@ -76,11 +76,15 @@ export default function TopicContent({ topik, onStartTest, onViewScore, hasAttem
                 )}
             </div>
 
-            <div className="mt-8 pt-6 border-t border-gray-200 dark:border-gray-700">
-                <div className="bg-gradient-to-br from-slate-50 to-slate-100 dark:from-gray-900 dark:to-gray-800 rounded-2xl p-5 sm:p-6 flex flex-col gap-5 shadow-sm transition-all duration-300 hover:shadow-lg hover:-translate-y-1">
+            <div className="mt-2 p-2 ">
+                <div className="relative overflow-hidden bg-gradient-to-br from-slate-50 to-slate-100 dark:from-gray-900 dark:to-gray-800 rounded-2xl p-5 sm:p-6 flex flex-col gap-5 shadow-sm transition-all duration-300 hover:shadow-lg hover:-translate-y-1">
+
+                    {/* Decorative Bubbles */}
+                    <div className="absolute -top-12 -right-12 w-40 h-40 bg-blue-200 dark:bg-blue-400/5 rounded-full blur-3xl pointer-events-none"></div>
+                    <div className="absolute -bottom-12 -left-12 w-40 h-40 bg-purple-200 dark:bg-purple-400/5 rounded-full blur-3xl pointer-events-none"></div>
 
                     {/* Gambar + Deskripsi sejajar */}
-                    <div className="flex flex-row items-center gap-4">
+                    <div className="relative z-10 flex flex-row items-center gap-4">
                         <Image
                             src="/post-test-topik.png"
                             alt="Post Test"
@@ -99,7 +103,7 @@ export default function TopicContent({ topik, onStartTest, onViewScore, hasAttem
                     </div>
 
                     {/* Tombol sejajar */}
-                    <div className="flex flex-row justify-start gap-3 w-full flex-wrap">
+                    <div className="relative z-10 flex flex-row justify-start gap-3 w-full flex-wrap">
                         <button
                             onClick={() => onStartTest(topik, hasAttempted)}
                             className="text-sm px-4 py-2 bg-yellow-400 hover:bg-yellow-300 text-black font-semibold rounded-xl shadow-md transition transform hover:scale-105 active:scale-95 focus:ring-2 focus:ring-yellow-200 sm:px-5 sm:py-2"
