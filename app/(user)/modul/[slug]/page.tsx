@@ -1082,9 +1082,9 @@ export default function ModulDetailPage() {
                                                 </h4>
                                                 <ul className="relative">
                                                     {topik.materi.subMateris.map((sub, subIndex, arr) => (
-                                                        <li key={sub._id} className="relative pl-10 pb-5 last:pb-0">
+                                                        <li key={sub._id} className="relative pl-10 pb-5">
                                                             {/* Garis vertikal */}
-                                                            {subIndex < arr.length - 1 && <div className="absolute left-[11px] top-4 h-full w-0.5 bg-slate-200 dark:bg-slate-700"></div>}
+                                                            <div className="absolute left-[11px] top-4 h-full w-0.5 bg-slate-200 dark:bg-slate-700"></div>
                                                             
                                                             {/* Lingkaran Nomor */}
                                                             <div className="absolute left-0 top-0 flex h-6 w-6 items-center justify-center rounded-full bg-blue-500 text-white text-xs font-bold ring-4 ring-slate-50 dark:ring-gray-900/50">
@@ -1103,6 +1103,23 @@ export default function ModulDetailPage() {
                                                             </a>
                                                         </li>
                                                     ))}
+                                                    {/* Item Uji Pemahaman */}
+                                                    <li className="relative pl-10 pb-0">
+                                                        {/* Lingkaran Nomor */}
+                                                        <div className="absolute left-0 top-0 flex h-6 w-6 items-center justify-center rounded-full bg-blue-500 text-white text-xs font-bold ring-4 ring-slate-50 dark:ring-gray-900/50">
+                                                            {topik.materi.subMateris.length + 1}
+                                                        </div>
+                                                        <a 
+                                                            href={`#uji-pemahaman-${topik._id}`}
+                                                            onClick={(e) => {
+                                                                e.preventDefault();
+                                                                document.getElementById(`uji-pemahaman-${topik._id}`)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                                                            }}
+                                                            className="block text-sm font-medium text-slate-700 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors duration-200"
+                                                        >
+                                                            Uji Pemahaman
+                                                        </a>
+                                                    </li>
                                                 </ul>
                                             </div>
                                         </div>
@@ -1161,7 +1178,7 @@ export default function ModulDetailPage() {
 
                             {/* Gambar (akan muncul di atas pada mobile, di kanan pada desktop) */}
                             <div className="flex w-full md:w-1/3 justify-center items-center order-first md:order-last col-span-1">
-                                <Image src={hasCompletedModulPostTest ? "/post-test-akhir.png" : "/post-test.png"} alt="Post Test" width={256} height={256} className="w-full h-auto max-w-[140px] sm:max-w-[180px] md:w-60 md:h-60 object-contain" unoptimized />
+                                <Image src={hasCompletedModulPostTest ? "/post-test-akhir.png" : "/post-test.png"} alt="Post Test" width={256} height={256} className="w-full h-auto max-w-[120px] sm:max-w-[180px] md:w-60 md:h-60 object-contain" unoptimized />
                             </div>
                         </div>
                     </section>
