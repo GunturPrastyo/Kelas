@@ -360,9 +360,9 @@ export default function DashboardPage() {
         {/* Rekomendasi */}
         <div className="relative bg-gradient-to-br border border-slate-200 dark:border-slate-800 border-r-[5px] border-r-green-500 dark:border-r-gray-600 from-green-100 to-green-200 dark:from-gray-900 dark:to-gray-800 p-4 sm:p-5 rounded-xl shadow flex items-center justify-between md:col-span-2 lg:col-span-1 overflow-hidden ">
           {/* Decorative Bubbles */}
-          {/* <div className="absolute top-0 right-0 w-28 h-32 bg-gradient-to-br from-green-400/80 to-transparent dark:from-green-800/20 rounded-bl-[80px] -mr-8 -mt-8 transition-transform duration-500 group-hover:scale-110" /> */}
-          <div className="absolute -top-12 -right-12 w-32 h-32 bg-green-200 dark:bg-green-500/10 rounded-full blur-2xl pointer-events-none"></div>
-          <div className="absolute -bottom-12 -left-12 w-32 h-32 bg-emerald-200 dark:bg-emerald-500/10 rounded-full blur-2xl pointer-events-none"></div>
+          {/* <div className="absolute buttom-0 right-0 w-32 h-32 bg-gradient-to-br from-green-400/80 to-transparent dark:from-green-800/20 rounded-tl-[100px] -ml-64 -mb-32 transition-transform duration-500 group-hover:scale-110" /> */}
+          <div className="absolute -top-12 -right-12 w-32 h-32 bg-green-200 dark:bg-gray-900/20 rounded-full blur-2xl pointer-events-none"></div>
+          <div className="absolute -bottom-12 -left-12 w-32 h-32 bg-emerald-200 dark:bg-gray-900/20 rounded-full blur-2xl pointer-events-none"></div>
 
           <div className="relative z-10 flex flex-col justify-center flex-1 min-w-0">
             <div className="flex items-center gap-3 mb-3">
@@ -381,7 +381,7 @@ export default function DashboardPage() {
                     ? `/modul/${recommendation.continueToModule.moduleSlug}#${recommendation.continueToModule.nextTopic.id}`
                     : `/modul/${recommendation.continueToModule.moduleSlug}`
                 }
-                className="block p-3 border border-slate-200 dark:border-slate-800 border-l-[5px] border-l-green-500 dark:border-l-gray-600 rounded-2xl bg-white dark:bg-gray-800 hover:bg-green-50/60 dark:hover:bg-gray-700 cursor-pointer transition-all group shadow-sm hover:shadow-md"
+                className="block p-3 border border-slate-200 dark:border-slate-600 border-l-[5px] border-l-green-500 dark:border-l-gray-600 rounded-2xl bg-white dark:bg-gray-800 hover:bg-green-50/60 dark:hover:bg-gray-700 cursor-pointer transition-all group shadow-sm hover:shadow-md"
               >
                 <div className="flex items-start gap-2">
 

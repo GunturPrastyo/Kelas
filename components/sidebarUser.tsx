@@ -72,7 +72,7 @@ export default function Sidebar() {
         </button>
         <div id="sidebar-title-container" className="flex-1 flex items-center gap-4 overflow-hidden" >
           {!isSidebarCollapsed && (
-            <Image id="sidebar-title" src="/logo.png" alt="KELAS Logo" width={512} height={512} className="ml-2 h-10 w-auto transition-opacity duration-300" style={{ width: 'auto' }} priority />
+            <Image id="sidebar-title" src="/logo.png" alt="KELAS Logo" width={512} height={512} className="ml-4 sm:ml-2 h-10 sm:h-8 w-auto transition-opacity duration-300" style={{ width: 'auto' }} priority />
           )}
         </div>
       </div>
