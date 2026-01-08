@@ -3,7 +3,6 @@
 import { useRouter } from "next/navigation";
 import { X } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import Image from "next/image";
 
 interface PreTestModalProps {
   isOpen: boolean;
@@ -43,7 +42,7 @@ export default function PreTestModal({ isOpen, onClose }: PreTestModalProps) {
         {/* Icon Container - Overlapping header and content */}
         <div className="relative -mt-12 mb-3 flex justify-center">
             <div className="w-24 h-24 bg-white dark:bg-gray-800 rounded-full flex items-center justify-center shadow-xl border-4 border-white dark:border-gray-700 p-4">
-                 <Image 
+                 <img 
                     src="/test-pre-test.png" 
                     alt="Pre-test Icon" 
                     width={128} 

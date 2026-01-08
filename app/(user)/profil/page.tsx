@@ -47,7 +47,6 @@ const ProfilePage = () => {
   const [confirmPassword, setConfirmPassword] = useState("");
 
   const [activeTab, setActiveTab] = useState("info");
-  const [message, setMessage] = useState<{ type: "success" | "error"; text: string } | null>(null);
 
   useEffect(() => {
     const userRaw = localStorage.getItem("user");
@@ -91,7 +90,6 @@ const ProfilePage = () => {
 
   const handleProfileUpdate = async (e: FormEvent) => {
     e.preventDefault();
-    setMessage(null);
 
     const formData = new FormData();
     formData.append("name", name);
@@ -109,25 +107,33 @@ const ProfilePage = () => {
 
       localStorage.setItem("user", JSON.stringify(data.user));
       setUser(data.user);
-      setMessage({ type: "success", text: "Profil berhasil diperbarui!" });
+
+      // Dispatch event agar komponen lain (seperti Navbar) segera memperbarui data user
+      window.dispatchEvent(new Event("user-updated"));
+
+      showAlert({
+        title: "Sukses",
+        message: "Profil berhasil diperbarui!",
+        type: "alert",
+      });
     } catch (err) {
-      setMessage({
-        type: "error",
-        text: err instanceof Error ? err.message : "Terjadi kesalahan",
+      showAlert({
+        title: "Gagal",
+        message: err instanceof Error ? err.message : "Terjadi kesalahan",
+        type: "alert",
       });
     }
   };
 
   const handlePasswordChange = async (e: FormEvent) => {
     e.preventDefault();
-    setMessage(null);
 
     if (newPassword !== confirmPassword) {
-      setMessage({ type: "error", text: "Konfirmasi password tidak cocok!" });
+      showAlert({ title: "Gagal", message: "Konfirmasi password tidak cocok!", type: "alert" });
       return;
     }
     if (newPassword.length < 6) {
-      setMessage({ type: "error", text: "Password baru minimal 6 karakter." });
+      showAlert({ title: "Gagal", message: "Password baru minimal 6 karakter.", type: "alert" });
       return;
     }
 
@@ -141,14 +147,15 @@ const ProfilePage = () => {
       const data = await res.json();
       if (!res.ok) throw new Error(data.message || "Gagal mengubah password");
 
-      setMessage({ type: "success", text: "Password berhasil diubah!" });
+      showAlert({ title: "Sukses", message: "Password berhasil diubah!", type: "alert" });
       setCurrentPassword("");
       setNewPassword("");
       setConfirmPassword("");
     } catch (err) {
-      setMessage({
-        type: "error",
-        text: err instanceof Error ? err.message : "Terjadi kesalahan",
+      showAlert({
+        title: "Gagal",
+        message: err instanceof Error ? err.message : "Terjadi kesalahan",
+        type: "alert",
       });
     }
   };
@@ -164,16 +171,15 @@ const ProfilePage = () => {
 
   const handleDownloadCertificate = async () => {
     if (!user) {
-      setMessage({ type: "error", text: "Pengguna belum login." });
+      showAlert({ title: "Gagal", message: "Pengguna belum login.", type: "alert" });
       return;
     }
     if (overallProgress < 100) {
-      setMessage({ type: "error", text: "Anda belum menyelesaikan semua modul untuk mendapatkan sertifikat." });
+      showAlert({ title: "Gagal", message: "Anda belum menyelesaikan semua modul untuk mendapatkan sertifikat.", type: "alert" });
       return;
     }
 
     try {
-      setMessage(null);
       // Encode nama untuk memastikan karakter seperti spasi aman untuk URL
       const encodedName = encodeURIComponent(name);
       const res = await authFetch(`${process.env.NEXT_PUBLIC_API_URL}/api/results/certificate?name=${encodedName}`, {
@@ -197,13 +203,14 @@ const ProfilePage = () => {
       a.click();
       a.remove();
       window.URL.revokeObjectURL(url);
-      setMessage({ type: "success", text: "Sertifikat berhasil diunduh!" });
+      showAlert({ title: "Sukses", message: "Sertifikat berhasil diunduh!", type: "alert" });
 
     } catch (err) {
       console.error("Error downloading certificate:", err);
-      setMessage({
-        type: "error",
-        text: err instanceof Error ? err.message : "Terjadi kesalahan saat mengunduh sertifikat.",
+      showAlert({
+        title: "Gagal",
+        message: err instanceof Error ? err.message : "Terjadi kesalahan saat mengunduh sertifikat.",
+        type: "alert",
       });
     }
   };
@@ -222,19 +229,6 @@ const ProfilePage = () => {
       <h1 className="text-3xl font-bold text-gray-800 dark:text-gray-100 mt-6 mb-6">
     
       </h1>
-
-      {message && (
-        <motion.div
-          initial={{ opacity: 0, y: -10 }}
-          animate={{ opacity: 1, y: 0 }}
-          className={`p-4 mb-6 rounded-xl text-center font-medium shadow ${message.type === "success"
-              ? "bg-green-100 text-green-800 border border-green-300"
-              : "bg-red-100 text-red-800 border border-red-300"
-            }`}
-        >
-          {message.text}
-        </motion.div>
-      )}
 
       {/* === KARTU SERTIFIKAT & PROGRES === */}
       <motion.div
