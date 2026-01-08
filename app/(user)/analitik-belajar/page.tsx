@@ -400,16 +400,26 @@ export default function AnalitikBelajarPage() {
           y: {
             beginAtZero: true,
             ticks: {
+              maxTicksLimit: 6, // Batasi jumlah label maksimal agar tidak terlalu rapat
               display: true, // Tampilkan ticks untuk referensi
               callback: function (value) {
                 const totalSeconds = value as number;
                 if (totalSeconds === 0) return '0 mnt';
-                if (totalSeconds < 3600) {
-                  const minutes = Math.round(totalSeconds / 60);
+
+                let hours = Math.floor(totalSeconds / 3600);
+                let minutes = Math.round((totalSeconds % 3600) / 60);
+
+                if (minutes === 60) {
+                  hours += 1;
+                  minutes = 0;
+                }
+
+                if (hours === 0) {
                   return `${minutes} mnt`;
-                } else {
-                  const hours = Math.round(totalSeconds / 3600);
+                } else if (minutes === 0) {
                   return `${hours} jam`;
+                } else {
+                  return `${hours} jam ${minutes} mnt`;
                 }
               }
             },
@@ -425,10 +435,7 @@ export default function AnalitikBelajarPage() {
   useEffect(() => {
     if (chartPerbandinganRef.current && comparisonData && isChartPerbandinganInView) { // chartPerbandinganRef.current sudah pasti HTMLCanvasElement
       // Tentukan label berdasarkan ukuran layar
-      const isMobile = window.innerWidth < 768; // md breakpoint
-      const chartLabels = isMobile
-        ? comparisonData.labels.map(label => label.split(' ')) // Wrap label di mobile
-        : comparisonData.labels; // Tampilkan satu baris di desktop
+      const chartLabels = comparisonData.labels.map(label => label.split(' '));
 
       const chartPerbandinganInstance = new Chart(chartPerbandinganRef.current, {
         type: "radar",
@@ -672,7 +679,7 @@ export default function AnalitikBelajarPage() {
       </section>
 
       {/* TOPIK YANG PERLU DIPERKUAT */}
-      <section className="relative overflow-hidden bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-md border-l-4 border-yellow-500">
+      <section className="relative overflow-hidden bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-md border-l-4 border-yellow-500 dark:border-l-gray-600">
         {/* Dekorasi Latar Belakang: Watermark Icon */}
         <div className="absolute -top-12 -right-12 opacity-[0.04] pointer-events-none select-none">
           <AlertTriangle className="w-64 h-64 text-yellow-600 dark:text-yellow-400 transform rotate-12" />
@@ -790,7 +797,7 @@ export default function AnalitikBelajarPage() {
 
       {/* GRAFIK */}
       <section className="grid lg:grid-cols-2 gap-8">
-        <div className="relative overflow-hidden bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-md border-l-4 border-blue-500">
+        <div className="relative overflow-hidden bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-md border-l-4 border-blue-500 dark:border-l-gray-600">
           {/* Dekorasi Latar Belakang: Watermark Icon */}
           <div className="absolute -top-6 -right-6 opacity-[0.04] pointer-events-none select-none">
             <Activity className="w-64 h-64 text-blue-600 dark:text-blue-400 transform -rotate-12" />
@@ -821,7 +828,7 @@ export default function AnalitikBelajarPage() {
         </div>
 
         {/* PERBANDINGAN DENGAN KELAS */}
-        <div className="relative overflow-hidden bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-md border-l-4 border-indigo-500">
+        <div className="relative overflow-hidden bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-md border-l-4 border-indigo-500 dark:border-l-gray-600">
           {/* Dekorasi Latar Belakang: Watermark Icon */}
           <div className="absolute -top-6 -right-6 opacity-[0.04] pointer-events-none select-none">
             <Users className="w-64 h-64 text-indigo-600 dark:text-indigo-400 transform rotate-12" />
@@ -1020,22 +1027,25 @@ export default function AnalitikBelajarPage() {
       </section>
 
       {/* REKOMENDASI */}
-      <section className="relative overflow-hidden bg-gradient-to-br from-blue-50 via-blue-100 to-gray-100 dark:from-gray-800 dark:via-gray-800 dark:to-gray-900 text-gray-800 dark:text-gray-100 p-6 rounded-2xl shadow-md border-l-4 border-purple-500">
+      <section className="relative overflow-hidden bg-gradient-to-br from-blue-50 via-blue-100 to-gray-100 dark:from-gray-800 dark:via-gray-800 dark:to-gray-900 text-gray-800 dark:text-gray-100 p-6 rounded-2xl shadow-md border-l-4 border-purple-500 dark:border-l-gray-600">
         {/* Dekorasi Latar Belakang: Watermark Icon */}
         <div className="absolute -top-6 -right-6 opacity-[0.04] pointer-events-none select-none">
           <Sparkles className="w-64 h-64 text-purple-600 dark:text-purple-400 transform rotate-12" />
         </div>
 
         <div className="relative z-10">
-          <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center justify-between mb-2">
             <h3 className="text-xl font-bold tracking-wide flex items-center gap-2">
-              <Sparkles className="w-6 h-6 text-purple-500" />
-              Rekomendasi Pembelajaran
+              <Sparkles className="w-6 h-6 text-purple-400 " />
+              Rekomendasi Belajar
             </h3>
-            <span className="text-xs sm:text-sm bg-blue-200/60 dark:bg-gray-700/50 px-3 py-1 rounded-full text-gray-700 dark:text-gray-300">
+            {/* <span className="text-xs sm:text-sm bg-blue-200/60 dark:bg-gray-700/50 px-3 py-1 rounded-full text-gray-700 dark:text-gray-300">
               Diperbarui hari ini
-            </span>
+            </span> */}
           </div>
+          <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">
+            Berikut adalah rekomendasi materi yang sebaiknya kamu pelajari selanjutnya untuk hasil yang optimal.
+          </p>
 
           {loading || !recommendations ? (
           <div className="space-y-3">

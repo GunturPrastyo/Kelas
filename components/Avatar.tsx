@@ -1,6 +1,5 @@
 "use client";
 
-import Image from "next/image";
 import { useEffect, useState } from "react";
 
 interface User {
@@ -14,34 +13,58 @@ interface AvatarProps {
   className?: string;
 }
 
-const Avatar = ({ user, size = 40, className = "" }: AvatarProps) => {
-  const [avatarUrl, setAvatarUrl] = useState("/user-placeholder.png");
+const Avatar = ({ user, size = 10, className = "w-8 h-auto" }: AvatarProps) => {
+  const [avatarUrl, setAvatarUrl] = useState(
+    `https://ui-avatars.com/api/?name=Pengguna&background=random&color=fff&size=128`
+  );
+
+  const generateAvatarUrl = (userData: User) => {
+    const displayName = userData.name || "Pengguna";
+    if (userData.avatar) {
+      return userData.avatar.startsWith("http")
+        ? userData.avatar
+        : `${process.env.NEXT_PUBLIC_API_URL}/uploads/${userData.avatar}`;
+    } else {
+      return `https://ui-avatars.com/api/?name=${encodeURIComponent(
+        displayName
+      )}&background=random&color=fff&size=128`;
+    }
+  };
 
   useEffect(() => {
     if (user) {
-      const displayName = user.name || "Pengguna";
-
-      if (user.avatar) {
-        const url = user.avatar.startsWith("http")
-          ? user.avatar
-          : `${process.env.NEXT_PUBLIC_API_URL}/uploads/${user.avatar}`;
-        setAvatarUrl(url);
-      } else {
-        const initialAvatarUrl = `https://ui-avatars.com/api/?name=${encodeURIComponent(
-          displayName
-        )}&background=random&color=fff&size=128`;
-        setAvatarUrl(initialAvatarUrl);
-      }
+      setAvatarUrl(generateAvatarUrl(user));
     }
   }, [user]);
 
+  useEffect(() => {
+    const handleUserUpdate = () => {
+      const storedUser = localStorage.getItem("user");
+      if (storedUser) {
+        const parsedUser = JSON.parse(storedUser);
+        setAvatarUrl(generateAvatarUrl(parsedUser));
+      }
+    };
+
+    window.addEventListener("user-updated", handleUserUpdate);
+    return () => window.removeEventListener("user-updated", handleUserUpdate);
+  }, []);
+
   return (
-    <Image
+    <img
       src={avatarUrl}
       alt={user?.name || "Avatar Pengguna"}
       width={size}
       height={size}
       className={`rounded-full object-cover ${className}`}
+      onError={(e) => {
+        const fallbackUrl = `https://ui-avatars.com/api/?name=${encodeURIComponent(
+          user?.name || "Pengguna"
+        )}&background=random&color=fff&size=128`;
+        if (e.currentTarget.src !== fallbackUrl) {
+          e.currentTarget.src = fallbackUrl;
+        }
+      }}
     />
   );
 };

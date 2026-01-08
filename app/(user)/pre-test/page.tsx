@@ -351,7 +351,7 @@ export default function PreTestPage() {
                                 {recommendedModules.length > 0 ? (
                                     recommendedModules.map(modul => (
                                         <Link href={`/modul/${modul.slug}`} key={modul._id} className="flex items-center gap-3 border border-slate-200 dark:border-gray-700 rounded-lg p-3 hover:bg-slate-50 dark:hover:bg-gray-700/50 transition">
-                                            <Image src={`${process.env.NEXT_PUBLIC_API_URL}/uploads/${modul.icon}`} alt={modul.title} width={128} height={128} className="w-8 h-8 rounded" />
+                                            <img src={`${process.env.NEXT_PUBLIC_API_URL}/uploads/${modul.icon}`} alt={modul.title} width={128} height={128} className="w-8 h-8 rounded" />
                                             <div>
                                                 <p className="font-semibold text-sm text-slate-800 dark:text-slate-200">{modul.title}</p>
                                                 <p className="text-xs text-slate-500 dark:text-slate-400">Materi {level}</p>
@@ -364,43 +364,7 @@ export default function PreTestPage() {
                             </div>
                         </div>
                     </div>
-                    {/* Tampilan Skor per Fitur per Modul */}
-                    {result.featureScoresByModule && result.featureScoresByModule.length > 0 && (
-                        <div className="mt-6">
-                            <h3 className="text-base font-semibold mb-4 text-slate-800 dark:text-slate-200">Rincian Skor Indikator per Modul</h3>
-                            <div className="space-y-4">
-                                {result.featureScoresByModule.map((moduleResult: any) => (
-                                    <div key={moduleResult.moduleId} className="p-4 border border-slate-200 dark:border-gray-700 rounded-lg">
-                                        <h4 className="font-semibold text-sm mb-3 text-slate-700 dark:text-slate-300">{moduleResult.moduleTitle}</h4>
-                                        <div className="space-y-3">
-                                            {moduleResult.features.map((fs: any) => {
-                                                const score = Math.round(fs.score);
-                                                let progressBarClass;
-                                                if (score < 40) {
-                                                    progressBarClass = 'bg-red-500';
-                                                } else if (score < 70) {
-                                                    progressBarClass = 'bg-yellow-500';
-                                                } else {
-                                                    progressBarClass = 'bg-green-500';
-                                                }
-                                                return (
-                                                    <div key={fs.featureId}>
-                                                        <div className="flex justify-between items-center mb-1">
-                                                            <span className="text-xs font-medium text-gray-600 dark:text-gray-400">{fs.featureName}</span>
-                                                            <span className="text-xs font-semibold text-gray-500 dark:text-gray-300">{score}%</span>
-                                                        </div>
-                                                        <div className="w-full bg-gray-200 dark:bg-gray-600 rounded-full h-1.5">
-                                                            <div className={`${progressBarClass} h-1.5 rounded-full`} style={{ width: `${score}%` }}></div>
-                                                        </div>
-                                                    </div>
-                                                );
-                                            })}
-                                            </div>
-                                    </div>
-                                ))}
-                            </div>
-                        </div>
-                    )}
+                 
                     <div className="mt-6 flex gap-2">
                         <button onClick={handleRetake} className="bg-transparent text-blue-600 dark:text-blue-400 border border-blue-500/20 dark:border-blue-400/20 px-3.5 py-2.5 rounded-lg cursor-pointer hover:bg-blue-50 dark:hover:bg-blue-900/20 transition">Ulangi Pre-test</button>
                         <Link href="/modul" className="bg-blue-600 hover:bg-blue-700 text-white border-none px-3.5 py-2.5 rounded-lg cursor-pointer">Lihat Rekomendasi Modul</Link>
@@ -517,7 +481,8 @@ export default function PreTestPage() {
 
             <header className="flex items-center justify-between gap-4 font-poppins mt-6">
                 <div className="flex items-center gap-2">
-                    <Image src="/logo1.png" width={256} height={256} className="h-10 w-auto" alt="Logo" />
+                
+                    <img src="/logo1.png" width={256} height={256} className="h-10 w-auto" alt="Logo" />
                     <h1 className="text-lg font-bold text-slate-800 dark:text-slate-200">Pre-test</h1>
                 </div>
                 <div className="flex gap-2 sm:gap-3 items-center justify-center text-slate-500 dark:text-slate-400 text-xs sm:text-sm bg-slate-100 dark:bg-gray-800 px-2 sm:px-3 py-1.5 rounded-lg border border-slate-200 dark:border-gray-700">
@@ -528,7 +493,7 @@ export default function PreTestPage() {
             </header>
 
             <section className="bg-gradient-to-r from-indigo-500 to-blue-600 rounded-xl p-4 mt-6 shadow-md text-white flex items-center gap-4">
-                <Image src="/test.png" width={256} height={256} className="h-24 w-24" alt="pre test" />
+                <img src="/test.png" width={256} height={256} className="h-24 w-24" alt="pre test" />
                 <div>
                     <h2 className="text-base font-bold ">Selamat Datang di Pre-test</h2>
                     <p className="text-sm opacity-90">Kerjakan soal ini untuk menentukan level belajar yang sesuai denganmu</p>

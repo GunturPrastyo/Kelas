@@ -47,9 +47,6 @@ export default function LoginPage() {
     localStorage.setItem("user", JSON.stringify(user));
     localStorage.setItem("token", token);
 
-    console.log("Login berhasil, data user:", user);
-    console.log("Mencoba redirect berdasarkan role:", user.role);
-
     // Arahkan sesuai role
     if (user.role === "admin") {
       router.push("/admin/dashboard");
