@@ -46,6 +46,8 @@ const ProfilePage = () => {
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
 
+  const [fontSize, setFontSize] = useState<string>('16px'); // Ukuran font default
+  const [fontStyle, setFontStyle] = useState<string>('font-poppins');
   const [activeTab, setActiveTab] = useState("info");
 
   useEffect(() => {
@@ -58,6 +60,12 @@ const ProfilePage = () => {
       setEmail(userData.email);
       setCertificateName(displayUserName); // Initialize certificateName
       // Logika avatar sekarang ditangani oleh komponen Avatar dan state avatarPreview
+
+      // Load settings
+      const storedFontSize = localStorage.getItem('materiFontSize');
+      if (storedFontSize) setFontSize(storedFontSize);
+      const storedFontStyle = localStorage.getItem('materiFontStyle');
+      if (storedFontStyle) setFontStyle(storedFontStyle);
     }
     setLoading(false);
 
@@ -160,6 +168,35 @@ const ProfilePage = () => {
     }
   };
 
+  const handleSettingsSave = (e: FormEvent) => {
+    e.preventDefault();
+    localStorage.setItem('materiFontSize', fontSize);
+    localStorage.setItem('materiFontStyle', fontStyle);
+    
+    // Dispatch event for immediate update if needed elsewhere
+    window.dispatchEvent(new Event('settings-updated'));
+    
+    // Trigger storage event manually for components listening to storage changes in the same tab
+    window.dispatchEvent(new StorageEvent("storage", {
+      key: "materiFontSize",
+      newValue: fontSize,
+      storageArea: localStorage,
+      url: window.location.href,
+    }));
+    window.dispatchEvent(new StorageEvent("storage", {
+      key: "materiFontStyle",
+      newValue: fontStyle,
+      storageArea: localStorage,
+      url: window.location.href,
+    }));
+
+    showAlert({
+      title: "Sukses",
+      message: "Pengaturan berhasil disimpan!",
+      type: "alert",
+    });
+  };
+
   const handleEditCertificateName = () => {
     showAlert({
       type: "confirm",
@@ -224,6 +261,25 @@ const ProfilePage = () => {
   if (!user) return <div className="p-6 text-center text-gray-500">Silakan login untuk melihat profil.</div>;
 
   return (
+  
+    
+
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     <div className="w-full font-sans p-2 mt-20">
       <Breadcrumb paths={[{ name: "Dashboard", href: "/dashboard" }, { name: "Profil", href: "#" }]} />
       <h1 className="text-3xl font-bold text-gray-800 dark:text-gray-100 mt-6 mb-6">
@@ -324,12 +380,36 @@ const ProfilePage = () => {
                 Ubah Password
               </button>
             )}
+            <button
+              onClick={() => setActiveTab("settings")}
+              className={`whitespace-nowrap py-3 px-1 border-b-2 font-medium text-sm transition-colors ${activeTab === 'settings'
+                  ? 'border-blue-500 text-blue-600 dark:border-blue-400 dark:text-blue-300'
+                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 dark:text-gray-400 dark:hover:text-gray-200 dark:hover:border-gray-600'
+                }`}
+            >
+              Pengaturan 
+            </button>
           </nav>
         </div>
 
         {/* Tab Content */}
         <div className="pt-6">
           {/* Informasi Akun Tab */}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
           {activeTab === "info" && (
             <form onSubmit={handleProfileUpdate} className="space-y-6">
               <div className="flex flex-col sm:flex-row items-center gap-8">
@@ -368,6 +448,38 @@ const ProfilePage = () => {
             </form>
           )}
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
           {/* Ubah Password Tab */}
           {activeTab === "password" && user.hasPassword && (
             <form onSubmit={handlePasswordChange} className="space-y-6">
@@ -388,6 +500,63 @@ const ProfilePage = () => {
               <div className="text-right">
                 <button type="submit" className="px-6 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-2xl font-medium text-md shadow transition">
                   Ubah Password
+                </button>
+              </div>
+            </form>
+          )}
+
+          {/* Pengaturan Tampilan Tab */}
+          {activeTab === "settings" && (
+            <form onSubmit={handleSettingsSave} className="space-y-6">
+              <div className="grid gap-6 sm:grid-cols-2">
+                <div>
+                  <label className="block text-sm text-gray-600 dark:text-gray-300 mb-2">Jenis Font Materi</label>
+                  <select 
+                    value={fontStyle} 
+                    onChange={(e) => setFontStyle(e.target.value)}
+                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-lg bg-gray-50 dark:bg-gray-700 focus:ring-2 focus:ring-blue-500 outline-none dark:text-white"
+                  >
+                    <option value="font-poppins">Poppins (Default)</option>
+                    <option value="!font-['Arial']">Arial</option>
+                    <option value="!font-['Times_New_Roman']">Times New Roman</option>
+                    
+                    <option value="!font-['Calibri']">Calibri</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-sm text-gray-600 dark:text-gray-300 mb-2">Ukuran Font Materi</label>
+                  <select 
+                    value={fontSize} 
+                    onChange={(e) => setFontSize(e.target.value)}
+                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-lg bg-gray-50 dark:bg-gray-700 focus:ring-2 focus:ring-blue-500 outline-none dark:text-white"
+                  >
+                    <option value="14px">Kecil (14px)</option>
+                    <option value="16px">Normal (16px)</option>
+                    <option value="18px">Sedang (18px)</option>
+                    <option value="20px">Besar (20px)</option>
+                    <option value="24px">Sangat Besar (24px)</option>
+                  </select>
+                </div>
+              </div>
+
+              {/* Preview Section */}
+              <div className="mt-4 p-4 border border-gray-200 dark:border-gray-700 rounded-xl bg-gray-50 dark:bg-gray-800/50">
+                <p className="text-sm text-gray-500 dark:text-gray-400 mb-2">Preview Tampilan:</p>
+                <div 
+                  className={`p-4 bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700 text-gray-800 dark:text-gray-200 transition-all duration-300 ${fontStyle}`}
+                  style={{ fontSize: fontSize }}
+                >
+                  <h4 className="font-bold mb-2">Contoh Judul Materi</h4>
+                  <p className="leading-relaxed">
+                    Ini adalah contoh paragraf untuk melihat bagaimana materi akan ditampilkan dengan pengaturan font yang Anda pilih. 
+                    Kenyamanan membaca sangat penting untuk proses belajar yang efektif.
+                  </p>
+                </div>
+              </div>
+
+              <div className="text-right">
+                <button type="submit" className="px-6 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-2xl font-medium text-md shadow transition">
+                  Simpan Pengaturan
                 </button>
               </div>
             </form>
