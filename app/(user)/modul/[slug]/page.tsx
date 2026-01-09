@@ -105,6 +105,9 @@ export default function ModulDetailPage() {
     const [changedQuestionIds, setChangedQuestionIds] = useState<Set<string>>(new Set()); // State baru untuk melacak ID unik
     const [tabExitCount, setTabExitCount] = useState(0);
     const [isPlaygroundOpen, setIsPlaygroundOpen] = useState(false);
+    
+    const [fontSize, setFontSize] = useState<string>('16px');
+    const [fontStyle, setFontStyle] = useState<string>('font-poppins');
 
     const { showAlert } = useAlert();
     const persistTimeoutRef = useRef<NodeJS.Timeout | null>(null);
@@ -137,6 +140,28 @@ export default function ModulDetailPage() {
     useEffect(() => {
         const userRaw = localStorage.getItem('user');
         if (userRaw) setUser(JSON.parse(userRaw));
+    }, []);
+
+    // --- Load Font Settings ---
+    useEffect(() => {
+        const loadSettings = () => {
+            const storedFontSize = localStorage.getItem('materiFontSize');
+            const storedFontStyle = localStorage.getItem('materiFontStyle');
+            if (storedFontSize) setFontSize(storedFontSize);
+            if (storedFontStyle) setFontStyle(storedFontStyle);
+        };
+
+        loadSettings();
+
+        const handleSettingsUpdate = () => loadSettings();
+        
+        window.addEventListener('settings-updated', handleSettingsUpdate);
+        window.addEventListener('storage', handleSettingsUpdate);
+        
+        return () => {
+            window.removeEventListener('settings-updated', handleSettingsUpdate);
+            window.removeEventListener('storage', handleSettingsUpdate);
+        };
     }, []);
 
     // [DEBUG] Menambahkan console.log untuk memeriksa status autentikasi di sisi client
@@ -1072,6 +1097,7 @@ export default function ModulDetailPage() {
                                 </div>
                                 {/* Accordion Content */}
                                 <div className={`transition-all duration-500 ease-in-out overflow-hidden ${isOpen && !isLocked ? 'max-h-[2000px]' : 'max-h-0'}`}>
+                                    <div className={fontStyle} style={{ fontSize }}>
                                     {/* Daftar Isi Sub Topik */}
                                     {isOpen && !isLocked && topik.materi && topik.materi.subMateris.length > 0 && (
                                         <div className="pt-2 pb-2 px-2 sm:px-10">
@@ -1125,7 +1151,8 @@ export default function ModulDetailPage() {
                                         </div>
                                     )}
 
-                                    <TopicContent topik={topik} onStartTest={startTest} onViewScore={viewScore} hasAttempted={topik.isCompleted || topik.hasAttempted} />
+                                        <TopicContent topik={topik} onStartTest={startTest} onViewScore={viewScore} hasAttempted={topik.isCompleted || topik.hasAttempted} />
+                                    </div>
                                 </div>
                             </div>
                         );

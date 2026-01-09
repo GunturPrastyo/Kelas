@@ -1,5 +1,6 @@
 "use client";
 
+import { useState, useEffect } from 'react';
 import Image from 'next/image';
 
 interface Materi {
@@ -57,6 +58,35 @@ export default function TopicContent({ topik, onStartTest, onViewScore, hasAttem
     const embedUrl = getYouTubeEmbedUrl(topik?.materi?.youtube);
     const subMateris = topik?.materi?.subMateris || [];
 
+    const [fontClass, setFontClass] = useState('font-poppins');
+    const [proseSizeClass, setProseSizeClass] = useState('prose-base');
+
+    useEffect(() => {
+        const loadSettings = () => {
+            const storedFontSize = localStorage.getItem('materiFontSize');
+            const storedFontStyle = localStorage.getItem('materiFontStyle');
+
+            if (storedFontStyle) {
+                setFontClass(storedFontStyle);
+            }
+
+            if (storedFontSize) {
+                switch (storedFontSize) {
+                    case '14px': setProseSizeClass('prose-sm'); break;
+                    case '16px': setProseSizeClass('prose-base'); break;
+                    case '18px': setProseSizeClass('prose-lg'); break;
+                    case '20px': setProseSizeClass('prose-xl'); break;
+                    case '24px': setProseSizeClass('prose-2xl'); break;
+                    default: setProseSizeClass('prose-base');
+                }
+            }
+        };
+
+        loadSettings();
+        window.addEventListener('settings-updated', loadSettings);
+        return () => window.removeEventListener('settings-updated', loadSettings);
+    }, []);
+
     return (
         <div className="px-1 sm:px-10 pb-5 pt-4 border-t border-gray-200 dark:border-gray-700 max-h-[80vh] overflow-y-auto custom-pattern-bg">
             <style>{`
@@ -75,7 +105,7 @@ export default function TopicContent({ topik, onStartTest, onViewScore, hasAttem
                 </div>
             )}
 
-            <div className="prose dark:prose-invert max-w-none space-y-4">
+            <div className={`space-y-4 ${fontClass}`}>
                 {subMateris.length > 0 ? (
                     subMateris.map((sub, index) => (
                         <div
@@ -83,8 +113,8 @@ export default function TopicContent({ topik, onStartTest, onViewScore, hasAttem
                         id={sub._id} // ID unik untuk target scroll
                         className="max-w-full w-full scroll-mt-24 bg-white dark:bg-gray-800 p-5 rounded-xl border border-slate-300 dark:border-gray-700/60 shadow-sm border-l-7 border-l-blue-400"
                         >
-                            <h4 className="font-bold text-lg !mb-2 text-gray-800 dark:text-gray-100">{sub.title}</h4>
-                            <div dangerouslySetInnerHTML={{ __html: sub.content }} />
+                            <h4 className={`font-bold ${proseSizeClass} !mb-2 text-gray-800 dark:text-gray-100`}>{sub.title}</h4>
+                            <div className={`prose dark:prose-invert max-w-none ${proseSizeClass}`} dangerouslySetInnerHTML={{ __html: sub.content }} />
                         </div>
                     ))
                 ) : (
