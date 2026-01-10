@@ -654,7 +654,7 @@ export default function ModulDetailPage() {
             // Tidak perlu disconnect observer lagi
         };
 
-    }, [openTopicId, activeTest, testIdx, currentQuestionForModal]); // Dependensi diperbarui
+    }, [openTopicId, activeTest, testIdx, currentQuestionForModal, modul]); // Dependensi diperbarui
 
 
 
@@ -1018,6 +1018,7 @@ export default function ModulDetailPage() {
                 /* Paksa background gelap untuk block code di mode terang */
                 html:not(.dark) .prose pre {
                     background-color: #0d1117; /* Warna dari github-dark.css */
+                    color: #c9d1d9; /* Warna teks terang agar terbaca jika highlight belum dimuat */
                 }
             `}</style>
             {/* 

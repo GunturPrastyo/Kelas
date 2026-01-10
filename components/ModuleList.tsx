@@ -17,6 +17,7 @@ interface Module {
   totalDuration?: number;
   completedTopics: number;
   totalTopics: number;
+  isLocked?: boolean;
 }
 
 interface ModuleListProps {
@@ -57,12 +58,16 @@ const getStatusBadge = (status: Module["status"], progress: number | undefined, 
 
 const getCategoryBadge = (category: string) => {
   const base = "inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-1 rounded-full shadow-sm";
-  switch (category) {
+  switch (category.toLowerCase()) {
     case "mudah":
+    case "dasar":
       return <span className={`${base} bg-amber-100 text-amber-800 dark:bg-amber-900/40 dark:text-amber-300`}>Dasar</span>;
     case "sedang":
+    case "menengah":
       return <span className={`${base} bg-blue-100 text-blue-800 dark:bg-blue-900/40 dark:text-blue-300`}>Menengah</span>;
     case "sulit":
+    case "lanjut":
+    case "lanjutan":
       return <span className={`${base} bg-green-100 text-green-800 dark:bg-green-900/40 dark:text-green-300`}>Lanjut</span>;
     default: return null;
   }
@@ -122,25 +127,29 @@ export default function ModuleList({ title, allModules, filter }: ModuleListProp
         onMouseDown={handleMouseDown}
         className="grid grid-flow-col auto-cols-[260px] sm:auto-cols-[300px] gap-6 overflow-x-auto scroll-smooth pb-8 scrollbar-hidden snap-x snap-mandatory cursor-grab active:cursor-grabbing select-none px-1"
       >
-        {modules.map((modul) => (
-          <Link
-            key={modul._id}
-            href={modul.status !== "Terkunci" ? `/modul/${modul.slug}` : "#"}
-            onClick={(e) => modul.status === "Terkunci" && e.preventDefault()}
-            className={`
+        {modules.map((modul) => {
+          const isLocked = modul.isLocked ?? (modul.status === 'Terkunci');
+          const effectiveStatus = isLocked ? 'Terkunci' : modul.status;
+
+          return (
+            <Link
+              key={modul._id}
+              href={effectiveStatus !== "Terkunci" ? `/modul/${modul.slug}` : "#"}
+              onClick={(e) => effectiveStatus === "Terkunci" && e.preventDefault()}
+              className={`
               group relative flex flex-col justify-between
               w-full h-[240px]
               rounded-2xl overflow-hidden
               bg-slate-50 dark:bg-gray-800
               border border-slate-200 dark:border-gray-700
-              border-l-[6px] ${modul.status === 'Terkunci' ? 'border-l-gray-300 dark:border-l-gray-600' :
+              border-l-[6px] ${effectiveStatus === 'Terkunci' ? 'border-l-gray-300 dark:border-l-gray-600' :
                 modul.progress === 100 ? 'border-l-green-500' : 'border-l-blue-500'
               }
               shadow-sm hover:shadow-xl hover:-translate-y-1
               transition-all duration-300 snap-start
-              ${modul.status === "Terkunci" ? "grayscale opacity-70 cursor-not-allowed" : ""}
+              ${effectiveStatus === "Terkunci" ? "grayscale opacity-70 cursor-not-allowed" : ""}
             `}
-          >
+            >
             {/* Decorative Background */}
             <div className={`absolute top-0 right-0 w-32 h-32 bg-gradient-to-br ${modul.progress === 100 ? "from-green-200/80 to-transparent dark:from-green-800/20" : "from-blue-200/80 to-transparent dark:from-blue-800/20"
               } rounded-bl-[80px] -mr-8 -mt-8 transition-transform duration-500 group-hover:scale-110`} />
@@ -185,15 +194,15 @@ export default function ModuleList({ title, allModules, filter }: ModuleListProp
               <div className="mt-3 pt-3 border-t border-slate-200 dark:border-gray-700/50">
                 <div className="flex justify-between items-center mb-2">
                   <span className="text-[10px] font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide">
-                    {modul.status === 'Selesai' ? 'Selesai' : modul.status === 'Terkunci' ? 'Terkunci' : `${modul.progress}% Selesai`}
+                    {effectiveStatus === 'Selesai' ? 'Selesai' : effectiveStatus === 'Terkunci' ? 'Terkunci' : `${modul.progress}% Selesai`}
                   </span>
                   <div className="scale-90 origin-right">
-                    {getStatusBadge(modul.status, modul.progress, modul.completedTopics, modul.totalTopics)}
+                    {getStatusBadge(effectiveStatus, modul.progress, modul.completedTopics, modul.totalTopics)}
                   </div>
                 </div>
                 <div className="w-full bg-gray-100 dark:bg-gray-700 rounded-full h-1.5 overflow-hidden">
                   <div
-                    className={`h-full rounded-full transition-all duration-500 ${modul.status === 'Terkunci' ? 'bg-gray-300 dark:bg-gray-600' :
+                    className={`h-full rounded-full transition-all duration-500 ${effectiveStatus === 'Terkunci' ? 'bg-gray-300 dark:bg-gray-600' :
                         modul.progress === 100 ? 'bg-green-500' : 'bg-blue-600'
                       }`}
                     style={{ width: `${modul.progress}%` }}
@@ -201,8 +210,9 @@ export default function ModuleList({ title, allModules, filter }: ModuleListProp
                 </div>
               </div>
             </div>
-          </Link>
-        ))}
+            </Link>
+          );
+        })}
       </div>
 
       {/* Hidden Scrollbar */}

@@ -226,19 +226,33 @@ export default function DashboardPage() {
   }, []);
 
   const personalizedModules = useMemo(() => {
-    const categoryMap = { mudah: 'dasar', sedang: 'menengah', sulit: 'lanjut' };
+    const categoryMap: Record<string, string> = { 
+      mudah: 'dasar', 
+      sedang: 'menengah', 
+      sulit: 'lanjut',
+      dasar: 'dasar',
+      menengah: 'menengah',
+      lanjut: 'lanjut',
+      lanjutan: 'lanjut'
+    };
+
+    const normalizedUserLevel = userLevel?.toLowerCase();
 
     // Pastikan modul diurutkan berdasarkan 'order' sebelum diproses lebih lanjut
     const sortedModules = [...modules].sort((a, b) => (a.order || 0) - (b.order || 0));
     return sortedModules.map(modul => {
-      const mappedCategory = categoryMap[modul.category as keyof typeof categoryMap];
+      const mappedCategory = categoryMap[modul.category?.toLowerCase()] || 'dasar';
       let status: ModuleStatus;
       let isLocked = userLevel === null; // Kunci semua jika belum pre-test
 
-      if (userLevel) {
-        if (userLevel === 'lanjut') isLocked = false;
-        else if (userLevel === 'menengah') isLocked = mappedCategory === 'lanjut';
-        else if (userLevel === 'dasar') isLocked = mappedCategory !== 'dasar';
+      if (normalizedUserLevel) {
+        if (normalizedUserLevel === 'lanjut' || normalizedUserLevel === 'lanjutan') {
+          isLocked = false;
+        } else if (normalizedUserLevel === 'menengah') {
+          isLocked = mappedCategory === 'lanjut';
+        } else if (normalizedUserLevel === 'dasar') {
+          isLocked = mappedCategory !== 'dasar';
+        }
       }
 
       if (modul.progress === 100) {
@@ -253,7 +267,7 @@ export default function DashboardPage() {
         status = 'Terkunci';
       }
 
-      return { ...modul, status }; // Hapus filter dari sini
+      return { ...modul, status, isLocked }; // Hapus filter dari sini
     });
   }, [modules, userLevel]);
 

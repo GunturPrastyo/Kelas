@@ -38,8 +38,9 @@ import {
   Subscript as SubIcon,
   Superscript as SuperIcon,
   Minus,
+  Captions,
 } from "lucide-react"; 
-import { useCallback, useRef } from "react"; 
+import { useCallback, useRef, useState, useEffect } from "react"; 
 import { authFetch } from "@/lib/authFetch";
 
 const ToolButton = ({
@@ -90,8 +91,86 @@ const StyleAttribute = Node.create({
   },
 });
 
+// Ekstensi Image kustom dengan dukungan resize (width)
+const ResizableImage = Image.extend({
+  addAttributes() {
+    return {
+      ...this.parent?.(),
+      width: {
+        default: '100%',
+        renderHTML: (attributes) => {
+          if (!attributes.width) return {};
+          return {
+            width: attributes.width,
+            style: `width: ${attributes.width}; height: auto;`,
+          };
+        },
+        parseHTML: (element) => element.getAttribute('width') || element.style.width,
+      },
+      caption: {
+        default: null,
+        parseHTML: (element) => element.getAttribute('data-caption'),
+        renderHTML: (attributes) => {
+          if (!attributes.caption) return {};
+          return {
+            'data-caption': attributes.caption,
+          };
+        },
+      },
+    };
+  },
+  renderHTML({ HTMLAttributes }) {
+    const { style, 'data-caption': caption, ...rest } = HTMLAttributes;
+    if (caption) {
+      return [
+        'figure',
+        { style: 'display: block; margin: 1rem 0; text-align: center;' },
+        ['img', { style, ...rest }],
+        ['figcaption', { style: 'margin-top: 0.5rem; color: #6b7280; font-size: 0.875rem; font-style: italic;' }, caption]
+      ];
+    }
+    return ['img', { style, ...rest }];
+  },
+  parseHTML() {
+    return [
+      {
+        tag: 'figure',
+        getAttrs: (node) => {
+          if (typeof node === 'string') return {};
+          const img = node.querySelector('img');
+          if (!img) return false;
+          const figcaption = node.querySelector('figcaption');
+          return {
+            src: img.getAttribute('src'),
+            width: img.getAttribute('width') || img.style.width,
+            caption: figcaption?.innerText || img.getAttribute('data-caption')
+          };
+        }
+      },
+      {
+        tag: 'img',
+      },
+    ];
+  }
+});
+
 const MenuBar = ({ editor }: { editor: Editor | null }) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // Paksa re-render komponen MenuBar saat state editor berubah (selection, content, dll)
+  // Ini penting agar tombol aktif/tidak aktif dan menu kontekstual (seperti resize gambar) muncul seketika
+  const [, forceUpdate] = useState({});
+
+  useEffect(() => {
+    if (!editor) return;
+    const handleUpdate = () => forceUpdate({});
+    editor.on('transaction', handleUpdate);
+    editor.on('selectionUpdate', handleUpdate);
+    return () => {
+      editor.off('transaction', handleUpdate);
+      editor.off('selectionUpdate', handleUpdate);
+    };
+  }, [editor]);
 
   const setLink = useCallback(() => {
     const url = window.prompt("Masukkan URL:");
@@ -123,10 +202,12 @@ const MenuBar = ({ editor }: { editor: Editor | null }) => {
         // Backend mengirimkan { imageUrl: '...' }, jadi kita ambil dari sana
         const imageUrl = data.imageUrl; 
 
-        // Masukkan URL hasil upload ke editor Tiptap
+        // Prompt untuk keterangan gambar
+        const caption = window.prompt("Masukkan keterangan gambar (opsional):");
+
         // URL dari backend adalah path relatif, kita perlu menggabungkannya dengan base URL API
         const fullImageUrl = `${process.env.NEXT_PUBLIC_API_URL}${imageUrl}`;
-        editor?.chain().focus().setImage({ src: fullImageUrl }).run();
+        editor?.chain().focus().setImage({ src: fullImageUrl, caption } as any).run();
       } catch (error) {
         console.error(error);
         alert("Terjadi kesalahan saat mengunggah gambar.");
@@ -189,6 +270,38 @@ const MenuBar = ({ editor }: { editor: Editor | null }) => {
       <ToolButton onClick={() => editor.chain().focus().setTextAlign("right").run()} isActive={editor.isActive({ textAlign: "right" })} icon={AlignRight} title="Align Right" />
       <ToolButton onClick={() => editor.chain().focus().setTextAlign("justify").run()} isActive={editor.isActive({ textAlign: "justify" })} icon={AlignJustify} title="Align Justify" />
 
+      {/* Image Resize Controls (Contextual) */}
+      {editor.isActive('image') && (
+        <>
+          <div className="w-px h-6 bg-gray-300 mx-1" />
+          {['25%', '50%', '75%', '100%'].map((size) => (
+            <button
+              key={size}
+              onClick={() => editor.chain().focus().updateAttributes('image', { width: size }).run()}
+              className={`text-xs px-2 py-1 rounded hover:bg-gray-100 dark:hover:bg-gray-700 ${editor.getAttributes('image').width === size
+                ? 'bg-blue-100 text-blue-600 dark:bg-blue-900/50 dark:text-blue-300'
+                : 'text-gray-600 dark:text-gray-300'
+                }`}
+            >
+              {size}
+            </button>
+          ))}
+          <div className="w-px h-6 bg-gray-300 mx-1" />
+          <ToolButton
+            onClick={() => {
+              const currentCaption = editor.getAttributes('image').caption;
+              const newCaption = window.prompt("Ubah keterangan gambar:", currentCaption || "");
+              if (newCaption !== null) {
+                editor.chain().focus().updateAttributes('image', { caption: newCaption }).run();
+              }
+            }}
+            isActive={!!editor.getAttributes('image').caption}
+            icon={Captions}
+            title="Edit Keterangan"
+          />
+        </>
+      )}
+
       <div className="flex-1" />
 
       {/* Extra tools */}
@@ -232,7 +345,7 @@ export default function TiptapEditor({
       TaskItem.configure({ nested: true }),
       HorizontalRule,
       Color,
-      Image,
+      ResizableImage, // Gunakan ResizableImage menggantikan Image standar
       StyleAttribute, // Tambahkan ekstensi kustom di sini
     ],
     content,

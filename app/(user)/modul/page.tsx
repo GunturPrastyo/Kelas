@@ -54,7 +54,7 @@ export default function ModulPage() {
             // Ambil level pengguna langsung dari field 'learningLevel' di objek user
             const learningLevel = parsedUser.learningLevel?.toLowerCase();
 
-            if (learningLevel === 'lanjut') {
+            if (learningLevel === 'lanjut' || learningLevel === 'lanjutan') {
                 setUserLevel('lanjut');
                 setRecommendation({
                     title: 'Jalur Belajar: Lanjut',
@@ -103,55 +103,138 @@ export default function ModulPage() {
             }
         };
 
+        // Fetch user level from API to ensure it's up to date (overriding localStorage if needed)
+        const fetchUserLevel = async () => {
+            try {
+                const res = await authFetch(`${process.env.NEXT_PUBLIC_API_URL}/api/results/check-pre-test`);
+                if (res.ok) {
+                    const data = await res.json();
+                    if (data.learningLevel) {
+                        const level = data.learningLevel.toLowerCase();
+                        let newLevel: UserLevel = null;
+
+                        if (level === 'lanjut' || level === 'lanjutan') {
+                            newLevel = 'lanjut';
+                            setRecommendation({
+                                title: 'Jalur Belajar: Lanjut',
+                                description: 'Pemahamanmu sudah kuat. Kamu siap untuk tantangan materi tingkat lanjut!',
+                                icon: '/lanjut.png',
+                                bgClass: 'border border-slate-200 dark:border-slate-700 border-l-green-500 border-l-[5px] from-green-100 to-emerald-200 dark:from-gray-800 dark:to-emerald-900',
+                                textClass: 'text-green-800 dark:text-green-300'
+                            });
+                        } else if (level === 'menengah') {
+                            newLevel = 'menengah';
+                            setRecommendation({
+                                title: 'Jalur Belajar: Menengah',
+                                description: 'Dasar-dasarmu sudah cukup. Mari perdalam dengan manipulasi DOM dan event.',
+                                icon: '/menengah.png',
+                                bgClass: 'border border-slate-200 dark:border-slate-700 border-l-blue-500 border-l-[5px] from-blue-100 to-sky-200 dark:from-gray-800 dark:to-sky-900',
+                                textClass: 'text-blue-800 dark:text-blue-300'
+                            });
+                        } else {
+                            newLevel = 'dasar';
+                            setRecommendation({
+                                title: 'Jalur Belajar: Dasar',
+                                description: 'Mari kita mulai dari awal untuk membangun fondasi JavaScript yang kokoh.',
+                                icon: '/dasar.png',
+                                bgClass: 'border border-slate-50 dark:border-slate-700 border-l-yellow-500 border-l-[5px] from-yellow-100 to-amber-200 dark:from-gray-800 dark:to-amber-900',
+                                textClass: 'text-yellow-800 dark:text-yellow-300'
+                            });
+                        }
+                        setUserLevel(newLevel);
+                    }
+                }
+            } catch (error) {
+                console.error("Error fetching user level:", error);
+            }
+        };
+
         fetchModules();
+        fetchUserLevel();
     }, []); // Hanya dijalankan sekali saat komponen dimuat
 
     const personalizedModules = useMemo(() => {
         // Map 'mudah' -> 'dasar', 'sedang' -> 'menengah', 'sulit' -> 'lanjut'
-        const categoryMap = { mudah: 'dasar', sedang: 'menengah', sulit: 'lanjut' };
+        const categoryMap: Record<string, string> = { 
+            mudah: 'dasar', 
+            sedang: 'menengah', 
+            sulit: 'lanjut',
+            dasar: 'dasar',
+            menengah: 'menengah',
+            lanjut: 'lanjut',
+            lanjutan: 'lanjut'
+        };
 
         // Pastikan modul diurutkan berdasarkan 'order' sebelum diproses lebih lanjut
         const sortedModules = [...modules].sort((a, b) => (a.order || 0) - (b.order || 0));
 
         const updatedModules = sortedModules.map(modul => {
-            const mappedCategory = categoryMap[modul.category];
+            const mappedCategory = categoryMap[modul.category?.toLowerCase()] || 'dasar';
             let isLocked = modul.isLocked ?? false; // Ambil status kunci dari backend sebagai dasar
 
-            // Terapkan logika penguncian di frontend berdasarkan userLevel
-            if (userLevel === null) {
-                isLocked = true; // Kunci semua jika belum pre-test
-            } else if (userLevel === 'dasar') {
-                isLocked = mappedCategory !== 'dasar';
-            } else if (userLevel === 'menengah') {
-                isLocked = mappedCategory === 'lanjut'; // Hanya kunci modul 'lanjut'
-            } else if (userLevel === 'lanjut') {
-                isLocked = false; // Buka semua modul
+            // Override isLocked berdasarkan userLevel jika tersedia
+            if (userLevel) {
+                if (userLevel === 'dasar') {
+                    // Dasar: Buka Dasar, Kunci Menengah & Lanjut
+                    // Dasar: Buka modul dasar, kunci modul menengah dan lanjutan
+                    isLocked = mappedCategory !== 'dasar';
+                } else if (userLevel === 'menengah') {
+                    // Menengah: Buka Dasar & Menengah, Kunci Lanjut
+                    // Menengah: Buka modul dasar dan menengah, kunci modul lanjutan
+                    isLocked = mappedCategory === 'lanjut';
+                } else if (userLevel === 'lanjut') {
+                    // Lanjut: Buka Semua
+                    isLocked = false;
+                }
             }
 
-            // Tentukan status berdasarkan isLocked dan progress
-            let status: ModuleStatus = isLocked ? 'Terkunci' : modul.status;
-            let isHighlighted = false; // Deklarasikan isHighlighted
- 
-            // Timpa status menjadi 'Terkunci' jika kondisi isLocked terpenuhi
-            if (isLocked) { // Pastikan status adalah 'Terkunci' jika isLocked true
+            // Hitung ulang status berdasarkan progress agar konsisten dengan logika frontend
+            let status: ModuleStatus;
+            if (modul.progress === 100) {
+                status = 'Selesai';
+            } else if (modul.progress > 0) {
+                status = 'Berjalan';
+            } else {
+                status = 'Belum Mulai';
+            }
+
+            if (isLocked && status !== 'Selesai') {
                 status = 'Terkunci';
             }
+
+            let isHighlighted = false; // Deklarasikan isHighlighted
  
             return { ...modul, status, isLocked };
         });
 
-        // Logika baru untuk menyorot HANYA SATU modul berikutnya
+        // Logika Highlight: Prioritaskan modul pada level user saat ini
         let nextModuleToHighlightId: string | null = null;
 
-        // Prioritas 1: Cari modul pertama yang sedang berjalan (progress > 0 dan < 100)
-        const firstInProgressModule = updatedModules.find(m => m.status === 'Berjalan');
-        if (firstInProgressModule) {
-            nextModuleToHighlightId = firstInProgressModule._id;
-        } else {
-            // Prioritas 2: Jika tidak ada yang berjalan, cari modul pertama yang belum dimulai dan tidak terkunci
-            const firstReadyModule = updatedModules.find(m => m.status === 'Belum Mulai' && !m.isLocked);
-            if (firstReadyModule) {
-                nextModuleToHighlightId = firstReadyModule._id;
+        // 1. Cari modul di level user saat ini yang belum selesai
+        if (userLevel) {
+            const modulesInUserLevel = updatedModules.filter(m => {
+                const mappedCategory = categoryMap[m.category?.toLowerCase()] || 'dasar';
+                return mappedCategory === userLevel;
+            });
+
+            // Cari yang sedang berjalan di level ini
+            let targetModule = modulesInUserLevel.find(m => m.status === 'Berjalan');
+            
+            // Jika tidak ada yang berjalan, cari yang belum mulai (dan tidak terkunci)
+            if (!targetModule) {
+                targetModule = modulesInUserLevel.find(m => m.status === 'Belum Mulai' && !m.isLocked);
+            }
+
+            if (targetModule) {
+                nextModuleToHighlightId = targetModule._id;
+            }
+        }
+
+        // 2. Fallback: Jika semua modul di level user sudah selesai, cari modul berikutnya yang belum selesai di seluruh daftar
+        if (!nextModuleToHighlightId) {
+            const nextUnfinished = updatedModules.find(m => m.status !== 'Selesai' && !m.isLocked);
+            if (nextUnfinished) {
+                nextModuleToHighlightId = nextUnfinished._id;
             }
         }
 
@@ -165,8 +248,8 @@ export default function ModulPage() {
             const mappedCategory = categoryMap[m.category];
             // Hapus filter berdasarkan searchQuery
             return selectedCategory ? mappedCategory === selectedCategory : true;
-        })
-    }, [selectedCategory, userLevel, modules]);
+        });
+    }, [selectedCategory, modules]);
 
     const getStatusBadge = (status: ModuleStatus, progress: number) => {
         const base = "inline-flex items-center gap-1.5 text-xs font-medium px-2.5 py-1 rounded-full";
@@ -190,12 +273,16 @@ export default function ModulPage() {
 
     const getCategoryBadge = (category: Category) => {
         const base = "text-xs font-semibold px-2 py-0.5 rounded-md";
-        switch (category) {
+        switch (category.toLowerCase()) {
             case 'mudah':
+            case 'dasar':
                 return <span className={`${base} bg-amber-100 text-amber-800 dark:bg-amber-900/40 dark:text-amber-300`}>Dasar</span>;
             case 'sedang':
+            case 'menengah':
                 return <span className={`${base} bg-blue-100 text-blue-800 dark:bg-blue-900/40 dark:text-blue-300`}>Menengah</span>;
             case 'sulit':
+            case 'lanjut':
+            case 'lanjutan':
                 return <span className={`${base} bg-green-100 text-green-800 dark:bg-green-900/40 dark:text-green-300`}>Lanjut</span>;
             default: return null;
         }

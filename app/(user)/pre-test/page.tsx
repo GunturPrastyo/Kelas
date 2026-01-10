@@ -23,6 +23,7 @@ interface Module {
     slug: string;
     icon: string;
     category: 'mudah' | 'sedang' | 'sulit';
+    progress?: number;
 }
 
 interface User {
@@ -234,6 +235,19 @@ export default function PreTestPage() {
 
     const handleRetake = () => {
         if (!user) return;
+
+        // Cek apakah user sudah memiliki progres di modul manapun
+        const hasProgress = allModules.some(m => (m.progress || 0) > 0);
+
+        if (hasProgress) {
+            showAlert({
+                title: 'Akses Ditolak',
+                message: 'Kamu tidak dapat mengulang Pre-Test karena sudah mulai mengerjakan modul. Silakan lanjutkan pembelajaranmu.',
+                confirmText: 'Mengerti',
+            });
+            return;
+        }
+
         showAlert({
             type: 'confirm',
             title: 'Konfirmasi',
