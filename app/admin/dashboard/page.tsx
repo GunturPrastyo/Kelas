@@ -207,8 +207,8 @@ export default function DashboardPage() {
       {/* Stats Grid yang Lebih Detail */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-6">
         {/* User Online - Realtime feel */}
-        <div className="relative overflow-hidden bg-blue-50 dark:bg-blue-900/10 p-4 md:p-6 rounded-2xl shadow-sm  group hover:shadow-lg transition-all duration-300">
-            <div className="absolute -right-6 -top-6 w-24 h-24 rounded-full bg-blue-100 dark:bg-blue-900/30 opacity-50 group-hover:scale-150 transition-transform duration-500 ease-out"></div>
+        <div className="relative overflow-hidden bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 p-4 md:p-6 rounded-2xl shadow-sm group hover:shadow-lg transition-all duration-300">
+            <div className="absolute -right-6 -top-6 w-24 h-24 rounded-full bg-gray-50 dark:bg-gray-700 opacity-50 group-hover:scale-150 transition-transform duration-500 ease-out"></div>
             <div className="relative z-10 flex items-start justify-between">
                 <div>
                     <p className="text-xs md:text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">User Online</p>
@@ -261,13 +261,13 @@ export default function DashboardPage() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         
         {/* Kolom Kiri: Chart Statistik Modul */}
-        <div className="lg:col-span-2 bg-indigo-50 dark:bg-indigo-900/10 rounded-2xl shadow-sm p-6 flex flex-col">
+        <div className="lg:col-span-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl shadow-sm p-6 flex flex-col">
             <div className="flex items-center justify-between mb-6">
                 <h2 className="text-lg font-bold text-gray-800 dark:text-white flex items-center gap-2">
-                    <BarChart3 size={20} className="text-blue-600" />
+                    <BarChart3 size={20} className="text-gray-600 dark:text-gray-400" />
                     Partisipasi Siswa per Modul
                 </h2>
-                <span className="text-xs font-medium px-2 py-1 bg-indigo-100 dark:bg-indigo-800 rounded text-indigo-600 dark:text-indigo-300">
+                <span className="text-xs font-medium px-2 py-1 bg-gray-100 dark:bg-gray-700 rounded text-gray-600 dark:text-gray-300">
                     Real-time
                 </span>
             </div>
@@ -286,7 +286,7 @@ export default function DashboardPage() {
 
         {/* Kolom Kanan: Aktivitas Terbaru (Mocked/Real) */}
         <div className="space-y-6">
-            <div className="bg-teal-50 dark:bg-teal-900/10 rounded-2xl shadow-sm p-6 h-full">
+            <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl shadow-sm p-6 h-full">
                 <h3 className="font-bold text-gray-800 dark:text-white mb-4 flex items-center justify-between">
                     <span>Siswa Terbaru</span>
                     <Link href="/admin/analitik#analitik-siswa" className="text-xs text-blue-600 hover:underline font-normal">Lihat Analitik</Link>
@@ -297,7 +297,7 @@ export default function DashboardPage() {
                         <p className="text-sm text-gray-500">Memuat...</p>
                     ) : stats.recentUsers.length > 0 ? (
                         stats.recentUsers.map((user, idx) => (
-                            <div key={user._id || idx} className="flex items-center gap-3 pb-3 border-b border-teal-100 dark:border-teal-800 last:border-0 last:pb-0">
+                            <div key={user._id || idx} className="flex items-center gap-3 pb-3 border-b border-gray-100 dark:border-gray-700 last:border-0 last:pb-0">
                                 <Image
                                     src={getAvatarUrl(user)}
                                     alt={user.name}
@@ -360,8 +360,8 @@ function StatCard({ title, value, icon, color = "blue", subtext, trend, trendUp 
     const style = colorStyles[color] || colorStyles.blue;
 
     return (
-        <div className={`relative overflow-hidden ${style.cardBg} p-4 md:p-6 rounded-2xl shadow-sm group hover:shadow-lg transition-all duration-300`}>
-            <div className={`absolute -right-6 -top-6 w-24 h-24 rounded-full ${style.bg} opacity-50 group-hover:scale-150 transition-transform duration-500 ease-out`}></div>
+        <div className={`relative overflow-hidden bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 p-4 md:p-6 rounded-2xl shadow-sm group hover:shadow-lg transition-all duration-300`}>
+            <div className={`absolute -right-6 -top-6 w-24 h-24 rounded-full bg-gray-50 dark:bg-gray-700 opacity-50 group-hover:scale-150 transition-transform duration-500 ease-out`}></div>
             
             <div className="relative z-10 flex items-start justify-between">
                 <div>
