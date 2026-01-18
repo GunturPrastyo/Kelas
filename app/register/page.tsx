@@ -6,7 +6,6 @@ import { useRouter } from "next/navigation"; import Link from "next/link";
 import { useState, FormEvent, useCallback } from "react";
 import validator from "validator";
 import { Eye, EyeOff } from "lucide-react";
-import { Turnstile } from "@marsidev/react-turnstile";
 
 export default function RegisterPage() {
   const router = useRouter();
@@ -17,15 +16,6 @@ export default function RegisterPage() {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
-  const [turnstileToken, setTurnstileToken] = useState("");
-
-  // Debugging: Cek apakah Site Key terbaca (Hapus baris ini nanti di production)
-  // console.log("Turnstile Site Key:", process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY);
-
-  // Gunakan useCallback agar fungsi ini tidak dibuat ulang setiap kali state form berubah
-  const handleTurnstileSuccess = useCallback((token: string) => {
-    setTurnstileToken(token);
-  }, []);
 
   const handleGoogleRegister = async (credentialResponse: CredentialResponse) => {
     setIsLoading(true);
@@ -107,18 +97,11 @@ export default function RegisterPage() {
       return;
     }
 
-    if (!turnstileToken) {
-      setError("Mohon selesaikan verifikasi keamanan (CAPTCHA).");
-      setIsLoading(false);
-      return;
-    }
-
-
     try {
       const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/users/register`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, email, password, confirmPassword, cfTurnstileToken: turnstileToken }),
+        body: JSON.stringify({ name, email, password, confirmPassword }),
       });
 
       const data = await res.json();
@@ -239,15 +222,6 @@ export default function RegisterPage() {
                     {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
                   </button>
                 </div>
-              </div>
-
-              {/* Cloudflare Turnstile Widget */}
-              <div className="flex justify-center pt-2">
-                <Turnstile
-                  siteKey={process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY || ""}
-                  onSuccess={handleTurnstileSuccess}
-                  onError={() => setError("Gagal memuat verifikasi keamanan.")}
-                />
               </div>
 
               <button
