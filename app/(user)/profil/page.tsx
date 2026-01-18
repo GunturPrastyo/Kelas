@@ -7,6 +7,7 @@ import Breadcrumb from "@/components/Breadcrumb";
 import { motion } from "framer-motion";
 import { Award, Download, Star, Info } from "lucide-react";
 import { useAlert } from "@/context/AlertContext";
+import { useSearchParams } from "next/navigation";
 
 interface ModuleProgress {
   _id: string;
@@ -32,6 +33,7 @@ interface User {
 
 const ProfilePage = () => {
   const { showAlert } = useAlert();
+  const searchParams = useSearchParams();
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const [progressData, setProgressData] = useState<ProgressData | null>(null);
@@ -49,6 +51,13 @@ const ProfilePage = () => {
   const [fontSize, setFontSize] = useState<string>('16px'); // Ukuran font default
   const [fontStyle, setFontStyle] = useState<string>('font-poppins');
   const [activeTab, setActiveTab] = useState("info");
+
+  useEffect(() => {
+    const tab = searchParams.get("tab");
+    if (tab && ["info", "password", "settings"].includes(tab)) {
+      setActiveTab(tab);
+    }
+  }, [searchParams]);
 
   useEffect(() => {
     const userRaw = localStorage.getItem("user");
@@ -283,8 +292,16 @@ const ProfilePage = () => {
     <div className="w-full font-sans p-2 mt-20">
       <Breadcrumb paths={[{ name: "Dashboard", href: "/dashboard" }, { name: "Profil", href: "#" }]} />
       <h1 className="text-3xl font-bold text-gray-800 dark:text-gray-100 mt-6 mb-6">
-    
       </h1>
+      <style jsx global>{`
+        .scrollbar-hidden::-webkit-scrollbar {
+          display: none;
+        }
+        .scrollbar-hidden {
+          -ms-overflow-style: none;
+          scrollbar-width: none;
+        }
+      `}</style>
 
       {/* === KARTU SERTIFIKAT & PROGRES === */}
       <motion.div
@@ -315,8 +332,8 @@ const ProfilePage = () => {
             {/* XP & Percentage */}
             <div className="mt-4 flex items-center gap-4">
               <div className="flex items-center gap-2 bg-blue-600/10 text-blue-700 dark:text-blue-300 px-3 py-1.5 rounded-full">
-                <Star className="w-4 h-4 text-yellow-400" />
-                <span className="font-bold text-sm">{overallProgress} XP</span>
+                {/* <Star className="w-4 h-4 text-yellow-400" /> */}
+                <span className="font-bold text-sm">{overallProgress} %</span>
               </div>
             </div>
 
@@ -355,11 +372,11 @@ const ProfilePage = () => {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.2 }}
-        className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-2xl shadow-lg p-6 mb-5"
+        className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-2xl shadow-lg p-4 sm:p-6 mb-5"
       >
         {/* Tab Headers */}
-        <div className="border-b border-gray-200 dark:border-gray-700">
-          <nav className="-mb-px flex space-x-6" aria-label="Tabs">
+        <div className="border-b border-gray-200 dark:border-gray-700 overflow-x-auto scrollbar-hidden">
+          <nav className="-mb-px flex space-x-4 sm:space-x-6 min-w-max" aria-label="Tabs">
             <button
               onClick={() => setActiveTab("info")}
               className={`whitespace-nowrap py-3 px-1 border-b-2 font-medium text-sm transition-colors ${activeTab === 'info'
