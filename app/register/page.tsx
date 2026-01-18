@@ -19,6 +19,9 @@ export default function RegisterPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [turnstileToken, setTurnstileToken] = useState("");
 
+  // Debugging: Cek apakah Site Key terbaca (Hapus baris ini nanti di production)
+  // console.log("Turnstile Site Key:", process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY);
+
   const handleGoogleRegister = async (credentialResponse: CredentialResponse) => {
     setIsLoading(true);
 
