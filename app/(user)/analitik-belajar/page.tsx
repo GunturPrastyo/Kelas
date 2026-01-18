@@ -1120,7 +1120,7 @@ export default function AnalitikBelajarPage() {
                 className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 bg-white/60 dark:bg-gray-700/40 rounded-xl hover:bg-white/80 dark:hover:bg-gray-600/50 transition-all shadow-sm cursor-pointer group" 
                 key="deepen-topic"
                 onClick={() =>
-                  recommendations.deepenTopic?.modulSlug && recommendations.deepenTopic?.topicSlug && router.push(
+                  recommendations.deepenTopic?.modulSlug && recommendations.deepenTopic?.topicId && router.push(
                     `/modul/${recommendations.deepenTopic.modulSlug}#${recommendations.deepenTopic.topicId}`
                   )
                 }
