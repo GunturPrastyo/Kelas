@@ -709,24 +709,24 @@ export default function ModulDetailPage() {
 
         return (
             <div className="w-full max-full fixed inset-0 bg-black bg-opacity-60 z-50 flex justify-center items-center p-4">
-                <div className="bg-white dark:bg-gray-800 rounded-xl shadow-2xl w-full max-w-6xl max-h-[90vh] flex flex-col overflow-hidden">
+                <div className="bg-white dark:bg-gray-800 rounded-xl shadow-2xl w-full max-w-6xl max-h-[90vh] flex flex-col overflow-hidden topic-test-modal">
                     {/* Header */}
-                    <header className="p-4 border-b border-gray-200 dark:border-gray-700 flex justify-between items-center bg-white dark:bg-gray-800 shrink-0">
-                        <div className="flex items-center gap-3">
+                    <header className="p-3 sm:p-4 border-b border-gray-200 dark:border-gray-700 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 sm:gap-0 bg-white dark:bg-gray-800 shrink-0">
+                        <div className="flex items-center gap-2 sm:gap-3 w-full sm:w-auto">
                             {!testResult && (
                                 <button
                                     onClick={() => setShowMobileNav(!showMobileNav)}
-                                    className="lg:hidden p-2 -ml-2 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
+                                    className="lg:hidden p-1.5 sm:p-2 -ml-1 sm:-ml-2 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors flex-shrink-0"
                                 >
                                     {showMobileNav ? <X size={20} /> : <Menu size={20} />}
                                 </button>
                             )}
-                            <div>
-                                <h2 className="text-lg font-bold text-gray-900 dark:text-white">Post-test: {activeTest.title}</h2>
-                                <p className="text-sm text-gray-500 dark:text-gray-400">Modul: {modul.title}</p>
+                            <div className="min-w-0 flex-1">
+                                <h2 className="text-base sm:text-lg font-bold text-gray-900 dark:text-white truncate">{activeTest.title}</h2>
+                                <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 truncate">Modul: {modul.title}</p>
                             </div>
                         </div>
-                        <div className="flex gap-3 items-center text-sm bg-slate-100 dark:bg-gray-700 px-3 py-1.5 rounded-lg">
+                        <div className="flex gap-3 items-center text-xs sm:text-sm bg-slate-100 dark:bg-gray-700 px-3 py-1.5 rounded-lg w-full sm:w-auto justify-between sm:justify-center">
                             <span>Soal: {totalQuestions}</span>
                             <span className="text-slate-300">|</span>
                             <span>Waktu: {`${String(Math.floor(testTimeLeft / 60)).padStart(2, '0')}:${String(testTimeLeft % 60).padStart(2, '0')}`}</span>
@@ -976,7 +976,7 @@ export default function ModulDetailPage() {
                                                 checked={testAnswers[currentQuestion._id] === option}
                                                 onChange={() => handleAnswerChange(currentQuestion._id, option)}
                                             />
-                                            <span className="break-words" dangerouslySetInnerHTML={questionOptionsHtml[oIndex]} />
+                                            <div className="break-words min-w-0" dangerouslySetInnerHTML={questionOptionsHtml[oIndex]} />
                                         </label>
                                     ))}
                                 </div>
@@ -1124,6 +1124,20 @@ export default function ModulDetailPage() {
                 html:not(.dark) .prose pre {
                     background-color: #0d1117; /* Warna dari github-dark.css */
                     color: #c9d1d9; /* Warna teks terang agar terbaca jika highlight belum dimuat */
+                }
+                /* Mode Gelap: Background Gray */
+                html.dark .prose pre {
+                    background-color: #374151;
+                    color: #e5e7eb;
+                }
+                @media (max-width: 640px) {
+                    .topic-test-modal pre {
+                        font-size: 12px !important;
+                        padding: 0.5rem !important;
+                    }
+                    .topic-test-modal code {
+                        font-size: 12px !important;
+                    }
                 }
             `}</style>
             {/* 
