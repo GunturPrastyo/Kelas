@@ -411,7 +411,7 @@ export default function DashboardPage() {
                       </span>.
                     </p>
                   </div>
-                  <PlayCircle className="w-10 h-10 text-green-800/70 dark:text-green-400/70 group-hover:text-green-600 dark:group-hover:text-green-400 transition-colors flex-shrink-0 mt-2" />
+                  {/* <PlayCircle className="w-10 h-10 text-green-800/70 dark:text-green-400/70 group-hover:text-green-600 dark:group-hover:text-green-400 transition-colors flex-shrink-0 mt-2" /> */}
                 </div>
               </Link>
             ) : (

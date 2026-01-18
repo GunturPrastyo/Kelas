@@ -563,18 +563,35 @@ export default function PostTestPage() {
             <style jsx global>{`
                 /* Style global untuk block code di dalam area kuis (soal & pilihan) */
                 .quiz-content pre {
-                    background-color: #0d1117 !important; /* Warna background github-dark */
-                    color: #c9d1d9 !important; /* Warna teks github-dark */
                     padding: 1em;
                     border-radius: 0.5em;
                     overflow-x: auto;
                     white-space: pre;
+                }
+                /* Mode Terang: Background Hitam */
+                html:not(.dark) .quiz-content pre {
+                    background-color: #0d1117 !important;
+                    color: #c9d1d9 !important;
+                }
+                /* Mode Gelap: Background Gray */
+                html.dark .quiz-content pre {
+                    background-color: #374151 !important;
+                    color: #e5e7eb !important;
                 }
                 .quiz-content pre code {
                     background-color: transparent !important;
                     color: inherit !important;
                     padding: 0 !important;
                     white-space: pre;
+                }
+                @media (max-width: 640px) {
+                    .quiz-content pre {
+                        font-size: 12px !important;
+                        padding: 0.5rem !important;
+                    }
+                    .quiz-content pre code {
+                        font-size: 12px !important;
+                    }
                 }
             `}</style>
             <nav className="flex mb-6" aria-label="Breadcrumb">
@@ -591,7 +608,7 @@ export default function PostTestPage() {
             </nav>
 
             <header className="flex items-center justify-between gap-4 mt-6">
-                <h1 className="text-xl font-bold text-slate-800 dark:text-slate-200">Post Test: {modul?.title}</h1>
+                <h1 className="text-xl font-bold text-slate-800 dark:text-slate-200">{modul?.title}</h1>
                 <div className="flex gap-3 items-center text-slate-500 dark:text-slate-400 text-sm bg-slate-100 dark:bg-gray-800 px-3 py-1.5 rounded-lg border border-slate-200 dark:border-gray-700">
                     <span>Soal: {total}</span>
                     <span className="text-slate-300">|</span>

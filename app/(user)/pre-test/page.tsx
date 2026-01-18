@@ -424,24 +424,24 @@ export default function PreTestPage() {
                     </div>
                 </section>
                 <section className="bg-white dark:bg-gray-800 rounded-xl p-6 mt-6 shadow-lg font-poppins" id="resultCard">
-                    <div className="flex items-center justify-between bg-slate-50 dark:bg-gray-700/50 p-4 rounded-lg border border-slate-200 dark:border-gray-700">
+                    <div className="flex items-center justify-between gap-2 sm:gap-4 bg-slate-50 dark:bg-gray-700/50 p-3 sm:p-4 rounded-lg border border-slate-200 dark:border-gray-700">
                         <div>
                             <div className="flex items-center gap-1.5">
-                                <p className="text-sm text-slate-500 dark:text-slate-400">Skor Kamu</p>
+                                <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400">Skor Kamu</p>
                                 <button onClick={() => setIsInfoModalOpen(true)} className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors">
                                     <Info size={14} />
                                 </button>
                             </div>
-                            <p className="text-3xl font-bold text-blue-600 dark:text-blue-400">{result.score}%</p>
+                            <p className="text-2xl sm:text-3xl font-bold text-blue-600 dark:text-blue-400">{result.score}%</p>
                         </div>
                         <div className="text-right">
-                            <p className="text-base font-semibold text-slate-700 dark:text-slate-300">{Math.floor(result.timeTaken / 60)}m {result.timeTaken % 60}s</p>
-                            <p className="text-sm text-slate-500 dark:text-slate-400">Waktu</p>
+                            <p className="text-sm sm:text-base font-semibold text-slate-700 dark:text-slate-300">{Math.floor(result.timeTaken / 60)}m {result.timeTaken % 60}s</p>
+                            <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400">Waktu</p>
                         </div>
 
                         <div className="text-right">
-                            <p className="text-base font-semibold text-slate-700 dark:text-slate-300">{result.correct} / {result.total}</p>
-                            <p className="text-sm text-slate-500 dark:text-slate-400">Jawaban Benar</p>
+                            <p className="text-sm sm:text-base font-semibold text-slate-700 dark:text-slate-300">{result.correct} / {result.total}</p>
+                            <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400">Jawaban Benar</p>
                         </div>
                     </div>
                     <div className="mt-6">
@@ -589,6 +589,27 @@ export default function PreTestPage() {
                 html:not(.dark) .prose pre {
                     background-color: #0d1117; /* Warna dari github-dark.css */
                     color: #c9d1d9;
+                }
+                /* Mode Gelap: Background Gray */
+                html.dark .prose pre {
+                    background-color: #374151;
+                    color: #e5e7eb;
+                }
+
+                /* Tambahkan rounded pada block code di dalam kartu pre-test (soal & jawaban) */
+                #pretestCard pre {
+                    border-radius: 0.5rem;
+                }
+
+                /* Penyesuaian ukuran font block code untuk mobile */
+                @media (max-width: 640px) {
+                    #pretestCard pre {
+                        font-size: 12px !important;
+                        padding: 0.5rem !important;
+                    }
+                    #pretestCard code {
+                        font-size: 12px !important;
+                    }
                 }
             `}</style>
             <Breadcrumb paths={[
