@@ -129,14 +129,6 @@ export default function UserDropdown() {
         });
     };
 
-    const handleSettingsClick = (e: React.MouseEvent) => {
-        e.preventDefault();
-        showAlert({
-            title: 'Segera Hadir',
-            message: 'Fitur pengaturan saat ini belum tersedia.',
-            confirmText: 'OK'
-        });
-    };
     if (!mounted || !user) {
         // Tampilkan placeholder atau tidak sama sekali jika user belum login
         return null;
@@ -203,13 +195,13 @@ export default function UserDropdown() {
                             </Link>
                         )}
 
-                        {user.role === 'user' && lastModule && (
+                        {/* {user.role === 'user' && lastModule && (
                             <Link href={`/modul/${lastModule.slug}`} onClick={() => setIsOpen(false)} className="w-full text-left flex items-center gap-3 px-3 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700/50 rounded-md transition-colors">
-                                <BookUp className="w-5 h-5 text-blue-500" />
-                                <span className="flex-1 truncate">Lanjutkan: {lastModule.title}</span>
+                                <BookUp className="w-5 h-5 text-gray-500" />
+                                <span className="flex-1 truncate">Lanjut dari: {lastModule.title}</span>
                                 <ChevronRight className="w-4 h-4 text-gray-400" />
                             </Link>
-                        )}
+                        )} */}
                         {user.role === 'user' && (
                             <Link href="/profil" onClick={() => setIsOpen(false)} className="w-full text-left flex items-center gap-3 px-3 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700/50 rounded-md transition-colors">
                                 <UserIcon className="w-5 h-5" />
@@ -241,10 +233,10 @@ export default function UserDropdown() {
                             )}
                         </div>
                         )}
-                        <button onClick={handleSettingsClick} className="w-full text-left flex items-center gap-3 px-3 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700/50 rounded-md transition-colors cursor-not-allowed opacity-60">
+                        <Link href="/profil?tab=settings" onClick={() => setIsOpen(false)} className="w-full text-left flex items-center gap-3 px-3 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700/50 rounded-md transition-colors">
                             <Settings className="w-5 h-5" />
                             <span>Pengaturan</span>
-                        </button>
+                        </Link>
                     </div>
                     <div className="p-2 border-t border-gray-200 dark:border-gray-700">
                         <button onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')} className="w-full text-left flex items-center justify-between gap-3 px-3 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700/50 rounded-md transition-colors">
