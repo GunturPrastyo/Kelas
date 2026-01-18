@@ -82,14 +82,17 @@ const ComparisonIndicator: FC<{ student: number; average: number; type: 'time' |
     );
 };
 
-const getStatusBadge = (weightedScore: number) => {
+const getStatusBadge = (weightedScore: number, averageScore: number = -1, averageTime: number = -1) => {
+    if (averageScore === 0 && averageTime === 0) {
+        return <span className="px-2 py-1 bg-gray-100 text-gray-600 rounded-md text-xs dark:bg-gray-700 dark:text-gray-300">Belum ada data</span>;
+    }
     if (weightedScore >= 1.4) {
-        return <span className="px-2 py-1 bg-red-200 text-red-800 rounded-md text-xs dark:bg-red-900/60 dark:text-red-200">Butuh Evaluasi</span>;
+        return <span className="px-2 py-1 bg-red-100 text-red-700 rounded-md text-xs dark:bg-red-900/40 dark:text-red-300">Butuh Evaluasi</span>;
     }
     if (weightedScore >= 0.7) {
-        return <span className="px-2 py-1 bg-yellow-200 text-yellow-800 rounded-md text-xs dark:bg-yellow-900/60 dark:text-yellow-200">Butuh pantauan</span>;
+        return <span className="px-2 py-1 bg-yellow-100 text-yellow-700 rounded-md text-xs dark:bg-yellow-900/40 dark:text-yellow-300">Butuh pantauan</span>;
     }
-    return <span className="px-2 py-1 bg-green-200 text-green-800 rounded-md text-xs dark:bg-green-900/60 dark:text-green-200">Baik</span>;
+    return <span className="px-2 py-1 bg-green-100 text-green-700 rounded-md text-xs dark:bg-green-900/40 dark:text-green-300">Baik</span>;
 };
 
 const formatTime = (seconds: number) => {
@@ -131,7 +134,7 @@ const StatCard = ({ title, value, icon, change, changeType, unit, subtext, color
     const style = colorStyles[color] || colorStyles.blue;
 
     return (
-        <div className={`${style.cardBg} p-6 shadow-lg rounded-xl border-l-4 ${style.border} flex flex-col justify-between transition-all hover:shadow-xl`}>
+        <div className={`bg-white dark:bg-gray-800 p-6 shadow-lg rounded-xl border-l-4 border-gray-300 dark:border-gray-600 flex flex-col justify-between transition-all hover:shadow-xl`}>
             <div>
                 <div className="flex justify-between items-start mb-2">
                     <h2 className="text-sm font-medium text-gray-500 dark:text-gray-400">{title}</h2>
@@ -396,6 +399,27 @@ export default function AdminAnalyticsPage() {
     const totalPages = Math.ceil(filteredData.length / modulesPerPage);
     const paginate = (pageNumber: number) => setCurrentPage(pageNumber);
 
+    const radarData = useMemo(() => {
+        const modules = analytics.moduleAnalytics || [];
+        const distribution = analytics.moduleScoreDistribution || [];
+
+        if (modules.length === 0 && distribution.length === 0) return [];
+
+        if (modules.length > 0) {
+            const distMap = new Map(distribution.map(d => [d.subject, d]));
+            return modules.map(mod => {
+                const dist = distMap.get(mod.moduleTitle);
+                return {
+                    subject: mod.moduleTitle,
+                    topicScore: dist ? dist.topicScore : 0,
+                    moduleScore: dist ? dist.moduleScore : 0,
+                    fullMark: 100
+                };
+            });
+        }
+        return distribution;
+    }, [analytics.moduleAnalytics, analytics.moduleScoreDistribution]);
+
     // Logika Filter & Paginasi untuk Dropdown Siswa
     const studentsPerPage = 10;
     const filteredStudents = useMemo(() => {
@@ -488,7 +512,7 @@ export default function AdminAnalyticsPage() {
                 <p className="text-sm text-gray-500 dark:text-gray-400 mb-6">Data performa siswa berdasarkan hasil tes topik dan tes akhir modul. Gunakan untuk mengidentifikasi modul atau topik yang memerlukan perhatian lebih.</p>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8 border-b border-gray-200 dark:border-gray-700 pb-8">
-                    <div className="bg-blue-50 dark:bg-blue-900/10 shadow-lg rounded-xl p-6 border-l-4 border-blue-500">
+                    <div className="bg-white dark:bg-gray-800 shadow-lg rounded-xl p-6 border-l-4 border-gray-300 dark:border-gray-600">
                         <div className="flex justify-between items-start mb-4">
                             <h2 className="text-lg font-bold text-gray-800 dark:text-gray-200">Kecepatan Belajar</h2>
                             <div className="p-2 bg-blue-100 dark:bg-blue-900/30 rounded-lg text-blue-600 dark:text-blue-400">
@@ -532,7 +556,7 @@ export default function AdminAnalyticsPage() {
                             </ResponsiveContainer>
                         </div>
                     </div>
-                    <div className="bg-purple-50 dark:bg-purple-900/10 shadow-lg rounded-xl p-6 border-l-4 border-purple-500">
+                    <div className="bg-white dark:bg-gray-800 shadow-lg rounded-xl p-6 border-l-4 border-gray-300 dark:border-gray-600">
                         <div className="flex justify-between items-start mb-4">
                             <h2 className="text-lg font-bold text-gray-800 dark:text-gray-200">Distribusi Nilai</h2>
                             <div className="p-2 bg-purple-100 dark:bg-purple-900/30 rounded-lg text-purple-600 dark:text-purple-400">
@@ -541,7 +565,7 @@ export default function AdminAnalyticsPage() {
                         </div>
                         <div className="h-96 rounded flex items-center justify-center text-gray-500">
                             <ResponsiveContainer width="100%" height="100%">
-                                <RadarChart cx="50%" cy="50%" outerRadius="80%" data={analytics.moduleScoreDistribution}>
+                                <RadarChart cx="50%" cy="50%" outerRadius="80%" data={radarData}>
                                     <PolarGrid />
                                     <PolarAngleAxis dataKey="subject" tick={{ fontSize: 11 }} />
                                     <PolarRadiusAxis angle={30} domain={[0, 100]} tick={{ fontSize: 10 }} />
@@ -580,12 +604,14 @@ export default function AdminAnalyticsPage() {
                     />
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 mt-4">
-                    <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-200">Detail Performa per Modul</h3>
-                    <p className="text-xs text-gray-500 dark:text-gray-400 ">Menampilkan data rata-rata hasil tes akhir setiap modul yang dikerjakan siswa.</p>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-6">
+                    <div className="col-span-1 sm:col-span-2">
+                        <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-200">Detail Performa per Modul</h3>
+                        <p className="text-xs text-gray-500 dark:text-gray-400 ">Menampilkan data rata-rata hasil tes akhir setiap modul yang dikerjakan siswa.</p>
+                    </div>
                     {currentModules.length > 0 ? (
                         currentModules.map((modul) => (
-                            <div key={modul.moduleTitle} className={`${modul.weightedScore >= 1.4 ? 'bg-red-50 dark:bg-red-900/10' : modul.weightedScore >= 0.7 ? 'bg-yellow-50 dark:bg-yellow-900/10' : 'bg-green-50 dark:bg-green-900/10'} border-l-4 ${modul.weightedScore >= 1.4 ? 'border-red-500' : modul.weightedScore >= 0.7 ? 'border-yellow-500' : 'border-green-500'} shadow-md rounded-xl overflow-hidden transition-all duration-300 hover:shadow-lg`}>
+                            <div key={modul.moduleTitle} className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 shadow-sm rounded-xl overflow-hidden transition-all duration-300 hover:shadow-md">
 
                                 <div className="p-5">
                                     <div className="flex justify-between items-start">
@@ -593,31 +619,30 @@ export default function AdminAnalyticsPage() {
                                             <div className={`p-2 rounded-lg ${modul.weightedScore >= 1.4 ? 'bg-red-100 text-red-600' : modul.weightedScore >= 0.7 ? 'bg-yellow-100 text-yellow-600' : 'bg-green-100 text-green-600'} dark:bg-gray-700`}>
                                                 <BookOpen size={20} />
                                             </div>
-                                            <h3 className="text-lg font-bold text-gray-800 dark:text-gray-200 pr-4">{modul.moduleTitle}</h3>
+                                            <h3 className="text-base font-bold text-gray-800 dark:text-gray-200 pr-4 line-clamp-1" title={modul.moduleTitle}>{modul.moduleTitle}</h3>
                                         </div>
-                                        {getStatusBadge(modul.weightedScore)}
+                                        {getStatusBadge(modul.weightedScore, modul.averageScore, modul.averageTimeInSeconds)}
                                     </div>
-                                    <div className="grid grid-cols-3 gap-4 mt-4 text-center border-t border-b border-gray-200 dark:border-gray-700 py-3">
+                                    <div className="grid grid-cols-3 gap-4 mt-4 text-center border-t border-gray-100 dark:border-gray-700 pt-4">
                                         <div>
-                                            <p className="text-xs text-gray-500 dark:text-gray-400">Rata-rata Nilai</p>
-                                            <p className="text-lg font-bold text-gray-800 dark:text-gray-200">{modul.averageScore}%</p>
+                                            <p className="text-xs text-gray-500 dark:text-gray-400 mb-1">Rata-rata Nilai</p>
+                                            <p className="text-base font-bold text-gray-800 dark:text-gray-200">{modul.averageScore}%</p>
                                         </div>
                                         <div>
-                                            <p className="text-xs text-gray-500 dark:text-gray-400">Tingkat Remedial</p>
-                                            <p className="text-lg font-bold text-gray-800 dark:text-gray-200">{modul.remedialRate}%</p>
+                                            <p className="text-xs text-gray-500 dark:text-gray-400 mb-1">Tingkat Remedial</p>
+                                            <p className="text-base font-bold text-gray-800 dark:text-gray-200">{modul.remedialRate}%</p>
                                         </div>
                                         <div>
-                                            <p className="text-xs text-gray-500 dark:text-gray-400">Rata-rata Waktu</p>
-                                            <p className="text-lg font-bold text-gray-800 dark:text-gray-200">{formatTime(modul.averageTimeInSeconds)}</p>
+                                            <p className="text-xs text-gray-500 dark:text-gray-400 mb-1">Rata-rata Waktu</p>
+                                            <p className="text-base font-bold text-gray-800 dark:text-gray-200">{formatTime(modul.averageTimeInSeconds)}</p>
                                         </div>
                                     </div>
                                 </div>
 
                                 {/* Topics List (conditionally rendered) */}
                                 {expandedModules.has(modul.moduleTitle) && (
-                                    <div className="bg-gray-50 dark:bg-gray-700/20 px-5 pb-4">
-                                        <h4 className="text-sm font-semibold text-gray-700 dark:text-gray-300">Detail Tes per Topik</h4>
-                                        <p className="text-xs text-gray-500 dark:text-gray-400">Rincian rata-rata nilai dan waktu pengerjaan untuk setiap topik di dalam modul ini.</p>
+                                    <div className="bg-gray-50 dark:bg-gray-900/30 px-5 pb-4 border-t border-gray-100 dark:border-gray-700">
+                                        <h4 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mt-3 mb-2">Detail Tes per Topik</h4>
                                         {modul.topics.length > 0 ? (
                                             <div>
                                                 {/* Topic Table Header */}
@@ -648,7 +673,7 @@ export default function AdminAnalyticsPage() {
                                                             <span className="text-sm font-medium text-gray-800 dark:text-gray-200">{topic.averageScore}%</span>
                                                         </div>
                                                         <div className="w-24 flex justify-center">
-                                                            {getStatusBadge(topic.weightedScore)}
+                                                            {getStatusBadge(topic.weightedScore, topic.averageScore, topic.averageTimeInSeconds)}
                                                         </div>
                                                     </div>
                                                 ))}
@@ -806,7 +831,7 @@ export default function AdminAnalyticsPage() {
                     <div className="space-y-8">
                         {/* Kartu Statistik Siswa */}
                         <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-6 items-stretch">
-                            <div className="bg-blue-50 dark:bg-blue-900/10 backdrop-blur-sm p-6 shadow-lg rounded-xl border-l-4 border-blue-500 flex flex-col justify-between">
+                            <div className="bg-white dark:bg-gray-800 p-6 shadow-lg rounded-xl border border-gray-200 dark:border-gray-700 flex flex-col justify-between">
                                 <div>
                                     <div className="flex justify-between items-start mb-2">
                                         <h2 className="text-sm text-gray-500 dark:text-gray-400 font-medium">Progress Belajar</h2>
@@ -830,7 +855,7 @@ export default function AdminAnalyticsPage() {
                                 </div>
                             </div>
 
-                            <div className="bg-green-50 dark:bg-green-900/10 backdrop-blur-sm p-6 shadow-lg rounded-xl border-l-4 border-green-500 flex flex-col justify-between">
+                            <div className="bg-white dark:bg-gray-800 p-6 shadow-lg rounded-xl border border-gray-200 dark:border-gray-700 flex flex-col justify-between">
                                 <div>
                                     <div className="flex justify-between items-start mb-2">
                                         <h2 className="text-sm text-gray-500 dark:text-gray-400 font-medium">Rata-rata Nilai</h2>
@@ -852,7 +877,7 @@ export default function AdminAnalyticsPage() {
                                 </div>
                             </div>
 
-                            <div className="hidden sm:flex bg-red-50 dark:bg-red-900/10 backdrop-blur-sm p-6 shadow-lg rounded-xl border-l-4 border-red-500 flex-col justify-between">
+                            <div className="hidden sm:flex bg-white dark:bg-gray-800 p-6 shadow-lg rounded-xl border border-gray-200 dark:border-gray-700 flex-col justify-between">
                                 <div>
                                     <div className="flex justify-between items-start mb-2">
                                         <h2 className="text-sm text-gray-500 dark:text-gray-400 font-medium">Topik Perlu Perhatian</h2>
@@ -882,7 +907,7 @@ export default function AdminAnalyticsPage() {
                             </div>
                         </div>
 
-                        <div className="block sm:hidden bg-red-50 dark:bg-red-900/10 backdrop-blur-sm p-6 shadow-lg rounded-xl border-l-4 border-red-500">
+                        <div className="block sm:hidden bg-white dark:bg-gray-800 p-6 shadow-lg rounded-xl border border-gray-200 dark:border-gray-700">
                             <div className="flex justify-between items-start mb-3">
                                 <div>
                                     <h2 className="text-sm text-gray-500 dark:text-gray-400 font-medium">Topik Perlu Perhatian</h2>
@@ -913,7 +938,7 @@ export default function AdminAnalyticsPage() {
 
                         {/* Detail Performa & Grafik */}
                         <div className="grid grid-cols-1 lg:grid-cols-5 gap-8">
-                            <div className="lg:col-span-5 bg-indigo-50 dark:bg-indigo-900/10 backdrop-blur-sm p-6 shadow-lg rounded-xl border-l-4 border-indigo-500">
+                            <div className="lg:col-span-5 bg-white dark:bg-gray-800 p-6 shadow-lg rounded-xl border border-gray-200 dark:border-gray-700">
                                 <div className="flex justify-between items-start mb-4">
                                     <div>
                                         <h3 className="text-lg font-bold text-gray-800 dark:text-gray-200">Detail Performa per Modul</h3>
@@ -951,7 +976,7 @@ export default function AdminAnalyticsPage() {
                                 </div>
                             </div>
                             {studentComparisonChartData.length > 0 && (
-                                <div className="lg:col-span-5 bg-orange-50 dark:bg-orange-900/10 backdrop-blur-sm p-6 shadow-lg rounded-xl border-l-4 border-orange-500">
+                                <div className="lg:col-span-5 bg-white dark:bg-gray-800 p-6 shadow-lg rounded-xl border border-gray-200 dark:border-gray-700">
                                     <div className="flex justify-between items-start mb-4">
                                         <div>
                                             <h3 className="text-lg font-bold text-gray-800 dark:text-gray-200">Perbandingan Nilai</h3>

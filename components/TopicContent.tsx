@@ -79,6 +79,13 @@ export default function TopicContent({ topik, onStartTest, onViewScore, hasAttem
                     case '24px': setProseSizeClass('prose-2xl'); break;
                     default: setProseSizeClass('prose-base');
                 }
+            } else {
+                // Default ke 14px (prose-sm) jika di mobile (< 768px) dan belum ada pengaturan
+                if (window.innerWidth < 768) {
+                    setProseSizeClass('prose-sm');
+                } else {
+                    setProseSizeClass('prose-base');
+                }
             }
         };
 

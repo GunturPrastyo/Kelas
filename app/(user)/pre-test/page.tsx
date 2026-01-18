@@ -1,10 +1,11 @@
 "use client"
 
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import Breadcrumb from '@/components/Breadcrumb';
-// 1. Import highlight.js dan tema CSS-nya
+import hljs from 'highlight.js';
+import 'highlight.js/styles/github-dark.css';
 import { Info, X } from 'lucide-react';
 import { authFetch } from "@/lib/authFetch";
 import { useAlert } from "@/context/AlertContext";
@@ -45,6 +46,8 @@ export default function PreTestPage() {
     const [allModules, setAllModules] = useState<Module[]>([]);
     const [isInfoModalOpen, setIsInfoModalOpen] = useState(false);
     const [isRecommendationInfoModalOpen, setIsRecommendationInfoModalOpen] = useState(false);
+    const [tabExitCount, setTabExitCount] = useState(0);
+    const questionAreaRef = useRef<HTMLDivElement>(null);
 
     const { showAlert } = useAlert();
     const total = questions.length;
@@ -71,6 +74,14 @@ export default function PreTestPage() {
         if (!user) return; // Pastikan user sudah ada
         const timeTaken = Math.round((Date.now() - startTime) / 1000);
 
+        // Pastikan semua soal terkirim, meskipun tidak dijawab
+        const finalAnswers = { ...answers };
+        questions.forEach(q => {
+            if (!finalAnswers[q._id]) {
+                finalAnswers[q._id] = ""; // Kirim string kosong untuk soal yang tidak dijawab
+            }
+        });
+
         const submitAndGrade = async () => {
             try {
                 const response = await authFetch(`${process.env.NEXT_PUBLIC_API_URL}/api/results/submit-test`, {
@@ -78,8 +89,9 @@ export default function PreTestPage() {
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
                         testType: 'pre-test-global',
-                        answers,
+                        answers: finalAnswers,
                         timeTaken,
+                        tabExits: tabExitCount,
                     }),
                 });
                 const resultData = await response.json();
@@ -104,7 +116,7 @@ export default function PreTestPage() {
         };
 
         submitAndGrade();
-    }, [answers, createNotification, showAlert, startTime, user]);
+    }, [answers, createNotification, showAlert, startTime, user, tabExitCount, questions]);
 
     useEffect(() => {
         const userRaw = localStorage.getItem('user');
@@ -160,17 +172,31 @@ export default function PreTestPage() {
                 setQuestions(fetchedQuestions);
                 const duration = fetchedQuestions.reduce((acc: number, q: Question) => acc + (q.durationPerQuestion || 60), 0);
                 setTotalDuration(duration);
-                setTimeLeft(duration);
 
                 // Muat progress yang belum selesai dari localStorage jika ada
                 const stateKey = `pretest_state_${user._id}`;
                 const progressRaw = localStorage.getItem(stateKey);
+                
+                let initialTimeLeft = duration;
+                let initialStartTime = Date.now();
+
                 if (progressRaw) {
                     const parsedProgress = JSON.parse(progressRaw);
                     setAnswers(parsedProgress.answers || {});
                     setIdx(parsedProgress.idx || 0);
+                    setTabExitCount(parsedProgress.tabExitCount || 0);
+
+                    // Restore timer jika ada data tersimpan
+                    if (typeof parsedProgress.timeLeft === 'number') {
+                        initialTimeLeft = parsedProgress.timeLeft;
+                        // Hitung startTime mundur agar timer melanjutkan dari sisa waktu
+                        const timeSpent = duration - initialTimeLeft;
+                        initialStartTime = Date.now() - (timeSpent * 1000);
+                    }
                 }
-                setStartTime(Date.now());
+                
+                setTimeLeft(initialTimeLeft);
+                setStartTime(initialStartTime);
 
             } catch (err) {
                 setError(err instanceof Error ? err.message : "Terjadi kesalahan.");
@@ -210,6 +236,7 @@ export default function PreTestPage() {
             const left = Math.max(0, Math.round((end - Date.now()) / 1000));
             setTimeLeft(left);
             if (left === 0) {
+                clearInterval(timerInterval);
                 showAlert({
                     title: 'Waktu Habis',
                     message: 'Waktu pengerjaan telah berakhir. Jawabanmu akan dikirim secara otomatis.',
@@ -222,10 +249,68 @@ export default function PreTestPage() {
         return () => clearInterval(timerInterval);
     }, [startTime, grade, result, totalDuration]);
 
+    // Effect untuk mendeteksi keluar tab (Fokus Tracking)
+    useEffect(() => {
+        if (result) return;
+
+        const handleVisibilityChange = () => {
+            if (document.visibilityState === 'hidden') {
+                setTabExitCount(prev => prev + 1);
+                showAlert({
+                    title: 'Peringatan Fokus',
+                    message: 'Kamu terdeteksi meninggalkan halaman tes. Aktivitas ini tercatat dan dapat mengurangi skor fokusmu.',
+                });
+            }
+        };
+
+        document.addEventListener('visibilitychange', handleVisibilityChange);
+        return () => document.removeEventListener('visibilitychange', handleVisibilityChange);
+    }, [result, showAlert]);
+
+    // Effect for syntax highlighting and copy button
+    useEffect(() => {
+        if (!questionAreaRef.current) return;
+
+        // 1. Highlight Code Blocks
+        questionAreaRef.current.querySelectorAll('pre code').forEach((block) => {
+            hljs.highlightElement(block as HTMLElement);
+        });
+
+        // 2. Add Copy Button
+        const codeBlocks = questionAreaRef.current.querySelectorAll('pre');
+        codeBlocks.forEach(preElement => {
+            if (preElement.parentElement?.classList.contains('code-block-wrapper')) return;
+
+            const copyButton = document.createElement('button');
+            copyButton.title = 'Salin kode';
+            copyButton.className = 'copy-button absolute top-2 right-2 p-2 bg-gray-700/50 dark:bg-gray-800/60 text-gray-300 rounded-md hover:bg-gray-600 dark:hover:bg-gray-700 transition-all duration-200';
+            copyButton.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>`;
+
+            copyButton.addEventListener('click', () => {
+                const codeElement = preElement.querySelector('code');
+                const codeToCopy = codeElement ? codeElement.innerText : '';
+                navigator.clipboard.writeText(codeToCopy).then(() => {
+                    copyButton.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>`;
+                    copyButton.classList.add('text-green-400');
+                    setTimeout(() => {
+                        copyButton.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>`;
+                        copyButton.classList.remove('text-green-400');
+                    }, 2000);
+                });
+            });
+
+            const wrapper = document.createElement('div');
+            wrapper.className = 'code-block-wrapper relative';
+            wrapper.appendChild(copyButton);
+            preElement.parentNode?.insertBefore(wrapper, preElement);
+            wrapper.appendChild(preElement);
+        });
+    }, [idx, questions]);
+
     const persist = () => {
         if (!user) return;
         const stateKey = `pretest_state_${user._id}`;
-        const snapshot = { answers, idx, timestamp: new Date().toISOString() };
+        const snapshot = { answers, idx, timeLeft, tabExitCount, timestamp: new Date().toISOString() };
         localStorage.setItem(stateKey, JSON.stringify(snapshot));
         showAlert({
             title: 'Progress Tersimpan',
@@ -267,6 +352,16 @@ export default function PreTestPage() {
     };
 
     const currentQuestion = questions[idx];
+
+    // Memoize HTML object untuk mencegah re-render saat timer berjalan (yang menyebabkan style highlight.js hilang)
+    const questionHtml = useMemo(() => {
+        return currentQuestion ? { __html: currentQuestion.questionText } : undefined;
+    }, [currentQuestion]);
+
+    // Memoize Options HTML object untuk mencegah re-render pada pilihan jawaban saat timer berjalan
+    const questionOptionsHtml = useMemo(() => {
+        return currentQuestion?.options.map(opt => ({ __html: opt })) || [];
+    }, [currentQuestion]);
 
     if (loading && !result) {
         return (
@@ -383,7 +478,7 @@ export default function PreTestPage() {
                         <button onClick={handleRetake} className="bg-transparent text-blue-600 dark:text-blue-400 border border-blue-500/20 dark:border-blue-400/20 px-3.5 py-2.5 rounded-lg cursor-pointer hover:bg-blue-50 dark:hover:bg-blue-900/20 transition">Ulangi Pre-test</button>
                         <Link href="/modul" className="bg-blue-600 hover:bg-blue-700 text-white border-none px-3.5 py-2.5 rounded-lg cursor-pointer">Lihat Rekomendasi Modul</Link>
                     </div>
-                    <div className="text-sm text-slate-500 dark:text-slate-400 mt-3">Catatan: Hasil ini disimpan secara lokal untuk personalisasi pengalaman belajar.</div>
+                   
                 </section>
                 <footer className="bg-white dark:bg-gray-800 p-4 text-center text-gray-600 dark:text-gray-400 text-sm mt-8 shadow-inner font-poppins">
                     <p>&copy; 2025 KELAS. All rights reserved.</p>
@@ -488,6 +583,14 @@ export default function PreTestPage() {
 
     return (
         <div className="max-w-full mx-auto p-2 font-sans mt-22">
+            <style jsx global>{`
+                .prose pre { white-space: pre; overflow-x: auto; }
+                /* Paksa background gelap untuk block code di mode terang */
+                html:not(.dark) .prose pre {
+                    background-color: #0d1117; /* Warna dari github-dark.css */
+                    color: #c9d1d9;
+                }
+            `}</style>
             <Breadcrumb paths={[
                 { name: "Dashboard", href: "/dashboard" },
                 { name: "Pre-test", href: "#" }
@@ -515,119 +618,168 @@ export default function PreTestPage() {
             </section>
 
             <section className="bg-white dark:bg-gray-800 rounded-xl p-6 mt-6 shadow-lg" id="pretestCard">
-                <div id="questionArea"> {/* Tambahkan ref di sini */}
-                    {currentQuestion && (
-                        <div className="py-6">
-                            <div className="flex items-start font-semibold mb-4 text-base text-slate-800 dark:text-slate-200">
-                                <span className="mr-2">{idx + 1}.</span>
-                                <div className="flex-1 overflow-x-auto">
-                                    <div className="prose dark:prose-invert max-w-none"
-                                        dangerouslySetInnerHTML={{ __html: currentQuestion.questionText }}
-                                    />
+                <div className="flex flex-col lg:flex-row gap-8">
+                    {/* Area Soal (Kiri di Desktop) */}
+                    <div className="flex-1 order-2 lg:order-1">
+                        <div id="questionArea" ref={questionAreaRef}>
+                            {currentQuestion && (
+                                <div className="py-0 lg:py-2">
+                                    <div className="flex items-start mb-4 text-base text-slate-800 dark:text-slate-200">
+                                        <span className="mr-2">{idx + 1}.</span>
+                                        <div className="flex-1 overflow-x-auto">
+                                            <div className="prose dark:prose-invert max-w-none"
+                                                dangerouslySetInnerHTML={questionHtml}
+                                            />
+                                        </div>
+                                    </div>
+                                    <div className="flex flex-col gap-3">
+                                        {currentQuestion.options.map((option, oIndex) => (
+                                            <label
+                                                key={oIndex}
+                                                className="flex items-start border border-slate-200 dark:border-gray-700 p-3 rounded-lg cursor-pointer hover:bg-slate-50 dark:hover:bg-gray-700/50 has-[:checked]:bg-indigo-50 dark:has-[:checked]:bg-indigo-900/50 has-[:checked]:border-blue-400 dark:has-[:checked]:border-blue-500 text-sm text-slate-700 dark:text-slate-300"
+                                            >
+                                                <input
+                                                    type="radio"
+                                                    className="mr-2.5 mt-0.5 flex-shrink-0"
+                                                    name={`q${currentQuestion._id}`}
+                                                    value={option}
+                                                    checked={answers[currentQuestion._id] === option}
+                                                    onChange={() =>
+                                                        setAnswers((prev) => ({ ...prev, [currentQuestion._id]: option }))
+                                                    }
+                                                />
+                                                <span
+                                                    className="overflow-x-auto flex-1"
+                                                    dangerouslySetInnerHTML={questionOptionsHtml[oIndex]}
+                                                ></span>
+                                            </label>
+                                        ))}
+                                    </div>
                                 </div>
-                            </div>
-                            <div className="flex flex-col gap-3">
-                                {currentQuestion.options.map((option, oIndex) => (
-                                    <label
-                                        key={oIndex}
-                                        className="flex items-start border border-slate-200 dark:border-gray-700 p-3 rounded-lg cursor-pointer hover:bg-slate-50 dark:hover:bg-gray-700/50 has-[:checked]:bg-indigo-50 dark:has-[:checked]:bg-indigo-900/50 has-[:checked]:border-blue-400 dark:has-[:checked]:border-blue-500 text-sm text-slate-700 dark:text-slate-300"
+                            )}
+                        </div>
+
+                        {/* Tombol Kontrol Responsif */}
+                        <div className="flex flex-col sm:flex-row gap-3 sm:gap-2 items-center mt-8">
+                            <div className="flex gap-2 w-full sm:w-auto">
+                                <button
+                                    id="prevBtn"
+                                    onClick={() => setIdx(i => Math.max(0, i - 1))}
+                                    disabled={idx === 0}
+                                    className="flex-1 bg-white dark:bg-gray-700 text-slate-700 dark:text-slate-300 border border-slate-300 dark:border-gray-600 px-3 py-2 sm:px-4 sm:py-2.5 rounded-lg cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed hover:bg-slate-50 dark:hover:bg-gray-600 text-sm sm:text-base"
+                                >
+                                    Sebelumnya
+                                </button>
+                                {idx < total - 1 ? (
+                                    <button
+                                        id="nextBtn"
+                                        onClick={() => setIdx(i => Math.min(total - 1, i + 1))}
+                                        disabled={idx === total - 1}
+                                        className="flex-1 bg-blue-600 text-white border-none px-3 py-2 sm:px-4 sm:py-2.5 rounded-lg cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed hover:bg-blue-700 transition text-sm sm:text-base"
                                     >
-                                        <input
-                                            type="radio"
-                                            className="mr-2.5 mt-0.5 flex-shrink-0"
-                                            name={`q${currentQuestion._id}`}
-                                            value={option}
-                                            checked={answers[currentQuestion._id] === option}
-                                            onChange={() =>
-                                                setAnswers((prev) => ({ ...prev, [currentQuestion._id]: option }))
+                                        Berikutnya
+                                    </button>
+                                ) : null}
+                            </div>
+                            <div className="flex gap-2 w-full sm:w-auto sm:ml-auto">
+                                <button
+                                    id="saveBtn"
+                                    onClick={persist}
+                                    className="flex-1 sm:flex-none bg-blue-100 text-blue-700 dark:bg-blue-900/50 dark:text-blue-300 border-none px-3 py-2 sm:px-4 sm:py-2.5 rounded-lg cursor-pointer hover:bg-blue-200 dark:hover:bg-blue-900/80 transition text-sm sm:text-base"
+                                >
+                                    Simpan
+                                </button>
+                                {idx === total - 1 ? (
+                                    <button
+                                        id="submitBtn"
+                                        onClick={() => {
+                                            // Cek apakah semua soal sudah dijawab
+                                            if (Object.keys(answers).length < total) {
+                                                showAlert({
+                                                    title: 'Jawaban Belum Lengkap',
+                                                    message: `Kamu baru menjawab ${Object.keys(answers).length} dari ${total} soal. Silakan lengkapi semua jawaban sebelum mengirim.`,
+                                                });
+                                            } else {
+                                                // Jika sudah lengkap, tampilkan konfirmasi
+                                                showAlert({
+                                                    type: 'confirm',
+                                                    title: 'Kirim Jawaban?',
+                                                    message: 'Apakah kamu yakin ingin mengirimkan jawaban dan melihat hasilnya?',
+                                                    confirmText: 'Ya, Kirim',
+                                                    cancelText: 'Batal',
+                                                    onConfirm: grade,
+                                                });
                                             }
-                                        />
-                                        <span
-                                            className="overflow-x-auto flex-1"
-                                            dangerouslySetInnerHTML={{ __html: option }}
-                                        ></span>
-                                    </label>
-
-
-
-                                ))}
+                                        }}
+                                        className="flex-1 sm:flex-none bg-green-600 text-white border-none px-3 py-2 sm:px-4 sm:py-2.5 rounded-lg cursor-pointer hover:bg-green-700 transition text-sm sm:text-base"
+                                    >
+                                        Kirim Jawaban
+                                    </button>
+                                ) : null}
                             </div>
                         </div>
-                    )}
-                </div>
 
-                {/* Tombol Kontrol Responsif */}
-                <div className="flex flex-col sm:flex-row gap-3 sm:gap-2 items-center mt-6">
-                    <div className="flex gap-2 w-full sm:w-auto">
-                        <button
-                            id="prevBtn"
-                            onClick={() => setIdx(i => Math.max(0, i - 1))}
-                            disabled={idx === 0}
-                            className="flex-1 bg-white dark:bg-gray-700 text-slate-700 dark:text-slate-300 border border-slate-300 dark:border-gray-600 px-3 py-2 sm:px-4 sm:py-2.5 rounded-lg cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed hover:bg-slate-50 dark:hover:bg-gray-600 text-sm sm:text-base"
-                        >
-                            Sebelumnya
-                        </button>
-                        {idx < total - 1 ? (
-                            <button
-                                id="nextBtn"
-                                onClick={() => setIdx(i => Math.min(total - 1, i + 1))}
-                                disabled={idx === total - 1}
-                                className="flex-1 bg-blue-600 text-white border-none px-3 py-2 sm:px-4 sm:py-2.5 rounded-lg cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed hover:bg-blue-700 transition text-sm sm:text-base"
-                            >
-                                Berikutnya
-                            </button>
-                        ) : null}
+                        <div className="h-2.5 bg-indigo-100 dark:bg-gray-700 rounded-full overflow-hidden mt-6" aria-hidden="true">
+                            <div
+                                id="progBar"
+                                className="h-full rounded-full bg-gradient-to-r from-blue-500 to-violet-500 transition-all duration-500 ease-out"
+                                style={{
+                                    width: `${((idx + 1) / total) * 100}%`,
+                                    backgroundImage: 'linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.15) 50%, rgba(255, 2_55, 255, 0.15) 75%, transparent 75%, transparent)',
+                                    backgroundSize: '40px 40px',
+                                    animation: 'progress-bar-stripes 1s linear infinite'
+                                }}></div>
+                        </div>
+                        <div className="text-sm text-slate-500 dark:text-slate-400 mt-2">Pertanyaan ke <span>{idx + 1}</span> dari <span>{total}</span></div>
                     </div>
-                    <div className="flex gap-2 w-full sm:w-auto sm:ml-auto">
-                        <button
-                            id="saveBtn"
-                            onClick={persist}
-                            className="flex-1 sm:flex-none bg-blue-100 text-blue-700 dark:bg-blue-900/50 dark:text-blue-300 border-none px-3 py-2 sm:px-4 sm:py-2.5 rounded-lg cursor-pointer hover:bg-blue-200 dark:hover:bg-blue-900/80 transition text-sm sm:text-base"
-                        >
-                            Simpan
-                        </button>
-                        {idx === total - 1 ? (
-                            <button
-                                id="submitBtn"
-                                onClick={() => {
-                                    // Cek apakah semua soal sudah dijawab
-                                    if (Object.keys(answers).length < total) {
-                                        showAlert({
-                                            title: 'Jawaban Belum Lengkap',
-                                            message: `Kamu baru menjawab ${Object.keys(answers).length} dari ${total} soal. Silakan lengkapi semua jawaban sebelum mengirim.`,
-                                        });
-                                    } else {
-                                        // Jika sudah lengkap, tampilkan konfirmasi
-                                        showAlert({
-                                            type: 'confirm',
-                                            title: 'Kirim Jawaban?',
-                                            message: 'Apakah kamu yakin ingin mengirimkan jawaban dan melihat hasilnya?',
-                                            confirmText: 'Ya, Kirim',
-                                            cancelText: 'Batal',
-                                            onConfirm: grade,
-                                        });
-                                    }
-                                }}
-                                className="flex-1 sm:flex-none bg-green-600 text-white border-none px-3 py-2 sm:px-4 sm:py-2.5 rounded-lg cursor-pointer hover:bg-green-700 transition text-sm sm:text-base"
-                            >
-                                Kirim Jawaban
-                            </button>
-                        ) : null}
-                    </div>
-                </div>
 
-                <div className="h-2.5 bg-indigo-100 dark:bg-gray-700 rounded-full overflow-hidden mt-3" aria-hidden="true">
-                    <div
-                        id="progBar"
-                        className="h-full rounded-full bg-gradient-to-r from-blue-500 to-violet-500 transition-all duration-500 ease-out"
-                        style={{
-                            width: `${((idx + 1) / total) * 100}%`,
-                            backgroundImage: 'linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.15) 50%, rgba(255, 2_55, 255, 0.15) 75%, transparent 75%, transparent)',
-                            backgroundSize: '40px 40px',
-                            animation: 'progress-bar-stripes 1s linear infinite'
-                        }}></div>
+                    {/* Navigasi Soal (Kanan di Desktop) */}
+                    <div className="lg:w-80 flex-shrink-0 order-1 lg:order-2">
+                        <div className="mb-0 p-5 bg-slate-50 dark:bg-gray-900/40 rounded-xl border border-slate-200 dark:border-gray-700/50 sticky top-24">
+                            <div className="flex flex-wrap justify-between items-center mb-4 gap-2">
+                                <h3 className="text-sm font-bold text-gray-700 dark:text-gray-300 flex items-center gap-2">
+                                    <span className="w-1 h-4 bg-blue-500 rounded-full"></span>
+                                    Navigasi Soal
+                                </h3>
+                                <div className="flex gap-3 text-xs text-gray-500 dark:text-gray-400">
+                                    <div className="flex items-center gap-1.5">
+                                        <span className="w-3 h-3 rounded bg-blue-600"></span>
+                                        <span>Sudah</span>
+                                    </div>
+                                    <div className="flex items-center gap-1.5">
+                                        <span className="w-3 h-3 rounded bg-gray-100 dark:bg-gray-700 border border-gray-300 dark:border-gray-600"></span>
+                                        <span>Belum</span>
+                                    </div>
+                                    <div className="flex items-center gap-1.5">
+                                        <span className="w-3 h-3 rounded border-2 border-blue-500"></span>
+                                        <span>Aktif</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="grid grid-cols-5 sm:grid-cols-8 md:grid-cols-10 lg:grid-cols-4 gap-2">
+                                {questions.map((q, index) => {
+                                    const isAnswered = answers[q._id] !== undefined;
+                                    const isCurrent = idx === index;
+                                    return (
+                                        <button
+                                            key={q._id}
+                                            onClick={() => setIdx(index)}
+                                            className={`h-10 w-full rounded-lg text-sm font-semibold transition-all flex items-center justify-center relative
+                                                ${isCurrent ? 'ring-2 ring-offset-2 ring-blue-500 dark:ring-offset-gray-800 z-10' : ''}
+                                                ${isAnswered 
+                                                    ? 'bg-blue-600 text-white hover:bg-blue-700 shadow-md' 
+                                                    : 'bg-white text-gray-600 dark:bg-gray-800 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700 border border-gray-200 dark:border-gray-600 shadow-sm'}
+                                            `}
+                                            title={`Soal ${index + 1}${isAnswered ? ' (Terjawab)' : ''}`}
+                                        >
+                                            {index + 1}
+                                        </button>
+                                    );
+                                })}
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                <div className="text-sm text-slate-500 dark:text-slate-400 mt-2">Pertanyaan ke <span>{idx + 1}</span> dari <span>{total}</span></div>
             </section>
 
             <footer className="bg-white dark:bg-gray-800 p-4 text-center text-gray-600 dark:text-gray-400 text-sm mt-8 shadow-inner font-poppins">

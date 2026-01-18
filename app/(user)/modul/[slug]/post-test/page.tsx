@@ -1,8 +1,10 @@
 "use client";
 
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useState, useEffect, useCallback, useRef, useMemo } from "react";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { authFetch } from "@/lib/authFetch";
+import hljs from 'highlight.js';
+import 'highlight.js/styles/github-dark.css';
 import Link from "next/link";
 import { Home, Target, Clock3, Activity, Eye, Lightbulb, Star } from 'lucide-react';
 import { useAlert } from "@/context/AlertContext";
@@ -68,16 +70,37 @@ export default function PostTestPage() {
 
     const total = questions.length;
 
+    const currentQuestion = questions[testIdx];
+
+    // Memoize HTML object untuk mencegah re-render saat timer berjalan (yang menyebabkan style highlight.js hilang)
+    const questionHtml = useMemo(() => {
+        return currentQuestion ? { __html: currentQuestion.questionText } : undefined;
+    }, [currentQuestion]);
+
+    // Memoize Options HTML object untuk mencegah re-render pada pilihan jawaban saat timer berjalan
+    const questionOptionsHtml = useMemo(() => {
+        return currentQuestion?.options.map(opt => ({ __html: opt })) || [];
+    }, [currentQuestion]);
+
     const gradeTest = useCallback(async () => {
         if (!user || !modul) return;
         setIsSubmitting(true);
+
+        // Pastikan semua soal terkirim, meskipun tidak dijawab
+        const finalAnswers = { ...answers };
+        questions.forEach(q => {
+            if (!finalAnswers[q._id]) {
+                finalAnswers[q._id] = "";
+            }
+        });
+
         try {
             const response = await authFetch(`${process.env.NEXT_PUBLIC_API_URL}/api/results/submit-test`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
                     testType: "post-test-modul",
-                    answers: answers,
+                    answers: finalAnswers,
                     timeTaken: Math.round((Date.now() - startTime) / 1000),
                     modulId: modul._id,
                     answerChanges: changedQuestionIds.size,
@@ -98,7 +121,7 @@ export default function PostTestPage() {
         } finally {
             setIsSubmitting(false);
         }
-    }, [answers, startTime, user, modul, showAlert, changedQuestionIds, tabExitCount]);
+    }, [answers, startTime, user, modul, showAlert, changedQuestionIds, tabExitCount, questions]);
     const handleAnswerChange = (questionId: string, option: string) => {
         setAnswers(prev => {
             // Cek apakah sudah ada jawaban sebelumnya untuk pertanyaan ini
@@ -218,6 +241,7 @@ export default function PostTestPage() {
             const left = Math.max(0, Math.round((end - Date.now()) / 1000));
             setTimeLeft(left);
             if (left === 0) {
+                clearInterval(timerInterval);
                 showAlert({
                     title: 'Waktu Habis',
                     message: 'Waktu pengerjaan telah berakhir. Jawaban Anda akan dikirim secara otomatis.',
@@ -229,6 +253,46 @@ export default function PostTestPage() {
 
         return () => clearInterval(timerInterval);
     }, [result, loading, error, questions, startTime, gradeTest, showAlert]);
+
+    // Effect for syntax highlighting and copy button
+    useEffect(() => {
+        if (!questionAreaRef.current) return;
+
+        // 1. Highlight Code Blocks
+        questionAreaRef.current.querySelectorAll('pre code').forEach((block) => {
+            hljs.highlightElement(block as HTMLElement);
+        });
+
+        // 2. Add Copy Button
+        const codeBlocks = questionAreaRef.current.querySelectorAll('pre');
+        codeBlocks.forEach(preElement => {
+            if (preElement.parentElement?.classList.contains('code-block-wrapper')) return;
+
+            const copyButton = document.createElement('button');
+            copyButton.title = 'Salin kode';
+            copyButton.className = 'copy-button absolute top-2 right-2 p-2 bg-gray-700/50 dark:bg-gray-800/60 text-gray-300 rounded-md hover:bg-gray-600 dark:hover:bg-gray-700 transition-all duration-200';
+            copyButton.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>`;
+
+            copyButton.addEventListener('click', () => {
+                const codeElement = preElement.querySelector('code');
+                const codeToCopy = codeElement ? codeElement.innerText : '';
+                navigator.clipboard.writeText(codeToCopy).then(() => {
+                    copyButton.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>`;
+                    copyButton.classList.add('text-green-400');
+                    setTimeout(() => {
+                        copyButton.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>`;
+                        copyButton.classList.remove('text-green-400');
+                    }, 2000);
+                });
+            });
+
+            const wrapper = document.createElement('div');
+            wrapper.className = 'code-block-wrapper relative';
+            wrapper.appendChild(copyButton);
+            preElement.parentNode?.insertBefore(wrapper, preElement);
+            wrapper.appendChild(preElement);
+        });
+    }, [testIdx, questions]);
 
     const handleRetake = async () => {
         if (!user || !modul) return;
@@ -494,10 +558,25 @@ export default function PostTestPage() {
         );
     }
 
-    const currentQuestion = questions[testIdx];
-
     return (
         <div className="mt-20 max-w-full mx-auto px-1.5 sm:px-3 lg:px-5 py-5 font-sans">
+            <style jsx global>{`
+                /* Style global untuk block code di dalam area kuis (soal & pilihan) */
+                .quiz-content pre {
+                    background-color: #0d1117 !important; /* Warna background github-dark */
+                    color: #c9d1d9 !important; /* Warna teks github-dark */
+                    padding: 1em;
+                    border-radius: 0.5em;
+                    overflow-x: auto;
+                    white-space: pre;
+                }
+                .quiz-content pre code {
+                    background-color: transparent !important;
+                    color: inherit !important;
+                    padding: 0 !important;
+                    white-space: pre;
+                }
+            `}</style>
             <nav className="flex mb-6" aria-label="Breadcrumb">
                 <ol className="inline-flex items-center md:space-x-2 rtl:space-x-reverse text-slate-700 dark:text-slate-300 gap-1">
                     <li className="inline-flex items-center">
@@ -520,66 +599,115 @@ export default function PostTestPage() {
                 </div>
             </header>
 
-            <section ref={questionAreaRef} className="bg-white dark:bg-gray-800 rounded-xl p-6 mt-6 shadow-lg border border-slate-200 dark:border-slate-700">
-                {currentQuestion && (
-                    <div className="py-6">
-                        <div className="flex items-start font-semibold mb-4 text-base text-slate-800 dark:text-slate-200">
-                            <span className="mr-2">{testIdx + 1}.</span>
-                            <div className="flex-1 overflow-x-auto">
-                                <div className="prose dark:prose-invert max-w-none" dangerouslySetInnerHTML={{ __html: currentQuestion.questionText }} />
+            <section className="bg-white dark:bg-gray-800 rounded-xl p-6 mt-6 shadow-lg border border-slate-200 dark:border-slate-700">
+                <div className="flex flex-col lg:flex-row gap-8">
+                    {/* Area Soal (Kiri di Desktop) */}
+                    <div className="flex-1 order-2 lg:order-1">
+                        <div ref={questionAreaRef}>
+                            {currentQuestion && (
+                                <div className="py-0 lg:py-2 quiz-content">
+                                    <div className="flex items-start mb-4 text-base text-slate-800 dark:text-slate-200">
+                                        <span className="mr-2">{testIdx + 1}.</span>
+                                        <div className="flex-1 overflow-x-auto">
+                                            <div className="prose dark:prose-invert max-w-none" dangerouslySetInnerHTML={questionHtml} />
+                                        </div>
+                                    </div>
+
+                                    <div className="flex flex-col gap-3">
+                                        {currentQuestion.options.map((option, oIndex) => (
+                                            <label key={oIndex} className="flex items-start border border-slate-200 dark:border-gray-700 p-3 rounded-lg cursor-pointer hover:bg-slate-50 dark:hover:bg-gray-700/50 has-[:checked]:bg-indigo-50 dark:has-[:checked]:bg-indigo-900/50 has-[:checked]:border-blue-400 dark:has-[:checked]:border-blue-500 text-sm text-slate-700 dark:text-slate-300">
+                                                <input
+                                                    type="radio"
+                                                    className="mr-2.5 mt-0.5 flex-shrink-0"
+                                                    name={`q${currentQuestion._id}`}
+                                                    value={option}
+                                                    checked={answers[currentQuestion._id] === option}
+                                                    onChange={() => handleAnswerChange(currentQuestion._id, option)} />
+                                                <span className="break-words" dangerouslySetInnerHTML={questionOptionsHtml[oIndex]} />
+                                            </label>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+
+                        <div className="flex flex-col sm:flex-row gap-3 sm:gap-2 items-center mt-6">
+                            <div className="flex gap-2 w-full sm:w-auto">
+                                <button onClick={() => setTestIdx(i => Math.max(0, i - 1))} disabled={testIdx === 0} className="flex-1 bg-white dark:bg-gray-700 text-slate-700 dark:text-slate-300 border border-slate-300 dark:border-gray-600 px-4 py-2.5 rounded-lg cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed hover:bg-slate-50 dark:hover:bg-gray-600">
+                                    Sebelumnya
+                                </button>
+                                {testIdx < total - 1 ? (
+                                    <button onClick={() => setTestIdx(i => Math.min(total - 1, i + 1))} className="flex-1 bg-blue-600 text-white border-none px-4 py-2.5 rounded-lg cursor-pointer hover:bg-blue-700 transition">
+                                        Berikutnya
+                                    </button>
+                                ) : (
+                                    <button
+                                        onClick={() => showAlert({
+                                            type: 'confirm',
+                                            title: 'Kirim Jawaban?',
+                                            message: 'Apakah kamu yakin ingin mengirimkan jawaban dan melihat hasilnya?',
+                                            confirmText: 'Ya, Kirim',
+                                            cancelText: 'Batal',
+                                            onConfirm: gradeTest,
+                                        })}
+                                        disabled={isSubmitting}
+                                        className="flex-1 sm:flex-none bg-green-600 text-white border-none px-4 py-2.5 rounded-lg cursor-pointer hover:bg-green-700 transition disabled:opacity-50"
+                                    >
+                                        {isSubmitting ? 'Mengirim...' : 'Kirim Jawaban'}
+                                    </button>
+                                )}
                             </div>
                         </div>
 
-                        <div className="flex flex-col gap-3">
-                            {currentQuestion.options.map((option, oIndex) => (
-                                <label key={oIndex} className="flex items-start border border-slate-200 dark:border-gray-700 p-3 rounded-lg cursor-pointer hover:bg-slate-50 dark:hover:bg-gray-700/50 has-[:checked]:bg-indigo-50 dark:has-[:checked]:bg-indigo-900/50 has-[:checked]:border-blue-400 dark:has-[:checked]:border-blue-500 text-sm text-slate-700 dark:text-slate-300">
-                                    <input
-                                        type="radio"
-                                        className="mr-2.5 mt-0.5 flex-shrink-0"
-                                        name={`q${currentQuestion._id}`}
-                                        value={option}
-                                        checked={answers[currentQuestion._id] === option}
-                                        onChange={() => handleAnswerChange(currentQuestion._id, option)} />
-                                    <span className="break-words" dangerouslySetInnerHTML={{ __html: option }} />
-                                </label>
-                            ))}
+                        <div className="h-2.5 bg-indigo-100 dark:bg-gray-700 rounded-full overflow-hidden mt-4">
+                            <div className="block h-full bg-gradient-to-r from-blue-500 to-violet-500" style={{ width: `${((testIdx + 1) / total) * 100}%` }}></div>
+                        </div>
+                        <div className="text-sm text-slate-500 dark:text-slate-400 mt-2">
+                            Pertanyaan ke <span>{testIdx + 1}</span> dari <span>{total}</span>
                         </div>
                     </div>
-                )}
 
-                <div className="flex flex-col sm:flex-row gap-3 sm:gap-2 items-center mt-6">
-                    <div className="flex gap-2 w-full sm:w-auto">
-                        <button onClick={() => setTestIdx(i => Math.max(0, i - 1))} disabled={testIdx === 0} className="flex-1 bg-white dark:bg-gray-700 text-slate-700 dark:text-slate-300 border border-slate-300 dark:border-gray-600 px-4 py-2.5 rounded-lg cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed hover:bg-slate-50 dark:hover:bg-gray-600">
-                            Sebelumnya
-                        </button>
-                        {testIdx < total - 1 ? (
-                            <button onClick={() => setTestIdx(i => Math.min(total - 1, i + 1))} className="flex-1 bg-blue-600 text-white border-none px-4 py-2.5 rounded-lg cursor-pointer hover:bg-blue-700 transition">
-                                Berikutnya
-                            </button>
-                        ) : (
-                            <button
-                                onClick={() => showAlert({
-                                    type: 'confirm',
-                                    title: 'Kirim Jawaban?',
-                                    message: 'Apakah kamu yakin ingin mengirimkan jawaban dan melihat hasilnya?',
-                                    confirmText: 'Ya, Kirim',
-                                    cancelText: 'Batal',
-                                    onConfirm: gradeTest,
+                    {/* Navigasi Soal (Kanan di Desktop) */}
+                    <div className="lg:w-80 flex-shrink-0 order-1 lg:order-2">
+                        <div className="mb-0 p-5 bg-slate-50 dark:bg-gray-900/40 rounded-xl border border-slate-200 dark:border-gray-700/50 sticky top-24">
+                            <div className="flex flex-wrap justify-between items-center mb-4 gap-2">
+                                <h3 className="text-sm font-bold text-gray-700 dark:text-gray-300 flex items-center gap-2">
+                                    <span className="w-1 h-4 bg-blue-500 rounded-full"></span>
+                                    Navigasi Soal
+                                </h3>
+                                <div className="flex gap-3 text-xs text-gray-500 dark:text-gray-400">
+                                    <div className="flex items-center gap-1.5">
+                                        <span className="w-3 h-3 rounded bg-blue-600"></span>
+                                        <span>Sudah</span>
+                                    </div>
+                                    <div className="flex items-center gap-1.5">
+                                        <span className="w-3 h-3 rounded bg-gray-100 dark:bg-gray-700 border border-gray-300 dark:border-gray-600"></span>
+                                        <span>Belum</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="grid grid-cols-5 sm:grid-cols-8 md:grid-cols-10 lg:grid-cols-4 gap-2">
+                                {questions.map((q, index) => {
+                                    const isAnswered = answers[q._id] !== undefined;
+                                    const isCurrent = testIdx === index;
+                                    return (
+                                        <button
+                                            key={q._id}
+                                            onClick={() => setTestIdx(index)}
+                                            className={`h-10 w-full rounded-lg text-sm font-semibold transition-all flex items-center justify-center relative
+                                                ${isCurrent ? 'ring-2 ring-offset-2 ring-blue-500 dark:ring-offset-gray-800 z-10' : ''}
+                                                ${isAnswered 
+                                                    ? 'bg-blue-600 text-white hover:bg-blue-700 shadow-md' 
+                                                    : 'bg-white text-gray-600 dark:bg-gray-800 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700 border border-gray-200 dark:border-gray-600 shadow-sm'}
+                                            `}
+                                        >
+                                            {index + 1}
+                                        </button>
+                                    );
                                 })}
-                                disabled={isSubmitting}
-                                className="flex-1 sm:flex-none bg-green-600 text-white border-none px-4 py-2.5 rounded-lg cursor-pointer hover:bg-green-700 transition disabled:opacity-50"
-                            >
-                                {isSubmitting ? 'Mengirim...' : 'Kirim Jawaban'}
-                            </button>
-                        )}
+                            </div>
+                        </div>
                     </div>
-                </div>
-
-                <div className="h-2.5 bg-indigo-100 dark:bg-gray-700 rounded-full overflow-hidden mt-4">
-                    <div className="block h-full bg-gradient-to-r from-blue-500 to-violet-500" style={{ width: `${((testIdx + 1) / total) * 100}%` }}></div>
-                </div>
-                <div className="text-sm text-slate-500 dark:text-slate-400 mt-2">
-                    Pertanyaan ke <span>{testIdx + 1}</span> dari <span>{total}</span>
                 </div>
             </section>
         </div>
