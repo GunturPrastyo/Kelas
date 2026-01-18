@@ -3,7 +3,7 @@
 import { GoogleOAuthProvider, GoogleLogin, CredentialResponse } from "@react-oauth/google";
 import Image from "next/image";
 import { useRouter } from "next/navigation"; import Link from "next/link";
-import { useState, FormEvent } from "react";
+import { useState, FormEvent, useCallback } from "react";
 import validator from "validator";
 import { Eye, EyeOff } from "lucide-react";
 import { Turnstile } from "@marsidev/react-turnstile";
@@ -21,6 +21,11 @@ export default function RegisterPage() {
 
   // Debugging: Cek apakah Site Key terbaca (Hapus baris ini nanti di production)
   // console.log("Turnstile Site Key:", process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY);
+
+  // Gunakan useCallback agar fungsi ini tidak dibuat ulang setiap kali state form berubah
+  const handleTurnstileSuccess = useCallback((token: string) => {
+    setTurnstileToken(token);
+  }, []);
 
   const handleGoogleRegister = async (credentialResponse: CredentialResponse) => {
     setIsLoading(true);
@@ -240,7 +245,7 @@ export default function RegisterPage() {
               <div className="flex justify-center pt-2">
                 <Turnstile
                   siteKey={process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY || ""}
-                  onSuccess={(token) => setTurnstileToken(token)}
+                  onSuccess={handleTurnstileSuccess}
                   onError={() => setError("Gagal memuat verifikasi keamanan.")}
                 />
               </div>
