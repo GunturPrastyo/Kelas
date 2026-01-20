@@ -202,9 +202,11 @@ export default function ModulDetailPage() {
                 data.topics = data.topics.map((topic: Topik) => {
                     const uniqueQuestions: Question[] = [];
                     const seenIds = new Set<string>();
+                    const seenTexts = new Set<string>();
                     topic.questions.forEach((q) => {
-                        if (!seenIds.has(q._id)) {
+                        if (!seenIds.has(q._id) && !seenTexts.has(q.questionText)) {
                             seenIds.add(q._id);
+                            seenTexts.add(q.questionText);
                             uniqueQuestions.push(q);
                         }
                     });
@@ -401,7 +403,7 @@ export default function ModulDetailPage() {
                         
                         // PERBAIKAN: Validasi currentIndex agar tidak melebihi jumlah soal (terutama jika data soal dideduplikasi)
                         let savedIndex = progressData.currentIndex || 0;
-                        if (savedIndex >= topik.questions.length) {
+                        if (savedIndex < 0 || savedIndex >= topik.questions.length) {
                             savedIndex = 0; // Reset ke awal jika index tidak valid
                         }
                         setTestIdx(savedIndex);
