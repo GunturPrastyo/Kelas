@@ -106,7 +106,7 @@ export default function DashboardPage() {
             const analyticsData = await analyticsRes.json();
             userCount = analyticsData.totalUsers || 0;
             avgScore = analyticsData.overallAverageScore || 0;
-            setActiveUsers(analyticsData.onlineUsers || 0);
+            setActiveUsers(analyticsData.onlineUsers ?? 0);
 
             // Gunakan data real dari moduleAnalytics jika tersedia dan tidak kosong
             if (analyticsData.moduleAnalytics && Array.isArray(analyticsData.moduleAnalytics) && analyticsData.moduleAnalytics.length > 0) {
@@ -139,10 +139,12 @@ export default function DashboardPage() {
   useEffect(() => {
     const fetchOnlineUsers = async () => {
         try {
-            const res = await authFetch(`${process.env.NEXT_PUBLIC_API_URL}/api/analytics/admin-analytics?type=online-users`);
+            // Tambahkan timestamp (_t) agar browser/CDN tidak melakukan caching pada request ini
+            const res = await authFetch(`${process.env.NEXT_PUBLIC_API_URL}/api/analytics/admin-analytics?type=online-users&_t=${Date.now()}`);
             if (res.ok) {
                 const data = await res.json();
-                setActiveUsers(data.onlineUsers);
+                // Gunakan nullish coalescing (??) untuk memastikan nilai tidak undefined/null
+                setActiveUsers(data.onlineUsers ?? 0);
             }
         } catch (error) {
             console.error("Gagal memuat user online:", error);
