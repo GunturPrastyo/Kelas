@@ -6,9 +6,38 @@ import SidebarUser from "@/components/sidebarUser";
 import { UIProvider, useUI } from "@/context/UIContext";
 import { AlertProvider } from "@/context/AlertContext";
 import AlertDialog from "@/components/AlertDialog";
+import { useEffect } from "react";
+import { authFetch } from "@/lib/authFetch";
 
 function UserLayoutContent({ children }: { children: React.ReactNode }) {
   const { isSidebarCollapsed, isMobileDrawerOpen, toggleMobileDrawer } = useUI();
+
+  // --- LOGIKA BARU: Heartbeat User Online ---
+  useEffect(() => {
+    const sendHeartbeat = async () => {
+      try {
+        // Kirim sinyal 'heartbeat' ke backend
+        await authFetch(`${process.env.NEXT_PUBLIC_API_URL}/api/results`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ testType: "heartbeat" }),
+        });
+      } catch (error) {
+        // Silent error agar tidak mengganggu user
+        console.error("Gagal mengirim heartbeat aktivitas:", error);
+      }
+    };
+
+    // Kirim segera saat halaman dimuat
+    sendHeartbeat();
+
+    // Kirim ulang setiap 5 menit (300.000 ms)
+    // Backend menghitung user online berdasarkan aktivitas 10 menit terakhir,
+    // jadi interval 5 menit aman untuk menjaga status tetap online.
+    const interval = setInterval(sendHeartbeat, 5 * 60 * 1000);
+
+    return () => clearInterval(interval);
+  }, []);
 
   return (
     <div className="font-poppins bg-gray-100 dark:bg-gray-900 text-gray-800 dark:text-gray-100 flex min-h-screen">
