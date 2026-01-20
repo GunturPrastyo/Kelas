@@ -240,6 +240,7 @@ export default function AdminAnalyticsPage() {
     const [studentAnalytics, setStudentAnalytics] = useState<StudentAnalyticsData | null>(null); // ... (rest of the state variables)
     const [studentLoading, setStudentLoading] = useState(false); // ... (rest of the state variables)
     const [studentError, setStudentError] = useState<string | null>(null); // ... (rest of the state variables)
+    const [topicPages, setTopicPages] = useState<Record<string, number>>({});
     
     // State untuk Dropdown Siswa Custom
     const [isStudentDropdownOpen, setIsStudentDropdownOpen] = useState(false);
@@ -300,6 +301,10 @@ export default function AdminAnalyticsPage() {
 
         return () => window.removeEventListener('resize', handleResize);
     }, []);
+
+    useEffect(() => {
+        setTopicPages({});
+    }, [modulesPerPage]);
 
     // Fix: Scroll otomatis ke section (hash) setelah loading selesai
     useEffect(() => {
@@ -644,40 +649,56 @@ export default function AdminAnalyticsPage() {
                                     <div className="bg-gray-50 dark:bg-gray-900/30 px-5 pb-4 border-t border-gray-100 dark:border-gray-700">
                                         <h4 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mt-3 mb-2">Detail Tes per Topik</h4>
                                         {modul.topics.length > 0 ? (
-                                            <div>
-                                                {/* Topic Table Header */}
-                                                <div className="flex justify-between gap-x-2 px-4 py-2 mt-2 border-b-2 border-gray-200 dark:border-gray-600">
-                                                    <div className="flex-1 min-w-0">
-                                                        <span className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase">Topik</span>
-                                                    </div>
-                                                    <div className="w-16 text-center">
-                                                        <span className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase">Waktu</span>
-                                                    </div>
-                                                    <div className="w-12 text-center">
-                                                        <span className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase">Nilai</span>
-                                                    </div>
-                                                    <div className="w-24 text-center">
-                                                        <span className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase">Status</span>
-                                                    </div>
-                                                </div>
-                                                {/* Topic Table Body */}
-                                                {modul.topics.map(topic => (
-                                                    <div key={topic.topicTitle} className="flex justify-between items-center gap-x-2 px-4 py-3 border-b border-gray-200 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-700/30">
-                                                        <div className="flex-1 min-w-0">
-                                                            <span className="text-sm font-medium text-gray-700 dark:text-gray-300 truncate block">{topic.topicTitle}</span>
+                                            <>
+                                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-2">
+                                                {modul.topics.slice(((topicPages[modul.moduleTitle] || 1) - 1) * modulesPerPage, (topicPages[modul.moduleTitle] || 1) * modulesPerPage).map(topic => (
+                                                    <div key={topic.topicTitle} className="bg-white dark:bg-gray-800 p-3 rounded-lg border border-gray-200 dark:border-gray-700 shadow-sm hover:shadow-md transition-shadow">
+                                                        <div className="flex justify-between items-start mb-2 gap-2">
+                                                            <span className="text-sm font-medium text-gray-800 dark:text-gray-200 line-clamp-2" title={topic.topicTitle}>
+                                                                {topic.topicTitle}
+                                                            </span>
+                                                            <div className="flex-shrink-0 scale-90 origin-top-right">
+                                                                {getStatusBadge(topic.weightedScore, topic.averageScore, topic.averageTimeInSeconds)}
+                                                            </div>
                                                         </div>
-                                                        <div className="w-16 text-center">
-                                                            <span className="text-xs font-medium text-gray-800 dark:text-gray-200">{formatTime(topic.averageTimeInSeconds)}</span>
-                                                        </div>
-                                                        <div className="w-12 text-center">
-                                                            <span className="text-sm font-medium text-gray-800 dark:text-gray-200">{topic.averageScore}%</span>
-                                                        </div>
-                                                        <div className="w-24 flex justify-center">
-                                                            {getStatusBadge(topic.weightedScore, topic.averageScore, topic.averageTimeInSeconds)}
+                                                        <div className="flex justify-between items-center text-xs border-t border-gray-100 dark:border-gray-700 pt-2 mt-2">
+                                                            <div className="flex flex-col">
+                                                                <span className="text-gray-500 dark:text-gray-400 mb-0.5">Waktu</span>
+                                                                <span className="font-medium text-gray-700 dark:text-gray-300 flex items-center gap-1">
+                                                                    <Clock size={12} className="text-gray-400" />
+                                                                    {formatTime(topic.averageTimeInSeconds)}
+                                                                </span>
+                                                            </div>
+                                                            <div className="flex flex-col text-right">
+                                                                <span className="text-gray-500 dark:text-gray-400 mb-0.5">Nilai</span>
+                                                                <span className="font-bold text-gray-800 dark:text-gray-200 text-sm">{topic.averageScore}%</span>
+                                                            </div>
                                                         </div>
                                                     </div>
                                                 ))}
                                             </div>
+                                            {Math.ceil(modul.topics.length / modulesPerPage) > 1 && (
+                                                <div className="flex justify-center mt-4 gap-2">
+                                                    <button
+                                                        onClick={() => setTopicPages(prev => ({ ...prev, [modul.moduleTitle]: Math.max((prev[modul.moduleTitle] || 1) - 1, 1) }))}
+                                                        disabled={(topicPages[modul.moduleTitle] || 1) === 1}
+                                                        className="px-2 py-1 text-xs bg-white border border-gray-300 rounded hover:bg-gray-100 disabled:opacity-50 dark:bg-gray-800 dark:border-gray-600 dark:text-gray-300"
+                                                    >
+                                                        Prev
+                                                    </button>
+                                                    <span className="text-xs flex items-center text-gray-600 dark:text-gray-400">
+                                                        {(topicPages[modul.moduleTitle] || 1)} / {Math.ceil(modul.topics.length / modulesPerPage)}
+                                                    </span>
+                                                    <button
+                                                        onClick={() => setTopicPages(prev => ({ ...prev, [modul.moduleTitle]: Math.min((prev[modul.moduleTitle] || 1) + 1, Math.ceil(modul.topics.length / modulesPerPage)) }))}
+                                                        disabled={(topicPages[modul.moduleTitle] || 1) === Math.ceil(modul.topics.length / modulesPerPage)}
+                                                        className="px-2 py-1 text-xs bg-white border border-gray-300 rounded hover:bg-gray-100 disabled:opacity-50 dark:bg-gray-800 dark:border-gray-600 dark:text-gray-300"
+                                                    >
+                                                        Next
+                                                    </button>
+                                                </div>
+                                            )}
+                                            </>
                                         ) : (
                                             <p className="px-5 py-3 text-center text-gray-500 italic">Tidak ada data topik untuk modul ini.</p>
                                         )}
@@ -737,7 +758,7 @@ export default function AdminAnalyticsPage() {
             </div>
 
             {/* SECTION 4: ANALITIK SISWA */}
-            <div id="analitik-siswa" className="bg-white dark:bg-gray-800 shadow-lg rounded-xl p-6 mb-12 border border-gray-100 dark:border-gray-700">
+            <div id="analitik-siswa" className="bg-white dark:bg-gray-800 shadow-lg rounded-xl p-4 sm:p-6 mb-12 border border-gray-100 dark:border-gray-700">
                 <div className="flex flex-col md:flex-row justify-between md:items-center mb-6">
                     <h2 className="text-xl font-bold text-gray-800 dark:text-gray-200">Analitik Siswa Individual</h2>
                     
@@ -830,12 +851,12 @@ export default function AdminAnalyticsPage() {
                 ) : studentAnalytics ? (
                     <div className="space-y-8">
                         {/* Kartu Statistik Siswa */}
-                        <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-6 items-stretch">
+                        <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 items-stretch">
                             <div className="bg-white dark:bg-gray-800 p-6 shadow-lg rounded-xl border border-gray-200 dark:border-gray-700 flex flex-col justify-between">
                                 <div>
                                     <div className="flex justify-between items-start mb-2">
                                         <h2 className="text-sm text-gray-500 dark:text-gray-400 font-medium">Progress Belajar</h2>
-                                        <div className="p-2 bg-blue-100 dark:bg-blue-900/30 rounded-lg text-blue-600 dark:text-blue-400">
+                                        <div className="hidden sm:block p-2 bg-blue-100 dark:bg-blue-900/30 rounded-lg text-blue-600 dark:text-blue-400">
                                             <BookOpen size={20} />
                                         </div>
                                     </div>
@@ -846,7 +867,7 @@ export default function AdminAnalyticsPage() {
                                 </div>
                                 <div className="mt-4">
                                     <div className="flex justify-between text-xs mb-1.5">
-                                        <span className="text-gray-500 dark:text-gray-400">Kelengkapan</span>
+                                        <span className="text-gray-500 dark:text-gray-400">Progres</span>
                                         <span className="font-bold text-blue-600 dark:text-blue-400">{studentAnalytics.progress}%</span>
                                     </div>
                                     <div className="w-full bg-gray-200 rounded-full h-2 dark:bg-gray-700 overflow-hidden">
@@ -859,7 +880,7 @@ export default function AdminAnalyticsPage() {
                                 <div>
                                     <div className="flex justify-between items-start mb-2">
                                         <h2 className="text-sm text-gray-500 dark:text-gray-400 font-medium">Rata-rata Nilai</h2>
-                                        <div className="p-2 bg-green-100 dark:bg-green-900/30 rounded-lg text-green-600 dark:text-green-400">
+                                        <div className="hidden sm:block p-2 bg-green-100 dark:bg-green-900/30 rounded-lg text-green-600 dark:text-green-400">
                                             <Target size={20} />
                                         </div>
                                     </div>
@@ -938,7 +959,7 @@ export default function AdminAnalyticsPage() {
 
                         {/* Detail Performa & Grafik */}
                         <div className="grid grid-cols-1 lg:grid-cols-5 gap-8">
-                            <div className="lg:col-span-5 bg-white dark:bg-gray-800 p-6 shadow-lg rounded-xl border border-gray-200 dark:border-gray-700">
+                            <div className="lg:col-span-5 bg-white dark:bg-gray-800 p-4 sm:p-6 shadow-lg rounded-xl border border-gray-200 dark:border-gray-700">
                                 <div className="flex justify-between items-start mb-4">
                                     <div>
                                         <h3 className="text-lg font-bold text-gray-800 dark:text-gray-200">Detail Performa per Modul</h3>
@@ -948,7 +969,8 @@ export default function AdminAnalyticsPage() {
                                         <Activity size={20} />
                                     </div>
                                 </div>
-                                <div className="overflow-x-auto">
+                                {/* Desktop View: Table */}
+                                <div className="hidden md:block overflow-x-auto">
                                     <table className="w-full text-sm text-left text-gray-600 dark:text-gray-400">
                                         <thead className="text-xs text-gray-700 uppercase bg-white/60 dark:bg-gray-700/60 dark:text-gray-300">
                                             <tr>
@@ -973,6 +995,20 @@ export default function AdminAnalyticsPage() {
                                             ))}
                                         </tbody>
                                     </table>
+                                </div>
+
+                                {/* Mobile View: Cards */}
+                                <div className="md:hidden space-y-4">
+                                    {studentAnalytics.detailedPerformance.map(perf => (
+                                        <StudentPerformanceCard
+                                            key={perf.moduleTitle}
+                                            perf={perf}
+                                            classModuleData={analytics.moduleAnalytics?.find(
+                                                (mod) => mod.moduleTitle === perf.moduleTitle
+                                            )}
+                                            classTopicAnalytics={analytics.topicAnalytics}
+                                        />
+                                    ))}
                                 </div>
                             </div>
                             {studentComparisonChartData.length > 0 && (
@@ -1033,6 +1069,114 @@ export default function AdminAnalyticsPage() {
     );
 }
 
+const StudentPerformanceCard = ({ perf, classModuleData, classTopicAnalytics }: {
+    perf: StudentAnalyticsData['detailedPerformance'][0],
+    classModuleData: AdminAnalyticsData['moduleAnalytics'] extends (infer U)[] ? U : never | undefined,
+    classTopicAnalytics: AdminAnalyticsData['topicAnalytics']
+}) => {
+    const classAverageScore = classModuleData?.averageScore;
+    const classAverageTime = classModuleData?.averageTimeInSeconds;
+    const [isExpanded, setIsExpanded] = useState(false);
+    const [page, setPage] = useState(1);
+    const itemsPerPage = 3;
+
+    const totalPages = Math.ceil(perf.topics.length / itemsPerPage);
+    const currentTopics = perf.topics.slice((page - 1) * itemsPerPage, page * itemsPerPage);
+
+    return (
+        <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm overflow-hidden">
+            <div className="p-4 cursor-pointer" onClick={() => setIsExpanded(!isExpanded)}>
+                <div className="flex justify-between items-start mb-3 gap-2">
+                    <h4 className="font-bold text-gray-800 dark:text-gray-200 text-sm line-clamp-2">{perf.moduleTitle}</h4>
+                    <div className="flex-shrink-0">
+                        {getStudentModuleStatusBadge(perf.moduleScore, perf.timeInSeconds, classAverageScore, classAverageTime)}
+                    </div>
+                </div>
+                
+                <div className="grid grid-cols-2 gap-4 text-sm mb-3">
+                    <div>
+                        <p className="text-xs text-gray-500 dark:text-gray-400 mb-1">Nilai Modul</p>
+                        <div className="flex items-center gap-2">
+                            <span className="font-bold text-lg text-gray-800 dark:text-gray-200">{perf.moduleScore > 0 ? `${perf.moduleScore}%` : '-'}</span>
+                            <ComparisonIndicator student={perf.moduleScore} average={classAverageScore ?? 0} type="score" />
+                        </div>
+                    </div>
+                    <div>
+                        <p className="text-xs text-gray-500 dark:text-gray-400 mb-1">Waktu</p>
+                        <div className="flex items-center gap-2">
+                            <span className="font-semibold text-gray-800 dark:text-gray-200">{formatTime(perf.timeInSeconds)}</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div className="flex items-center justify-center pt-2 border-t border-gray-100 dark:border-gray-700">
+                    <button 
+                        className="flex items-center text-xs text-blue-600 dark:text-blue-400 font-medium"
+                    >
+                        {isExpanded ? <ChevronUp size={16} className="mr-1" /> : <ChevronDown size={16} className="mr-1" />}
+                        {isExpanded ? 'Tutup Detail Topik' : 'Lihat Detail Topik'}
+                    </button>
+                </div>
+            </div>
+
+            {isExpanded && perf.topics.length > 0 && (
+                <div className="bg-gray-50 dark:bg-gray-900/30 border-t border-gray-100 dark:border-gray-700 p-4">
+                    <h5 className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase mb-3">Detail Topik</h5>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        {currentTopics.map(topic => {
+                             const classTopicData = classTopicAnalytics?.find(t => t.topicTitle === topic.topicTitle);
+                             return (
+                                <div key={topic.topicTitle} className="bg-white dark:bg-gray-800 p-3 rounded-lg border border-gray-200 dark:border-gray-700 shadow-sm">
+                                    <div className="flex justify-between items-start mb-2 gap-2">
+                                        <span className="text-sm font-medium text-gray-800 dark:text-gray-200 line-clamp-2">{topic.topicTitle}</span>
+                                        <div className="flex-shrink-0 scale-90 origin-top-right">
+                                            {getStudentModuleStatusBadge(topic.score, topic.timeInSeconds, classTopicData?.averageScore, classTopicData?.averageTimeInSeconds)}
+                                        </div>
+                                    </div>
+                                    <div className="flex justify-between items-center text-xs border-t border-gray-100 dark:border-gray-700 pt-2 mt-2">
+                                        <div className="flex flex-col">
+                                            <span className="text-gray-500 dark:text-gray-400 mb-0.5">Waktu</span>
+                                            <span className="font-medium text-gray-700 dark:text-gray-300 flex items-center gap-1">
+                                                <Clock size={12} className="text-gray-400" />
+                                                {formatTime(topic.timeInSeconds)}
+                                            </span>
+                                        </div>
+                                        <div className="flex flex-col text-right">
+                                            <span className="text-gray-500 dark:text-gray-400 mb-0.5">Nilai</span>
+                                            <span className="font-bold text-gray-800 dark:text-gray-200 text-sm">{topic.score}%</span>
+                                        </div>
+                                    </div>
+                                </div>
+                             );
+                        })}
+                    </div>
+                    {totalPages > 1 && (
+                        <div className="flex justify-center mt-4 gap-2">
+                            <button
+                                onClick={() => setPage(p => Math.max(1, p - 1))}
+                                disabled={page === 1}
+                                className="px-2 py-1 text-xs bg-white border border-gray-300 rounded hover:bg-gray-100 disabled:opacity-50 dark:bg-gray-800 dark:border-gray-600 dark:text-gray-300"
+                            >
+                                Prev
+                            </button>
+                            <span className="text-xs flex items-center text-gray-600 dark:text-gray-400">
+                                {page} / {totalPages}
+                            </span>
+                            <button
+                                onClick={() => setPage(p => Math.min(totalPages, p + 1))}
+                                disabled={page === totalPages}
+                                className="px-2 py-1 text-xs bg-white border border-gray-300 rounded hover:bg-gray-100 disabled:opacity-50 dark:bg-gray-800 dark:border-gray-600 dark:text-gray-300"
+                            >
+                                Next
+                            </button>
+                        </div>
+                    )}
+                </div>
+            )}
+        </div>
+    );
+};
+
 const StudentPerformanceRow = ({ perf, classModuleData, classTopicAnalytics }: {
     perf: StudentAnalyticsData['detailedPerformance'][0],
     classModuleData: AdminAnalyticsData['moduleAnalytics'] extends (infer U)[] ? U : never | undefined,
@@ -1077,35 +1221,39 @@ const StudentPerformanceRow = ({ perf, classModuleData, classTopicAnalytics }: {
             {isExpanded && perf.topics.length > 0 && (
                 <tr className="bg-gray-100 dark:bg-gray-900/50">
                     <td colSpan={6} className="p-0">
-                        <div className="px-8 py-4">
+                        <div className="px-4 sm:px-8 py-4">
                             <h4 className="text-sm font-semibold text-gray-700 dark:text-gray-300">Detail Tes per Topik</h4>
                             <p className="text-xs text-gray-500 dark:text-gray-400 mb-2">Rincian nilai dan waktu pengerjaan untuk setiap topik di dalam modul ini.</p>
-                            <div className="overflow-x-auto">
-                                <table className="w-full text-sm text-left">
-                                    <thead className="text-xs text-gray-600 dark:text-gray-400 border-b-2 border-gray-200 dark:border-gray-600">
-                                        <tr>
-                                            <th className="py-2 font-semibold" style={{ width: '50%' }}>Nama Topik</th>
-                                            <th className="py-2 font-semibold text-center">Waktu Belajar</th>
-                                            <th className="py-2 font-semibold text-center">Nilai Tes Topik</th>
-                                            <th className="py-2 font-semibold text-center">Status</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        {perf.topics.map(topic => {
-                                            const classTopicData = classTopicAnalytics?.find(t => t.topicTitle === topic.topicTitle);
-                                            return (
-                                                <tr key={topic.topicTitle} className="border-b border-gray-200 dark:border-gray-700 hover:bg-gray-200 dark:hover:bg-gray-700/50">
-                                                    <td className="py-2 text-gray-700 dark:text-gray-300">{topic.topicTitle}</td>
-                                                    <td className="py-2 text-center text-gray-600 dark:text-gray-400">{formatTime(topic.timeInSeconds)}</td>
-                                                    <td className="py-2 text-center font-semibold text-gray-800 dark:text-gray-200">{topic.score}%</td>
-                                                    <td className="py-2 text-center">
-                                                        {getStudentModuleStatusBadge(topic.score, topic.timeInSeconds, classTopicData?.averageScore, classTopicData?.averageTimeInSeconds)}
-                                                    </td>
-                                                </tr>
-                                            );
-                                        })}
-                                    </tbody>
-                                </table>
+                            
+                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mt-4">
+                                {perf.topics.map(topic => {
+                                    const classTopicData = classTopicAnalytics?.find(t => t.topicTitle === topic.topicTitle);
+                                    return (
+                                        <div key={topic.topicTitle} className="bg-white dark:bg-gray-800 p-4 rounded-lg border border-gray-200 dark:border-gray-700 shadow-sm hover:shadow-md transition-shadow">
+                                            <div className="flex justify-between items-start mb-2 gap-2">
+                                                <span className="text-sm font-medium text-gray-800 dark:text-gray-200 line-clamp-2" title={topic.topicTitle}>
+                                                    {topic.topicTitle}
+                                                </span>
+                                                <div className="flex-shrink-0 scale-90 origin-top-right">
+                                                    {getStudentModuleStatusBadge(topic.score, topic.timeInSeconds, classTopicData?.averageScore, classTopicData?.averageTimeInSeconds)}
+                                                </div>
+                                            </div>
+                                            <div className="flex justify-between items-center text-xs border-t border-gray-100 dark:border-gray-700 pt-3 mt-2">
+                                                <div className="flex flex-col">
+                                                    <span className="text-gray-500 dark:text-gray-400 mb-0.5">Waktu</span>
+                                                    <span className="font-medium text-gray-700 dark:text-gray-300 flex items-center gap-1">
+                                                        <Clock size={12} className="text-gray-400" />
+                                                        {formatTime(topic.timeInSeconds)}
+                                                    </span>
+                                                </div>
+                                                <div className="flex flex-col text-right">
+                                                    <span className="text-gray-500 dark:text-gray-400 mb-0.5">Nilai</span>
+                                                    <span className="font-bold text-gray-800 dark:text-gray-200 text-sm">{topic.score}%</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    );
+                                })}
                             </div>
                         </div>
                     </td>
