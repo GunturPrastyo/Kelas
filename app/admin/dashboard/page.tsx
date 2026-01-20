@@ -33,10 +33,10 @@ export default function DashboardPage() {
     totalUsers: 0,
     totalModules: 0,
     averageScore: 0,
-    activeUsers: 0,
     recentUsers: [] as User[],
     moduleStats: [] as any[]
   });
+  const [activeUsers, setActiveUsers] = useState(0);
   const [loading, setLoading] = useState(true);
   const [adminName, setAdminName] = useState("Admin");
   const chartRef = useRef<HTMLCanvasElement>(null);
@@ -74,7 +74,6 @@ export default function DashboardPage() {
         let recentUsersList: User[] = [];
         let moduleStatsData: any[] = [];
         let avgScore = 0;
-        let onlineUsersCount = 0;
 
         if (usersRes.ok) {
             const usersData = await usersRes.json();
@@ -107,7 +106,7 @@ export default function DashboardPage() {
             const analyticsData = await analyticsRes.json();
             userCount = analyticsData.totalUsers || 0;
             avgScore = analyticsData.overallAverageScore || 0;
-            onlineUsersCount = analyticsData.onlineUsers || 0;
+            setActiveUsers(analyticsData.onlineUsers || 0);
 
             // Gunakan data real dari moduleAnalytics jika tersedia dan tidak kosong
             if (analyticsData.moduleAnalytics && Array.isArray(analyticsData.moduleAnalytics) && analyticsData.moduleAnalytics.length > 0) {
@@ -122,7 +121,6 @@ export default function DashboardPage() {
             totalUsers: userCount,
             totalModules: moduleCount,
             averageScore: avgScore,
-            activeUsers: onlineUsersCount,
             recentUsers: recentUsersList,
             moduleStats: moduleStatsData
         });
@@ -144,7 +142,7 @@ export default function DashboardPage() {
             const res = await authFetch(`${process.env.NEXT_PUBLIC_API_URL}/api/analytics/admin-analytics?type=online-users`);
             if (res.ok) {
                 const data = await res.json();
-                setStats((prev) => ({ ...prev, activeUsers: data.onlineUsers }));
+                setActiveUsers(data.onlineUsers);
             }
         } catch (error) {
             console.error("Gagal memuat user online:", error);
@@ -235,7 +233,7 @@ export default function DashboardPage() {
                 <div>
                     <p className="text-xs md:text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">User Online</p>
                     <h3 className="text-2xl md:text-3xl font-bold text-gray-800 dark:text-white flex items-center gap-2 tracking-tight">
-                        {loading ? "..." : stats.activeUsers}
+                        {loading ? "..." : activeUsers}
                         <span className="relative flex h-3 w-3">
                           <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
                           <span className="relative inline-flex rounded-full h-3 w-3 bg-green-500"></span>
