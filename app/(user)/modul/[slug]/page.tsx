@@ -197,6 +197,21 @@ export default function ModulDetailPage() {
             if (!res.ok) throw new Error("Gagal memuat data modul.");
             const data = await res.json();
 
+            // PERBAIKAN: Deduplikasi soal (questions) di dalam setiap topik untuk mencegah soal ganda akibat import data
+            if (data.topics && Array.isArray(data.topics)) {
+                data.topics = data.topics.map((topic: Topik) => {
+                    const uniqueQuestions: Question[] = [];
+                    const seenIds = new Set<string>();
+                    topic.questions.forEach((q) => {
+                        if (!seenIds.has(q._id)) {
+                            seenIds.add(q._id);
+                            uniqueQuestions.push(q);
+                        }
+                    });
+                    return { ...topic, questions: uniqueQuestions };
+                });
+            }
+
             // Fallback: Jika backend tidak mengirim `hasCompletedModulPostTest`, cek manual.
             if (data.hasCompletedModulPostTest === undefined) {
                 try {
@@ -383,7 +398,14 @@ export default function ModulDetailPage() {
                             acc[ans.questionId] = ans.selectedOption;
                             return acc;
                         }, {}) || {});
-                        setTestIdx(progressData.currentIndex || 0);
+                        
+                        // PERBAIKAN: Validasi currentIndex agar tidak melebihi jumlah soal (terutama jika data soal dideduplikasi)
+                        let savedIndex = progressData.currentIndex || 0;
+                        if (savedIndex >= topik.questions.length) {
+                            savedIndex = 0; // Reset ke awal jika index tidak valid
+                        }
+                        setTestIdx(savedIndex);
+
                         setAnswerChangesCount(progressData.answerChangesCount || 0);
                         setChangedQuestionIds(new Set(progressData.changedQuestionIds || [])); // Muat progress untuk Set
                         setTabExitCount(progressData.tabExitCount || 0);
