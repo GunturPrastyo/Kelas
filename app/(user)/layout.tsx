@@ -14,6 +14,9 @@ function UserLayoutContent({ children }: { children: React.ReactNode }) {
 
   // --- LOGIKA BARU: Heartbeat User Online ---
   useEffect(() => {
+    const controller = new AbortController();
+    const { signal } = controller;
+
     const sendHeartbeat = async () => {
       try {
         // Kirim sinyal 'heartbeat' ke backend
@@ -21,10 +24,13 @@ function UserLayoutContent({ children }: { children: React.ReactNode }) {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ testType: "heartbeat" }),
+          signal: signal, // Hubungkan signal abort
         });
       } catch (error) {
         // Silent error agar tidak mengganggu user
-        console.error("Gagal mengirim heartbeat aktivitas:", error);
+        if ((error as Error).name !== 'AbortError') {
+            console.error("Gagal mengirim heartbeat aktivitas:", error);
+        }
       }
     };
 
@@ -36,7 +42,10 @@ function UserLayoutContent({ children }: { children: React.ReactNode }) {
     // jadi interval 5 menit aman untuk menjaga status tetap online.
     const interval = setInterval(sendHeartbeat, 5 * 60 * 1000);
 
-    return () => clearInterval(interval);
+    return () => {
+        clearInterval(interval);
+        controller.abort(); // Batalkan request jika komponen di-unmount (misal saat logout)
+    };
   }, []);
 
   return (

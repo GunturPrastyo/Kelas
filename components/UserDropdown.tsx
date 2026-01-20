@@ -111,7 +111,16 @@ export default function UserDropdown() {
         return () => window.removeEventListener('progressUpdated', handleProgressUpdate);
     }, []); // Dependency kosong agar hanya berjalan sekali
 
-    const handleLogout = () => {
+    const handleLogout = async () => {
+        try {
+            // Trigger logout di backend agar status online (lastActiveAt) direset
+            await authFetch(`${process.env.NEXT_PUBLIC_API_URL}/api/users/logout`, {
+                method: 'POST',
+                // Tidak perlu signal di sini karena kita INGIN ini selesai
+            });
+        } catch (error) {
+            console.error("Gagal logout dari server:", error);
+        }
         // Hapus data dari localStorage dan redirect ke halaman login
         localStorage.removeItem('user');
         localStorage.removeItem('token');
