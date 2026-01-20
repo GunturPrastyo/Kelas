@@ -64,7 +64,7 @@ function UserLayoutContent({ children }: { children: React.ReactNode }) {
       {/* Mobile Overlay */}
       {isMobileDrawerOpen && (
         <div
-          className="fixed inset-0 z-40 bg-black bg-opacity-50 md:hidden"
+          className="fixed inset-0 z-40 bg-opacity-50 md:hidden"
           onClick={toggleMobileDrawer}
           aria-hidden="true"
         />
