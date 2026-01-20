@@ -1020,7 +1020,7 @@ export default function AdminAnalyticsPage() {
                                         <RechartsBarChart
                                             data={studentComparisonChartData}
                                             layout="vertical"
-                                            margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
+                                            margin={{ top: 0, right: 10, left: -20, bottom: 0 }}
                                             barCategoryGap="35%"
                                         >
                                             <CartesianGrid strokeDasharray="3 3" stroke="rgba(128, 128, 128, 0.2)" />
