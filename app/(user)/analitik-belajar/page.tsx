@@ -596,9 +596,9 @@ export default function AnalitikBelajarPage() {
           {/* Card 1 */}
           <div className="relative overflow-hidden bg-gradient-to-br from-blue-50 to-blue-100 dark:from-gray-800 dark:to-gray-900 text-gray-800 dark:text-gray-100 rounded-2xl p-4 shadow-md hover:scale-[1.02] transition-transform dark:shadow-lg dark:shadow-gray-800/40 border border-slate-200 dark:border-slate-700 border-l-[6px] border-l-blue-500">
             <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-br from-blue-200/60 to-transparent dark:from-blue-900/20 rounded-bl-[60px] -mr-4 -mt-4" />
-            <div className="relative z-10 flex flex-col gap-2">
+            <div className="relative z-10 flex flex-col gap-2 items-center sm:items-start text-center sm:text-left">
               <p className="text-sm text-gray-600 dark:text-gray-400">Modul Selesai</p>
-              <div className="flex items-center gap-3">
+              <div className="flex flex-col items-center sm:flex-row sm:items-center gap-2 sm:gap-3">
                 <div className="flex-shrink-0">
                   <Image src="/modules2.png" alt="Modul Icon" width={48} height={48} className="w-12 h-12 rounded-lg bg-blue-100 dark:bg-gray-700 p-1" />
                 </div>
@@ -621,9 +621,9 @@ export default function AnalitikBelajarPage() {
           {/* Card 2 */}
           <div className="relative overflow-hidden bg-gradient-to-br from-green-50 to-green-100 dark:from-gray-800 dark:to-gray-900 text-gray-800 dark:text-gray-100 rounded-2xl p-4 shadow-md hover:scale-[1.02] transition-transform dark:shadow-lg dark:shadow-gray-800/40 border border-slate-200 dark:border-slate-700 border-l-[6px] border-l-green-500">
             <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-br from-green-200/60 to-transparent dark:from-green-900/20 rounded-bl-[60px] -mr-4 -mt-4" />
-            <div className="relative z-10 flex flex-col gap-2">
+            <div className="relative z-10 flex flex-col gap-2 items-center sm:items-start text-center sm:text-left">
               <p className="text-sm text-gray-600 dark:text-gray-400">Rata-rata Nilai</p>
-              <div className="flex items-center gap-3">
+              <div className="flex flex-col items-center sm:flex-row sm:items-center gap-2 sm:gap-3">
                 <div className="flex-shrink-0">
                   <Image src="/star.png" alt="Score Icon" width={48} height={48} className="w-12 h-12 rounded-lg bg-green-100 dark:bg-gray-700 p-1" />
                 </div>
@@ -644,16 +644,16 @@ export default function AnalitikBelajarPage() {
           {/* Card 3 */}
           <div className="relative overflow-hidden bg-gradient-to-br from-purple-50 to-purple-100 dark:from-gray-800 dark:to-gray-900 text-gray-800 dark:text-gray-100 rounded-2xl p-4 shadow-md hover:scale-[1.02] transition-transform dark:shadow-lg dark:shadow-gray-800/40 border border-slate-200 dark:border-slate-700 border-l-[6px] border-l-purple-500">
             <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-br from-purple-200/60 to-transparent dark:from-purple-900/20 rounded-bl-[60px] -mr-4 -mt-4" />
-            <div className="relative z-10 flex flex-col gap-2">
+            <div className="relative z-10 flex flex-col gap-2 items-center sm:items-start text-center sm:text-left">
               <p className="text-sm text-gray-600 dark:text-gray-400">Total Waktu Belajar</p>
-              <div className="flex items-center gap-3">
+              <div className="flex flex-col items-center sm:flex-row sm:items-center gap-2 sm:gap-3">
                 <div className="flex-shrink-0">
                   <Image src="/study.png" alt="Time Icon" width={48} height={48} className="w-12 h-12 rounded-lg bg-purple-100 dark:bg-gray-700 p-1" />
                 </div>
                 {loading || !summary ? (
                   <div className="h-8 w-24 bg-purple-100/50 dark:bg-gray-700/50 rounded-md animate-pulse"></div>
                 ) : (
-                  <div className="flex items-baseline gap-1.5 flex-wrap">
+                  <div className="flex items-baseline gap-1.5 flex-wrap justify-center sm:justify-start">
                     <h2 className="text-3xl font-bold text-purple-600 dark:text-purple-400 leading-none">{animatedStudyHours}</h2>
                     <span className="text-xl font-semibold text-purple-500 dark:text-purple-300">jam</span>
                     <p className="text-base text-purple-500 dark:text-purple-400">{summary.studyMinutes} menit</p>                </div>
@@ -670,9 +670,9 @@ export default function AnalitikBelajarPage() {
           {/* Card 4 */}
           <div className="relative overflow-hidden bg-gradient-to-br from-orange-50 to-orange-100 dark:from-gray-800 dark:to-gray-900 text-gray-800 dark:text-gray-100 rounded-2xl p-4 shadow-md hover:scale-[1.02] transition-transform dark:shadow-lg dark:shadow-gray-800/40 border border-slate-200 dark:border-slate-700 border-l-[6px] border-l-orange-500">
             <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-br from-orange-200/60 to-transparent dark:from-orange-900/20 rounded-bl-[60px] -mr-4 -mt-4" />
-            <div className="relative z-10 flex flex-col gap-2">
+            <div className="relative z-10 flex flex-col gap-2 items-center sm:items-start text-center sm:text-left">
               <p className="text-sm text-gray-600 dark:text-gray-400">Streak Harian</p>
-              <div className="flex items-center gap-3">
+              <div className="flex flex-col items-center sm:flex-row sm:items-center gap-2 sm:gap-3">
                 <div className="flex-shrink-0">
                   <Image src="/streak.png" alt="Streak Icon" width={48} height={48} className="w-12 h-12 rounded-lg bg-orange-100 dark:bg-gray-700 p-1" />
                 </div>
