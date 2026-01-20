@@ -1,7 +1,7 @@
 "use client";
 
 import { useEditor, EditorContent, Editor } from "@tiptap/react";
-import { Node } from '@tiptap/core';
+import { Node as TiptapNode } from '@tiptap/core';
 import StarterKit from "@tiptap/starter-kit";
 import { TextStyle } from "@tiptap/extension-text-style";
 import Highlight from "@tiptap/extension-highlight";
@@ -57,6 +57,7 @@ const ToolButton = ({
   <button
     type="button"
     onClick={onClick}
+    onMouseDown={(e) => e.preventDefault()}
     title={title}
     className={`p-2 rounded-md transition-colors ${isActive
       ? "bg-purple-100 text-gray-700 dark:bg-gray-600 dark:text-white"
@@ -68,7 +69,7 @@ const ToolButton = ({
 );
 
 // Ekstensi kustom untuk menambahkan atribut 'style' ke node
-const StyleAttribute = Node.create({
+const StyleAttribute = TiptapNode.create({
   name: 'styleAttribute',
   addGlobalAttributes() {
     return [
@@ -318,11 +319,14 @@ export default function TiptapEditor({
   content,
   onChange,
   placeholder,
+  onBlur,
 }: {
   content: string;
   onChange: (val: string) => void;
   placeholder?: string;
+  onBlur?: () => void;
 }) {
+  const containerRef = useRef<HTMLDivElement>(null);
   const editor = useEditor({
     extensions: [
       StarterKit.configure({
@@ -350,6 +354,13 @@ export default function TiptapEditor({
     ],
     content,
     onUpdate: ({ editor }) => onChange(editor.getHTML()),
+    onBlur: ({ event }) => {
+      const relatedTarget = event.relatedTarget as Node | null;
+      if (containerRef.current && relatedTarget && containerRef.current.contains(relatedTarget)) {
+        return;
+      }
+      if (onBlur) onBlur();
+    },
     editorProps: {
       attributes: {
         class:
@@ -360,7 +371,7 @@ export default function TiptapEditor({
   });
 
   return (
-    <div className="space-y-2 my-4">
+    <div className="space-y-2 my-4" ref={containerRef}>
       <MenuBar editor={editor} />
       <EditorContent
         editor={editor}

@@ -14,7 +14,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { PlusCircle, Trash2, CheckCircle2, Edit3, Save, Settings2 } from "lucide-react";
+import { PlusCircle, Trash2, CheckCircle2, Settings2 } from "lucide-react";
 import { authFetch } from "@/lib/authFetch";
 
 // Impor TiptapEditor secara dinamis
@@ -427,26 +427,6 @@ export default function TestForm({
                       </span>
                     </div>
                     <div className="flex gap-2">
-                      {activeOption.qIndex === qIndex &&
-                        activeOption.oIndex === oIndex ? (
-                        <button
-                          onClick={() =>
-                            setActiveOption({ qIndex: -1, oIndex: null })
-                          }
-                          className="text-green-600 hover:text-green-700 dark:text-green-400 dark:hover:text-green-500"
-                        >
-                          <Save size={16} />
-                        </button>
-                      ) : (
-                        <button
-                          onClick={() =>
-                            setActiveOption({ qIndex, oIndex })
-                          }
-                          className="text-blue-500 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-500"
-                        >
-                          <Edit3 size={16} />
-                        </button>
-                      )}
                       {q.options.length > 1 && (
                         <button
                           onClick={() => handleRemoveOption(qIndex, oIndex)}
@@ -466,12 +446,16 @@ export default function TestForm({
                       onChange={(value) =>
                         handleChangeOption(qIndex, oIndex, value)
                       }
+                      // @ts-ignore - TiptapEditor prop types might not be fully inferred in dynamic import usage without strict typing
+                      onBlur={() => setActiveOption({ qIndex: -1, oIndex: null })}
                       placeholder={`Masukkan isi opsi ${oIndex + 1}...`}
                     />
                   ) : (
                     <div
-                      className="prose prose-sm dark:prose-invert max-w-none px-2 py-1"
-                      dangerouslySetInnerHTML={{ __html: option || "<i>Kosong</i>" }}
+                      onClick={() => setActiveOption({ qIndex, oIndex })}
+                      className="prose prose-sm dark:prose-invert max-w-none px-2 py-2 cursor-text hover:bg-gray-50 dark:hover:bg-gray-800/50 rounded border border-transparent hover:border-gray-200 dark:hover:border-gray-700 transition-colors min-h-[2.5rem]"
+                      title="Klik untuk mengedit"
+                      dangerouslySetInnerHTML={{ __html: option || "<span class='text-gray-400 italic'>Klik untuk mengisi jawaban...</span>" }}
                     />
                   )}
                 </div>
