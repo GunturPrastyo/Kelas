@@ -76,6 +76,7 @@ export default function DashboardPage() {
         let recentUsersList: User[] = [];
         let moduleStatsData: any[] = [];
         let avgScore = 0;
+        let onlineUsersCount = 0;
 
         if (usersRes.ok) {
             const usersData = await usersRes.json();
@@ -108,6 +109,7 @@ export default function DashboardPage() {
             const analyticsData = await analyticsRes.json();
             userCount = analyticsData.totalUsers || 0;
             avgScore = analyticsData.overallAverageScore || 0;
+            onlineUsersCount = analyticsData.onlineUsers || 0;
 
             // Gunakan data real dari moduleAnalytics jika tersedia dan tidak kosong
             if (analyticsData.moduleAnalytics && Array.isArray(analyticsData.moduleAnalytics) && analyticsData.moduleAnalytics.length > 0) {
@@ -118,14 +120,11 @@ export default function DashboardPage() {
             }
         }
 
-        // Simulasi user online (random 5-15% dari total user)
-        const simulatedOnline = Math.max(1, Math.floor(userCount * (0.05 + Math.random() * 0.1)));
-
         setStats({
             totalUsers: userCount,
             totalModules: moduleCount,
             averageScore: avgScore,
-            activeUsers: simulatedOnline,
+            activeUsers: onlineUsersCount,
             recentUsers: recentUsersList,
             moduleStats: moduleStatsData
         });
