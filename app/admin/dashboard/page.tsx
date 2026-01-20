@@ -6,7 +6,6 @@ import Image from "next/image";
 import { Users, BookOpen, GraduationCap, Activity, Plus, ArrowRight, BarChart3, Zap, TrendingUp } from "lucide-react";
 import { authFetch } from "@/lib/authFetch";
 import { Chart, registerables } from "chart.js";
-
 Chart.register(...registerables);
 
 interface User {
@@ -43,7 +42,6 @@ export default function DashboardPage() {
   const chartRef = useRef<HTMLCanvasElement>(null);
   const chartInstance = useRef<Chart | null>(null);
 
-  // Greeting logic
   const greeting = useMemo(() => {
     const hour = new Date().getHours();
     if (hour >= 4 && hour < 11) return "Selamat Pagi";
@@ -139,7 +137,26 @@ export default function DashboardPage() {
     fetchStats();
   }, []);
 
-  // Chart.js initialization
+  // --- POLLING: Update User Online Secara Berkala ---
+  useEffect(() => {
+    const fetchOnlineUsers = async () => {
+        try {
+            const res = await authFetch(`${process.env.NEXT_PUBLIC_API_URL}/api/analytics/admin-analytics?type=online-users`);
+            if (res.ok) {
+                const data = await res.json();
+                setStats((prev) => ({ ...prev, activeUsers: data.onlineUsers }));
+            }
+        } catch (error) {
+            console.error("Gagal memuat user online:", error);
+        }
+    };
+
+    fetchOnlineUsers();
+    const interval = setInterval(fetchOnlineUsers, 10000);
+
+    return () => clearInterval(interval);
+  }, []);
+
   useEffect(() => {
     if (chartRef.current && stats.moduleStats.length > 0) {
       if (chartInstance.current) {
@@ -195,6 +212,12 @@ export default function DashboardPage() {
         });
       }
     }
+
+    return () => {
+        if (chartInstance.current) {
+            chartInstance.current.destroy();
+        }
+    };
   }, [stats.moduleStats]);
 
   return (
