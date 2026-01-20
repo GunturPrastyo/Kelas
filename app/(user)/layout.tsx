@@ -14,37 +14,46 @@ function UserLayoutContent({ children }: { children: React.ReactNode }) {
 
   // --- LOGIKA BARU: Heartbeat User Online ---
   useEffect(() => {
-    const controller = new AbortController();
-    const { signal } = controller;
-
+    // 1. Fungsi Heartbeat (Saya Aktif)
     const sendHeartbeat = async () => {
       try {
-        // Kirim sinyal 'heartbeat' ke backend
         await authFetch(`${process.env.NEXT_PUBLIC_API_URL}/api/results`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ testType: "heartbeat" }),
-          signal: signal, // Hubungkan signal abort
         });
       } catch (error) {
-        // Silent error agar tidak mengganggu user
-        if ((error as Error).name !== 'AbortError') {
-            console.error("Gagal mengirim heartbeat aktivitas:", error);
-        }
+        console.error("Gagal mengirim heartbeat:", error);
       }
     };
 
-    // Kirim segera saat halaman dimuat
-    sendHeartbeat();
+    // 2. Fungsi Offline (Saya Keluar) - Menggunakan fetch native dengan keepalive
+    const sendOfflineSignal = () => {
+      const token = localStorage.getItem('token');
+      if (!token) return;
 
-    // Kirim ulang setiap 5 menit (300.000 ms)
-    // Backend menghitung user online berdasarkan aktivitas 10 menit terakhir,
-    // jadi interval 5 menit aman untuk menjaga status tetap online.
-    const interval = setInterval(sendHeartbeat, 5 * 60 * 1000);
+      // Gunakan fetch biasa karena authFetch mungkin async/complex untuk event unload
+      fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/results`, {
+        method: "POST",
+        headers: { 
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`
+        },
+        body: JSON.stringify({ testType: "offline" }),
+        keepalive: true // PENTING: Agar request tetap jalan walau tab ditutup
+      }).catch(err => console.error("Gagal kirim sinyal offline:", err));
+    };
+
+    // Jalankan heartbeat segera dan setiap 30 detik
+    sendHeartbeat();
+    const interval = setInterval(sendHeartbeat, 30000);
+
+    // Dengarkan event saat user menutup tab/browser
+    window.addEventListener('beforeunload', sendOfflineSignal);
 
     return () => {
         clearInterval(interval);
-        controller.abort(); // Batalkan request jika komponen di-unmount (misal saat logout)
+        window.removeEventListener('beforeunload', sendOfflineSignal);
     };
   }, []);
 
@@ -55,7 +64,7 @@ function UserLayoutContent({ children }: { children: React.ReactNode }) {
       {/* Mobile Overlay */}
       {isMobileDrawerOpen && (
         <div
-          className="fixed inset-0 bg-black/50 z-40 md:hidden"
+          className="fixed inset-0 z-40 bg-black bg-opacity-50 md:hidden"
           onClick={toggleMobileDrawer}
           aria-hidden="true"
         />
