@@ -257,15 +257,9 @@ export default function AdminAnalyticsPage() {
                     throw new Error('Gagal memuat data analitik.');
                 }
                 const data = await res.json();
-                // Data dummy untuk field yang belum ada di API (jika masih ada)
-                const dummyData = {
-                    activeUsers: Math.floor(data.totalUsers * 0.73), // 73% dari total
-                    averageRemedialRate: 18,
-                    moduleWithLongestTime: "Variabel & Tipe Data",
-                    moduleWithFastestTime: "Pengenalan Komputasi",
-                };
-
-                setAnalytics({ ...data, ...dummyData });
+                
+              
+                setAnalytics({ ...data});
             } catch (err: any) {
                 setError(err.message);
             } finally {
@@ -506,7 +500,7 @@ export default function AdminAnalyticsPage() {
                 <StatCard title="Jumlah Siswa" value={analytics.totalUsers ?? 0} icon={<Users size={20} />} color="blue" change="+12 minggu ini" changeType="increase" />
                 <StatCard title="Rata-rata Waktu" value={42} unit=" mnt" icon={<Clock size={20} />} color="yellow" change="↓ 5% lebih cepat" changeType="neutral" />
                 <StatCard title="Rata-rata Nilai" value={analytics.overallAverageScore ?? 0} unit="%" icon={<Percent size={20} />} color="green" change="+3% minggu ini" changeType="increase" />
-                <StatCard title="Siswa Aktif" value={analytics.activeUsers ?? 0} icon={<UserCheck size={20} />} color="indigo" subtext={`${analytics.totalUsers ? Math.round((analytics.activeUsers! / analytics.totalUsers) * 100) : 0}% dari total siswa`} changeType="decrease"/>
+                <StatCard title="Siswa Aktif" value={analytics.activeUsers ?? 0} icon={<UserCheck size={20} />} color="indigo" subtext={`${analytics.totalUsers ? Math.round(((analytics.activeUsers || 0) / analytics.totalUsers) * 100) : 0}% aktif 7 hari terakhir`} />
             </div>
 
 
