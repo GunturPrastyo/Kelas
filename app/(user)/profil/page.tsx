@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, ChangeEvent, FormEvent, useMemo } from "react";
+import React, { useState, useEffect, ChangeEvent, FormEvent, useMemo, Suspense } from "react";
 import { authFetch } from "@/lib/authFetch";
 import Avatar from "@/components/Avatar"; // Ganti Image dengan komponen Avatar
 import Breadcrumb from "@/components/Breadcrumb";
@@ -31,7 +31,7 @@ interface User {
   hasPassword?: boolean; // Tambahkan properti ini, buat opsional untuk kompatibilitas
 }
 
-const ProfilePage = () => {
+const ProfileContent = () => {
   const { showAlert } = useAlert();
   const searchParams = useSearchParams();
   const [user, setUser] = useState<User | null>(null);
@@ -581,6 +581,14 @@ const ProfilePage = () => {
         </div>
       </motion.div>
     </div>
+  );
+};
+
+const ProfilePage = () => {
+  return (
+    <Suspense fallback={<div className="p-6 text-center text-gray-500">Memuat...</div>}>
+      <ProfileContent />
+    </Suspense>
   );
 };
 
