@@ -152,12 +152,21 @@ export default function PreTestPage() {
                 const resultRaw = localStorage.getItem(resultKey);
                 if (resultRaw) {
                     const parsedResult = JSON.parse(resultRaw);
-                    // Kirim hasil dari localStorage ke DB jika belum ada di sana
-                    authFetch(`${process.env.NEXT_PUBLIC_API_URL}/api/results`, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ ...parsedResult, testType: 'pre-test-global' }),
-                    }).catch(err => console.warn("Gagal sinkronisasi hasil localStorage ke DB:", err));
+                    
+                    // Validasi kelengkapan data sebelum sync ke DB untuk menghindari error 400
+                    if (
+                        parsedResult.score != null && 
+                        parsedResult.correct != null && 
+                        parsedResult.total != null && 
+                        parsedResult.timeTaken != null
+                    ) {
+                        // Kirim hasil dari localStorage ke DB jika belum ada di sana
+                        authFetch(`${process.env.NEXT_PUBLIC_API_URL}/api/results`, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ ...parsedResult, testType: 'pre-test-global' }),
+                        }).catch(err => console.warn("Gagal sinkronisasi hasil localStorage ke DB:", err));
+                    }
 
                     setResult(parsedResult);
                     setLoading(false);
