@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Breadcrumb from "@/components/Breadcrumb";
+import { authFetch } from "@/lib/authFetch";
 
 export default function TambahModulPage({ isSidebarCollapsed }: { isSidebarCollapsed?: boolean }) {
   const router = useRouter();
@@ -38,7 +39,7 @@ export default function TambahModulPage({ isSidebarCollapsed }: { isSidebarColla
       formData.append("slug", generateSlug(title));
       if (iconFile) formData.append("icon", iconFile);
 
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/modul`, {
+      const res = await authFetch(`${process.env.NEXT_PUBLIC_API_URL}/api/modul`, {
         method: "POST",
         body: formData,
       });
