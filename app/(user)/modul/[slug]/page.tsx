@@ -791,7 +791,7 @@ export default function ModulDetailPage() {
                                             {Math.round(testResult.score)}%
                                         </p>
                                         <p className="text-base text-slate-700 dark:text-slate-300 font-semibold">
-                                            {testResult.correct} / {activeTest.questions.length} Jawaban Benar
+                                            {testResult.correct} / {testResult.total} Jawaban Benar
                                         </p>
                                     </div>
                                 </motion.div>
