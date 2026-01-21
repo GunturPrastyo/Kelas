@@ -6,56 +6,9 @@ import SidebarUser from "@/components/sidebarUser";
 import { UIProvider, useUI } from "@/context/UIContext";
 import { AlertProvider } from "@/context/AlertContext";
 import AlertDialog from "@/components/AlertDialog";
-import { useEffect } from "react";
-import { authFetch } from "@/lib/authFetch";
 
 function UserLayoutContent({ children }: { children: React.ReactNode }) {
   const { isSidebarCollapsed, isMobileDrawerOpen, toggleMobileDrawer } = useUI();
-
-  // --- LOGIKA BARU: Heartbeat User Online ---
-  useEffect(() => {
-    // 1. Fungsi Heartbeat (Saya Aktif)
-    const sendHeartbeat = async () => {
-      try {
-        await authFetch(`${process.env.NEXT_PUBLIC_API_URL}/api/results`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ testType: "heartbeat" }),
-        });
-      } catch (error) {
-        console.error("Gagal mengirim heartbeat:", error);
-      }
-    };
-
-    // 2. Fungsi Offline (Saya Keluar) - Menggunakan fetch native dengan keepalive
-    const sendOfflineSignal = () => {
-      const token = localStorage.getItem('token');
-      if (!token) return;
-
-      // Gunakan fetch biasa karena authFetch mungkin async/complex untuk event unload
-      fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/results`, {
-        method: "POST",
-        headers: { 
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${token}`
-        },
-        body: JSON.stringify({ testType: "offline" }),
-        keepalive: true // PENTING: Agar request tetap jalan walau tab ditutup
-      }).catch(err => console.error("Gagal kirim sinyal offline:", err));
-    };
-
-    // Jalankan heartbeat segera dan setiap 30 detik
-    sendHeartbeat();
-    const interval = setInterval(sendHeartbeat, 30000);
-
-    // Dengarkan event saat user menutup tab/browser
-    window.addEventListener('beforeunload', sendOfflineSignal);
-
-    return () => {
-        clearInterval(interval);
-        window.removeEventListener('beforeunload', sendOfflineSignal);
-    };
-  }, []);
 
   return (
     <div className="font-poppins bg-gray-100 dark:bg-gray-900 text-gray-800 dark:text-gray-100 flex min-h-screen">
