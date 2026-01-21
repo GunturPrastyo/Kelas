@@ -170,11 +170,7 @@ export default function PostTestPage() {
 
                 // Ambil data modul terlebih dahulu untuk mendapatkan ID-nya
                 // Tambahkan timestamp atau cache: 'no-store' untuk mencegah caching di production
-                const modulResponse = await authFetch(`${process.env.NEXT_PUBLIC_API_URL}/api/modul/user-view/${slug}?t=${new Date().getTime()}`, {
-                    headers: {
-                        'Cache-Control': 'no-cache, no-store, must-revalidate'
-                    }
-                });
+                const modulResponse = await authFetch(`${process.env.NEXT_PUBLIC_API_URL}/api/modul/user-view/${slug}?t=${new Date().getTime()}`);
                 if (!modulResponse.ok) throw new Error("Gagal memuat data modul.");
                 const modulData: Modul = await modulResponse.json();
                 if (!isMounted) return;
