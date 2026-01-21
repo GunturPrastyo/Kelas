@@ -11,7 +11,10 @@ export const authFetch = (url: RequestInfo | URL, options: RequestInit = {}): Pr
     // Gabungkan header yang ada dengan header Authorization
     const headers = {
         ...options.headers,
-        ...(token && { 'X-Authorization': `Bearer ${token}` }), // Gunakan header kustom
+        ...(token && { 
+            'Authorization': `Bearer ${token}`, // Header standar
+            'X-Authorization': `Bearer ${token}` // Header alternatif untuk Hostinger
+        }), 
     };
 
     return fetch(url, { ...options, headers });
