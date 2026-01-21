@@ -162,11 +162,17 @@ export default function PostTestPage() {
 
         let isMounted = true; // Flag untuk mencegah update state pada unmounted component
 
+        // FIX: Reset state saat slug berubah untuk mencegah data modul/hasil sebelumnya tampil
+        setLoading(true);
+        setResult(null);
+        setModul(null);
+        setQuestions([]);
+        setAnswers({});
+
         const fetchModulAndQuestions = async () => {
             const isRetake = searchParams.get('retake') === 'true';
 
             try {
-                setLoading(true);
 
                 // Ambil data modul terlebih dahulu untuk mendapatkan ID-nya
                 // Tambahkan timestamp atau cache: 'no-store' untuk mencegah caching di production
