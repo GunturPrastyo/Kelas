@@ -86,8 +86,17 @@ export default function PostTestPage() {
         if (!user || !modul) return;
         setIsSubmitting(true);
 
+        // 1. Filter answers: Hanya ambil jawaban yang ID-nya ada di questions saat ini
+        const validQuestionIds = new Set(questions.map(q => q._id));
+        const cleanAnswers = Object.keys(answers)
+            .filter(key => validQuestionIds.has(key))
+            .reduce((obj, key) => {
+                obj[key] = answers[key];
+                return obj;
+            }, {} as { [key: string]: string });
+
         // Pastikan semua soal terkirim, meskipun tidak dijawab
-        const finalAnswers = { ...answers };
+        const finalAnswers = { ...cleanAnswers };
         questions.forEach(q => {
             if (!finalAnswers[q._id]) {
                 finalAnswers[q._id] = "";
