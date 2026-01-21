@@ -989,7 +989,7 @@ export default function ModulDetailPage() {
                                         dangerouslySetInnerHTML={questionHtml}
                                     />
                                 </div>
-                                <div className="flex flex-col gap-3 quiz-options">
+                                <div className="flex flex-col gap-3">
                                     {currentQuestion.options.map((option, oIndex) => (
                                         <label key={oIndex} className="flex items-start border border-slate-200 dark:border-gray-700 p-3 rounded-lg cursor-pointer hover:bg-slate-50 dark:hover:bg-gray-700/50 has-[:checked]:bg-indigo-50 dark:has-[:checked]:bg-indigo-900/50 has-[:checked]:border-blue-400 dark:has-[:checked]:border-blue-500">
                                             <input
@@ -1000,7 +1000,7 @@ export default function ModulDetailPage() {
                                                 checked={testAnswers[currentQuestion._id] === option}
                                                 onChange={() => handleAnswerChange(currentQuestion._id, option)}
                                             />
-                                            <div className="break-words min-w-0 flex-1" dangerouslySetInnerHTML={questionOptionsHtml[oIndex]} />
+                                            <div className="break-words min-w-0" dangerouslySetInnerHTML={questionOptionsHtml[oIndex]} />
                                         </label>
                                     ))}
                                 </div>
@@ -1143,53 +1143,24 @@ export default function ModulDetailPage() {
                 html {
                     scroll-behavior: smooth;
                 }
-                
-                /* --- STYLING BLOCK CODE DI MODAL POST TEST --- */
-                
-                /* 1. Reset & Base Style untuk PRE di dalam modal */
-                .topic-test-modal pre {
-                    white-space: pre;
-                    overflow-x: auto;
-                    margin-top: 0.5em;
-                    margin-bottom: 0.5em;
+                .prose pre { white-space: pre; overflow-x: auto; }
+                /* Paksa background gelap untuk block code di mode terang */
+                html:not(.dark) .prose pre {
+                    background-color: #0d1117; /* Warna dari github-dark.css */
+                    color: #c9d1d9; /* Warna teks terang agar terbaca jika highlight belum dimuat */
                 }
-
-                /* 2. Style untuk Question (.prose) dan Answer (.quiz-options) */
-                /* Menggunakan selector yang spesifik untuk memastikan override */
-                .topic-test-modal .prose pre,
-                .topic-test-modal .quiz-options pre {
-                    background-color: #0d1117 !important;
-                    color: #c9d1d9 !important;
-                    padding: 1rem !important;
-                    border-radius: 0.5rem !important;
-                    border: 1px solid #30363d !important;
+                /* Mode Gelap: Background Gray */
+                html.dark .prose pre {
+                    background-color: #374151;
+                    color: #e5e7eb;
                 }
-
-                /* 3. Style untuk CODE di dalam PRE */
-                .topic-test-modal .prose pre code,
-                .topic-test-modal .quiz-options pre code {
-                    background-color: transparent !important;
-                    color: inherit !important;
-                    padding: 0 !important;
-                    font-family: monospace !important;
-                    font-size: 14px !important; /* Default desktop font size */
-                    border: none !important;
-                    box-shadow: none !important;
-                }
-
-                /* 4. Penyesuaian Mobile (< 640px) */
                 @media (max-width: 640px) {
-                    .topic-test-modal .prose pre,
-                    .topic-test-modal .quiz-options pre {
-                        padding: 0.75rem !important;
-                        margin-top: 0.25em !important;
-                        margin-bottom: 0.25em !important;
-                    }
-
-                    .topic-test-modal .prose pre code,
-                    .topic-test-modal .quiz-options pre code {
+                    .topic-test-modal pre {
                         font-size: 12px !important;
-                        line-height: 1.4 !important;
+                        padding: 0.5rem !important;
+                    }
+                    .topic-test-modal code {
+                        font-size: 12px !important;
                     }
                 }
             `}</style>
