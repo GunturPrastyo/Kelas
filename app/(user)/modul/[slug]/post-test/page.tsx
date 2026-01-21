@@ -640,7 +640,7 @@ export default function PostTestPage() {
                                                     value={option}
                                                     checked={answers[currentQuestion._id] === option}
                                                     onChange={() => handleAnswerChange(currentQuestion._id, option)} />
-                                                <span className="break-words" dangerouslySetInnerHTML={questionOptionsHtml[oIndex]} />
+                                                <div className="break-words min-w-0 flex-1" dangerouslySetInnerHTML={questionOptionsHtml[oIndex]} />
                                             </label>
                                         ))}
                                     </div>
