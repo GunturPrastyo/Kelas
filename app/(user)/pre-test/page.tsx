@@ -152,15 +152,9 @@ export default function PreTestPage() {
                 const resultRaw = localStorage.getItem(resultKey);
                 if (resultRaw) {
                     const parsedResult = JSON.parse(resultRaw);
-                    
-                    // Validasi kelengkapan data sebelum sync ke DB untuk menghindari error 400
-                    if (
-                        parsedResult.score != null && 
-                        parsedResult.correct != null && 
-                        parsedResult.total != null && 
-                        parsedResult.timeTaken != null
-                    ) {
-                        // Kirim hasil dari localStorage ke DB jika belum ada di sana
+                    // Kirim hasil dari localStorage ke DB jika belum ada di sana
+                    // Validasi data sebelum sinkronisasi untuk mencegah error 400
+                    if (parsedResult.score != null && parsedResult.correct != null && parsedResult.total != null && parsedResult.timeTaken != null) {
                         authFetch(`${process.env.NEXT_PUBLIC_API_URL}/api/results`, {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json' },
