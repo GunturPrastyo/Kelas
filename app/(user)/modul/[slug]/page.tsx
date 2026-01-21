@@ -372,6 +372,13 @@ export default function ModulDetailPage() {
 
         setTestResult(null);
         setActiveTest(topik);
+        
+        // RESET STATE DI AWAL: Pastikan bersih dari data topik sebelumnya
+        setTestAnswers({});
+        setTestIdx(0);
+        setAnswerChangesCount(0);
+        setChangedQuestionIds(new Set());
+        setTabExitCount(0);
 
         // Jika tidak mengulang (retake=false) DAN topik sudah selesai, langsung tampilkan skor.
         if (!retake && (topik.isCompleted || topik.hasAttempted)) {
@@ -382,14 +389,7 @@ export default function ModulDetailPage() {
         // Jika ini adalah retake, atau tes pertama kali, atau belum selesai,
         // coba muat progress yang ada. Jika tidak, mulai dari awal.
         try {
-            if (retake) {
-                // Jika retake, selalu mulai dari awal
-                setTestAnswers({});
-                setTestIdx(0);
-                setAnswerChangesCount(0); // Reset counter lama
-                setChangedQuestionIds(new Set()); // Reset set baru
-                setTabExitCount(0);
-            } else {
+            if (!retake) {
                 // Jika bukan retake, coba muat progress
                 const progressRes = await authFetch(`${process.env.NEXT_PUBLIC_API_URL}/api/results/progress?testType=post-test-topik-progress&modulId=${modul?._id}&topikId=${topik._id}`);
                 if (progressRes.ok) {
@@ -411,21 +411,11 @@ export default function ModulDetailPage() {
                         setAnswerChangesCount(progressData.answerChangesCount || 0);
                         setChangedQuestionIds(new Set(progressData.changedQuestionIds || [])); // Muat progress untuk Set
                         setTabExitCount(progressData.tabExitCount || 0);
-                    } else {
-                        // Jika tidak ada progress, reset ke awal
-                        setTestAnswers({});
-                        setTestIdx(0);
-                        setAnswerChangesCount(0);
-                        setChangedQuestionIds(new Set());
-                        setTabExitCount(0);
                     }
                 }
             }
         } catch (err) {
             console.warn('Gagal memuat progress post-test dari server', err);
-            // Fallback jika API progress error, mulai dari awal
-            setTestAnswers({});
-            setTestIdx(0);
         }
 
         setTestStartTime(Date.now());
@@ -499,8 +489,18 @@ export default function ModulDetailPage() {
         if (!user || !activeTest) return;
         setIsSubmitting(true);
 
+        // 1. Filter testAnswers: Hanya ambil jawaban yang ID-nya ada di activeTest.questions
+        // Ini mencegah jawaban dari topik lain (jika state tidak bersih) atau soal duplikat yang disembunyikan ikut terkirim.
+        const validQuestionIds = new Set(activeTest.questions.map(q => q._id));
+        const cleanAnswers = Object.keys(testAnswers)
+            .filter(key => validQuestionIds.has(key))
+            .reduce((obj, key) => {
+                obj[key] = testAnswers[key];
+                return obj;
+            }, {} as { [key: string]: string });
+
         // Pastikan semua soal terkirim, meskipun tidak dijawab
-        const finalAnswers = { ...testAnswers };
+        const finalAnswers = { ...cleanAnswers };
         activeTest.questions.forEach(q => {
             if (!finalAnswers[q._id]) {
                 finalAnswers[q._id] = "";
