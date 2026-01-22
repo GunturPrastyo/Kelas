@@ -173,10 +173,11 @@ export default function PostTestPage() {
             const isRetake = searchParams.get('retake') === 'true';
 
             try {
+                const timestamp = new Date().getTime(); // Cache buster
 
                 // Ambil data modul terlebih dahulu untuk mendapatkan ID-nya
                 // Tambahkan timestamp atau cache: 'no-store' untuk mencegah caching di production
-                const modulResponse = await authFetch(`${process.env.NEXT_PUBLIC_API_URL}/api/modul/user-view/${slug}?t=${new Date().getTime()}`);
+                const modulResponse = await authFetch(`${process.env.NEXT_PUBLIC_API_URL}/api/modul/user-view/${slug}?t=${timestamp}`);
                 if (!modulResponse.ok) throw new Error("Gagal memuat data modul.");
                 const modulData: Modul = await modulResponse.json();
                 if (!isMounted) return;
@@ -185,7 +186,7 @@ export default function PostTestPage() {
 
                 if (!isRetake) {
                     // Cek apakah user sudah pernah menyelesaikan post-test ini
-                    const resultResponse = await authFetch(`${process.env.NEXT_PUBLIC_API_URL}/api/results/latest-by-type/post-test-modul?modulId=${modulData._id}`);
+                    const resultResponse = await authFetch(`${process.env.NEXT_PUBLIC_API_URL}/api/results/latest-by-type/post-test-modul?modulId=${modulData._id}&t=${timestamp}`);
                     if (resultResponse.ok) {
                         const latestResult = await resultResponse.json();
                         if (latestResult) {
@@ -216,8 +217,8 @@ export default function PostTestPage() {
 
                 // Ambil soal dan progress secara paralel
                 const [questionsResponse, progressResponse] = await Promise.all([
-                    authFetch(`${process.env.NEXT_PUBLIC_API_URL}/api/questions/post-test-modul/${modulData._id}`),
-                    !isRetake ? authFetch(`${process.env.NEXT_PUBLIC_API_URL}/api/results/progress?testType=post-test-modul-progress&modulId=${modulData._id}`) : Promise.resolve(null)
+                    authFetch(`${process.env.NEXT_PUBLIC_API_URL}/api/questions/post-test-modul/${modulData._id}?t=${timestamp}`),
+                    !isRetake ? authFetch(`${process.env.NEXT_PUBLIC_API_URL}/api/results/progress?testType=post-test-modul-progress&modulId=${modulData._id}&t=${timestamp}`) : Promise.resolve(null)
                 ]);
 
                 if (!isMounted) return;
