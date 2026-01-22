@@ -332,7 +332,7 @@ export default function PostTestPage() {
                     });
 
                     // Reload halaman dengan parameter retake
-                    router.push(`/modul/${slug}/post-test?retake=true`);
+                    router.push(`/modul/${slug}/post-test?retake=true&modulId=${modul._id}`);
 
                 } catch (err) {
                     setError(err instanceof Error ? err.message : "Terjadi kesalahan saat memulai ulang tes.");
