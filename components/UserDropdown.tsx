@@ -111,6 +111,26 @@ export default function UserDropdown() {
         return () => window.removeEventListener('progressUpdated', handleProgressUpdate);
     }, []); // Dependency kosong agar hanya berjalan sekali
 
+    // Efek untuk menangani logout otomatis saat browser/tab ditutup
+    useEffect(() => {
+        const handleBeforeUnload = () => {
+            const token = localStorage.getItem('token');
+            if (token) {
+                // Gunakan fetch native dengan keepalive: true agar request terkirim saat closing
+                fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/users/logout`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-Authorization': `Bearer ${token}` // Header sesuai middleware auth
+                    },
+                    keepalive: true
+                }).catch(err => console.error("Auto-logout failed:", err));
+            }
+        };
+        window.addEventListener('beforeunload', handleBeforeUnload);
+        return () => window.removeEventListener('beforeunload', handleBeforeUnload);
+    }, []);
+
     const handleLogout = async () => {
         try {
             // Trigger logout di backend agar status online (lastActiveAt) direset
