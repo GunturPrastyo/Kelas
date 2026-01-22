@@ -179,7 +179,9 @@ export default function DashboardPage() {
                 borderColor: "rgb(59, 130, 246)",
                 borderWidth: 0,
                 borderRadius: 4,
-                barThickness: isMobile ? 12 : 20,
+                barPercentage: 0.6,
+                categoryPercentage: 0.8,
+                maxBarThickness: 30,
               },
             ],
           },
@@ -187,6 +189,11 @@ export default function DashboardPage() {
             indexAxis: 'y',
             responsive: true,
             maintainAspectRatio: false,
+            layout: {
+                padding: {
+                    right: 10
+                }
+            },
             plugins: {
               legend: {
                 display: false,
@@ -203,11 +210,20 @@ export default function DashboardPage() {
                 ticks: {
                   stepSize: 1,
                 },
+                grid: {
+                    display: false,
+                }
               },
               y: {
                 grid: {
                   display: false,
                 },
+                ticks: {
+                    autoSkip: false,
+                    font: {
+                        size: isMobile ? 11 : 12
+                    }
+                }
               },
             },
           },
@@ -297,13 +313,13 @@ export default function DashboardPage() {
             </div>
             
             {/* Chart.js Bar Chart */}
-            <div className="flex-1 w-full h-64 relative">
+            <div className="flex-1 w-full relative" style={{ minHeight: '300px', height: stats.moduleStats.length > 0 ? `${Math.max(300, stats.moduleStats.length * 50)}px` : '300px' }}>
                 {loading ? (
-                    <div className="w-full h-full flex items-center justify-center text-gray-400">Memuat data grafik...</div>
+                    <div className="w-full h-full flex items-center justify-center text-gray-400 absolute inset-0">Memuat data grafik...</div>
                 ) : stats.moduleStats.length > 0 ? (
                     <canvas ref={chartRef}></canvas>
                 ) : (
-                    <div className="w-full h-full flex items-center justify-center text-gray-400">Belum ada data modul</div>
+                    <div className="w-full h-full flex items-center justify-center text-gray-400 absolute inset-0">Belum ada data modul</div>
                 )}
             </div>
         </div>

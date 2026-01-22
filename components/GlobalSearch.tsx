@@ -4,7 +4,6 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import { Search, Loader2, X } from 'lucide-react';
 import { authFetch } from '@/lib/authFetch';
 import Link from 'next/link';
-import Image from 'next/image';
 import { useDebounce } from './useDebounce'; // Menggunakan path relatif
 
 interface Topic {
@@ -161,11 +160,9 @@ export default function GlobalSearch() {
                                 const content = (
                                     <div className={`flex items-center gap-4 p-3 transition-colors ${result.isLocked ? 'opacity-50 cursor-not-allowed' : 'hover:bg-gray-100 dark:hover:bg-gray-700'}`}>
                                         {result.icon && (
-                                            <Image
+                                            <img
                                                 src={`${process.env.NEXT_PUBLIC_API_URL}/uploads/${result.icon}`}
                                                 alt={result.title}
-                                                width={40}
-                                                height={40}
                                                 className="w-10 h-10 object-cover rounded-md bg-gray-100 dark:bg-gray-700 p-1 flex-shrink-0"
                                             />
                                         )}

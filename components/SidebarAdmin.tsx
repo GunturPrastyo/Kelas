@@ -2,7 +2,6 @@
 
 import Link from "next/link"
 import { useState, useEffect, useMemo } from "react";
-import Image from "next/image";
 import { usePathname, useRouter } from 'next/navigation';
 import { useUI } from "@/context/UIContext"
 import { LogOut } from "lucide-react";
@@ -93,7 +92,7 @@ export default function SidebarAdmin() {
         </button>
         <div className="flex-1 flex items-center gap-4 overflow-hidden" suppressHydrationWarning>
           {mounted && !isSidebarCollapsed && (
-            <Image src="/logo.png" alt="KELAS Logo" width={150} height={40} className="h-10 w-auto transition-opacity duration-300" priority />
+            <img src="/logo.png" alt="KELAS Logo" className="h-10 w-auto transition-opacity duration-300" />
           )}
         </div>
       </div>
@@ -104,7 +103,7 @@ export default function SidebarAdmin() {
           const active = isActive(link.href);
           return (
           <Link key={link.href} href={link.href} className={`flex items-center gap-4 p-3 rounded-lg transition-colors ${active ? 'bg-blue-50 dark:bg-gray-700' : 'hover:bg-gray-100 dark:hover:bg-gray-700'}`}>
-            <Image src={link.icon} alt={link.alt} width={28} height={28} className="flex-shrink-0" priority={false} />
+            <img src={link.icon} alt={link.alt} className="w-7 h-7 flex-shrink-0" />
             <span className={`whitespace-nowrap transition-opacity duration-300 text-sm ${isSidebarCollapsed ? 'opacity-0 hidden' : 'opacity-100'} ${active ? 'text-blue-600 dark:text-white font-semibold' : 'text-gray-600 dark:text-gray-300'}`}>
               {link.label}
             </span>
