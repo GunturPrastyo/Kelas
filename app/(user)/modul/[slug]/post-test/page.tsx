@@ -189,11 +189,17 @@ export default function PostTestPage() {
                     if (resultResponse.ok) {
                         const latestResult = await resultResponse.json();
                         if (latestResult) {
-                            if (isMounted) {
-                                setResult(latestResult);
-                                setLoading(false);
+                            // SAFETY CHECK: Pastikan result yang diterima benar-benar milik modul ini
+                            // Ini mencegah tampilan hasil modul A muncul di modul B jika backend salah kirim
+                            if (latestResult.modulId && latestResult.modulId !== modulData._id) {
+                                console.warn("Mismatch result detected. Ignoring stale data.");
+                            } else {
+                                if (isMounted) {
+                                    setResult(latestResult);
+                                    setLoading(false);
+                                }
+                                return;
                             }
-                            return;
                         }
                     }
                 }
