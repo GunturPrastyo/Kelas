@@ -194,11 +194,9 @@ export default function PostTestPage() {
                             // Ini mencegah tampilan hasil modul A muncul di modul B jika backend salah kirim
                             // Gunakan String() untuk memastikan perbandingan aman antara ObjectId dan string
                             if (latestResult.modulId && String(latestResult.modulId) !== String(modulData._id)) {
-                                console.warn(`[PostTest] Mismatch result! Expected: ${modulData._id}, Got: ${latestResult.modulId}`);
-                                // Tetap set result untuk debugging, tapi log warning
-                            }
-                            
-                            if (isMounted) {
+                                console.error(`[PostTest] Mismatch result detected! Expected: ${modulData._id}, Got: ${latestResult.modulId}. Ignoring stale data.`);
+                                // FIX: Jangan set result jika mismatch. Anggap belum ada hasil.
+                            } else if (isMounted) {
                                 setResult(latestResult);
                                 setLoading(false);
                                 return; // Stop di sini jika sudah ada hasil (dan bukan retake)
