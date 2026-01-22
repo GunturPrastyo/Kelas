@@ -191,7 +191,8 @@ export default function PostTestPage() {
                         if (latestResult) {
                             // SAFETY CHECK: Pastikan result yang diterima benar-benar milik modul ini
                             // Ini mencegah tampilan hasil modul A muncul di modul B jika backend salah kirim
-                            if (latestResult.modulId && latestResult.modulId !== modulData._id) {
+                            // Gunakan String() untuk memastikan perbandingan aman antara ObjectId dan string
+                            if (latestResult.modulId && String(latestResult.modulId) !== String(modulData._id)) {
                                 console.warn("Mismatch result detected. Ignoring stale data.");
                             } else {
                                 if (isMounted) {
