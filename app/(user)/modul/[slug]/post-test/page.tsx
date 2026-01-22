@@ -196,6 +196,7 @@ export default function PostTestPage() {
                             if (latestResult.modulId && String(latestResult.modulId) !== String(modulData._id)) {
                                 console.error(`[PostTest] Mismatch result detected! Expected: ${modulData._id}, Got: ${latestResult.modulId}. Ignoring stale data.`);
                                 // FIX: Jangan set result jika mismatch. Anggap belum ada hasil.
+                                setResult(null); // Pastikan state result kosong
                             } else if (isMounted) {
                                 setResult(latestResult);
                                 setLoading(false);
