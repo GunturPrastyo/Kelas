@@ -165,6 +165,8 @@ export default function DashboardPage() {
 
       const ctx = chartRef.current.getContext("2d");
       if (ctx) {
+        const isMobile = window.innerWidth < 768;
+
         chartInstance.current = new Chart(ctx, {
           type: "bar",
           data: {
@@ -177,7 +179,7 @@ export default function DashboardPage() {
                 borderColor: "rgb(59, 130, 246)",
                 borderWidth: 0,
                 borderRadius: 4,
-                barThickness: 20,
+                barThickness: isMobile ? 12 : 20,
               },
             ],
           },
