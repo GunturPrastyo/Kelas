@@ -1329,7 +1329,7 @@ export default function ModulDetailPage() {
                                 )}
 
                                 <Link
-                                    href={!isPostTestLocked ? `/modul/${modul.slug}/post-test` : '#'}
+                                    href={!isPostTestLocked ? `/modul/${modul.slug}/post-test?modulId=${modul._id}` : '#'}
                                     passHref
                                     className={`w-full sm:w-auto inline-flex justify-center px-3 py-2 sm:px-6 sm:py-3 text-xs sm:text-base font-semibold rounded-xl shadow-md transition-all ${isPostTestLocked
                                         ? 'bg-gray-300 text-gray-500 cursor-not-allowed dark:bg-gray-600 dark:text-gray-400'
