@@ -232,9 +232,9 @@ export default function LoginPage() {
                 onError={() => {
                   if (!isLoading) setError("Login Google gagal. Silakan coba lagi.");
                 }}
-                theme="filled_blue"
+                theme="outline"
                 shape="rectangular"
-                width="300"
+                width="250"
               />
             </div>
 
