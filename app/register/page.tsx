@@ -1,7 +1,6 @@
 "use client";
 
 import { GoogleOAuthProvider, GoogleLogin, CredentialResponse } from "@react-oauth/google";
-import Image from "next/image";
 import { useRouter } from "next/navigation"; import Link from "next/link";
 import { useState, FormEvent, useCallback } from "react";
 import validator from "validator";
@@ -135,7 +134,7 @@ export default function RegisterPage() {
 
           <div className="p-10 md:p-14 bg-[#EAF0FF] dark:bg-gray-900 order-last md:order-first z-20 rounded-4xl -mt-10 sm:m-0">
             <div className="flex justify-center mb-5">
-              <Image src="/logo1.png" alt="Logo" width={256} height={256} className="w-20 h-auto drop-shadow-md" />
+              <img src="/logo1.png" alt="Logo" width={256} height={256} className="w-20 h-auto drop-shadow-md" />
             </div>
 
             <h2 className="text-xl font-extrabold text-center text-gray-800 dark:text-white mb-6">
@@ -244,11 +243,15 @@ export default function RegisterPage() {
               className="flex justify-center"
               style={{ opacity: isLoading ? 0.5 : 1, pointerEvents: isLoading ? "none" : "auto" }}
             >
+
               <GoogleLogin
                 onSuccess={handleGoogleRegister}
-                onError={() => setError("Registrasi Google gagal.")}
-                theme="outline"
-                width="256px"
+                onError={() => {
+                  if (!isLoading) setError("Login Google gagal. Silakan coba lagi.");
+                }}
+                theme="filled_blue"
+                shape="rectangular"
+                width="300"
               />
             </div>
 
@@ -265,7 +268,7 @@ export default function RegisterPage() {
 
           {/* KANAN ILUSTRASI */}
           <div className="flex items-center justify-center bg-gradient-to-br from-blue-600 to-indigo-600 p-5 z-0">
-            <Image
+            <img
               src="/register-illustration.png"
               alt="Ilustrasi Daftar"
               width={800}

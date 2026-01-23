@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect } from 'react';
-import Image from 'next/image';
 
 interface Materi {
     _id: string;
@@ -138,7 +137,7 @@ export default function TopicContent({ topik, onStartTest, onViewScore, hasAttem
 
                     {/* Gambar + Deskripsi sejajar */}
                     <div className="relative z-10 flex flex-row items-center gap-4 ">
-                        <Image
+                        <img
                             src="/post-test-topik.png"
                             alt="Post Test"
                             width={256}
