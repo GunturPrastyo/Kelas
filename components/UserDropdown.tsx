@@ -241,7 +241,7 @@ export default function UserDropdown() {
                         {user.role === 'user' && (
                             <div className={`flex items-center justify-between px-3 py-2 rounded-md transition-colors ${overallProgress === 100 ? 'hover:bg-gray-100 dark:hover:bg-gray-700/50' : ''}`}>
                             <Link
-                                href={overallProgress === 100 ? "/sertifikat" : "#"}
+                                href={overallProgress === 100 ? "/profil" : "#"}
                                 onClick={(e) => {
                                     if (overallProgress < 100) e.preventDefault();
                                     else setIsOpen(false);
@@ -252,7 +252,7 @@ export default function UserDropdown() {
                                 <span>Sertifikat Saya</span>
                             </Link>
                             {overallProgress === 100 ? (
-                                <Link href="/sertifikat" onClick={() => setIsOpen(false)} className="p-1.5 rounded-full hover:bg-blue-100 dark:hover:bg-blue-900/50 text-blue-600 dark:text-blue-400">
+                                <Link href="/profil" onClick={() => setIsOpen(false)} className="p-1.5 rounded-full hover:bg-blue-100 dark:hover:bg-blue-900/50 text-blue-600 dark:text-blue-400">
                                     <Download size={16} />
                                 </Link>
                             ) : (
