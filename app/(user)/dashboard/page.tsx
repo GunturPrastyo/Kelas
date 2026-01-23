@@ -416,12 +416,28 @@ export default function DashboardPage() {
               </Link>
             ) : (
               <div className="p-4 border border-slate-200 dark:border-slate-800 border-l-[5px] border-l-green-500 dark:border-l-gray-600 rounded-2xl bg-white/60 dark:bg-gray-900/50 text-center shadow-sm">
-                <h3 className="font-semibold text-gray-700 dark:text-gray-300">
-                  Semua modul rekomendasi telah kamu mulai
-                </h3>
-                <p className="text-xs text-gray-600 dark:text-gray-400 mt-1">
-                  Mantap! Lanjutkan progres belajarmu dan eksplor topik-topik baru yang menantang.
-                </p>
+                {!hasTakenPreTest || overallProgress === 0 ? (
+                  <>
+                    <h3 className="font-semibold text-gray-700 dark:text-gray-300">Yuk, Mulai Belajarmu!</h3>
+                    <p className="text-xs text-gray-600 dark:text-gray-400 mt-1">
+                      Kerjakan <b>Pre-Test</b> dulu untuk membuka materi yang pas buat kamu, atau mulai dari modul dasar.
+                    </p>
+                  </>
+                ) : overallProgress === 100 ? (
+                  <>
+                    <h3 className="font-semibold text-gray-700 dark:text-gray-300">Luar Biasa! Semua Modul Selesai</h3>
+                    <p className="text-xs text-gray-600 dark:text-gray-400 mt-1">
+                      Kamu telah menyelesaikan semua materi dengan sangat baik. Pertahankan semangat belajarmu!
+                    </p>
+                  </>
+                ) : (
+                  <>
+                    <h3 className="font-semibold text-gray-700 dark:text-gray-300">Semua modul rekomendasi telah kamu mulai</h3>
+                    <p className="text-xs text-gray-600 dark:text-gray-400 mt-1">
+                      Mantap! Lanjutkan progres belajarmu dan eksplor topik-topik baru yang menantang.
+                    </p>
+                  </>
+                )}
               </div>
             )}
           </div>

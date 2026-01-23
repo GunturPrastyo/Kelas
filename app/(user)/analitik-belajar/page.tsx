@@ -53,9 +53,7 @@ interface RecommendationData {
     moduleTitle: string;
     moduleIcon: string;
     moduleScore: number;
-    weakestTopic: {
-      title: string;
-    } | null;
+    weakestTopic: string | null;
     weakestTopicDetails: {
       _id: string;
       slug: string;
@@ -1156,25 +1154,25 @@ export default function AnalitikBelajarPage() {
                   />
                   <div className="flex-1 sm:flex-none">
                     <p className="font-semibold">
-                      Ulangi <b>{recommendations.repeatModule.moduleTitle}</b>
+                      Ulangi <b className="text-indigo-600 dark:text-indigo-300">{recommendations.repeatModule.moduleTitle}</b>
                     </p>
                     <p className="text-sm opacity-80 hidden sm:block">
-                      Nilai test akhirmu masih {recommendations.repeatModule.moduleScore}.
+                      Nilai test akhirmu masih <span className="font-bold text-rose-600 dark:text-rose-400">{recommendations.repeatModule.moduleScore}</span>.
                       {recommendations.repeatModule.allTopicsMastered ? (
                         " Semua topik sudah bagus, coba kerjakan ulang test akhir dengan lebih teliti."
                       ) : recommendations.repeatModule.weakestTopic ? (
-                        ` Fokus pada topik ${recommendations.repeatModule.weakestTopic}.`
+                        <> Fokus pada topik <span className="font-semibold text-indigo-600 dark:text-indigo-300">{recommendations.repeatModule.weakestTopic}</span>.</>
                       ) : null}
                     </p>
                   </div>
                 </div>
                 <div className="flex items-center justify-between gap-4 w-full sm:w-auto">
                   <p className="text-sm opacity-80 sm:hidden">
-                    Nilai test akhirmu masih {recommendations.repeatModule.moduleScore}.
+                    Nilai test akhirmu masih <span className="font-bold text-rose-600 dark:text-rose-400">{recommendations.repeatModule.moduleScore}</span>.
                     {recommendations.repeatModule.allTopicsMastered ? (
                       " Semua topik sudah bagus, coba kerjakan ulang test akhir dengan lebih teliti."
                     ) : recommendations.repeatModule.weakestTopic ? (
-                      ` Fokus pada topik ${recommendations.repeatModule.weakestTopic}.`
+                      <> Fokus pada topik <span className="font-semibold text-indigo-600 dark:text-indigo-300">{recommendations.repeatModule.weakestTopic}</span>.</>
                     ) : null}
                   </p>
                   <button
@@ -1205,7 +1203,7 @@ export default function AnalitikBelajarPage() {
                   />
                   <div className="flex-1 sm:flex-none">
                     <p className="font-semibold">
-                      Perdalam topik <b>{recommendations.deepenTopic.topicTitle || 'Tidak Diketahui'}</b>
+                      Perdalam topik <b className="text-indigo-600 dark:text-indigo-300">{recommendations.deepenTopic.topicTitle || 'Tidak Diketahui'}</b>
                     </p>
                     <p className="text-sm opacity-80 hidden sm:block">
                       Coba latihan tambahan agar lebih memahami topik ini secara mendalam.
@@ -1242,20 +1240,24 @@ export default function AnalitikBelajarPage() {
                   />
                   <div className="flex-1 sm:flex-none">
                     <p className="font-semibold">
-                      Lanjutkan ke <b>{recommendations.continueToModule.moduleTitle}</b>
+                      Lanjutkan ke <b className="text-indigo-600 dark:text-indigo-300">{recommendations.continueToModule.moduleTitle}</b>
                     </p>
                     <p className="text-sm opacity-80 hidden sm:block">
-                      {recommendations.continueToModule.nextTopic
-                        ? `Kamu sudah siap untuk materi lanjutan tentang ${recommendations.continueToModule.nextTopic.title}.`
-                        : "Lanjutkan progres belajarmu di modul ini."}
+                      {recommendations.continueToModule.nextTopic ? (
+                        <>Kamu sudah siap untuk materi lanjutan tentang <span className="font-semibold text-indigo-600 dark:text-indigo-300">{recommendations.continueToModule.nextTopic.title}</span>.</>
+                      ) : (
+                        "Lanjutkan progres belajarmu di modul ini."
+                      )}
                     </p>
                   </div>
                 </div>
                 <div className="flex items-center justify-between gap-4 w-full sm:w-auto">
                   <p className="text-sm opacity-80 sm:hidden">
-                    {recommendations.continueToModule.nextTopic
-                      ? `Kamu sudah siap untuk materi lanjutan tentang ${recommendations.continueToModule.nextTopic.title}.`
-                      : "Lanjutkan progres belajarmu di modul ini."}
+                    {recommendations.continueToModule.nextTopic ? (
+                      <>Kamu sudah siap untuk materi lanjutan tentang <span className="font-semibold text-indigo-600 dark:text-indigo-300">{recommendations.continueToModule.nextTopic.title}</span>.</>
+                    ) : (
+                      "Lanjutkan progres belajarmu di modul ini."
+                    )}
                   </p>
                   <button
                     className="flex-shrink-0 flex items-center justify-center w-10 h-10 rounded-full bg-blue-500 group-hover:bg-blue-600 transition text-white shadow-md"
