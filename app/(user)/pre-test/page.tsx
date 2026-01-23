@@ -2,7 +2,6 @@
 
 import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import Link from 'next/link';
-import Image from 'next/image';
 import Breadcrumb from '@/components/Breadcrumb';
 import hljs from 'highlight.js';
 import 'highlight.js/styles/github-dark.css';
@@ -411,13 +410,13 @@ export default function PreTestPage() {
                 ]} />
                 <header className="flex items-center justify-between gap-2 font-poppins mt-6">
                     <div className="flex items-center gap-2">
-                        <Image src="/logo1.png" width={256} height={256} className="h-10 w-auto" alt="Logo" />
+                        <img src="/logo1.png" width={256} height={256} className="h-10 w-auto" alt="Logo" />
                         <h1 className="text-lg font-bold text-slate-800 dark:text-slate-200">Hasil Pre-test</h1>
                     </div>
                 </header>
 
                 <section className="bg-gradient-to-r from-indigo-500 to-blue-600 rounded-xl p-4 mt-6 shadow-md text-white flex items-center gap-4">
-                    <Image src="/test.png" width={256} height={256} className="h-24 w-24" alt="pre test" />
+                    <img src="/test.png" width={256} height={256} className="h-24 w-24" alt="pre test" />
                     <div>
                         <h2 className="text-base font-bold ">Pre-test Selesai!</h2>
                         <p className="text-sm opacity-90">Berikut adalah hasil dan rekomendasi jalur belajarmu.</p>

@@ -2,7 +2,6 @@
 
 import { useEffect, useState, useMemo, useRef } from "react";
 import Link from "next/link"
-import Image from "next/image";
 import { Users, BookOpen, GraduationCap, Activity, Plus, ArrowRight, BarChart3, Zap, TrendingUp } from "lucide-react";
 import { authFetch } from "@/lib/authFetch";
 import { Chart, registerables } from "chart.js";
@@ -338,7 +337,7 @@ export default function DashboardPage() {
                     ) : stats.recentUsers.length > 0 ? (
                         stats.recentUsers.map((user, idx) => (
                             <div key={user._id || idx} className="flex items-center gap-3 pb-3 border-b border-gray-100 dark:border-gray-700 last:border-0 last:pb-0">
-                                <Image
+                                <img
                                     src={getAvatarUrl(user)}
                                     alt={user.name}
                                     width={40}

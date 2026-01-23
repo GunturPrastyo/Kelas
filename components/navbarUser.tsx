@@ -4,7 +4,6 @@ import { useState, useEffect, useMemo } from "react"
 import { useTheme } from "next-themes"
 import { usePathname } from "next/navigation"
 import { useUI } from "@/context/UIContext"
-import Image from "next/image"
 import NotificationBell from "./NotificationBell" // Import komponen notifikasi
 import UserDropdown from "./UserDropdown" // Import komponen UserDropdown
 import GlobalSearch from "./GlobalSearch"; // 1. Impor komponen GlobalSearch
@@ -77,7 +76,7 @@ export default function Navbar() {
         </button>
         <div id="header-title-placeholder" suppressHydrationWarning>
           {isSidebarCollapsed && (
-            <Image src="/logo.png" alt="KELAS Logo" width={150} height={40} className="h-8 w-auto ml-2" />
+            <img src="/logo.png" alt="KELAS Logo" width={150} height={40} className="h-8 w-auto ml-2" />
           )}
         </div>
       </div>

@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import Image from "next/image";
 import { authFetch } from "@/lib/authFetch";
 import { useRouter } from "next/navigation";
 import { Award, TrendingUp, TrendingDown, LayoutDashboard, Activity, BarChartHorizontal, AlertTriangle, Users, Target, Play, Rocket, Sparkles } from "lucide-react";
@@ -598,7 +597,7 @@ export default function AnalitikBelajarPage() {
               <p className="text-sm text-gray-600 dark:text-gray-400">Modul Selesai</p>
               <div className="flex flex-col items-center sm:flex-row sm:items-center gap-2 sm:gap-3">
                 <div className="flex-shrink-0">
-                  <Image src="/modules2.png" alt="Modul Icon" width={48} height={48} className="w-12 h-12 rounded-lg bg-blue-100 dark:bg-gray-700 p-1" />
+                  <img src="/modules2.png" alt="Modul Icon" width={48} height={48} className="w-12 h-12 rounded-lg bg-blue-100 dark:bg-gray-700 p-1" />
                 </div>
                 {loading || !summary ? (
                   <div className="h-8 w-24 bg-blue-100/50 dark:bg-gray-700/50 rounded-md animate-pulse"></div>
@@ -623,7 +622,7 @@ export default function AnalitikBelajarPage() {
               <p className="text-sm text-gray-600 dark:text-gray-400">Rata-rata Nilai</p>
               <div className="flex flex-col items-center sm:flex-row sm:items-center gap-2 sm:gap-3">
                 <div className="flex-shrink-0">
-                  <Image src="/star.png" alt="Score Icon" width={48} height={48} className="w-12 h-12 rounded-lg bg-green-100 dark:bg-gray-700 p-1" />
+                  <img src="/star.png" alt="Score Icon" width={48} height={48} className="w-12 h-12 rounded-lg bg-green-100 dark:bg-gray-700 p-1" />
                 </div>
                 {loading || !summary ? (
                   <div className="h-8 w-20 bg-green-100/50 dark:bg-gray-700/50 rounded-md animate-pulse"></div>
@@ -646,7 +645,7 @@ export default function AnalitikBelajarPage() {
               <p className="text-sm text-gray-600 dark:text-gray-400">Total Waktu Belajar</p>
               <div className="flex flex-col items-center sm:flex-row sm:items-center gap-2 sm:gap-3">
                 <div className="flex-shrink-0">
-                  <Image src="/study.png" alt="Time Icon" width={48} height={48} className="w-12 h-12 rounded-lg bg-purple-100 dark:bg-gray-700 p-1" />
+                  <img src="/study.png" alt="Time Icon" width={48} height={48} className="w-12 h-12 rounded-lg bg-purple-100 dark:bg-gray-700 p-1" />
                 </div>
                 {loading || !summary ? (
                   <div className="h-8 w-24 bg-purple-100/50 dark:bg-gray-700/50 rounded-md animate-pulse"></div>
@@ -672,7 +671,7 @@ export default function AnalitikBelajarPage() {
               <p className="text-sm text-gray-600 dark:text-gray-400">Streak Harian</p>
               <div className="flex flex-col items-center sm:flex-row sm:items-center gap-2 sm:gap-3">
                 <div className="flex-shrink-0">
-                  <Image src="/streak.png" alt="Streak Icon" width={48} height={48} className="w-12 h-12 rounded-lg bg-orange-100 dark:bg-gray-700 p-1" />
+                  <img src="/streak.png" alt="Streak Icon" width={48} height={48} className="w-12 h-12 rounded-lg bg-orange-100 dark:bg-gray-700 p-1" />
                 </div>
                 {loading || !summary ? (
                   <div className="h-8 w-16 bg-orange-100/50 dark:bg-gray-700/50 rounded-md animate-pulse"></div>
@@ -1025,7 +1024,7 @@ export default function AnalitikBelajarPage() {
                         >
                           <div className="flex items-center gap-4">
                             <div className={`p-1.5 rounded-xl ${level === 'Dasar' ? 'bg-green-100 dark:bg-green-900/30' : level === 'Menengah' ? 'bg-blue-100 dark:bg-blue-900/30' : 'bg-purple-100 dark:bg-purple-900/30'}`}>
-                              <Image src={info.icon} alt={`${info.title} icon`} width={128} height={128} className="w-24 sm:w-12 h-auto object-contain" />
+                              <img src={info.icon} alt={`${info.title} icon`} width={128} height={128} className="w-24 sm:w-12 h-auto object-contain" />
                             </div>
                             <div>
                               <h4 className="font-bold text-md text-gray-800 dark:text-gray-100">{info.title}</h4>

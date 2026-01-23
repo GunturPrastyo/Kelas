@@ -3,7 +3,6 @@
 import { useState, useEffect, useCallback, useRef, use, useMemo } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
-import Image from 'next/image';
 // 1. Import highlight.js dan tema CSS-nya
 import hljs from 'highlight.js';
 // Selalu gunakan tema gelap untuk konsistensi tampilan block code
@@ -1349,7 +1348,7 @@ export default function ModulDetailPage() {
 
                             {/* Gambar (akan muncul di atas pada mobile, di kanan pada desktop) */}
                             <div className="flex w-full md:w-1/3 justify-center items-center order-first md:order-last col-span-1">
-                                <Image src={hasCompletedModulPostTest ? "/post-test-akhir.png" : "/post-test.png"} alt="Post Test" width={256} height={256} className="w-full h-auto max-w-[120px] sm:max-w-[180px] md:w-60 md:h-60 object-contain" unoptimized />
+                                <img src={hasCompletedModulPostTest ? "/post-test-akhir.png" : "/post-test.png"} alt="Post Test" width={256} height={256} className="w-full h-auto max-w-[120px] sm:max-w-[180px] md:w-60 md:h-60 object-contain" />
                             </div>
                         </div>
                     </section>
@@ -1368,7 +1367,7 @@ export default function ModulDetailPage() {
                     <div className="absolute inset-0 bg-indigo-200 dark:bg-indigo-500/10 rounded-full animate-ping opacity-20"></div>
                     
                     <div className="relative w-12 h-12 transition-transform duration-300 group-hover:rotate-12">
-                        <Image 
+                        <img 
                             src="/coding.png" 
                             alt="Live Code" 
                             width={64} 

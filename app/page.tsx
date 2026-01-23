@@ -1,7 +1,6 @@
 "use client";
 
 import { GoogleOAuthProvider, GoogleLogin, CredentialResponse } from "@react-oauth/google";
-import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useState, FormEvent, useEffect } from "react";
 import validator from "validator";
@@ -46,8 +45,6 @@ export default function LoginPage() {
     // Simpan token dan data user
     localStorage.setItem("user", JSON.stringify(user));
     localStorage.setItem("token", token);
-
-  
 
     // Arahkan sesuai role
     if (user.role === "admin") {
@@ -129,7 +126,7 @@ export default function LoginPage() {
 
           {/* === MOBILE HEADER DENGAN WAVE === */}
           <div className="md:hidden relative w-full h-auto bg-gradient-to-br from-blue-600 to-indigo-600 z-0">
-            <Image
+            <img
               src="/login-illustration.png"
               alt="Ilustrasi Belajar"
               width={800}
@@ -145,7 +142,7 @@ export default function LoginPage() {
           <div className="p-10 md:p-14 bg-[#EAF0FF] dark:bg-gray-900 rounded-4xl z-30 -mt-5 sm:m-0">
 
             <div className="flex justify-center mb-6">
-              <Image src="/logo1.png" alt="Logo" width={256} height={256} className="w-18 h-auto drop-shadow-md" />
+              <img src="/logo1.png" alt="Logo" width={256} height={256} className="w-18 h-auto drop-shadow-md" />
             </div>
 
             <h2 className="text-2xl font-bold text-center text-gray-900 dark:text-white mb-2">
@@ -235,9 +232,9 @@ export default function LoginPage() {
                 onError={() => {
                   if (!isLoading) setError("Login Google gagal. Silakan coba lagi.");
                 }}
-                theme="outline"
+                theme="filled_blue"
                 shape="rectangular"
-                width="256px"
+                width="300"
               />
             </div>
 
@@ -252,7 +249,7 @@ export default function LoginPage() {
 
           {/* === DESKTOP ILUSTRASI === */}
           <div className="hidden md:flex items-center justify-center bg-gradient-to-br from-blue-600 to-indigo-600 p-8">
-            <Image
+            <img
               src="/login-illustration.png"
               alt="Ilustrasi Belajar"
               width={600}
