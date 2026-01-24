@@ -513,21 +513,21 @@ export default function PreTestPage() {
                                 <div className="p-3 rounded-lg bg-green-50 dark:bg-green-900/30 border border-green-200 dark:border-green-800">
                                     <p className="font-bold text-green-700 dark:text-green-300">Jalur Lanjutan</p>
                                     <p className="text-xs text-gray-600 dark:text-gray-400">
-                                        Kamu masuk jalur ini kalau nilai rata-rata materi Dasar minimal 85 persen dan nilai materi Menengah minimal 75 persen.
+                                        Kamu masuk jalur ini kalau nilai rata-rata kompetensi Dasar minimal 85 persen dan nilai kompetensi Menengah minimal 75 persen.
                                     </p>
                                 </div>
 
                                 <div className="p-3 rounded-lg bg-blue-50 dark:bg-blue-900/30 border border-blue-200 dark:border-blue-800">
                                     <p className="font-bold text-blue-700 dark:text-blue-300">Jalur Menengah</p>
                                     <p className="text-xs text-gray-600 dark:text-gray-400">
-                                        Kamu dapat jalur ini kalau nilai rata-rata materi Dasar minimal 75 persen, tapi belum memenuhi syarat untuk masuk jalur Lanjutan.
+                                        Kamu dapat jalur ini kalau nilai rata-rata kompetensi Dasar minimal 75 persen, tapi belum memenuhi syarat untuk masuk jalur Lanjutan.
                                     </p>
                                 </div>
 
                                 <div className="p-3 rounded-lg bg-yellow-50 dark:bg-yellow-900/30 border border-yellow-200 dark:border-yellow-800">
                                     <p className="font-bold text-yellow-700 dark:text-yellow-300">Jalur Dasar</p>
                                     <p className="text-xs text-gray-600 dark:text-gray-400">
-                                        Kalau nilai kamu belum memenuhi syarat buat jalur Menengah atau Lanjutan, sistem akan memberi saran mulai dari Jalur Dasar dulu.
+                                        Kalau nilai kamu belum memenuhi syarat untuk jalur Menengah atau Lanjutan, sistem akan memberi saran mulai dari Jalur Dasar dulu.
                                     </p>
                                 </div>
 
@@ -557,19 +557,19 @@ export default function PreTestPage() {
                             </p>
                             <ul className="space-y-3 text-sm">
                                 <li className="flex items-start">
-                                    <span className="font-semibold text-green-600 dark:text-green-400 w-28 flex-shrink-0">Ketepatan (60%)</span>
+                                    <span className="font-semibold text-green-600 dark:text-green-400 w-28 flex-shrink-0">Ketepatan (80%)</span>
                                     <span className="text-gray-500 dark:text-gray-400">Berdasarkan bobot indikator dari setiap jawaban yang benar.</span>
                                 </li>
                                 <li className="flex items-start">
-                                    <span className="font-semibold text-blue-600 dark:text-blue-400 w-28 flex-shrink-0">Kecepatan (15%)</span>
+                                    <span className="font-semibold text-blue-600 dark:text-blue-400 w-28 flex-shrink-0">Kecepatan (5%)</span>
                                     <span className="text-gray-500 dark:text-gray-400">Seberapa efisien Anda menyelesaikan tes dibandingkan total waktu yang tersedia.</span>
                                 </li>
                                 <li className="flex items-start">
-                                    <span className="font-semibold text-yellow-600 dark:text-yellow-400 w-28 flex-shrink-0">Stabilitas (10%)</span>
+                                    <span className="font-semibold text-yellow-600 dark:text-yellow-400 w-28 flex-shrink-0">Stabilitas (5%)</span>
                                     <span className="text-gray-500 dark:text-gray-400">Seberapa sering Anda mengubah jawaban. Lebih sedikit perubahan berarti skor lebih tinggi.</span>
                                 </li>
                                 <li className="flex items-start">
-                                    <span className="font-semibold text-purple-600 dark:text-purple-400 w-28 flex-shrink-0">Fokus (15%)</span>
+                                    <span className="font-semibold text-purple-600 dark:text-purple-400 w-28 flex-shrink-0">Fokus (10%)</span>
                                     <span className="text-gray-500 dark:text-gray-400">Seberapa sering Anda keluar dari halaman tes. Lebih sedikit keluar berarti skor lebih tinggi.</span>
                                 </li>
                             </ul>

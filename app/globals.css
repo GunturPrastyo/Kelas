@@ -83,7 +83,7 @@ body {
 
 /* Global Styles for Tiptap/Prose Code Blocks */
 .prose pre {
-  @apply bg-gray-800 text-gray-800 dark:bg-gray-700  dark:text-white rounded-lg my-4 overflow-x-auto;
+  @apply bg-gray-800 text-gray-800 dark:bg-gray-700 p-2 dark:text-white rounded-lg my-4 overflow-x-auto;
 }
 
 .dark .prose pre {
