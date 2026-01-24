@@ -1140,31 +1140,7 @@ export default function ModulDetailPage() {
               Menambahkan style global untuk menangani overflow pada code block di dalam .prose.
               Ini memastikan hanya code block yang bisa di-scroll horizontal, bukan seluruh kontainer soal.
             */}
-            <style jsx global>{`
-                html {
-                    scroll-behavior: smooth;
-                }
-                .prose pre { white-space: pre; overflow-x: auto; }
-                /* Paksa background gelap untuk block code di mode terang */
-                html:not(.dark) .prose pre {
-                    background-color: #0d1117; /* Warna dari github-dark.css */
-                    color: #c9d1d9; /* Warna teks terang agar terbaca jika highlight belum dimuat */
-                }
-                /* Mode Gelap: Background Gray */
-                html.dark .prose pre {
-                    background-color: #374151;
-                    color: #e5e7eb;
-                }
-                @media (max-width: 640px) {
-                    .topic-test-modal pre {
-                        font-size: 12px !important;
-                        padding: 0.5rem !important;
-                    }
-                    .topic-test-modal code {
-                        font-size: 12px !important;
-                    }
-                }
-            `}</style>
+           
             {/* 
               Menambahkan style global untuk menangani font-size pada code block yang overflow.
               Kelas .code-overflow ditambahkan secara dinamis oleh ResizeObserver di dalam useEffect.
