@@ -120,7 +120,7 @@ export default function TopicContent({ topik, onStartTest, onViewScore, hasAttem
                         className="max-w-full w-full scroll-mt-24 bg-white dark:bg-gray-800 p-5 rounded-xl border border-slate-300 dark:border-gray-700/60 shadow-sm border-l-7 border-l-blue-400"
                         >
                             <h4 className={`font-bold ${proseSizeClass} !mb-2 text-gray-800 dark:text-gray-100`}>{sub.title}</h4>
-                            <div className={`prose dark:prose-invert max-w-none ${proseSizeClass} [&_p]:mb-3`} dangerouslySetInnerHTML={{ __html: sub.content }} />
+                            <div className={`prose pre max-w-none ${proseSizeClass} [&_p]:mb-3`} dangerouslySetInnerHTML={{ __html: sub.content }} />
                         </div>
                     ))
                 ) : (

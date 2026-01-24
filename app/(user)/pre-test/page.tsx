@@ -582,35 +582,7 @@ export default function PreTestPage() {
 
     return (
         <div className="max-w-full mx-auto p-2 font-sans mt-22">
-            <style jsx global>{`
-                .prose pre { white-space: pre; overflow-x: auto; }
-                /* Paksa background gelap untuk block code di mode terang */
-                html:not(.dark) .prose pre {
-                    background-color: #0d1117; /* Warna dari github-dark.css */
-                    color: #c9d1d9;
-                }
-                /* Mode Gelap: Background Gray */
-                html.dark .prose pre {
-                    background-color: #374151;
-                    color: #e5e7eb;
-                }
-
-                /* Tambahkan rounded pada block code di dalam kartu pre-test (soal & jawaban) */
-                #pretestCard pre {
-                    border-radius: 0.5rem;
-                }
-
-                /* Penyesuaian ukuran font block code untuk mobile */
-                @media (max-width: 640px) {
-                    #pretestCard pre {
-                        font-size: 12px !important;
-                        padding: 0.5rem !important;
-                    }
-                    #pretestCard code {
-                        font-size: 12px !important;
-                    }
-                }
-            `}</style>
+        
             <Breadcrumb paths={[
                 { name: "Dashboard", href: "/dashboard" },
                 { name: "Pre-test", href: "#" }
@@ -645,9 +617,9 @@ export default function PreTestPage() {
                             {currentQuestion && (
                                 <div className="py-0 lg:py-2">
                                     <div className="flex items-start mb-4 text-base text-slate-800 dark:text-slate-200">
-                                        <span className="mr-2">{idx + 1}.</span>
+                                        <span className="mr-2 text-xs sm:text-lg">{idx + 1}.</span>
                                         <div className="flex-1 overflow-x-auto">
-                                            <div className="prose dark:prose-invert max-w-none"
+                                            <div className="text-xs sm:text-lg prose dark:prose-invert max-w-none"
                                                 dangerouslySetInnerHTML={questionHtml}
                                             />
                                         </div>
@@ -656,7 +628,7 @@ export default function PreTestPage() {
                                         {currentQuestion.options.map((option, oIndex) => (
                                             <label
                                                 key={oIndex}
-                                                className="flex items-start border border-slate-200 dark:border-gray-700 p-3 rounded-lg cursor-pointer hover:bg-slate-50 dark:hover:bg-gray-700/50 has-[:checked]:bg-indigo-50 dark:has-[:checked]:bg-indigo-900/50 has-[:checked]:border-blue-400 dark:has-[:checked]:border-blue-500 text-sm text-slate-700 dark:text-slate-300"
+                                                className="flex items-start prose dark:prose-invert border text-xs sm:text-lg border-slate-200 dark:border-gray-700 p-3 rounded-lg cursor-pointer hover:bg-slate-50 dark:hover:bg-gray-700/50 has-[:checked]:bg-indigo-50 dark:has-[:checked]:bg-indigo-900/50 has-[:checked]:border-blue-400 dark:has-[:checked]:border-blue-500 text-slate-700 dark:text-slate-300"
                                             >
                                                 <input
                                                     type="radio"
