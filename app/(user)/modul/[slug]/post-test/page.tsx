@@ -584,40 +584,7 @@ export default function PostTestPage() {
 
     return (
         <div className="mt-20 max-w-full mx-auto px-1.5 sm:px-3 lg:px-5 py-5 font-sans">
-            <style jsx global>{`
-                /* Style global untuk block code di dalam area kuis (soal & pilihan) */
-                .quiz-content pre {
-                    padding: 1em;
-                    border-radius: 0.5em;
-                    overflow-x: auto;
-                    white-space: pre;
-                }
-                /* Mode Terang: Background Hitam */
-                html:not(.dark) .quiz-content pre {
-                    background-color: #0d1117 !important;
-                    color: #c9d1d9 !important;
-                }
-                /* Mode Gelap: Background Gray */
-                html.dark .quiz-content pre {
-                    background-color: #374151 !important;
-                    color: #e5e7eb !important;
-                }
-                .quiz-content pre code {
-                    background-color: transparent !important;
-                    color: inherit !important;
-                    padding: 0 !important;
-                    white-space: pre;
-                }
-                @media (max-width: 640px) {
-                    .quiz-content pre {
-                        font-size: 12px !important;
-                        padding: 0.5rem !important;
-                    }
-                    .quiz-content pre code {
-                        font-size: 12px !important;
-                    }
-                }
-            `}</style>
+           
             <nav className="flex mb-6" aria-label="Breadcrumb">
                 <ol className="inline-flex items-center md:space-x-2 rtl:space-x-reverse text-slate-700 dark:text-slate-300 gap-1">
                     <li className="inline-flex items-center">
@@ -648,15 +615,15 @@ export default function PostTestPage() {
                             {currentQuestion && (
                                 <div className="py-0 lg:py-2 quiz-content">
                                     <div className="flex items-start mb-4 text-base text-slate-800 dark:text-slate-200">
-                                        <span className="mr-2">{testIdx + 1}.</span>
+                                        <span className="mr-2 text-xs sm:text-lg">{testIdx + 1}.</span>
                                         <div className="flex-1 overflow-x-auto">
-                                            <div className="prose dark:prose-invert max-w-none" dangerouslySetInnerHTML={questionHtml} />
+                                            <div className="text-xs sm:text-lg prose pre max-w-none" dangerouslySetInnerHTML={questionHtml} />
                                         </div>
                                     </div>
 
                                     <div className="flex flex-col gap-3">
                                         {currentQuestion.options.map((option, oIndex) => (
-                                            <label key={oIndex} className="flex items-start border border-slate-200 dark:border-gray-700 p-3 rounded-lg cursor-pointer hover:bg-slate-50 dark:hover:bg-gray-700/50 has-[:checked]:bg-indigo-50 dark:has-[:checked]:bg-indigo-900/50 has-[:checked]:border-blue-400 dark:has-[:checked]:border-blue-500 text-sm text-slate-700 dark:text-slate-300">
+                                            <label key={oIndex} className="flex prose pre text-xs sm:text-lg items-start border border-slate-200 dark:border-gray-700 p-3 rounded-lg cursor-pointer hover:bg-slate-50 dark:hover:bg-gray-700/50 has-[:checked]:bg-indigo-50 dark:has-[:checked]:bg-indigo-900/50 has-[:checked]:border-blue-400 dark:has-[:checked]:border-blue-500 text-slate-700 dark:text-slate-300">
                                                 <input
                                                     type="radio"
                                                     className="mr-2.5 mt-0.5 flex-shrink-0"

@@ -591,13 +591,13 @@ export default function AnalitikBelajarPage() {
         </h2>
         <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-5" >
           {/* Card 1 */}
-          <div className="relative overflow-hidden bg-gradient-to-br from-blue-50 to-blue-100 dark:from-gray-800 dark:to-gray-900 text-gray-800 dark:text-gray-100 rounded-2xl p-4 shadow-md hover:scale-[1.02] transition-transform dark:shadow-lg dark:shadow-gray-800/40 border border-slate-200 dark:border-slate-700 border-l-[6px] border-l-blue-500">
+          <div className="relative overflow-hidden bg-gradient-to-br from-blue-50 to-blue-100 dark:from-gray-800 dark:to-gray-900 text-gray-800 dark:text-gray-100 rounded-2xl p-4 shadow-md hover:scale-[1.02] transition-transform dark:shadow-lg dark:shadow-gray-800/40 border border-slate-200 dark:border-slate-700 border-l-[6px] border-l-blue-400">
             <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-br from-blue-200/60 to-transparent dark:from-blue-900/20 rounded-bl-[60px] -mr-4 -mt-4" />
             <div className="relative z-10 flex flex-col gap-2 items-center sm:items-start text-center sm:text-left">
               <p className="text-sm text-gray-600 dark:text-gray-400">Modul Selesai</p>
               <div className="flex flex-col items-center sm:flex-row sm:items-center gap-2 sm:gap-3">
                 <div className="flex-shrink-0">
-                  <img src="/modules2.png" alt="Modul Icon" width={48} height={48} className="w-12 h-12 rounded-lg bg-blue-100 dark:bg-gray-700 p-1" />
+                  <img src="/modules2.png" alt="Modul Icon" width={48} height={48} className="w-14 h-14 rounded-lg bg-blue-100 dark:bg-gray-700 p-1" />
                 </div>
                 {loading || !summary ? (
                   <div className="h-8 w-24 bg-blue-100/50 dark:bg-gray-700/50 rounded-md animate-pulse"></div>
@@ -616,13 +616,13 @@ export default function AnalitikBelajarPage() {
           </div>
 
           {/* Card 2 */}
-          <div className="relative overflow-hidden bg-gradient-to-br from-green-50 to-green-100 dark:from-gray-800 dark:to-gray-900 text-gray-800 dark:text-gray-100 rounded-2xl p-4 shadow-md hover:scale-[1.02] transition-transform dark:shadow-lg dark:shadow-gray-800/40 border border-slate-200 dark:border-slate-700 border-l-[6px] border-l-green-500">
+          <div className="relative overflow-hidden bg-gradient-to-br from-green-50 to-green-100 dark:from-gray-800 dark:to-gray-900 text-gray-800 dark:text-gray-100 rounded-2xl p-4 shadow-md hover:scale-[1.02] transition-transform dark:shadow-lg dark:shadow-gray-800/40 border border-slate-200 dark:border-slate-700 border-l-[6px] border-l-green-400">
             <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-br from-green-200/60 to-transparent dark:from-green-900/20 rounded-bl-[60px] -mr-4 -mt-4" />
             <div className="relative z-10 flex flex-col gap-2 items-center sm:items-start text-center sm:text-left">
               <p className="text-sm text-gray-600 dark:text-gray-400">Rata-rata Nilai</p>
               <div className="flex flex-col items-center sm:flex-row sm:items-center gap-2 sm:gap-3">
                 <div className="flex-shrink-0">
-                  <img src="/star.png" alt="Score Icon" width={48} height={48} className="w-12 h-12 rounded-lg bg-green-100 dark:bg-gray-700 p-1" />
+                  <img src="/star.png" alt="Score Icon" width={48} height={48} className="w-14 h-14 rounded-lg bg-green-100 dark:bg-gray-700 p-1" />
                 </div>
                 {loading || !summary ? (
                   <div className="h-8 w-20 bg-green-100/50 dark:bg-gray-700/50 rounded-md animate-pulse"></div>
@@ -639,13 +639,13 @@ export default function AnalitikBelajarPage() {
           </div>
 
           {/* Card 3 */}
-          <div className="relative overflow-hidden bg-gradient-to-br from-purple-50 to-purple-100 dark:from-gray-800 dark:to-gray-900 text-gray-800 dark:text-gray-100 rounded-2xl p-4 shadow-md hover:scale-[1.02] transition-transform dark:shadow-lg dark:shadow-gray-800/40 border border-slate-200 dark:border-slate-700 border-l-[6px] border-l-purple-500">
+          <div className="relative overflow-hidden bg-gradient-to-br from-purple-50 to-purple-100 dark:from-gray-800 dark:to-gray-900 text-gray-800 dark:text-gray-100 rounded-2xl p-4 shadow-md hover:scale-[1.02] transition-transform dark:shadow-lg dark:shadow-gray-800/40 border border-slate-200 dark:border-slate-700 border-l-[6px] border-l-purple-400">
             <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-br from-purple-200/60 to-transparent dark:from-purple-900/20 rounded-bl-[60px] -mr-4 -mt-4" />
             <div className="relative z-10 flex flex-col gap-2 items-center sm:items-start text-center sm:text-left">
               <p className="text-sm text-gray-600 dark:text-gray-400">Total Waktu Belajar</p>
               <div className="flex flex-col items-center sm:flex-row sm:items-center gap-2 sm:gap-3">
                 <div className="flex-shrink-0">
-                  <img src="/study.png" alt="Time Icon" width={48} height={48} className="w-12 h-12 rounded-lg bg-purple-100 dark:bg-gray-700 p-1" />
+                  <img src="/study.png" alt="Time Icon" width={48} height={48} className="w-16 h-16 rounded-lg bg-purple-100 dark:bg-gray-700 p-1" />
                 </div>
                 {loading || !summary ? (
                   <div className="h-8 w-24 bg-purple-100/50 dark:bg-gray-700/50 rounded-md animate-pulse"></div>
@@ -665,13 +665,13 @@ export default function AnalitikBelajarPage() {
           </div>
 
           {/* Card 4 */}
-          <div className="relative overflow-hidden bg-gradient-to-br from-orange-50 to-orange-100 dark:from-gray-800 dark:to-gray-900 text-gray-800 dark:text-gray-100 rounded-2xl p-4 shadow-md hover:scale-[1.02] transition-transform dark:shadow-lg dark:shadow-gray-800/40 border border-slate-200 dark:border-slate-700 border-l-[6px] border-l-orange-500">
+          <div className="relative overflow-hidden bg-gradient-to-br from-orange-50 to-orange-100 dark:from-gray-800 dark:to-gray-900 text-gray-800 dark:text-gray-100 rounded-2xl p-4 shadow-md hover:scale-[1.02] transition-transform dark:shadow-lg dark:shadow-gray-800/40 border border-slate-200 dark:border-slate-700 border-l-[6px] border-l-orange-400">
             <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-br from-orange-200/60 to-transparent dark:from-orange-900/20 rounded-bl-[60px] -mr-4 -mt-4" />
             <div className="relative z-10 flex flex-col gap-2 items-center sm:items-start text-center sm:text-left">
               <p className="text-sm text-gray-600 dark:text-gray-400">Streak Harian</p>
               <div className="flex flex-col items-center sm:flex-row sm:items-center gap-2 sm:gap-3">
                 <div className="flex-shrink-0">
-                  <img src="/streak.png" alt="Streak Icon" width={48} height={48} className="w-12 h-12 rounded-lg bg-orange-100 dark:bg-gray-700 p-1" />
+                  <img src="/streak.png" alt="Streak Icon" width={48} height={48} className="w-14 h-14 rounded-lg bg-orange-100 dark:bg-gray-700 p-1" />
                 </div>
                 {loading || !summary ? (
                   <div className="h-8 w-16 bg-orange-100/50 dark:bg-gray-700/50 rounded-md animate-pulse"></div>
@@ -690,7 +690,7 @@ export default function AnalitikBelajarPage() {
       </section>
 
       {/* TOPIK YANG PERLU DIPERKUAT */}
-      <section className="relative overflow-hidden custom-pattern-bg p-6 rounded-2xl shadow-md border-l-4 border-yellow-500 dark:border-l-gray-600">
+      <section className="relative overflow-hidden custom-pattern-bg p-6 rounded-2xl shadow-md border-l-6 border-yellow-400 dark:border-l-gray-600">
         {/* Dekorasi Latar Belakang: Watermark Icon */}
         <div className="absolute -top-12 -right-12 opacity-[0.04] pointer-events-none select-none">
           <AlertTriangle className="w-64 h-64 text-yellow-600 dark:text-yellow-400 transform rotate-12" />
@@ -866,7 +866,7 @@ export default function AnalitikBelajarPage() {
 
       {/* GRAFIK */}
       <section className="grid lg:grid-cols-2 gap-8">
-        <div className="relative overflow-hidden bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-md border-l-4 border-blue-500 dark:border-l-gray-600">
+        <div className="relative overflow-hidden bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-md border-l-6 border-blue-400 dark:border-l-gray-600">
           {/* Dekorasi Latar Belakang: Watermark Icon */}
           <div className="absolute -top-6 -right-6 opacity-[0.04] pointer-events-none select-none">
             <Activity className="w-64 h-64 text-blue-600 dark:text-blue-400 transform -rotate-12" />
@@ -897,7 +897,7 @@ export default function AnalitikBelajarPage() {
         </div>
 
         {/* PERBANDINGAN DENGAN KELAS */}
-        <div className="relative overflow-hidden bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-md border-l-4 border-indigo-500 dark:border-l-gray-600">
+        <div className="relative overflow-hidden bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-md border-l-6 border-indigo-400 dark:border-l-gray-600">
           {/* Dekorasi Latar Belakang: Watermark Icon */}
           <div className="absolute -top-6 -right-6 opacity-[0.04] pointer-events-none select-none">
             <Users className="w-64 h-64 text-indigo-600 dark:text-indigo-400 transform rotate-12" />
@@ -1000,9 +1000,9 @@ export default function AnalitikBelajarPage() {
                   
                   // Warna border berdasarkan level
                   const levelColors = {
-                    'Dasar': 'border-l-4 border-l-green-500',
-                    'Menengah': 'border-l-4 border-l-blue-500',
-                    'Lanjutan': 'border-l-4 border-l-purple-500',
+                    'Dasar': 'border-l-6 border-l-green-400',
+                    'Menengah': 'border-l-6 border-l-blue-400',
+                    'Lanjutan': 'border-l-6 border-l-purple-400',
                   };
                   const borderColor = levelColors[level as keyof typeof levelColors] || 'border-l-4 border-l-gray-500';
                   const bubbleColors = {
@@ -1096,7 +1096,7 @@ export default function AnalitikBelajarPage() {
       </section>
 
       {/* REKOMENDASI */}
-      <section className="relative overflow-hidden bg-gradient-to-br from-blue-50 via-blue-100 to-gray-100 dark:from-gray-800 dark:via-gray-800 dark:to-gray-900 text-gray-800 dark:text-gray-100 p-6 rounded-2xl shadow-md border-l-4 border-purple-500 dark:border-l-gray-600">
+      <section className="relative overflow-hidden bg-gradient-to-br from-blue-50 via-blue-100 to-gray-100 dark:from-gray-800 dark:via-gray-800 dark:to-gray-900 text-gray-800 dark:text-gray-100 p-6 rounded-2xl shadow-md border-r-8 border-purple-400 dark:border-r-gray-600">
         {/* Dekorasi Latar Belakang: Watermark Icon */}
         <div className="absolute -top-6 -right-6 opacity-[0.04] pointer-events-none select-none">
           <Sparkles className="w-64 h-64 text-purple-600 dark:text-purple-400 transform rotate-12" />

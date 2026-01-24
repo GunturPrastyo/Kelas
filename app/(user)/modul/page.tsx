@@ -119,7 +119,7 @@ export default function ModulPage() {
                                 title: 'Jalur Belajar: Lanjut',
                                 description: 'Pemahamanmu sudah kuat. Kamu siap untuk tantangan materi tingkat lanjut!',
                                 icon: '/lanjut.png',
-                                bgClass: 'border border-slate-200 dark:border-slate-700 border-l-green-500 border-l-[5px] from-green-100 to-emerald-200 dark:from-gray-800 dark:to-emerald-900',
+                                bgClass: 'border border-slate-200 dark:border-slate-700 border-l-green-400 border-l-[8px] from-green-100 to-emerald-200 dark:from-gray-800 dark:to-emerald-900',
                                 textClass: 'text-green-800 dark:text-green-300'
                             });
                         } else if (level === 'menengah') {
@@ -128,7 +128,7 @@ export default function ModulPage() {
                                 title: 'Jalur Belajar: Menengah',
                                 description: 'Dasar-dasarmu sudah cukup. Mari perdalam dengan manipulasi DOM dan event.',
                                 icon: '/menengah.png',
-                                bgClass: 'border border-slate-200 dark:border-slate-700 border-l-blue-500 border-l-[5px] from-blue-100 to-sky-200 dark:from-gray-800 dark:to-sky-900',
+                                bgClass: 'border border-slate-200 dark:border-slate-700 border-l-blue-400 border-l-[8px] from-blue-100 to-sky-200 dark:from-gray-800 dark:to-sky-900',
                                 textClass: 'text-blue-800 dark:text-blue-300'
                             });
                         } else {
@@ -137,7 +137,7 @@ export default function ModulPage() {
                                 title: 'Jalur Belajar: Dasar',
                                 description: 'Mari kita mulai dari awal untuk membangun fondasi JavaScript yang kokoh.',
                                 icon: '/dasar.png',
-                                bgClass: 'border border-slate-50 dark:border-slate-700 border-l-yellow-500 border-l-[5px] from-yellow-100 to-amber-200 dark:from-gray-800 dark:to-amber-900',
+                                bgClass: 'border border-slate-50 dark:border-slate-700 border-l-yellow-400 border-l-[8px] from-yellow-100 to-amber-200 dark:from-gray-800 dark:to-amber-900',
                                 textClass: 'text-yellow-800 dark:text-yellow-300'
                             });
                         }

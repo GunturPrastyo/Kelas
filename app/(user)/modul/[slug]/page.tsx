@@ -731,7 +731,9 @@ export default function ModulDetailPage() {
         const totalQuestions = activeTest.questions.length;
 
         return (
+            
             <div className="w-full max-full fixed inset-0 bg-black bg-opacity-60 z-50 flex justify-center items-center p-4">
+                
                 <div className="bg-white dark:bg-gray-800 rounded-xl shadow-2xl w-full max-w-6xl max-h-[90vh] flex flex-col overflow-hidden topic-test-modal">
                     {/* Header */}
                     <header className="p-3 sm:p-4 border-b border-gray-200 dark:border-gray-700 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 sm:gap-0 bg-white dark:bg-gray-800 shrink-0">
@@ -982,15 +984,15 @@ export default function ModulDetailPage() {
                             // --- PENGERJAAN TEST ---
                             <div>
                                 <div className="flex items-start mb-4 text-base text-slate-800 dark:text-slate-200">
-                                    <span className="mr-2">{testIdx + 1}.</span>
+                                    <span className="mr-2 text-xs sm:text-lg">{testIdx + 1}.</span>
                                     <div
-                                        className="flex-1 prose dark:prose-invert max-w-none"
+                                        className="flex-1 prose pre text-xs sm:text-lg max-w-none"
                                         dangerouslySetInnerHTML={questionHtml}
                                     />
                                 </div>
                                 <div className="flex flex-col gap-3">
                                     {currentQuestion.options.map((option, oIndex) => (
-                                        <label key={oIndex} className="flex items-start border border-slate-200 dark:border-gray-700 p-3 rounded-lg cursor-pointer hover:bg-slate-50 dark:hover:bg-gray-700/50 has-[:checked]:bg-indigo-50 dark:has-[:checked]:bg-indigo-900/50 has-[:checked]:border-blue-400 dark:has-[:checked]:border-blue-500">
+                                        <label key={oIndex} className="flex prose pre text-xs sm:text-lg items-start border border-slate-200 dark:border-gray-700 p-3 rounded-lg cursor-pointer hover:bg-slate-50 dark:hover:bg-gray-700/50 has-[:checked]:bg-indigo-50 dark:has-[:checked]:bg-indigo-900/50 has-[:checked]:border-blue-400 dark:has-[:checked]:border-blue-500">
                                             <input
                                                 type="radio"
                                                 className="mr-2.5 mt-0.5"
@@ -1082,7 +1084,7 @@ export default function ModulDetailPage() {
                                             persistProgress(); // Pastikan progress terakhir tersimpan sebelum menutup
                                             setActiveTest(null);
                                         }}
-                                        className="text-sm text-gray-600 dark:text-gray-400 hover:underline"
+                                        className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 hover:underline"
                                     >
                                         Tutup & Simpan Progress
                                     </button>
@@ -1090,14 +1092,14 @@ export default function ModulDetailPage() {
                                         <button
                                             onClick={() => setTestIdx(i => Math.max(0, i - 1))}
                                             disabled={testIdx === 0}
-                                            className="px-4 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg disabled:opacity-50"
+                                            className="px-4 py-2 text-xs sm:text-sm bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg disabled:opacity-50"
                                         >
                                             Sebelumnya
                                         </button>
                                         {testIdx < totalQuestions - 1 ? (
                                             <button
                                                 onClick={() => setTestIdx(i => Math.min(totalQuestions - 1, i + 1))}
-                                                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
+                                                className="px-4 py-2 text-xs sm:text-sm bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
                                             >
                                                 Berikutnya
                                             </button>
