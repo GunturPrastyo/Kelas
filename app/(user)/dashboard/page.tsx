@@ -307,7 +307,7 @@ export default function DashboardPage() {
           <div className="flex flex-col justify-center flex-1 min-w-0">
             <div className="flex items-center gap-3 mb-3">
               <div className="bg-blue-600 rounded-lg w-10 h-10 flex items-center justify-center">
-                <img src="/progress1.png" width={128} height={128} className="w-full h-full object-contain p-1" alt="" />
+                <img src="/progress1.webp" width={128} height={128} className="w-full h-full object-contain p-1" alt="" />
               </div>
               <h2 className="text-lg font-bold text-gray-900 dark:text-white">Progres Belajar</h2>
             </div>
@@ -331,7 +331,7 @@ export default function DashboardPage() {
           {/* Gambar */}
           <div className="flex-shrink-0 flex items-center justify-center max-w-[40%]">
             <img
-              src="/progress.png"
+              src="/progress.webp"
               alt="Progress Illustration"
               width={256}
               height={256}
@@ -349,7 +349,7 @@ export default function DashboardPage() {
           <div className="flex flex-col justify-center flex-1 min-w-0">
             <div className="flex items-center gap-3 mb-3">
               <div className="bg-purple-600 rounded-lg w-10 h-10 flex items-center justify-center">
-                <img src="/clock2.png" width={128} height={128} className="w-full h-full object-contain p-1" alt="" />
+                <img src="/clock2.webp" width={128} height={128} className="w-full h-full object-contain p-1" alt="" />
               </div>
               <h2 className="text-lg font-bold text-gray-900 dark:text-white">Jam Belajar</h2>
             </div>
@@ -361,7 +361,7 @@ export default function DashboardPage() {
 
           <div className="flex-shrink-0 flex items-center justify-center max-w-[40%]">
             <img
-              src="/clock.png"
+              src="/clock.webp"
               alt="Clock Illustration"
               width={256}
               height={256}
@@ -380,7 +380,7 @@ export default function DashboardPage() {
           <div className="relative z-10 flex flex-col justify-center flex-1 min-w-0">
             <div className="flex items-center gap-3 mb-3">
               <div className="bg-green-600 rounded-lg w-10 h-10 flex items-center justify-center">
-                <img src="/target.png" width={128} height={128} className="w-full h-full object-contain p-1" alt="" />
+                <img src="/target.webp" width={128} height={128} className="w-full h-full object-contain p-1" alt="" />
               </div>
               <h2 className="text-lg font-bold text-gray-900 dark:text-white">
                 Rekomendasi Belajar
@@ -461,7 +461,7 @@ export default function DashboardPage() {
             <div className="flex items-center gap-3 mb-2">
               <div className="bg-blue-500 rounded-lg w-10 h-10 flex items-center justify-center flex-shrink-0">
                 <img
-                  src="/test-pre-test.png"
+                  src="/test-pre-test.webp"
                   width={128}
                   height={128}
                   className="object-contain p-0.5"
@@ -486,7 +486,7 @@ export default function DashboardPage() {
           {/* Kanan: ilustrasi */}
           <div className="flex-shrink-0">
             <img
-              src="/pre-tes.png"
+              src="/pre-tes.webp"
               alt="Quiz Illustration"
               width={140}
               height={120}
@@ -509,7 +509,7 @@ export default function DashboardPage() {
             >
               <div className="flex items-center gap-3 mb-6">
                 <div className="bg-indigo-600 rounded-lg w-10 h-10 flex items-center justify-center">
-                  <img src="/analisis.png" width={128} height={128} className="w-full h-full object-contain p-1" alt="" />
+                  <img src="/analisis.webp" width={128} height={128} className="w-full h-full object-contain p-1" alt="" />
                 </div>
                 <h2 className="text-xl font-bold text-gray-900 dark:text-white">
                   Analitik Belajar
@@ -522,7 +522,7 @@ export default function DashboardPage() {
                   <div className="  border border-slate-200 dark:border-slate-800 border-l-[6px] border-l-blue-500 dark:border-l-gray-600 p-4 rounded-lg bg-gradient-to-br from-blue-100 to-blue-200 dark:from-gray-700 dark:to-gray-800 shadow-md hover:shadow-lg transition">
                     <div className="flex flex-col items-center gap-2">
                       <div className="bg-blue-600 rounded-full w-10 h-10 flex items-center justify-center">
-                        <img src="/book.png" width={256} height={256} className="w-full h-full object-contain p-1" alt="" />
+                        <img src="/book.webp" width={256} height={256} className="w-full h-full object-contain p-1" alt="" />
                       </div>
                       <p className="text-2xl font-bold text-blue-700 dark:text-blue-400">
                         {animatedCompletedModules ?? 0} <span className="text-xl text-gray-500 dark:text-gray-400">/ {modules.length}</span>
@@ -534,7 +534,7 @@ export default function DashboardPage() {
                   <div className="border border-slate-200 dark:border-slate-800 border-l-[6px] border-l-green-500 dark:border-l-gray-600 p-4 rounded-lg bg-gradient-to-br from-green-100 to-green-200 dark:from-gray-700 dark:to-gray-800 shadow-md hover:shadow-lg transition">
                     <div className="flex flex-col items-center gap-2">
                       <div className="bg-green-600 rounded-full w-10 h-10 flex items-center justify-center">
-                        <img src="/score.png" width={256} height={256} className="w-full h-full object-contain p-1" alt="" />
+                        <img src="/score.webp" width={256} height={256} className="w-full h-full object-contain p-1" alt="" />
                       </div>
                       <p className="text-2xl font-bold text-green-700 dark:text-green-400">{loading ? '...' : `${animatedAverageScore ?? 0}%`}</p>
                       <p className="text-sm text-gray-600 dark:text-gray-300">Rata-rata Skor</p>

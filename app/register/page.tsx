@@ -134,7 +134,7 @@ export default function RegisterPage() {
 
           <div className="p-10 md:p-14 bg-[#EAF0FF] dark:bg-gray-900 order-last md:order-first z-20 rounded-4xl -mt-10 sm:m-0">
             <div className="flex justify-center mb-5">
-              <img src="/logo1.png" alt="Logo" width={256} height={256} className="w-20 h-auto drop-shadow-md" />
+              <img src="/logo1.webp" alt="Logo" width={256} height={256} className="w-20 h-auto drop-shadow-md" />
             </div>
 
             <h2 className="text-xl font-extrabold text-center text-gray-800 dark:text-white mb-6">
@@ -269,7 +269,7 @@ export default function RegisterPage() {
           {/* KANAN ILUSTRASI */}
           <div className="flex items-center justify-center bg-gradient-to-br from-blue-600 to-indigo-600 p-5 z-0">
             <img
-              src="/register-illustration.png"
+              src="/register-illustration.webp"
               alt="Ilustrasi Daftar"
               width={800}
               height={800}

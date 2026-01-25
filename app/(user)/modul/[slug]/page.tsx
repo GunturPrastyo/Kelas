@@ -1326,7 +1326,7 @@ export default function ModulDetailPage() {
 
                             {/* Gambar (akan muncul di atas pada mobile, di kanan pada desktop) */}
                             <div className="flex w-full md:w-1/3 justify-center items-center order-first md:order-last col-span-1">
-                                <img src={hasCompletedModulPostTest ? "/post-test-akhir.png" : "/post-test.png"} alt="Post Test" width={256} height={256} className="w-full h-auto max-w-[120px] sm:max-w-[180px] md:w-60 md:h-60 object-contain" />
+                                <img src={hasCompletedModulPostTest ? "/post-test-akhir.webp" : "/post-test.webp"} alt="Post Test" width={256} height={256} className="w-full h-auto max-w-[120px] sm:max-w-[180px] md:w-60 md:h-60 object-contain" />
                             </div>
                         </div>
                     </section>
@@ -1346,7 +1346,7 @@ export default function ModulDetailPage() {
                     
                     <div className="relative w-12 h-12 transition-transform duration-300 group-hover:rotate-12">
                         <img 
-                            src="/coding.png" 
+                            src="/coding.webp" 
                             alt="Live Code" 
                             width={64} 
                             height={64} 

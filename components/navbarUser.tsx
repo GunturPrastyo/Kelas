@@ -76,7 +76,7 @@ export default function Navbar() {
         </button>
         <div id="header-title-placeholder" suppressHydrationWarning>
           {isSidebarCollapsed && (
-            <img src="/logo.png" alt="KELAS Logo" width={150} height={40} className="h-8 w-auto ml-2" />
+            <img src="/logo.webp" alt="KELAS Logo" width={150} height={40} className="h-8 w-auto ml-2" />
           )}
         </div>
       </div>

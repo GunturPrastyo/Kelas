@@ -59,7 +59,7 @@ export default function ModulPage() {
                 setRecommendation({
                     title: 'Jalur Belajar: Lanjut',
                     description: 'Pemahamanmu sudah kuat. Kamu siap untuk tantangan materi tingkat lanjut!',
-                    icon: '/lanjut.png',
+                    icon: '/lanjut.webp',
                     bgClass: 'border border-slate-200 dark:border-slate-700 border-l-green-500 border-l-[5px] from-green-100 to-emerald-200 dark:from-gray-800 dark:to-emerald-900',
                     textClass: 'text-green-800 dark:text-green-300'
                 });
@@ -68,7 +68,7 @@ export default function ModulPage() {
                 setRecommendation({
                     title: 'Jalur Belajar: Menengah',
                     description: 'Dasar-dasarmu sudah cukup. Mari perdalam dengan manipulasi DOM dan event.',
-                    icon: '/menengah.png',
+                    icon: '/menengah.webp',
                     bgClass: 'border border-slate-200 dark:border-slate-700 border-l-blue-500 border-l-[5px] from-blue-100 to-sky-200 dark:from-gray-800 dark:to-sky-900',
                     textClass: 'text-blue-800 dark:text-blue-300'
                 });
@@ -77,7 +77,7 @@ export default function ModulPage() {
                 setRecommendation({
                     title: 'Jalur Belajar: Dasar',
                     description: 'Mari kita mulai dari awal untuk membangun fondasi JavaScript yang kokoh.',
-                    icon: '/dasar.png',
+                    icon: '/dasar.webp',
                     bgClass: 'border border-slate-50 dark:border-slate-700 border-l-yellow-500 border-l-[5px] from-yellow-100 to-amber-200 dark:from-gray-800 dark:to-amber-900',
                     textClass: 'text-yellow-800 dark:text-yellow-300'
                 });
@@ -118,7 +118,7 @@ export default function ModulPage() {
                             setRecommendation({
                                 title: 'Jalur Belajar: Lanjut',
                                 description: 'Pemahamanmu sudah kuat. Kamu siap untuk tantangan materi tingkat lanjut!',
-                                icon: '/lanjut.png',
+                                icon: '/lanjut.webp',
                                 bgClass: 'border border-slate-200 dark:border-slate-700 border-l-green-400 border-l-[8px] from-green-100 to-emerald-200 dark:from-gray-800 dark:to-emerald-900',
                                 textClass: 'text-green-800 dark:text-green-300'
                             });
@@ -127,7 +127,7 @@ export default function ModulPage() {
                             setRecommendation({
                                 title: 'Jalur Belajar: Menengah',
                                 description: 'Dasar-dasarmu sudah cukup. Mari perdalam dengan manipulasi DOM dan event.',
-                                icon: '/menengah.png',
+                                icon: '/menengah.webp',
                                 bgClass: 'border border-slate-200 dark:border-slate-700 border-l-blue-400 border-l-[8px] from-blue-100 to-sky-200 dark:from-gray-800 dark:to-sky-900',
                                 textClass: 'text-blue-800 dark:text-blue-300'
                             });
@@ -136,7 +136,7 @@ export default function ModulPage() {
                             setRecommendation({
                                 title: 'Jalur Belajar: Dasar',
                                 description: 'Mari kita mulai dari awal untuk membangun fondasi JavaScript yang kokoh.',
-                                icon: '/dasar.png',
+                                icon: '/dasar.webp',
                                 bgClass: 'border border-slate-50 dark:border-slate-700 border-l-yellow-400 border-l-[8px] from-yellow-100 to-amber-200 dark:from-gray-800 dark:to-amber-900',
                                 textClass: 'text-yellow-800 dark:text-yellow-300'
                             });
@@ -321,7 +321,7 @@ export default function ModulPage() {
             {/* Tampilkan konten setelah loading selesai */}
             {!loading && !userLevel && (
                 <section className="bg-gradient-to-br from-yellow-50 to-orange-100 dark:from-gray-900 dark:to-gray-800 p-4 rounded-xl shadow-sm flex items-center gap-4 mb-6">
-                    <Image src="/warning-test.png" alt="Pre-test" width={480} height={480} className="w-20 h-20" />
+                    <Image src="/warning-test.webp" alt="Pre-test" width={480} height={480} className="w-20 h-20" />
                     <div>
                         <h2 className="text-lg font-semibold text-yellow-800 dark:text-yellow-300">Tentukan Jalur Belajarmu!</h2>
                         <p className="text-sm text-gray-600 dark:text-gray-400">Ambil pre-test terlebih dahulu untuk membuka modul yang sesuai dengan level kemampuanmu. <Link href="/pre-test" className="font-semibold text-blue-600 hover:underline">Mulai Pre-test</Link></p>
