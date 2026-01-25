@@ -658,7 +658,7 @@ export default function PreTestPage() {
                                     id="prevBtn"
                                     onClick={() => setIdx(i => Math.max(0, i - 1))}
                                     disabled={idx === 0}
-                                    className="flex-1 bg-white dark:bg-gray-700 text-slate-700 dark:text-slate-300 border border-slate-300 dark:border-gray-600 px-3 py-2 sm:px-4 sm:py-2.5 rounded-lg cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed hover:bg-slate-50 dark:hover:bg-gray-600 text-sm sm:text-base"
+                                    className="flex-1 bg-white  dark:bg-gray-700 text-slate-700 dark:text-slate-300 border border-slate-300 dark:border-gray-600 px-3 py-2 sm:px-4 sm:py-2.5 rounded-lg cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed hover:bg-slate-50 dark:hover:bg-gray-600 text-xs sm:text-base"
                                 >
                                     Sebelumnya
                                 </button>
@@ -667,7 +667,7 @@ export default function PreTestPage() {
                                         id="nextBtn"
                                         onClick={() => setIdx(i => Math.min(total - 1, i + 1))}
                                         disabled={idx === total - 1}
-                                        className="flex-1 bg-blue-600 text-white border-none px-3 py-2 sm:px-4 sm:py-2.5 rounded-lg cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed hover:bg-blue-700 transition text-sm sm:text-base"
+                                        className="flex-1 bg-blue-600 text-white border-none px-3 py-2 sm:px-4 sm:py-2.5 rounded-lg cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed hover:bg-blue-700 transition text-xs sm:text-base"
                                     >
                                         Berikutnya
                                     </button>
@@ -677,7 +677,7 @@ export default function PreTestPage() {
                                 <button
                                     id="saveBtn"
                                     onClick={persist}
-                                    className="flex-1 sm:flex-none bg-blue-100 text-blue-700 dark:bg-blue-900/50 dark:text-blue-300 border-none px-3 py-2 sm:px-4 sm:py-2.5 rounded-lg cursor-pointer hover:bg-blue-200 dark:hover:bg-blue-900/80 transition text-sm sm:text-base"
+                                    className="flex-1 sm:flex-none bg-blue-100 text-blue-700 dark:bg-blue-900/50 dark:text-blue-300 border-none px-3 py-2 sm:px-4 sm:py-2.5 rounded-lg cursor-pointer hover:bg-blue-200 dark:hover:bg-blue-900/80 transition text-xs sm:text-base"
                                 >
                                     Simpan
                                 </button>
@@ -703,7 +703,7 @@ export default function PreTestPage() {
                                                 });
                                             }
                                         }}
-                                        className="flex-1 sm:flex-none bg-green-600 text-white border-none px-3 py-2 sm:px-4 sm:py-2.5 rounded-lg cursor-pointer hover:bg-green-700 transition text-sm sm:text-base"
+                                        className="flex-1 sm:flex-none bg-green-600 text-white border-none px-3 py-2 sm:px-4 sm:py-2.5 rounded-lg cursor-pointer hover:bg-green-700 transition text-xs sm:text-base"
                                     >
                                         Kirim Jawaban
                                     </button>

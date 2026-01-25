@@ -641,11 +641,11 @@ export default function PostTestPage() {
 
                         <div className="flex flex-col sm:flex-row gap-3 sm:gap-2 items-center mt-6">
                             <div className="flex gap-2 w-full sm:w-auto">
-                                <button onClick={() => setTestIdx(i => Math.max(0, i - 1))} disabled={testIdx === 0} className="flex-1 bg-white dark:bg-gray-700 text-slate-700 dark:text-slate-300 border border-slate-300 dark:border-gray-600 px-4 py-2.5 rounded-lg cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed hover:bg-slate-50 dark:hover:bg-gray-600">
+                                <button onClick={() => setTestIdx(i => Math.max(0, i - 1))} disabled={testIdx === 0} className="flex-1 bg-white text-xs sm:text-base dark:bg-gray-700 text-slate-700 dark:text-slate-300 border border-slate-300 dark:border-gray-600 px-4 py-2.5 rounded-lg cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed hover:bg-slate-50 dark:hover:bg-gray-600">
                                     Sebelumnya
                                 </button>
                                 {testIdx < total - 1 ? (
-                                    <button onClick={() => setTestIdx(i => Math.min(total - 1, i + 1))} className="flex-1 bg-blue-600 text-white border-none px-4 py-2.5 rounded-lg cursor-pointer hover:bg-blue-700 transition">
+                                    <button onClick={() => setTestIdx(i => Math.min(total - 1, i + 1))} className="flex-1 bg-blue-600 text-white text-xs sm:text-base border-none px-4 py-2.5 rounded-lg cursor-pointer hover:bg-blue-700 transition">
                                         Berikutnya
                                     </button>
                                 ) : (
@@ -659,7 +659,7 @@ export default function PostTestPage() {
                                             onConfirm: gradeTest,
                                         })}
                                         disabled={isSubmitting}
-                                        className="flex-1 sm:flex-none bg-green-600 text-white border-none px-4 py-2.5 rounded-lg cursor-pointer hover:bg-green-700 transition disabled:opacity-50"
+                                        className="flex-1 sm:flex-none text-xs sm:text-base bg-green-600 text-white border-none px-4 py-2.5 rounded-lg cursor-pointer hover:bg-green-700 transition disabled:opacity-50"
                                     >
                                         {isSubmitting ? 'Mengirim...' : 'Kirim Jawaban'}
                                     </button>
