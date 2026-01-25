@@ -410,13 +410,13 @@ export default function PreTestPage() {
                 ]} />
                 <header className="flex items-center justify-between gap-2 font-poppins mt-6">
                     <div className="flex items-center gap-2">
-                        <img src="/logo1.png" width={256} height={256} className="h-10 w-auto" alt="Logo" />
+                        <img src="/logo1.webp" width={256} height={256} className="h-10 w-auto" alt="Logo" />
                         <h1 className="text-lg font-bold text-slate-800 dark:text-slate-200">Hasil Pre-test</h1>
                     </div>
                 </header>
 
                 <section className="bg-gradient-to-r from-indigo-500 to-blue-600 rounded-xl p-4 mt-6 shadow-md text-white flex items-center gap-4">
-                    <img src="/test.png" width={256} height={256} className="h-24 w-24" alt="pre test" />
+                    <img src="/test.webp" width={256} height={256} className="h-24 w-24" alt="pre test" />
                     <div>
                         <h2 className="text-base font-bold ">Pre-test Selesai!</h2>
                         <p className="text-sm opacity-90">Berikut adalah hasil dan rekomendasi jalur belajarmu.</p>
@@ -591,7 +591,7 @@ export default function PreTestPage() {
             <header className="flex items-center justify-between gap-4 font-poppins mt-6">
                 <div className="flex items-center gap-2">
                 
-                    <img src="/logo1.png" width={256} height={256} className="h-10 w-auto" alt="Logo" />
+                    <img src="/logo1.webp" width={256} height={256} className="h-10 w-auto" alt="Logo" />
                     <h1 className="text-lg font-bold text-slate-800 dark:text-slate-200">Pre-test</h1>
                 </div>
                 <div className="flex gap-2 sm:gap-3 items-center justify-center text-slate-500 dark:text-slate-400 text-xs sm:text-sm bg-slate-100 dark:bg-gray-800 px-2 sm:px-3 py-1.5 rounded-lg border border-slate-200 dark:border-gray-700">
@@ -602,7 +602,7 @@ export default function PreTestPage() {
             </header>
 
             <section className="bg-gradient-to-r from-indigo-500 to-blue-600 rounded-xl p-4 mt-6 shadow-md text-white flex items-center gap-4">
-                <img src="/test.png" width={256} height={256} className="h-24 w-24" alt="pre test" />
+                <img src="/test.webp" width={256} height={256} className="h-24 w-24" alt="pre test" />
                 <div>
                     <h2 className="text-base font-bold ">Selamat Datang di Pre-test</h2>
                     <p className="text-sm opacity-90">Kerjakan soal ini untuk menentukan level belajar yang sesuai denganmu</p>

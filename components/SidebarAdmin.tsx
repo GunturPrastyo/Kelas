@@ -92,7 +92,7 @@ export default function SidebarAdmin() {
         </button>
         <div className="flex-1 flex items-center gap-4 overflow-hidden" suppressHydrationWarning>
           {mounted && !isSidebarCollapsed && (
-            <img src="/logo.png" alt="KELAS Logo" className="h-10 w-auto transition-opacity duration-300" />
+            <img src="/logo.webp" alt="KELAS Logo" className="h-10 w-auto transition-opacity duration-300" />
           )}
         </div>
       </div>

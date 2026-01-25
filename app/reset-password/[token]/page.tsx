@@ -84,7 +84,7 @@ const ResetPassword = () => {
       <div className="max-w-md w-full bg-[#EAF0FF] dark:bg-gray-900 rounded-3xl shadow-2xl border border-white/30 p-8 sm:p-10 relative">
         
         <div className="flex justify-center mb-6">
-          <img src="/logo1.png" alt="Logo" width={150} height={150} className="w-20 h-auto drop-shadow-md" />
+          <img src="/logo1.webp" alt="Logo" width={150} height={150} className="w-20 h-auto drop-shadow-md" />
         </div>
 
         <h2 className="text-2xl font-bold text-center text-gray-900 dark:text-white mb-2">

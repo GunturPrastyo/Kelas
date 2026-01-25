@@ -597,7 +597,7 @@ export default function AnalitikBelajarPage() {
               <p className="text-sm text-gray-600 dark:text-gray-400">Modul Selesai</p>
               <div className="flex flex-col items-center sm:flex-row sm:items-center gap-2 sm:gap-3">
                 <div className="flex-shrink-0">
-                  <img src="/modules2.png" alt="Modul Icon" width={48} height={48} className="w-14 h-14 rounded-lg bg-blue-100 dark:bg-gray-700 p-1" />
+                  <img src="/modules2.webp" alt="Modul Icon" width={48} height={48} className="w-14 h-14 rounded-lg bg-blue-100 dark:bg-gray-700 p-1" />
                 </div>
                 {loading || !summary ? (
                   <div className="h-8 w-24 bg-blue-100/50 dark:bg-gray-700/50 rounded-md animate-pulse"></div>
@@ -622,7 +622,7 @@ export default function AnalitikBelajarPage() {
               <p className="text-sm text-gray-600 dark:text-gray-400">Rata-rata Nilai</p>
               <div className="flex flex-col items-center sm:flex-row sm:items-center gap-2 sm:gap-3">
                 <div className="flex-shrink-0">
-                  <img src="/star.png" alt="Score Icon" width={48} height={48} className="w-14 h-14 rounded-lg bg-green-100 dark:bg-gray-700 p-1" />
+                  <img src="/star.webp" alt="Score Icon" width={48} height={48} className="w-14 h-14 rounded-lg bg-green-100 dark:bg-gray-700 p-1" />
                 </div>
                 {loading || !summary ? (
                   <div className="h-8 w-20 bg-green-100/50 dark:bg-gray-700/50 rounded-md animate-pulse"></div>
@@ -645,7 +645,7 @@ export default function AnalitikBelajarPage() {
               <p className="text-sm text-gray-600 dark:text-gray-400">Total Waktu Belajar</p>
               <div className="flex flex-col items-center sm:flex-row sm:items-center gap-2 sm:gap-3">
                 <div className="flex-shrink-0">
-                  <img src="/study.png" alt="Time Icon" width={48} height={48} className="w-16 h-16 rounded-lg bg-purple-100 dark:bg-gray-700 p-1" />
+                  <img src="/study.webp" alt="Time Icon" width={48} height={48} className="w-16 h-16 rounded-lg bg-purple-100 dark:bg-gray-700 p-1" />
                 </div>
                 {loading || !summary ? (
                   <div className="h-8 w-24 bg-purple-100/50 dark:bg-gray-700/50 rounded-md animate-pulse"></div>
@@ -671,7 +671,7 @@ export default function AnalitikBelajarPage() {
               <p className="text-sm text-gray-600 dark:text-gray-400">Streak Harian</p>
               <div className="flex flex-col items-center sm:flex-row sm:items-center gap-2 sm:gap-3">
                 <div className="flex-shrink-0">
-                  <img src="/streak.png" alt="Streak Icon" width={48} height={48} className="w-14 h-14 rounded-lg bg-orange-100 dark:bg-gray-700 p-1" />
+                  <img src="/streak.webp" alt="Streak Icon" width={48} height={48} className="w-14 h-14 rounded-lg bg-orange-100 dark:bg-gray-700 p-1" />
                 </div>
                 {loading || !summary ? (
                   <div className="h-8 w-16 bg-orange-100/50 dark:bg-gray-700/50 rounded-md animate-pulse"></div>
@@ -980,17 +980,17 @@ export default function AnalitikBelajarPage() {
                     'Dasar': {
                       title: 'Kompetensi Dasar',
                       unlockInfo: `Skor rata-rata Dasar <b class="${avgScore >= 75 ? 'text-green-500' : 'text-red-500'}">(${avgScore}%)</b> harus ≥ 75% untuk membuka level Menengah.`,
-                      icon: '/dasar.png'
+                      icon: '/dasar.webp'
                     },
                     'Menengah': {
                       title: 'Kompetensi Menengah',
                       unlockInfo: `Skor rata-rata Menengah <b class="${avgScore >= 75 ? 'text-green-500' : 'text-red-500'}">(${avgScore}%)</b> harus ≥ 75% untuk membuka level Lanjutan.`,
-                      icon: '/menengah.png'
+                      icon: '/menengah.webp'
                     },
                     'Lanjutan': {
                       title: 'Kompetensi Lanjutan',
                       unlockInfo: 'Kamu telah mencapai level tertinggi. Terus asah kemampuanmu!',
-                      icon: '/lanjut.png'
+                      icon: '/lanjut.webp'
                     },
                   };
 
@@ -1196,7 +1196,7 @@ export default function AnalitikBelajarPage() {
               >
                 <div className="flex items-center gap-4 w-full sm:w-auto">
                   <img
-                    src="/reading-book.png"
+                    src="/reading-book.webp"
                     className="w-16 h-16 rounded-lg object-contain bg-white/30 dark:bg-gray-700/40 p-1 flex-shrink-0"
                     alt="Perdalam Topik"
                   />

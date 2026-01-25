@@ -71,7 +71,7 @@ export default function Sidebar() {
         </button>
         <div id="sidebar-title-container" className="flex-1 flex items-center gap-4 overflow-hidden" >
           {!isSidebarCollapsed && (
-            <img id="sidebar-title" src="/logo.png" alt="KELAS Logo" className="ml-4 sm:ml-2 h-10 sm:h-8 w-auto transition-opacity duration-300" />
+            <img id="sidebar-title" src="/logo.webp" alt="KELAS Logo" className="ml-4 sm:ml-2 h-10 sm:h-8 w-auto transition-opacity duration-300" />
           )}
         </div>
       </div>

@@ -138,7 +138,7 @@ export default function TopicContent({ topik, onStartTest, onViewScore, hasAttem
                     {/* Gambar + Deskripsi sejajar */}
                     <div className="relative z-10 flex flex-row items-center gap-4 ">
                         <img
-                            src="/post-test-topik.png"
+                            src="/post-test-topik.webp"
                             alt="Post Test"
                             width={256}
                             height={256}
