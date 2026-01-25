@@ -1114,7 +1114,7 @@ export default function ModulDetailPage() {
                                                     onConfirm: submitTest,
                                                 })}
                                                 disabled={isSubmitting}
-                                                className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50"
+                                                className="px-4 py-2 text-xs sm:text-sm bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50"
                                             >
                                                 {isSubmitting ? 'Mengirim...' : 'Kirim Jawaban'}
                                             </button>
