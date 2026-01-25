@@ -453,7 +453,7 @@ export default function TestForm({
                   ) : (
                     <div
                       onClick={() => setActiveOption({ qIndex, oIndex })}
-                      className="prose prose-sm dark:prose-invert max-w-none px-2 py-2 cursor-text hover:bg-gray-50 dark:hover:bg-gray-800/50 rounded border border-transparent hover:border-gray-200 dark:hover:border-gray-700 transition-colors min-h-[2.5rem]"
+                      className="prose pre max-w-none px-2 py-2 cursor-text hover:bg-gray-50 dark:hover:bg-gray-800/50 rounded border border-transparent hover:border-gray-200 dark:hover:border-gray-700 transition-colors min-h-[2.5rem]"
                       title="Klik untuk mengedit"
                       dangerouslySetInnerHTML={{ __html: option || "<span class='text-gray-400 italic'>Klik untuk mengisi jawaban...</span>" }}
                     />
@@ -477,7 +477,7 @@ export default function TestForm({
                 <div className="flex items-center text-green-600 dark:text-green-500 text-sm gap-1">
                   <CheckCircle2 size={14} />
                   <span
-                    className="prose prose-sm dark:prose-invert"
+                    className="prose pre"
                     dangerouslySetInnerHTML={{
                       __html: `Jawaban: ${q.answer || "<i>Belum dipilih</i>"}`,
                     }}
