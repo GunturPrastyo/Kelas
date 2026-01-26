@@ -96,7 +96,7 @@ export default function Navbar() {
             <button
               id="theme-toggle"
               type="button"
-              className="hidden sm:block text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-700 rounded-lg text-sm"
+              className="hidden lg:block text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-700 rounded-lg text-sm"
               onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
             >
               {theme === 'dark' ? (
@@ -117,7 +117,7 @@ export default function Navbar() {
           <NotificationBell />
              {/* Sambutan Pengguna */}
           {mounted && user && (
-            <div className="hidden md:flex items-center gap-2">
+            <div className="hidden xl:flex items-center gap-2">
               {greeting.icon}
               <p className="text-sm text-gray-600 dark:text-gray-300 whitespace-nowrap">
                 {greeting.text}, <span className="font-semibold">{user.name.split(" ").slice(0, 2).join(" ")}!</span>
