@@ -414,7 +414,7 @@ export default function DashboardPage() {
                 </div>
               </Link>
             ) : (
-              <div className="p-4 border border-slate-200 dark:border-slate-800 border-l-[5px] border-l-green-500 dark:border-l-gray-600 rounded-2xl bg-white/60 dark:bg-gray-900/50 text-center shadow-sm">
+              <div className="p-4 border border-slate-200 dark:border-slate-800 border-l-[5px] border-l-blue-500 dark:border-l-gray-600 rounded-2xl bg-white/60 dark:bg-gray-900/50 text-center shadow-sm">
                 {!hasTakenPreTest || overallProgress === 0 ? (
                   <>
                     <h3 className="font-semibold text-gray-700 dark:text-gray-300">Yuk, Mulai Belajarmu!</h3>
