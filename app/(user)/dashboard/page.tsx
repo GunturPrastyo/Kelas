@@ -419,7 +419,7 @@ export default function DashboardPage() {
                   <>
                     <h3 className="font-semibold text-gray-700 dark:text-gray-300">Yuk, Mulai Belajarmu!</h3>
                     <p className="text-xs text-gray-600 dark:text-gray-400 mt-1">
-                      Kerjakan <b>Pre-Test</b> dulu untuk membuka materi yang pas buat kamu, atau mulai dari modul dasar.
+                      Kerjakan Pre-Test dulu untuk membuka materi yang pas buat kamu, atau mulai dari modul dasar.
                     </p>
                   </>
                 ) : overallProgress === 100 ? (
