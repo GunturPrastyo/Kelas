@@ -343,17 +343,17 @@ export default function DashboardPage() {
         {/* Jam Belajar */}
         <div
           ref={studyTimeCardRef}
-          className="bg-gradient-to-br from-purple-100 to-purple-200 dark:from-gray-900 dark:to-gray-800 p-4 sm:p-5 rounded-xl shadow flex items-center justify-between overflow-hidden border border-slate-200 dark:border-slate-800"
+          className="bg-gradient-to-br from-blue-100 to-blue-200 dark:from-gray-900 dark:to-gray-800 p-4 sm:p-5 rounded-xl shadow flex items-center justify-between overflow-hidden border border-slate-200 dark:border-slate-800"
         >
           
           <div className="flex flex-col justify-center flex-1 min-w-0">
             <div className="flex items-center gap-3 mb-3">
-              <div className="bg-purple-600 rounded-lg w-10 h-10 flex items-center justify-center">
+              <div className="bg-blue-600 rounded-lg w-10 h-10 flex items-center justify-center">
                 <img src="/clock2.webp" width={128} height={128} className="w-full h-full object-contain p-1" alt="" />
               </div>
               <h2 className="text-lg font-bold text-gray-900 dark:text-white">Jam Belajar</h2>
             </div>
-            <p className="text-xl sm:text-3xl font-bold text-purple-700 dark:text-purple-400">{animatedHours} Jam {animatedMinutes} Mnt</p>
+            <p className="text-xl sm:text-3xl font-bold text-blue-700 dark:text-blue-400">{animatedHours} Jam {animatedMinutes} Mnt</p>
             <p className="text-xs text-gray-600 dark:text-gray-300">
               Total waktu belajar hingga saat ini
             </p>
@@ -371,15 +371,15 @@ export default function DashboardPage() {
         </div>
 
         {/* Rekomendasi */}
-        <div className="relative bg-gradient-to-br border border-slate-200 dark:border-slate-800 border-r-[5px] border-r-green-500 dark:border-r-gray-600 from-green-100 to-green-200 dark:from-gray-900 dark:to-gray-800 p-4 sm:p-5 rounded-xl shadow flex items-center justify-between md:col-span-2 lg:col-span-1 overflow-hidden ">
+        <div className="relative bg-gradient-to-br border border-slate-200 dark:border-slate-800 border-r-[5px] border-r-blue-500 dark:border-r-gray-600 from-blue-100 to-blue-200 dark:from-gray-900 dark:to-gray-800 p-4 sm:p-5 rounded-xl shadow flex items-center justify-between md:col-span-2 lg:col-span-1 overflow-hidden ">
           {/* Decorative Bubbles */}
           {/* <div className="absolute buttom-0 right-0 w-32 h-32 bg-gradient-to-br from-green-400/80 to-transparent dark:from-green-800/20 rounded-tl-[100px] -ml-64 -mb-32 transition-transform duration-500 group-hover:scale-110" /> */}
-          <div className="absolute -top-12 -right-12 w-32 h-32 bg-green-200 dark:bg-gray-900/20 rounded-full blur-2xl pointer-events-none"></div>
-          <div className="absolute -bottom-12 -left-12 w-32 h-32 bg-emerald-200 dark:bg-gray-900/20 rounded-full blur-2xl pointer-events-none"></div>
+          <div className="absolute -top-12 -right-12 w-32 h-32 bg-blue-200 dark:bg-gray-900/20 rounded-full blur-2xl pointer-events-none"></div>
+          <div className="absolute -bottom-12 -left-12 w-32 h-32 bg-blue-200 dark:bg-gray-900/20 rounded-full blur-2xl pointer-events-none"></div>
 
           <div className="relative z-10 flex flex-col justify-center flex-1 min-w-0">
             <div className="flex items-center gap-3 mb-3">
-              <div className="bg-green-600 rounded-lg w-10 h-10 flex items-center justify-center">
+              <div className="bg-blue-600 rounded-lg w-10 h-10 flex items-center justify-center">
                 <img src="/target.webp" width={128} height={128} className="w-full h-full object-contain p-1" alt="" />
               </div>
               <h2 className="text-lg font-bold text-gray-900 dark:text-white">
@@ -394,18 +394,18 @@ export default function DashboardPage() {
                     ? `/modul/${recommendation.continueToModule.moduleSlug}#${recommendation.continueToModule.nextTopic.id}`
                     : `/modul/${recommendation.continueToModule.moduleSlug}`
                 }
-                className="block p-3 border border-slate-200 dark:border-slate-600 border-l-[5px] border-l-green-500 dark:border-l-gray-600 rounded-2xl bg-white dark:bg-gray-800 hover:bg-green-50/60 dark:hover:bg-gray-700 cursor-pointer transition-all group shadow-sm hover:shadow-md"
+                className="block p-3 border border-slate-200 dark:border-slate-600 border-l-[5px] border-l-blue-500 dark:border-l-gray-600 rounded-2xl bg-white dark:bg-gray-800 hover:bg-blue-50/60 dark:hover:bg-gray-700 cursor-pointer transition-all group shadow-sm hover:shadow-md"
               >
                 <div className="flex items-start gap-2">
 
                   <div className="flex-1 min-w-0">
-                    <h3 className="font-bold text-green-700 dark:text-green-400 group-hover:text-green-800 dark:group-hover:text-green-300 transition-colors">
+                    <h3 className="font-bold text-blue-700 dark:text-blue-400 group-hover:text-blue-800 dark:group-hover:text-blue-300 transition-colors">
                       Mulai : {recommendation.continueToModule.moduleTitle}
                     </h3>
 
                     <p className="text-xs text-gray-600 dark:text-gray-400 leading-relaxed">
                       Rekomendasi topik selanjutnya adalah{" "}
-                      <span className="font-semibold text-green-700 dark:text-green-400">
+                      <span className="font-semibold text-blue-700 dark:text-blue-400">
                         {recommendation.continueToModule.nextTopic?.title || "Topik pertama"}
                       </span>.
                     </p>
@@ -455,7 +455,7 @@ export default function DashboardPage() {
       <section className="grid grid-cols-1 lg:grid-cols-2 gap-6">
 
         {/* Pre-Test */}
-        <div className="bg-gradient-to-r from-blue-100 via-indigo-200 to-indigo-300 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 p-4 sm:p-5 rounded-xl shadow flex items-center justify-between gap-4 border border-slate-200 dark:border-slate-800">
+        <div className="bg-gradient-to-br from-blue-100 to-blue-200 dark:from-gray-900 dark:to-gray-800 p-4 sm:p-5 rounded-xl shadow flex items-center justify-between gap-4 border border-slate-200 dark:border-slate-800">
           {/* Kiri: teks dan tombol */}
           <div className="flex-1">
             <div className="flex items-center gap-3 mb-2">
@@ -505,10 +505,10 @@ export default function DashboardPage() {
           return (
             <div
               ref={analyticsCardRef}
-              className="max-w-full bg-gradient-to-br from-indigo-200 via-purple-200 to-violet-300 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 p-6 rounded-xl shadow border border-slate-200 dark:border-slate-800"
+              className="max-w-full bg-gradient-to-br from-blue-100 to-blue-200 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 p-6 rounded-xl shadow border border-slate-200 dark:border-slate-800"
             >
               <div className="flex items-center gap-3 mb-6">
-                <div className="bg-indigo-600 rounded-lg w-10 h-10 flex items-center justify-center">
+                <div className="bg-blue-600 rounded-lg w-10 h-10 flex items-center justify-center">
                   <img src="/analisis.webp" width={128} height={128} className="w-full h-full object-contain p-1" alt="" />
                 </div>
                 <h2 className="text-xl font-bold text-gray-900 dark:text-white">
@@ -519,7 +519,7 @@ export default function DashboardPage() {
                 {/* Wrapper untuk 2 kartu atas */}
                 <div className="col-span-2 grid grid-cols-2 gap-6">
                   {/* Modul Selesai */}
-                  <div className="  border border-slate-200 dark:border-slate-800 border-l-[6px] border-l-blue-500 dark:border-l-gray-600 p-4 rounded-lg bg-gradient-to-br from-blue-100 to-blue-200 dark:from-gray-700 dark:to-gray-800 shadow-md hover:shadow-lg transition">
+                  <div className="  border border-slate-200 dark:border-slate-800 border-l-[8px] border-l-blue-500 dark:border-l-gray-600 p-4 rounded-lg bg-gradient-to-br from-blue-200 to-blue-300 dark:from-gray-700 dark:to-gray-800 shadow-md hover:shadow-lg transition">
                     <div className="flex flex-col items-center gap-2">
                       <div className="bg-blue-600 rounded-full w-10 h-10 flex items-center justify-center">
                         <img src="/book.webp" width={256} height={256} className="w-full h-full object-contain p-1" alt="" />
@@ -531,12 +531,12 @@ export default function DashboardPage() {
                     </div>
                   </div>
                   {/* Rata-rata Skor */}
-                  <div className="border border-slate-200 dark:border-slate-800 border-l-[6px] border-l-green-500 dark:border-l-gray-600 p-4 rounded-lg bg-gradient-to-br from-green-100 to-green-200 dark:from-gray-700 dark:to-gray-800 shadow-md hover:shadow-lg transition">
+                  <div className="border border-slate-200 dark:border-slate-800 border-l-[8px] border-l-blue-500 dark:border-l-gray-600 p-4 rounded-lg bg-gradient-to-br from-blue-200 to-blue-300 dark:from-gray-700 dark:to-gray-800 shadow-md hover:shadow-lg transition">
                     <div className="flex flex-col items-center gap-2">
-                      <div className="bg-green-600 rounded-full w-10 h-10 flex items-center justify-center">
+                      <div className="bg-blue-600 rounded-full w-10 h-10 flex items-center justify-center">
                         <img src="/score.webp" width={256} height={256} className="w-full h-full object-contain p-1" alt="" />
                       </div>
-                      <p className="text-2xl font-bold text-green-700 dark:text-green-400">{loading ? '...' : `${animatedAverageScore ?? 0}%`}</p>
+                      <p className="text-2xl font-bold text-blue-700 dark:text-blue-400">{loading ? '...' : `${animatedAverageScore ?? 0}%`}</p>
                       <p className="text-sm text-gray-600 dark:text-gray-300">Rata-rata Skor</p>
                     </div>
                   </div>
@@ -545,15 +545,15 @@ export default function DashboardPage() {
                 {/* Topik Terlemah */}
                 <Link
                   href={analytics.weakestTopic ? `/modul/${analytics.weakestTopic.modulSlug}#${analytics.weakestTopic.topicId}` : "#"}
-                  className={`border border-slate-200 dark:border-slate-800 border-l-[6px] border-l-red-500 dark:border-l-gray-600 col-span-2 sm:col-span-1 max-w-full p-4 rounded-lg bg-gradient-to-br from-red-100 to-red-200 dark:from-gray-700 dark:to-gray-800 shadow-md transition ${analytics.weakestTopic ? "hover:shadow-lg cursor-pointer" : "cursor-default"}`}
+                  className={`border border-slate-200 dark:border-slate-800 border-l-[8px] border-l-blue-500 dark:border-l-gray-600 col-span-2 sm:col-span-1 max-w-full p-4 rounded-lg bg-gradient-to-br from-blue-200 to-blue-300 dark:from-gray-700 dark:to-gray-800 shadow-md transition ${analytics.weakestTopic ? "hover:shadow-lg cursor-pointer" : "cursor-default"}`}
                 >
                   <div className="flex flex-col items-center justify-center gap-2 break-words h-full text-center">
-                    <div className="bg-red-600 rounded-full w-10 h-10 flex items-center justify-center flex-shrink-0">
+                    <div className="bg-blue-600 rounded-full w-10 h-10 flex items-center justify-center flex-shrink-0">
                       <img src="/thunder.png" width={256} height={256} className="w-full h-full object-contain p-1" alt="Topik Terlemah" />
                     </div>
                     <div className="min-w-0 w-11/12">
                       <p
-                        className="font-bold text-red-700 dark:text-red-400 w-full text-md truncate sm:truncate-none whitespace-normal sm:whitespace-nowrap"
+                        className="font-bold text-blue-700 dark:text-blue-400 w-full text-md truncate sm:truncate-none whitespace-normal sm:whitespace-nowrap"
                         title={analytics.weakestTopic?.title || 'Belum ada'}
                       >
                         {analytics.weakestTopic?.title || 'Belum ada'}

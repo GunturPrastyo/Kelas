@@ -31,7 +31,7 @@ const getStatusBadge = (status: Module["status"], progress: number | undefined, 
   switch (status) {
     case "Selesai":
       return (
-        <span className={`${base} bg-green-100 text-green-700 dark:bg-green-900/40 dark:text-green-300`}>
+        <span className={`${base} bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300`}>
           <CheckCircle2 size={14} /> Selesai
         </span>
       );
@@ -139,27 +139,24 @@ export default function ModuleList({ title, allModules, filter }: ModuleListProp
               className={`
               group relative flex flex-col justify-between
               w-full h-[240px]
-              rounded-2xl overflow-hidden
+              rounded-2xl overflow-hidden 
               bg-slate-50 dark:bg-gray-800
               border border-slate-200 dark:border-gray-700
-              border-l-[6px] ${effectiveStatus === 'Terkunci' ? 'border-l-gray-300 dark:border-l-gray-600' :
-                modul.progress === 100 ? 'border-l-green-500' : 'border-l-blue-500'
-              }
+              border-l-8 ${effectiveStatus === 'Terkunci' ? 'border-l-gray-300 dark:border-l-gray-600' : 'border-l-blue-400'}
               shadow-sm hover:shadow-xl hover:-translate-y-1
               transition-all duration-300 snap-start
               ${effectiveStatus === "Terkunci" ? "grayscale opacity-70 cursor-not-allowed" : ""}
             `}
             >
             {/* Decorative Background */}
-            <div className={`absolute top-0 right-0 w-32 h-32 bg-gradient-to-br ${modul.progress === 100 ? "from-green-200/80 to-transparent dark:from-green-800/20" : "from-blue-200/80 to-transparent dark:from-blue-800/20"
-              } rounded-bl-[80px] -mr-8 -mt-8 transition-transform duration-500 group-hover:scale-110`} />
+            <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-blue-200/80 to-transparent dark:from-blue-800/20 rounded-bl-[80px] -mr-8 -mt-8 transition-transform duration-500 group-hover:scale-110" />
 
             <div className="relative p-5 flex flex-col h-full z-10">
               {/* Header */}
               <div className="flex justify-between items-start mb-3">
                 <div className={`
                         w-12 h-12 rounded-xl flex items-center justify-center shadow-sm border border-white/50 dark:border-gray-600
-                        ${modul.progress === 100 ? "bg-green-100/50 dark:bg-green-900/30" : "bg-blue-100/50 dark:bg-blue-900/30"}
+                        bg-blue-100/50 dark:bg-blue-900/30
                         backdrop-blur-sm
                     `}>
                   <img
@@ -202,9 +199,7 @@ export default function ModuleList({ title, allModules, filter }: ModuleListProp
                 </div>
                 <div className="w-full bg-gray-100 dark:bg-gray-700 rounded-full h-1.5 overflow-hidden">
                   <div
-                    className={`h-full rounded-full transition-all duration-500 ${effectiveStatus === 'Terkunci' ? 'bg-gray-300 dark:bg-gray-600' :
-                        modul.progress === 100 ? 'bg-green-500' : 'bg-blue-600'
-                      }`}
+                    className={`h-full rounded-full transition-all duration-500 ${effectiveStatus === 'Terkunci' ? 'bg-gray-300 dark:bg-gray-600' : 'bg-blue-600'}`}
                     style={{ width: `${modul.progress}%` }}
                   />
                 </div>
