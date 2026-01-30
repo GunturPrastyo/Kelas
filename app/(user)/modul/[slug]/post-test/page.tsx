@@ -518,7 +518,7 @@ export default function PostTestPage() {
                                 Topik yang Perlu Kamu Perkuat
                             </h4>
 
-                            <p className="text-xs text-yellow-700 dark:text-yellow-400 mb-5">
+                            <p className="text-xs text-yellow-700 dark:text-yellow-400 mb-4 mt-4">
                                 Ada beberapa topik yang masih bisa kamu tingkatkan. Yuk cek lagi biar makin mantap!
                             </p>
 
