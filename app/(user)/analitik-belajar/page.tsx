@@ -932,16 +932,18 @@ export default function AnalitikBelajarPage() {
                         </p>
                       </div>
                     </div>
-                    <div className={`flex items-center gap-4 p-3 rounded-lg border ${comparisonData.scoreDifference > 0 ? 'bg-green-50 dark:bg-green-900/30 border-green-100 dark:border-green-800' : 'bg-yellow-50 dark:bg-yellow-900/30 border-yellow-100 dark:border-yellow-800'}`}>
+                    <div className={`flex items-center gap-4 p-3 rounded-lg border ${comparisonData.scoreDifference > 0 ? 'bg-green-50 dark:bg-green-900/30 border-green-100 dark:border-green-800' : comparisonData.scoreDifference < 0 ? 'bg-yellow-50 dark:bg-yellow-900/30 border-yellow-100 dark:border-yellow-800' : 'bg-blue-50 dark:bg-blue-900/30 border-blue-100 dark:border-blue-800'}`}>
                       {comparisonData.scoreDifference > 0 ? (
                         <TrendingUp className="w-8 h-8 text-green-500 flex-shrink-0" />
-                      ) : (
+                      ) : comparisonData.scoreDifference < 0 ? (
                         <TrendingDown className="w-8 h-8 text-yellow-500 flex-shrink-0" />
+                      ) : (
+                        <Activity className="w-8 h-8 text-blue-500 flex-shrink-0" />
                       )}
                       <div>
                         <p className="text-xs text-gray-600 dark:text-gray-400">Performa Nilai</p>
                         <p className="font-bold text-base">
-                          {comparisonData.scoreDifference > 0 ? `Lebih Tinggi ${comparisonData.scoreDifference}%` : comparisonData.scoreDifference < 0 ? `Lebih Rendah ${Math.abs(comparisonData.scoreDifference)}%` : 'Setara'}
+                                      {comparisonData.scoreDifference > 0 ? "Di atas rata-rata kelas" : comparisonData.scoreDifference < 0 ? "Di bawah rata-rata kelas" : 'Setara dengan rata-rata'}
                         </p>
                       </div>
                     </div>
