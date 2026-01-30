@@ -364,7 +364,7 @@ export default function ModulDetailPage() {
         if (topik.questions.length === 0) {
             showAlert({
                 title: 'Informasi',
-                message: 'Belum ada soal post-test untuk topik ini.',
+                message: 'Belum ada soal tes untuk topik ini.',
             });
             return;
         }
@@ -1291,16 +1291,16 @@ export default function ModulDetailPage() {
                             {/* Konten Teks */}
                             <div className="flex-1 p-0 sm:p-10  text-left w-full order-last md:order-first col-span-1">
                                 <h2 className="text-sm sm:text-xl lg:text-2xl font-bold text-gray-800 dark:text-gray-100 mb-1 sm:mb-2">
-                                    Post Test Akhir
+                                    Uji Pemahaman Akhir
                                 </h2>
                                 {isPostTestLocked ? (
                                     <p className="text-xs sm:text-sm lg:text-base text-gray-500 dark:text-gray-400 mb-3 sm:mb-6">
-                                        Selesaikan semua topik di modul ini untuk membuka post-test akhir.
+                                        Selesaikan semua topik di modul ini untuk membuka uji pemahaman akhir.
                                     </p>
                                 ) : (
                                     <p className="text-xs sm:text-sm lg:text-base text-gray-600 dark:text-gray-400 mb-3 sm:mb-6">
                                         {hasCompletedModulPostTest
-                                            ? "Kerja bagus! Kamu telah menyelesaikan post-test untuk modul ini."
+                                            ? "Kerja bagus! Kamu telah menyelesaikan uji pemahaman akhir untuk modul ini."
                                             : "Selamat! Kamu telah menyelesaikan semua topik. Uji pemahaman akhir Kamu untuk menyelesaikan modul ini."}
                                     </p>
                                 )}

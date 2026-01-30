@@ -76,7 +76,7 @@ export default function EditPostTestTopikPage() {
   }, [slug, topikSlug]);
 
   if (loading) {
-    return <div className="p-6 text-center">Memuat data post-test...</div>;
+    return <div className="p-6 text-center">Memuat data tes...</div>;
   }
 
   if (error) {

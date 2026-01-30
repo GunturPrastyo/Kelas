@@ -322,8 +322,8 @@ export default function PostTestPage() {
         if (!user || !modul) return;
         showAlert({
             type: 'confirm',
-            title: 'Ulangi Post-Test?',
-            message: 'Apakah kamu yakin ingin mengulang post-test untuk modul ini? Hasil sebelumnya akan tetap tersimpan jika skormu saat ini lebih rendah.',
+            title: 'Ulangi Tes?',
+            message: 'Apakah kamu yakin ingin mengulang tes untuk modul ini? Hasil sebelumnya akan tetap tersimpan jika skormu saat ini lebih rendah.',
             confirmText: 'Ya, Ulangi',
             onConfirm: async () => {
                 try {

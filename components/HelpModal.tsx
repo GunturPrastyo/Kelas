@@ -67,9 +67,9 @@ const helpData = {
                 title: "Tanya Jawab Umum (FAQ)",
                 items: [
                     { question: "Bagaimana jika saya lupa password?", answer: "<p>Pada halaman login, klik tautan 'Lupa Password?'. Masukkan email Anda, dan kami akan mengirimkan instruksi untuk mereset password Anda.</p>" },
-                    { question: "Mengapa saya tidak bisa membuka modul tertentu?", answer: "<p>Modul bisa terkunci jika Anda belum menyelesaikan pre-test, atau jika level modul tersebut di atas level rekomendasi Anda (misalnya, mencoba membuka modul 'Lanjut' saat level Anda 'Dasar'). Selesaikan modul prasyarat terlebih dahulu.</p>" },
+                    { question: "Mengapa saya tidak bisa membuka modul tertentu?", answer: "<p>Modul bisa terkunci jika Anda belum menyelesaikan tes awal, atau jika level modul tersebut di atas level rekomendasi Anda (misalnya, mencoba membuka modul 'Lanjut' saat level Anda 'Dasar'). Selesaikan modul prasyarat terlebih dahulu.</p>" },
                     { question: "Bagaimana sistem menentukan rekomendasi jalur belajar?", answer: "<p>Rekomendasi ditentukan oleh hasil <strong>Pre-Test</strong> Anda. Sistem menganalisis jawaban Anda untuk mengukur pemahaman pada materi tingkat Dasar, Menengah, dan Lanjut, lalu menempatkan Anda di jalur yang paling sesuai.</p>" },
-                    { question: "Apa syarat untuk mendapatkan sertifikat?", answer: "<p>Anda harus menyelesaikan 100% semua modul dan lulus semua post-test yang ada dalam satu jalur belajar yang ditentukan.</p>" },
+                    { question: "Apa syarat untuk mendapatkan sertifikat?", answer: "<p>Anda harus menyelesaikan 100% semua modul dan lulus semua uji pemahaman yang ada dalam satu jalur belajar yang ditentukan.</p>" },
                     { question: "Bagaimana cara menghubungi admin/guru?", answer: "<p>Untuk saat ini, fitur komunikasi langsung belum tersedia. Silakan hubungi administrator melalui kontak yang disediakan di luar platform.</p>" },
                 ]
             }
