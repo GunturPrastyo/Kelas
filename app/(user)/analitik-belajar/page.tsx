@@ -189,7 +189,7 @@ export default function AnalitikBelajarPage() {
   const [chartPerbandinganRef, isChartPerbandinganInView] = useInView({ threshold: 0.5, triggerOnce: true }) as [React.RefObject<HTMLCanvasElement>, boolean];
   const [summary, setSummary] = useState<SummaryData | null>(null);
   const [weeklyActivity, setWeeklyActivity] = useState<number[]>([]);
-  const [classWeeklyActivity, setClassWeeklyActivity] = useState<number[]>([]);  
+  const [classWeeklyActivity, setClassWeeklyActivity] = useState<number[]>([]);
   const [competencyData, setCompetencyData] = useState<(GroupedCompetencyData & { nextModuleToImprove?: ModuleForCompetencyMap | null }) | null>(null);
   const [comparisonData, setComparisonData] = useState<ComparisonData | null>(null);
   const [recommendations, setRecommendations] = useState<RecommendationData | null>(null);
@@ -277,7 +277,7 @@ export default function AnalitikBelajarPage() {
         const weeklySeconds = weeklyActivityData.weeklySeconds || Array(7).fill(0);
         setWeeklyActivity(weeklySeconds); // Simpan dalam detik, konversi akan dilakukan di chart options
         setClassWeeklyActivity(classWeeklyActivityData.weeklyAverages || Array(7).fill(0));
-        
+
         // --- Logika untuk Tombol Tingkatkan di Peta Kompetensi ---
         let nextModuleToImprove = null;
         if (progressData && userLearningLevel) {
@@ -307,7 +307,7 @@ export default function AnalitikBelajarPage() {
         const enrichedWeakTopics = weakTopicsData.map((topic: any) => {
           const moduleForTopic = progressData.find((modul: any) =>
             modul.topics.some((t: any) => t.title === topic.topicTitle)
-          ); 
+          );
           return { ...topic, modulSlug: moduleForTopic?.slug };
         }).filter((t: WeakTopicData) => t.status !== "Sudah bagus" && t.modulSlug);
 
@@ -594,7 +594,7 @@ export default function AnalitikBelajarPage() {
           <div className="relative overflow-hidden bg-gradient-to-br from-blue-50 to-blue-100 dark:from-gray-800 dark:to-gray-900 text-gray-800 dark:text-gray-100 rounded-2xl p-4 shadow-md hover:scale-[1.02] transition-transform dark:shadow-lg dark:shadow-gray-800/40 border border-slate-200 dark:border-slate-700 border-l-[6px] border-l-blue-400">
             <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-br from-blue-200/60 to-transparent dark:from-blue-900/20 rounded-bl-[60px] -mr-4 -mt-4" />
             <div className="relative z-10 flex flex-col gap-2 items-center sm:items-start text-center sm:text-left">
-              <p className="text-sm text-gray-600 dark:text-gray-400">Modul Selesai</p>
+              <p className="text-base text-gray-800 dark:text-gray-400">Modul Selesai</p>
               <div className="flex flex-col items-center sm:flex-row sm:items-center gap-2 sm:gap-3">
                 <div className="flex-shrink-0">
                   <img src="/modules2.webp" alt="Modul Icon" width={48} height={48} className="w-14 h-14 rounded-lg bg-blue-100 dark:bg-gray-700 p-1" />
@@ -608,7 +608,7 @@ export default function AnalitikBelajarPage() {
               {loading || !summary ? (
                 <div className="h-4 w-full bg-blue-100/50 dark:bg-gray-700/50 rounded-md animate-pulse"></div>
               ) : (
-                <p className="text-xs text-gray-500 dark:text-gray-400">
+                <p className="text-sm sm:text-base text-gray-500 dark:text-gray-400">
                   Kamu telah menyelesaikan {summary.totalModules > 0 ? Math.round((summary.completedModules / summary.totalModules) * 100) : 0}%
                 </p>
               )}
@@ -619,7 +619,7 @@ export default function AnalitikBelajarPage() {
           <div className="relative overflow-hidden bg-gradient-to-br from-green-50 to-green-100 dark:from-gray-800 dark:to-gray-900 text-gray-800 dark:text-gray-100 rounded-2xl p-4 shadow-md hover:scale-[1.02] transition-transform dark:shadow-lg dark:shadow-gray-800/40 border border-slate-200 dark:border-slate-700 border-l-[6px] border-l-green-400">
             <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-br from-green-200/60 to-transparent dark:from-green-900/20 rounded-bl-[60px] -mr-4 -mt-4" />
             <div className="relative z-10 flex flex-col gap-2 items-center sm:items-start text-center sm:text-left">
-              <p className="text-sm text-gray-600 dark:text-gray-400">Rata-rata Nilai</p>
+              <p className="text-base text-gray-800 dark:text-gray-400">Rata-rata Nilai</p>
               <div className="flex flex-col items-center sm:flex-row sm:items-center gap-2 sm:gap-3">
                 <div className="flex-shrink-0">
                   <img src="/star.webp" alt="Score Icon" width={48} height={48} className="w-14 h-14 rounded-lg bg-green-100 dark:bg-gray-700 p-1" />
@@ -633,7 +633,7 @@ export default function AnalitikBelajarPage() {
               {loading || !summary ? (
                 <div className="h-4 w-full bg-green-100/50 dark:bg-gray-700/50 rounded-md animate-pulse"></div>
               ) : (
-                <p className="text-xs text-gray-500 dark:text-gray-400">Dari semua tes setiap topik</p>
+                <p className="text-sm sm:text-base text-gray-500 dark:text-gray-400">Dari semua tes setiap topik</p>
               )}
             </div>
           </div>
@@ -642,7 +642,7 @@ export default function AnalitikBelajarPage() {
           <div className="relative overflow-hidden bg-gradient-to-br from-purple-50 to-purple-100 dark:from-gray-800 dark:to-gray-900 text-gray-800 dark:text-gray-100 rounded-2xl p-4 shadow-md hover:scale-[1.02] transition-transform dark:shadow-lg dark:shadow-gray-800/40 border border-slate-200 dark:border-slate-700 border-l-[6px] border-l-purple-400">
             <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-br from-purple-200/60 to-transparent dark:from-purple-900/20 rounded-bl-[60px] -mr-4 -mt-4" />
             <div className="relative z-10 flex flex-col gap-2 items-center sm:items-start text-center sm:text-left">
-              <p className="text-sm text-gray-600 dark:text-gray-400">Total Waktu Belajar</p>
+              <p className="text-base text-gray-800 dark:text-gray-400">Total Waktu Belajar</p>
               <div className="flex flex-col items-center sm:flex-row sm:items-center gap-2 sm:gap-3">
                 <div className="flex-shrink-0">
                   <img src="/study.webp" alt="Time Icon" width={48} height={48} className="w-16 h-16 rounded-lg bg-purple-100 dark:bg-gray-700 p-1" />
@@ -658,8 +658,10 @@ export default function AnalitikBelajarPage() {
               </div>
               {loading || !summary ? (
                 <div className="h-4 w-full bg-purple-100/50 dark:bg-gray-700/50 rounded-md animate-pulse"></div>
+
               ) : (
-                null
+
+                <p className="text-sm sm:text-base text-gray-500 dark:text-gray-400">Waktu kamu belajar</p>
               )}
             </div>
           </div>
@@ -668,7 +670,7 @@ export default function AnalitikBelajarPage() {
           <div className="relative overflow-hidden bg-gradient-to-br from-orange-50 to-orange-100 dark:from-gray-800 dark:to-gray-900 text-gray-800 dark:text-gray-100 rounded-2xl p-4 shadow-md hover:scale-[1.02] transition-transform dark:shadow-lg dark:shadow-gray-800/40 border border-slate-200 dark:border-slate-700 border-l-[6px] border-l-orange-400">
             <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-br from-orange-200/60 to-transparent dark:from-orange-900/20 rounded-bl-[60px] -mr-4 -mt-4" />
             <div className="relative z-10 flex flex-col gap-2 items-center sm:items-start text-center sm:text-left">
-              <p className="text-sm text-gray-600 dark:text-gray-400">Streak Harian</p>
+              <p className="text-base text-gray-800 dark:text-gray-400">Streak Harian</p>
               <div className="flex flex-col items-center sm:flex-row sm:items-center gap-2 sm:gap-3">
                 <div className="flex-shrink-0">
                   <img src="/streak.webp" alt="Streak Icon" width={48} height={48} className="w-14 h-14 rounded-lg bg-orange-100 dark:bg-gray-700 p-1" />
@@ -682,7 +684,7 @@ export default function AnalitikBelajarPage() {
               {loading || !summary ? (
                 <div className="h-4 w-full bg-orange-100/50 dark:bg-gray-700/50 rounded-md animate-pulse"></div>
               ) : (
-                <p className="text-xs text-gray-500 dark:text-gray-400">Hari berturut-turut aktif</p>
+                <p className="text-sm sm:text-base text-gray-500 dark:text-gray-400">Hari berturut-turut aktif</p>
               )}
             </div>
           </div>
@@ -798,8 +800,8 @@ export default function AnalitikBelajarPage() {
                 ))
               ) : paginatedWeakTopics.length > 0 ? (
                 paginatedWeakTopics.map((topic) => (
-                  <tr 
-                    key={topic.topicTitle} 
+                  <tr
+                    key={topic.topicTitle}
                     className={`border-b dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors ${topic.weakSubTopics && topic.weakSubTopics.length > 0 ? 'cursor-pointer' : ''}`}
                     onClick={() => handleRowClick(topic)}
                   >
@@ -997,7 +999,7 @@ export default function AnalitikBelajarPage() {
                   const info = levelInfo[level as keyof typeof levelInfo];
                   const isCurrentUserLevel = userCurrentLevel?.toLowerCase() === level.toLowerCase();
                   const isOpen = openCompetency === level;
-                  
+
                   // Warna border berdasarkan level
                   const levelColors = {
                     'Dasar': 'border-l-6 border-l-green-400',
@@ -1117,45 +1119,56 @@ export default function AnalitikBelajarPage() {
           </p>
 
           {loading || !recommendations ? (
-          <div className="space-y-3">
-            {[...Array(3)].map((_, i) => (
-              <div key={i} className="flex items-center gap-4 p-4 bg-white/40 dark:bg-gray-700/40 rounded-xl animate-pulse">
-                <div className="w-16 h-16 rounded-lg bg-white/30 dark:bg-gray-600/30"></div>
-                <div className="flex-1 space-y-2">
-                  <div className="h-5 w-3/4 bg-white/30 dark:bg-gray-600/30 rounded"></div>
-                  <div className="h-4 w-1/2 bg-white/30 dark:bg-gray-600/30 rounded"></div>
+            <div className="space-y-3">
+              {[...Array(3)].map((_, i) => (
+                <div key={i} className="flex items-center gap-4 p-4 bg-white/40 dark:bg-gray-700/40 rounded-xl animate-pulse">
+                  <div className="w-16 h-16 rounded-lg bg-white/30 dark:bg-gray-600/30"></div>
+                  <div className="flex-1 space-y-2">
+                    <div className="h-5 w-3/4 bg-white/30 dark:bg-gray-600/30 rounded"></div>
+                    <div className="h-4 w-1/2 bg-white/30 dark:bg-gray-600/30 rounded"></div>
+                  </div>
                 </div>
-              </div>
-            ))}
-          </div>
-        ) : (
-          <ul className="space-y-3">
-            {/* REPEAT MODULE */}
-            {recommendations?.repeatModule && (
-              <li 
-                className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 bg-white/60 dark:bg-gray-700/40 rounded-xl hover:bg-white/80 dark:hover:bg-gray-600/50 transition-all shadow-sm cursor-pointer group" 
-                key="repeat-module"
-                onClick={() => {
-                  const slug = recommendations.repeatModule?.moduleSlug;
-                  if (recommendations.repeatModule?.allTopicsMastered) {
-                    router.push(`/modul/${slug}/post-test`);
-                  } else {
-                    const hash = recommendations.repeatModule?.weakestTopicDetails ? '#' + recommendations.repeatModule.weakestTopicDetails._id : '';
-                    router.push(`/modul/${slug}${hash}`);
-                  }
-                }}
-              >
-                <div className="flex items-center gap-4 w-full sm:w-auto">
-                  <img
-                    src={`${process.env.NEXT_PUBLIC_API_URL}/uploads/${recommendations.repeatModule.moduleIcon}`}
-                    className="w-16 h-16 rounded-lg object-contain bg-white/30 dark:bg-gray-700/40 p-1 flex-shrink-0"
-                    alt="gambar modul"
-                  />
-                  <div className="flex-1 sm:flex-none">
-                    <p className="font-semibold">
-                      Ulangi <b className="text-indigo-600 dark:text-indigo-300">{recommendations.repeatModule.moduleTitle}</b>
-                    </p>
-                    <p className="text-sm opacity-80 hidden sm:block">
+              ))}
+            </div>
+          ) : (
+            <ul className="space-y-3">
+              {/* REPEAT MODULE */}
+              {recommendations?.repeatModule && (
+                <li
+                  className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 bg-white/60 dark:bg-gray-700/40 rounded-xl hover:bg-white/80 dark:hover:bg-gray-600/50 transition-all shadow-sm cursor-pointer group"
+                  key="repeat-module"
+                  onClick={() => {
+                    const slug = recommendations.repeatModule?.moduleSlug;
+                    if (recommendations.repeatModule?.allTopicsMastered) {
+                      router.push(`/modul/${slug}/post-test`);
+                    } else {
+                      const hash = recommendations.repeatModule?.weakestTopicDetails ? '#' + recommendations.repeatModule.weakestTopicDetails._id : '';
+                      router.push(`/modul/${slug}${hash}`);
+                    }
+                  }}
+                >
+                  <div className="flex items-center gap-4 w-full sm:w-auto">
+                    <img
+                      src={`${process.env.NEXT_PUBLIC_API_URL}/uploads/${recommendations.repeatModule.moduleIcon}`}
+                      className="w-16 h-16 rounded-lg object-contain bg-white/30 dark:bg-gray-700/40 p-1 flex-shrink-0"
+                      alt="gambar modul"
+                    />
+                    <div className="flex-1 sm:flex-none">
+                      <p className="font-semibold">
+                        Ulangi <b className="text-indigo-600 dark:text-indigo-300">{recommendations.repeatModule.moduleTitle}</b>
+                      </p>
+                      <p className="text-sm opacity-80 hidden sm:block">
+                        Nilai test akhirmu masih <span className="font-bold text-rose-600 dark:text-rose-400">{recommendations.repeatModule.moduleScore}</span>.
+                        {recommendations.repeatModule.allTopicsMastered ? (
+                          " Semua topik sudah bagus, coba kerjakan ulang test akhir dengan lebih teliti."
+                        ) : recommendations.repeatModule.weakestTopic ? (
+                          <> Fokus pada topik <span className="font-semibold text-indigo-600 dark:text-indigo-300">{recommendations.repeatModule.weakestTopic}</span>.</>
+                        ) : null}
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex items-center justify-between gap-4 w-full sm:w-auto">
+                    <p className="text-sm opacity-80 sm:hidden">
                       Nilai test akhirmu masih <span className="font-bold text-rose-600 dark:text-rose-400">{recommendations.repeatModule.moduleScore}</span>.
                       {recommendations.repeatModule.allTopicsMastered ? (
                         " Semua topik sudah bagus, coba kerjakan ulang test akhir dengan lebih teliti."
@@ -1163,115 +1176,104 @@ export default function AnalitikBelajarPage() {
                         <> Fokus pada topik <span className="font-semibold text-indigo-600 dark:text-indigo-300">{recommendations.repeatModule.weakestTopic}</span>.</>
                       ) : null}
                     </p>
+                    <button
+                      className="flex-shrink-0 flex items-center justify-center w-10 h-10 rounded-full bg-blue-500 group-hover:bg-blue-600 transition text-white shadow-md"
+                    >
+                      <Play className="w-5 h-5" />
+                    </button>
                   </div>
-                </div>
-                <div className="flex items-center justify-between gap-4 w-full sm:w-auto">
-                  <p className="text-sm opacity-80 sm:hidden">
-                    Nilai test akhirmu masih <span className="font-bold text-rose-600 dark:text-rose-400">{recommendations.repeatModule.moduleScore}</span>.
-                    {recommendations.repeatModule.allTopicsMastered ? (
-                      " Semua topik sudah bagus, coba kerjakan ulang test akhir dengan lebih teliti."
-                    ) : recommendations.repeatModule.weakestTopic ? (
-                      <> Fokus pada topik <span className="font-semibold text-indigo-600 dark:text-indigo-300">{recommendations.repeatModule.weakestTopic}</span>.</>
-                    ) : null}
-                  </p>
-                  <button
-                    className="flex-shrink-0 flex items-center justify-center w-10 h-10 rounded-full bg-blue-500 group-hover:bg-blue-600 transition text-white shadow-md"
-                  >
-                    <Play className="w-5 h-5" />
-                  </button>
-                </div>
-              </li>
-            )}
+                </li>
+              )}
 
-            {/* DEEPEN TOPIC */}
-            {recommendations?.deepenTopic && (
-              <li 
-                className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 bg-white/60 dark:bg-gray-700/40 rounded-xl hover:bg-white/80 dark:hover:bg-gray-600/50 transition-all shadow-sm cursor-pointer group" 
-                key="deepen-topic"
-                onClick={() =>
-                  recommendations.deepenTopic?.modulSlug && recommendations.deepenTopic?.topicId && router.push(
-                    `/modul/${recommendations.deepenTopic.modulSlug}#${recommendations.deepenTopic.topicId}`
-                  )
-                }
-              >
-                <div className="flex items-center gap-4 w-full sm:w-auto">
-                  <img
-                    src="/reading-book.webp"
-                    className="w-16 h-16 rounded-lg object-contain bg-white/30 dark:bg-gray-700/40 p-1 flex-shrink-0"
-                    alt="Perdalam Topik"
-                  />
-                  <div className="flex-1 sm:flex-none">
-                    <p className="font-semibold">
-                      Perdalam topik <b className="text-indigo-600 dark:text-indigo-300">{recommendations.deepenTopic.topicTitle || 'Tidak Diketahui'}</b>
-                    </p>
-                    <p className="text-sm opacity-80 hidden sm:block">
+              {/* DEEPEN TOPIC */}
+              {recommendations?.deepenTopic && (
+                <li
+                  className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 bg-white/60 dark:bg-gray-700/40 rounded-xl hover:bg-white/80 dark:hover:bg-gray-600/50 transition-all shadow-sm cursor-pointer group"
+                  key="deepen-topic"
+                  onClick={() =>
+                    recommendations.deepenTopic?.modulSlug && recommendations.deepenTopic?.topicId && router.push(
+                      `/modul/${recommendations.deepenTopic.modulSlug}#${recommendations.deepenTopic.topicId}`
+                    )
+                  }
+                >
+                  <div className="flex items-center gap-4 w-full sm:w-auto">
+                    <img
+                      src="/reading-book.webp"
+                      className="w-16 h-16 rounded-lg object-contain bg-white/30 dark:bg-gray-700/40 p-1 flex-shrink-0"
+                      alt="Perdalam Topik"
+                    />
+                    <div className="flex-1 sm:flex-none">
+                      <p className="font-semibold">
+                        Perdalam topik <b className="text-indigo-600 dark:text-indigo-300">{recommendations.deepenTopic.topicTitle || 'Tidak Diketahui'}</b>
+                      </p>
+                      <p className="text-sm opacity-80 hidden sm:block">
+                        Coba latihan tambahan agar lebih memahami topik ini secara mendalam.
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex items-center justify-between gap-4 w-full sm:w-auto">
+                    <p className="text-sm opacity-80 sm:hidden">
                       Coba latihan tambahan agar lebih memahami topik ini secara mendalam.
                     </p>
+                    <button
+                      className="flex-shrink-0 flex items-center justify-center w-10 h-10 rounded-full bg-blue-500 group-hover:bg-blue-600 transition text-white shadow-md"
+                    >
+                      <Play className="w-5 h-5" />
+                    </button>
                   </div>
-                </div>
-                <div className="flex items-center justify-between gap-4 w-full sm:w-auto">
-                  <p className="text-sm opacity-80 sm:hidden">
-                    Coba latihan tambahan agar lebih memahami topik ini secara mendalam.
-                  </p>
-                  <button
-                    className="flex-shrink-0 flex items-center justify-center w-10 h-10 rounded-full bg-blue-500 group-hover:bg-blue-600 transition text-white shadow-md"
-                  >
-                    <Play className="w-5 h-5" />
-                  </button>
-                </div>
-              </li>
-            )}
+                </li>
+              )}
 
-            {/* CONTINUE MODULE */}
-            {recommendations?.continueToModule ? (
-              <li 
-                className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 bg-white/60 dark:bg-gray-700/40 rounded-xl hover:bg-white/80 dark:hover:bg-gray-600/50 transition-all shadow-sm cursor-pointer group" 
-                key="continue-module"
-                onClick={() =>
-                  router.push(`/modul/${recommendations.continueToModule?.moduleSlug}${recommendations.continueToModule?.nextTopic ? `#${recommendations.continueToModule.nextTopic.id}` : ''}`)
-                }
-              >
-                <div className="flex items-center gap-4 w-full sm:w-auto">
-                  <img
-                    src={`${process.env.NEXT_PUBLIC_API_URL}/uploads/${recommendations.continueToModule.moduleIcon}`}
-                    className="w-16 h-16 rounded-lg object-contain bg-white/30 dark:bg-gray-700/40 p-1 flex-shrink-0"
-                    alt="gambar modul"
-                  />
-                  <div className="flex-1 sm:flex-none">
-                    <p className="font-semibold">
-                      Lanjutkan ke <b className="text-indigo-600 dark:text-indigo-300">{recommendations.continueToModule.moduleTitle}</b>
-                    </p>
-                    <p className="text-sm opacity-80 hidden sm:block">
+              {/* CONTINUE MODULE */}
+              {recommendations?.continueToModule ? (
+                <li
+                  className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 bg-white/60 dark:bg-gray-700/40 rounded-xl hover:bg-white/80 dark:hover:bg-gray-600/50 transition-all shadow-sm cursor-pointer group"
+                  key="continue-module"
+                  onClick={() =>
+                    router.push(`/modul/${recommendations.continueToModule?.moduleSlug}${recommendations.continueToModule?.nextTopic ? `#${recommendations.continueToModule.nextTopic.id}` : ''}`)
+                  }
+                >
+                  <div className="flex items-center gap-4 w-full sm:w-auto">
+                    <img
+                      src={`${process.env.NEXT_PUBLIC_API_URL}/uploads/${recommendations.continueToModule.moduleIcon}`}
+                      className="w-16 h-16 rounded-lg object-contain bg-white/30 dark:bg-gray-700/40 p-1 flex-shrink-0"
+                      alt="gambar modul"
+                    />
+                    <div className="flex-1 sm:flex-none">
+                      <p className="font-semibold">
+                        Lanjutkan ke <b className="text-indigo-600 dark:text-indigo-300">{recommendations.continueToModule.moduleTitle}</b>
+                      </p>
+                      <p className="text-sm opacity-80 hidden sm:block">
+                        {recommendations.continueToModule.nextTopic ? (
+                          <>Kamu sudah siap untuk materi lanjutan tentang <span className="font-semibold text-indigo-600 dark:text-indigo-300">{recommendations.continueToModule.nextTopic.title}</span>.</>
+                        ) : (
+                          "Lanjutkan progres belajarmu di modul ini."
+                        )}
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex items-center justify-between gap-4 w-full sm:w-auto">
+                    <p className="text-sm opacity-80 sm:hidden">
                       {recommendations.continueToModule.nextTopic ? (
                         <>Kamu sudah siap untuk materi lanjutan tentang <span className="font-semibold text-indigo-600 dark:text-indigo-300">{recommendations.continueToModule.nextTopic.title}</span>.</>
                       ) : (
                         "Lanjutkan progres belajarmu di modul ini."
                       )}
                     </p>
+                    <button
+                      className="flex-shrink-0 flex items-center justify-center w-10 h-10 rounded-full bg-blue-500 group-hover:bg-blue-600 transition text-white shadow-md"
+                    >
+                      <Play className="w-5 h-5" />
+                    </button>
                   </div>
-                </div>
-                <div className="flex items-center justify-between gap-4 w-full sm:w-auto">
-                  <p className="text-sm opacity-80 sm:hidden">
-                    {recommendations.continueToModule.nextTopic ? (
-                      <>Kamu sudah siap untuk materi lanjutan tentang <span className="font-semibold text-indigo-600 dark:text-indigo-300">{recommendations.continueToModule.nextTopic.title}</span>.</>
-                    ) : (
-                      "Lanjutkan progres belajarmu di modul ini."
-                    )}
-                  </p>
-                  <button
-                    className="flex-shrink-0 flex items-center justify-center w-10 h-10 rounded-full bg-blue-500 group-hover:bg-blue-600 transition text-white shadow-md"
-                  >
-                    <Play className="w-5 h-5" />
-                  </button>
-                </div>
-              </li>
-            ) : (
-              <p className="p-4 text-center text-gray-700 dark:text-gray-300">
-                Selamat Semua modul telah kamu selesaikan dengan baik!
-              </p>
-            )}
-          </ul>
-        )}
+                </li>
+              ) : (
+                <p className="p-4 text-center text-gray-700 dark:text-gray-300">
+                  Selamat Semua modul telah kamu selesaikan dengan baik!
+                </p>
+              )}
+            </ul>
+          )}
         </div>
       </section>
 
