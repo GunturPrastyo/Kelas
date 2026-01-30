@@ -419,7 +419,7 @@ export default function DashboardPage() {
                   <>
                     <h3 className="font-semibold text-gray-700 dark:text-gray-300">Yuk, Mulai Belajarmu!</h3>
                     <p className="text-xs text-gray-600 dark:text-gray-400 mt-1">
-                      Kerjakan Pre-Test dulu untuk membuka materi yang pas buat kamu, atau mulai dari modul dasar.
+                      Kerjakan Tes Aea dulu untuk membuka materi yang pas buat kamu, atau mulai dari modul dasar.
                     </p>
                   </>
                 ) : overallProgress === 100 ? (
@@ -469,17 +469,17 @@ export default function DashboardPage() {
                 />
               </div>
               <h2 className="text-base sm:text-lg font-bold text-gray-900 dark:text-white">
-                Pre-Test
+                Tes Awal
               </h2>
             </div>
             <p className="text-gray-600 dark:text-gray-300 mb-3 text-xs sm:text-sm leading-relaxed">
-              Ikuti pre-test untuk memetakan level pengetahuanmu. <span className="font-medium text-red-600 dark:text-red-500">Hasilnya akan menentukan jalur belajar yang paling sesuai untukmu.</span>
+              Ikuti tes awal untuk memetakan level pengetahuanmu. <span className="font-medium text-red-600 dark:text-red-500">Hasilnya akan menentukan jalur belajar yang paling sesuai untukmu.</span>
             </p>
             <Link
               href="/pre-test"
               className="inline-block px-4 py-2 bg-blue-600 text-white text-xs sm:text-sm font-medium rounded-lg hover:bg-blue-700 transition"
             >
-              {hasTakenPreTest ? 'Lihat Hasil' : 'Mulai Pre-Test'}
+              {hasTakenPreTest ? 'Lihat Hasil' : 'Mulai Tes'}
             </Link>
           </div>
 

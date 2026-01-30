@@ -149,7 +149,7 @@ export default function TopicContent({ topik, onStartTest, onViewScore, hasAttem
                                 Waktunya Uji Pemahaman!
                             </h4>
                             <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 mt-1 leading-relaxed">
-                                Setelah mempelajari materi, uji pemahamanmu dengan mengerjakan post-test singkat ini.
+                                Setelah mempelajari materi, uji pemahamanmu dengan mengerjakan tes singkat ini.
                             </p>
                         </div>
                     </div>
@@ -160,7 +160,7 @@ export default function TopicContent({ topik, onStartTest, onViewScore, hasAttem
                             onClick={() => onStartTest(topik, hasAttempted)}
                             className="text-sm px-4 py-2 bg-yellow-400 hover:bg-yellow-300 text-black font-semibold rounded-xl shadow-md transition transform hover:scale-105 active:scale-95 focus:ring-2 focus:ring-yellow-200 sm:px-5 sm:py-2"
                         >
-                            {hasAttempted ? "Ulangi Post-Test" : "Mulai Post-Test"}
+                            {hasAttempted ? "Ulangi Tes" : "Mulai Tes"}
                         </button>
 
                         {hasAttempted && (

@@ -5,7 +5,7 @@ import { authFetch } from "@/lib/authFetch";
 import { useRouter } from "next/navigation";
 import { Award, TrendingUp, TrendingDown, LayoutDashboard, Activity, BarChartHorizontal, AlertTriangle, Users, Target, Play, Rocket, Sparkles } from "lucide-react";
 import { Chart, registerables } from "chart.js";
-import { ChevronDown } from "lucide-react";
+import { ChevronDown, ChevronRight } from "lucide-react";
 Chart.register(...registerables);
 
 interface SummaryData {
@@ -746,11 +746,14 @@ export default function AnalitikBelajarPage() {
                 </div>
 
                 <div className="mb-4 bg-white dark:bg-gray-800 p-3 rounded-lg border border-gray-100 dark:border-gray-600/50">
-                  <p className="text-[10px] text-gray-400 dark:text-gray-500 mb-1.5 font-bold uppercase tracking-wider">Rekomendasi Perbaikan:</p>
+                  <p className="text-sm text-gray-400 dark:text-gray-500 mb-1.5 font-bold uppercase tracking-wider">Rekomendasi Perbaikan :</p>
                   {topic.weakSubTopics && topic.weakSubTopics.length > 0 ? (
-                    <ul className="list-disc list-inside text-sm text-gray-600 dark:text-gray-300 space-y-1 pl-1">
+                    <ul className="list-none text-sm text-gray-600 dark:text-gray-300 space-y-1">
                       {topic.weakSubTopics.map((sub, subIndex) => (
-                        <li key={subIndex}>{sub.title.replace(/^\d+\.?\s*/, '')}</li>
+                        <li key={subIndex} className="flex items-start gap-2">
+                          <ChevronRight className="w-4 h-4 text-blue-500 mt-0.5 flex-shrink-0" />
+                          <span>{sub.title.replace(/^\d+\.?\s*/, '')}</span>
+                        </li>
                       ))}
                     </ul>
                   ) : (
@@ -782,20 +785,20 @@ export default function AnalitikBelajarPage() {
           <table className="w-full text-left border-collapse">
             <thead className="bg-gray-100 dark:bg-gray-700 text-sm text-gray-600 dark:text-gray-400 whitespace-nowrap">
               <tr>
-                <th className="p-3 font-medium rounded-l-lg">Topik</th>
-                <th className="p-3 font-medium text-center" style={{ width: '120px' }}>Nilai Terakhir</th>
-                <th className="p-3 font-medium" style={{ width: '40%' }}>Rekomendasi Perbaikan</th>
-                <th className="p-3 font-medium rounded-r-lg">Aksi</th>
+                <th className="p-4 font-medium rounded-l-lg w-[30%]">Topik</th>
+                <th className="p-4 font-medium text-center w-[15%]">Nilai Terakhir</th>
+                <th className="p-4 font-medium w-[40%]">Rekomendasi Perbaikan</th>
+                <th className="p-4 font-medium rounded-r-lg w-[15%] text-center">Aksi</th>
               </tr>
             </thead>
             <tbody>
               {loading ? (
                 [...Array(3)].map((_, i) => (
                   <tr key={i} className="border-b dark:border-gray-700">
-                    <td className="p-3"><div className="h-5 w-3/4 bg-gray-200 dark:bg-gray-700 rounded animate-pulse"></div></td>
-                    <td className="p-3"><div className="h-5 w-1/4 bg-gray-200 dark:bg-gray-700 rounded animate-pulse mx-auto"></div></td>
-                    <td className="p-3"><div className="h-5 w-2/3 bg-gray-200 dark:bg-gray-700 rounded animate-pulse"></div></td>
-                    <td className="p-3 text-center"><div className="h-8 w-24 bg-gray-200 dark:bg-gray-700 rounded animate-pulse mx-auto"></div></td>
+                    <td className="p-4"><div className="h-5 w-3/4 bg-gray-200 dark:bg-gray-700 rounded animate-pulse"></div></td>
+                    <td className="p-4"><div className="h-5 w-1/4 bg-gray-200 dark:bg-gray-700 rounded animate-pulse mx-auto"></div></td>
+                    <td className="p-4"><div className="h-5 w-2/3 bg-gray-200 dark:bg-gray-700 rounded animate-pulse"></div></td>
+                    <td className="p-4 text-center"><div className="h-8 w-24 bg-gray-200 dark:bg-gray-700 rounded animate-pulse mx-auto"></div></td>
                   </tr>
                 ))
               ) : paginatedWeakTopics.length > 0 ? (
@@ -805,20 +808,23 @@ export default function AnalitikBelajarPage() {
                     className={`border-b dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors ${topic.weakSubTopics && topic.weakSubTopics.length > 0 ? 'cursor-pointer' : ''}`}
                     onClick={() => handleRowClick(topic)}
                   >
-                    <td className="p-3 font-medium text-gray-800 dark:text-gray-200">{topic.topicTitle.replace(/^\d+\.?\s*/, '')}</td>
-                    <td className="p-3 text-gray-600 dark:text-gray-300 text-center">{topic.score}%</td>
-                    <td className="p-3 text-sm text-gray-600 dark:text-gray-400">
+                    <td className="p-4 font-medium text-gray-800 dark:text-gray-200">{topic.topicTitle.replace(/^\d+\.?\s*/, '')}</td>
+                    <td className="p-4 text-gray-600 dark:text-gray-300 text-center">{topic.score}%</td>
+                    <td className="p-4 text-sm text-gray-600 dark:text-gray-400">
                       {topic.weakSubTopics && topic.weakSubTopics.length > 0 ? (
-                        <ul className="list-disc list-inside space-y-1">
+                        <ul className="list-none space-y-1">
                           {topic.weakSubTopics.map((sub, subIndex) => (
-                            <li key={subIndex}>{sub.title.replace(/^\d+\.?\s*/, '')}</li>
+                            <li key={subIndex} className="flex items-start gap-2">
+                              <ChevronRight className="w-4 h-4 text-blue-500 mt-0.5 flex-shrink-0" />
+                              <span>{sub.title.replace(/^\d+\.?\s*/, '')}</span>
+                            </li>
                           ))}
                         </ul>
                       ) : (
                         "-"
                       )}
                     </td>
-                    <td className="p-3 text-center">
+                    <td className="p-4 text-center">
                       <button
                         onClick={(e) => {
                           e.stopPropagation();
@@ -1083,7 +1089,7 @@ export default function AnalitikBelajarPage() {
             );
           })()
         ) : (
-          <p className="text-center text-sm text-gray-600 dark:text-gray-400 py-8">Data kompetensi belum tersedia. Kerjakan pre-test untuk melihatnya.</p>
+          <p className="text-center text-sm text-gray-600 dark:text-gray-400 py-8">Data kompetensi belum tersedia. Kerjakan tes awal untuk melihatnya.</p>
         )}
         {/* Tombol Tingkatkan dipindahkan ke luar dari pengecekan loading */}
         {!loading && competencyData?.nextModuleToImprove && (
