@@ -904,10 +904,10 @@ export default function AnalitikBelajarPage() {
           </div>
 
           <div className="relative z-10">
-            <h3 className="font-semibold text-sm sm:text-base text-gray-700 dark:text-gray-200 flex items-center gap-2">
+            <h2 className="font-semibold text-sm sm:text-base text-gray-700 dark:text-gray-200 flex items-center gap-2">
               <Users className="w-5 h-5 text-indigo-500" />
               Perbandingan Nilai per Modul
-            </h3>
+            </h2>
             <p className="text-sm sm:text-base text-gray-500 dark:text-gray-400 mb-2 mt-2">Bagaimana performa nilaimu dibandingkan teman-teman sekelas? Lihat perbandingan skormu dengan rata-rata kelas di setiap modul.</p>
             <div className="flex flex-col lg:flex-row gap-4 items-center">
               <div className="lg:w-3/5 w-full flex justify-center">
@@ -1028,7 +1028,7 @@ export default function AnalitikBelajarPage() {
                             </div>
                             <div>
                               <h4 className="font-bold text-md text-gray-800 dark:text-gray-100">{info.title}</h4>
-                              <p className="text-xs text-gray-500 dark:text-gray-400 mt-1 leading-relaxed max-w-md" dangerouslySetInnerHTML={{ __html: info.unlockInfo }} />
+                              <p className="text-sm sm:text-md text-gray-500 dark:text-gray-400 mt-1 leading-relaxed max-w-md" dangerouslySetInnerHTML={{ __html: info.unlockInfo }} />
                             </div>
                           </div>
 
