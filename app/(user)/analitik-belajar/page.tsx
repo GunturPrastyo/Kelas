@@ -702,7 +702,7 @@ export default function AnalitikBelajarPage() {
               <AlertTriangle className="w-5 h-5 text-yellow-500" />
               Topik yang Perlu Diperkuat
             </h3>
-            <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">Ini adalah daftar topik di mana skormu masih di bawah standar. Fokuskan belajarmu di sini untuk meningkatkan pemahaman.</p>
+            <p className="text-sm sm:text-base text-gray-500 dark:text-gray-400 mt-1">Ini adalah daftar topik di mana skormu masih di bawah standar. Fokuskan belajarmu di sini untuk meningkatkan pemahaman.</p>
           </div>
           <div className="relative w-full sm:w-auto">
             <input
@@ -874,10 +874,10 @@ export default function AnalitikBelajarPage() {
 
           <div className="relative z-10">
             <h3 className="font-semibold text-gray-700 dark:text-gray-200 flex items-center gap-2">
-              <Activity className="w-5 h-5 text-blue-500" />
+              <Activity className="w-5 h-5 text-blue-500 text-sm sm:text-base" />
               Aktivitas Belajar Mingguan
             </h3>
-            <p className="text-xs text-gray-500 dark:text-gray-400 mb-3">Lihat seberapa aktif kamu belajar minggu ini! Grafik ini membandingkan total waktu belajarmu setiap hari dengan rata-rata peserta lain.</p>
+            <p className="text-sm sm:text-base text-gray-500 dark:text-gray-400 mb-4 mt-2">Lihat seberapa aktif kamu belajar minggu ini! Grafik ini membandingkan total waktu belajarmu setiap hari dengan rata-rata peserta lain.</p>
             <div className="relative">
               <canvas ref={chartAktivitasRef}></canvas>
             </div>
@@ -904,11 +904,11 @@ export default function AnalitikBelajarPage() {
           </div>
 
           <div className="relative z-10">
-            <h3 className="font-semibold text-gray-700 dark:text-gray-200 flex items-center gap-2">
+            <h3 className="font-semibold text-sm sm:text-base text-gray-700 dark:text-gray-200 flex items-center gap-2">
               <Users className="w-5 h-5 text-indigo-500" />
               Perbandingan Nilai per Modul
             </h3>
-            <p className="text-xs text-gray-500 dark:text-gray-400 mb-2">Bagaimana performa nilaimu dibandingkan teman-teman sekelas? Lihat perbandingan skormu dengan rata-rata kelas di setiap modul.</p>
+            <p className="text-sm sm:text-base text-gray-500 dark:text-gray-400 mb-2 mt-2">Bagaimana performa nilaimu dibandingkan teman-teman sekelas? Lihat perbandingan skormu dengan rata-rata kelas di setiap modul.</p>
             <div className="flex flex-col lg:flex-row gap-4 items-center">
               <div className="lg:w-3/5 w-full flex justify-center">
                 <canvas ref={chartPerbandinganRef}></canvas>
@@ -953,11 +953,11 @@ export default function AnalitikBelajarPage() {
 
       {/* PETA KOMPETENSI */}
       <section className="bg-gradient-to-br from-violet-50 to-indigo-100 dark:from-gray-800 dark:to-slate-800 p-6 rounded-2xl shadow-md">
-        <h3 className="font-semibold text-gray-700 dark:text-gray-200 mb-1 flex items-center gap-2">
+        <h3 className="text-sm sm:text-base font-semibold text-gray-700 dark:text-gray-200 mb-1 flex items-center gap-2">
           <Target className="w-5 h-5 text-indigo-500" />
           Peta Kompetensi Individu
         </h3>
-        <p className="text-xs text-gray-500 dark:text-gray-400 mb-4">Lihat penguasaanmu pada setiap kompetensi yang diukur dari tes yang telah dikerjakan, dikelompokkan per modul.</p>
+        <p className=" text-gray-500 dark:text-gray-400 mb-4 text-sm sm:text-base">Lihat penguasaanmu pada setiap kompetensi yang diukur dari tes yang telah dikerjakan, dikelompokkan per modul.</p>
 
         {loading ? (
           <div className="h-60 bg-white/30 dark:bg-gray-800/30 rounded-xl animate-pulse"></div>
@@ -1104,7 +1104,7 @@ export default function AnalitikBelajarPage() {
 
         <div className="relative z-10">
           <div className="flex items-center justify-between mb-2">
-            <h3 className="text-xl font-bold tracking-wide flex items-center gap-2">
+            <h3 className="text-md sm:text-lg font-bold tracking-wide flex items-center gap-2">
               <Sparkles className="w-6 h-6 text-purple-400 " />
               Rekomendasi Belajar
             </h3>
@@ -1112,7 +1112,7 @@ export default function AnalitikBelajarPage() {
               Diperbarui hari ini
             </span> */}
           </div>
-          <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">
+          <p className="text-sm sm:text-base  text-gray-500 dark:text-gray-400 mb-4">
             Berikut adalah rekomendasi materi yang sebaiknya kamu pelajari selanjutnya untuk hasil yang optimal.
           </p>
 
