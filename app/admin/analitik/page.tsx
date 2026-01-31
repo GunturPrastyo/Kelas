@@ -50,6 +50,7 @@ interface StudentAnalyticsData {
     completedModules: number;
     totalModules: number;
     averageTimeInSeconds: number;
+    averageScore?: number; // Tambahkan properti ini
     weakestTopic: {
         topicTitle: string;
         score: number;
@@ -879,12 +880,12 @@ export default function AdminAnalyticsPage() {
                                         </div>
                                     </div>
                                     <p className="text-3xl font-bold mt-1 text-gray-800 dark:text-gray-200">
-                                        {Math.round(studentAnalytics.detailedPerformance.reduce((acc, p) => acc + p.moduleScore, 0) / (studentAnalytics.detailedPerformance.length || 1))}%
+                                        {studentAnalytics.averageScore ?? 0}%
                                     </p>
                                 </div>
                                 <div className="mt-4 flex items-center gap-2">
                                     <ComparisonIndicator
-                                        student={studentAnalytics.detailedPerformance.reduce((acc, p) => acc + p.moduleScore, 0) / (studentAnalytics.detailedPerformance.length || 1)}
+                                        student={studentAnalytics.averageScore ?? 0}
                                         average={overallClassAverageScore}
                                         type="score"
                                     />
