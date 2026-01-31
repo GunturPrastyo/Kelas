@@ -896,16 +896,18 @@ export default function AdminAnalyticsPage() {
                                 <div>
                                     <div className="flex justify-between items-start mb-2">
                                         <h2 className="text-sm text-gray-500 dark:text-gray-400 font-medium">Topik Perlu Perhatian</h2>
-                                        <div className="p-2 bg-red-100 dark:bg-red-900/30 rounded-lg text-red-600 dark:text-red-400">
-                                            <AlertTriangle size={20} />
+                                        <div className={`p-2 rounded-lg ${studentAnalytics.weakestTopic && studentAnalytics.weakestTopic.score < 70 ? 'bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400' : 'bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400'}`}>
+                                            {studentAnalytics.weakestTopic && studentAnalytics.weakestTopic.score < 70 ? <AlertTriangle size={20} /> : <CheckCircle size={20} />}
                                         </div>
                                     </div>
                                     <p className="text-lg font-bold text-gray-800 dark:text-gray-200 line-clamp-2 leading-tight">
-                                        {studentAnalytics.weakestTopic?.topicTitle ?? 'Belum ada data'}
+                                        {studentAnalytics.weakestTopic 
+                                            ? (studentAnalytics.weakestTopic.score < 70 ? studentAnalytics.weakestTopic.topicTitle : 'Semua topik aman')
+                                            : 'Belum ada data'}
                                     </p>
                                 </div>
                                 
-                                {studentAnalytics.weakestTopic && (
+                                {studentAnalytics.weakestTopic && studentAnalytics.weakestTopic.score < 70 && (
                                     <div className="mt-4">
                                         <div className="flex justify-between text-xs mb-1.5">
                                             <span className="text-gray-500 dark:text-gray-400">Skor Penguasaan</span>
@@ -926,16 +928,18 @@ export default function AdminAnalyticsPage() {
                             <div className="flex justify-between items-start mb-3">
                                 <div>
                                     <h2 className="text-sm text-gray-500 dark:text-gray-400 font-medium">Topik Perlu Perhatian</h2>
-                                    <p className="text-lg font-bold mt-1 text-gray-800 dark:text-gray-200 line-clamp-2">
-                                        {studentAnalytics.weakestTopic?.topicTitle ?? 'Belum ada data'}
+                                    <p className="text-lg font-bold mt-1 text-gray-800 dark:text-gray-200 line-clamp-2 leading-tight">
+                                        {studentAnalytics.weakestTopic 
+                                            ? (studentAnalytics.weakestTopic.score < 70 ? studentAnalytics.weakestTopic.topicTitle : 'Semua topik aman')
+                                            : 'Belum ada data'}
                                     </p>
                                 </div>
-                                <div className="p-2 bg-red-100 dark:bg-red-900/30 rounded-lg text-red-600 dark:text-red-400 flex-shrink-0 ml-2">
-                                    <AlertTriangle size={20} />
+                                <div className={`p-2 rounded-lg flex-shrink-0 ml-2 ${studentAnalytics.weakestTopic && studentAnalytics.weakestTopic.score < 70 ? 'bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400' : 'bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400'}`}>
+                                    {studentAnalytics.weakestTopic && studentAnalytics.weakestTopic.score < 70 ? <AlertTriangle size={20} /> : <CheckCircle size={20} />}
                                 </div>
                             </div>
                             
-                            {studentAnalytics.weakestTopic && (
+                            {studentAnalytics.weakestTopic && studentAnalytics.weakestTopic.score < 70 && (
                                 <div className="mt-2">
                                     <div className="flex justify-between text-xs mb-1.5">
                                         <span className="text-gray-500 dark:text-gray-400">Skor Penguasaan</span>
