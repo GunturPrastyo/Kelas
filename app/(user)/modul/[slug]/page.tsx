@@ -11,7 +11,7 @@ import { authFetch } from '@/lib/authFetch'; // <-- Import helper baru
 import { useAlert } from '@/context/AlertContext';
 
 import TopicContent from '@/components/TopicContent';
-import { Home, CheckCircle2, Lock, Rocket, Award, AlertTriangle, Star, Lightbulb, Target, Clock3, Activity, Eye, Menu, X } from 'lucide-react';
+import { Home, CheckCircle2, Lock, Rocket, Award, AlertTriangle, Star, Lightbulb, Target, Clock3, Activity, Eye, Menu, X, Play } from 'lucide-react';
 import { motion } from "framer-motion";
 import CodePlayground from '@/components/CodePlayground';
 
@@ -127,6 +127,11 @@ export default function ModulDetailPage() {
     const questionOptionsHtml = useMemo(() => {
         return currentQuestionForModal?.options.map(opt => ({ __html: opt })) || [];
     }, [currentQuestionForModal]);
+
+    // --- Determine Next Topic to Study ---
+    const nextTopic = useMemo(() => {
+        return modul?.topics.find(t => !t.isCompleted);
+    }, [modul]);
 
     // --- Notification Helper ---
     const createNotification = useCallback(async (message: string, link: string) => {
@@ -1171,7 +1176,7 @@ export default function ModulDetailPage() {
             </nav>
 
             {/* Header Modul */}
-            <header className="relative overflow-hidden bg-gradient-to-r from-indigo-500 to-blue-600 rounded-xl p-6 mt-6 shadow-md text-white flex flex-col items-start gap-2 mb-8 md:flex-row md:items-center md:gap-4">
+            <header className="relative overflow-hidden bg-gradient-to-r from-indigo-500 to-blue-600 dark:from-gray-800 dark:to-gray-800 rounded-xl p-6 mt-6 shadow-md text-white flex flex-col items-start gap-2 mb-6 md:flex-row md:items-center md:gap-4">
                
                 {/* Ikon untuk desktop (di kiri) */}
                 <img src={`${process.env.NEXT_PUBLIC_API_URL}/uploads/${modul.icon}`} alt={modul.title} className="relative z-10 hidden md:block h-20 w-20 rounded-lg object-cover bg-white/20 p-1" />
@@ -1188,6 +1193,21 @@ export default function ModulDetailPage() {
                         <div className="bg-yellow-400 h-2.5 rounded-full" style={{ width: `${modul.progress}%` }}></div>
                     </div>
                     <p className="text-sm opacity-90 mt-2">{modul.completedTopics} dari {modul.totalTopics} topik selesai ({modul.progress}%)</p>
+
+                    {nextTopic && (
+                        <button
+                            onClick={() => {
+                                setOpenTopicId(nextTopic._id);
+                                setTimeout(() => {
+                                    document.getElementById(`topic-card-${nextTopic._id}`)?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                                }, 300);
+                            }}
+                            className="mt-6 group inline-flex items-center gap-2.5 bg-gray-100 text-gray-900 px-7 py-3.5 rounded-3xl font-bold text-sm sm:text-base hover:bg-gray-50 transition-all transform hover:-translate-y-0.5"
+                        >
+                            <Play size={20} className="fill-gray-900 text-gray-900 ml-0.5" />
+                            <span className="line-clamp-1 max-w-[200px] sm:max-w-md text-left">Lanjut: {nextTopic.title}</span>
+                        </button>
+                    )}
                 </div>
             </header>
 
