@@ -1205,7 +1205,7 @@ export default function ModulDetailPage() {
                             className="mt-6 group inline-flex items-center gap-2.5 bg-gray-100 text-gray-900 px-7 py-3.5 rounded-3xl font-bold text-sm sm:text-base hover:bg-gray-50 transition-all transform hover:-translate-y-0.5"
                         >
                             <Play size={20} className="fill-gray-900 text-gray-900 ml-0.5" />
-                            <span className="line-clamp-1 max-w-[200px] sm:max-w-md text-left">Lanjut: {nextTopic.title}</span>
+                            <span className="line-clamp-1 max-w-[200px] sm:max-w-md text-left">Lanjutkan</span>
                         </button>
                     )}
                 </div>
