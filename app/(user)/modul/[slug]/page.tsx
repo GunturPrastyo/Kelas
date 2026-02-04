@@ -814,7 +814,7 @@ export default function ModulDetailPage() {
                                             Keren! Kamu sudah menguasai topik ini, lanjut ke materi berikutnya yuk!
                                         </p>
                                     ) : (
-                                        <p className="mt-6 flex  text-yellow-600 dark:text-yellow-400 font-medium text-sm sm:text-base">
+                                        <p className="mt-6 flex text-center items-center justify-center  text-yellow-600 dark:text-yellow-400 font-medium text-sm sm:text-base">
                                             <AlertTriangle className="w-8 sm:w-4 h-8 sm:h-4" />
                                             Skor kamu belum mencapai 70%. Coba pelajari lagi bagian yang masih kurang ya!
                                         </p>
