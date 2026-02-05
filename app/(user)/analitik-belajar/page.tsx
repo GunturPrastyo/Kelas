@@ -661,7 +661,7 @@ export default function AnalitikBelajarPage() {
 
               ) : (
 
-                <p className="text-sm sm:text-base text-gray-500 dark:text-gray-400">Waktu kamu belajar</p>
+                null
               )}
             </div>
           </div>
