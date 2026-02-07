@@ -2,7 +2,7 @@
 
 import { GoogleOAuthProvider, GoogleLogin, CredentialResponse } from "@react-oauth/google";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useState, FormEvent, useEffect } from "react";
+import { useState, FormEvent, useEffect, Suspense } from "react";
 import validator from "validator";
 
 import { Eye, EyeOff } from "lucide-react";
@@ -15,7 +15,7 @@ interface User {
   // Add other user properties as needed
 }
 
-export default function LoginPage() {
+function LoginContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [error, setError] = useState("");
