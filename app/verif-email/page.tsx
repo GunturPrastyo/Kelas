@@ -27,7 +27,13 @@ function VerifyEmailContent() {
           body: JSON.stringify({ token }),
         });
         
-        const data = await res.json();
+        let data;
+        try {
+          data = await res.json();
+        } catch (err) {
+         
+          throw new Error(`Gagal memverifikasi (Status: ${res.status}). Pastikan server berjalan dan route tersedia.`);
+        }
 
         if (!res.ok) {
           throw new Error(data.message || "Verifikasi gagal atau token kadaluarsa.");
