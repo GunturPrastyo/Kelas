@@ -58,7 +58,7 @@ export default function PreTestModal({ isOpen, onClose }: PreTestModalProps) {
             Yuk, Cek Kemampuanmu!
           </h2>
           <p className="text-gray-600 dark:text-gray-300 mb-8 leading-relaxed text-sm">
-            Sebelum mulai belajar, kerjakan <strong>Pre-Test</strong> dulu ya. 
+            Sebelum mulai belajar, kerjakan <strong>Tes Awal</strong> dulu ya. 
             Hasilnya akan membantu kami merekomendasikan materi yang paling pas buat kamu.
           </p>
 
@@ -67,7 +67,7 @@ export default function PreTestModal({ isOpen, onClose }: PreTestModalProps) {
               onClick={handleStartPreTest} 
               className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-6 text-base shadow-lg shadow-blue-500/25 transition-all hover:scale-[1.02] rounded-xl"
             >
-              Mulai Pre-Test Sekarang
+              Mulai Tes Awal Sekarang
             </Button>
             <button 
               onClick={onClose}

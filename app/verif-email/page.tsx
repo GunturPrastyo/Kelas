@@ -10,6 +10,7 @@ function VerifyEmailContent() {
   const token = searchParams.get("token");
   const [status, setStatus] = useState<"loading" | "success" | "error">("loading");
   const [message, setMessage] = useState("");
+  const [verifiedEmail, setVerifiedEmail] = useState("");
 
   useEffect(() => {
     if (!token) {
@@ -39,6 +40,7 @@ function VerifyEmailContent() {
           throw new Error(data.message || "Verifikasi gagal atau token kadaluarsa.");
         }
 
+        if (data.email) setVerifiedEmail(data.email);
         setStatus("success");
       } catch (error) {
         setStatus("error");
@@ -67,7 +69,7 @@ function VerifyEmailContent() {
             Akun Anda telah berhasil diaktifkan. Sekarang Anda dapat masuk ke dalam aplikasi.
           </p>
           <Link 
-            href="/login" 
+            href={verifiedEmail ? `/login?email=${encodeURIComponent(verifiedEmail)}` : "/login"}
             className="px-8 py-3 bg-blue-600 text-white font-semibold rounded-xl hover:bg-blue-700 transition w-full shadow-lg shadow-blue-500/30"
           >
             Masuk Sekarang

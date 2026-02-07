@@ -1,7 +1,7 @@
 "use client";
 
 import { GoogleOAuthProvider, GoogleLogin, CredentialResponse } from "@react-oauth/google";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useState, FormEvent, useEffect } from "react";
 import validator from "validator";
 
@@ -17,6 +17,7 @@ interface User {
 
 export default function LoginPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [error, setError] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
   const [email, setEmail] = useState("");
@@ -25,6 +26,12 @@ export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
 
   useEffect(() => {
+    // Cek URL query params untuk email (dari verifikasi email)
+    const emailParam = searchParams.get("email");
+    if (emailParam) {
+      setEmail(emailParam);
+    }
+
     // Cek sessionStorage untuk kredensial dari halaman registrasi
     const storedCredentials = sessionStorage.getItem('loginCredentials');
 
@@ -38,7 +45,7 @@ export default function LoginPage() {
       // Hapus kredensial dari sessionStorage setelah digunakan
       sessionStorage.removeItem('loginCredentials');
     }
-  }, []); // Cukup jalankan sekali saat komponen dimuat
+  }, [searchParams]); // Jalankan saat searchParams berubah
 
   // Reusable function to handle post-authentication logic
   const handleAuthSuccess = (user: User, token: string) => {
