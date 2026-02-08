@@ -3,7 +3,7 @@
 import React, { useEffect, useMemo, useState, FC, ReactNode, useRef } from 'react';
 import { BarChart as RechartsBarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar } from 'recharts';
 import { authFetch } from '@/lib/authFetch';
-import { BarChart as BarChartIcon, Users, Clock, Percent, Activity, TrendingUp, TrendingDown, AlertTriangle, CheckCircle, PieChart, UserCheck, ChevronDown, ChevronRight, BookOpen, Target, BarChart2, Search, ChevronUp } from 'lucide-react';
+import { BarChart as BarChartIcon, Users, Clock, Percent, Activity, TrendingUp, TrendingDown, AlertTriangle, CheckCircle, PieChart, UserCheck, ChevronDown, ChevronRight, BookOpen, Target, BarChart2, Search, ChevronUp, Printer, X, Loader2 } from 'lucide-react';
 
 interface AdminAnalyticsData {
     totalUsers?: number;
@@ -228,6 +228,57 @@ const getStudentModuleStatusBadge = (
     return <span className={`px-2 py-1 rounded-md text-xs ${bgColor} ${textColor}`}>{statusText}</span>;
 };
 
+const getStatusHTML = (
+    studentModuleScore: number,
+    studentTimeInSeconds: number,
+    classAverageScore: number | undefined,
+    classAverageTimeInSeconds: number | undefined
+) => {
+    if (classAverageScore === undefined || classAverageTimeInSeconds === undefined || classAverageTimeInSeconds <= 0) {
+        return `<span style="padding: 3px 8px; background-color: #f3f4f6; color: #374151; border-radius: 12px; font-size: 11px; font-weight: 600; border: 1px solid #e5e7eb;">Data Kelas -</span>`;
+    }
+
+    if (studentModuleScore <= 0 && studentTimeInSeconds <= 0) {
+        return `<span style="padding: 3px 8px; background-color: #fee2e2; color: #b91c1c; border-radius: 12px; font-size: 11px; font-weight: 600; border: 1px solid #fecaca;">Butuh Evaluasi</span>`;
+    }
+
+    const scoreRatio = classAverageScore > 0 ? (studentModuleScore / classAverageScore) : (studentModuleScore > 0 ? 2 : 1);
+    const timeRatio = studentTimeInSeconds > 0 ? (classAverageTimeInSeconds / studentTimeInSeconds) : 0.1;
+    const performanceIndex = (scoreRatio + timeRatio) / 2;
+
+    const excellentThreshold = 1.2;
+    const goodThreshold = 0.9;
+    const monitorThreshold = 0.7;
+
+    let statusText = 'Dipantau';
+    let bgColor = '#fef3c7';
+    let textColor = '#b45309';
+    let borderColor = '#fde68a';
+
+    if (performanceIndex >= excellentThreshold) {
+        statusText = 'Sangat Baik';
+        bgColor = '#dcfce7';
+        textColor = '#15803d';
+        borderColor = '#bbf7d0';
+    } else if (performanceIndex >= goodThreshold) {
+        statusText = 'Baik';
+        bgColor = '#dbeafe';
+        textColor = '#1d4ed8';
+        borderColor = '#bfdbfe';
+    } else if (performanceIndex >= monitorThreshold) {
+        statusText = 'Butuh Pemantauan';
+        bgColor = '#fef3c7';
+        textColor = '#b45309';
+        borderColor = '#fde68a';
+    } else {
+        statusText = 'Butuh Evaluasi';
+        bgColor = '#fee2e2';
+        textColor = '#b91c1c';
+        borderColor = '#fecaca';
+    }
+    return `<span style="padding: 3px 8px; background-color: ${bgColor}; color: ${textColor}; border-radius: 12px; font-size: 11px; font-weight: 600; border: 1px solid ${borderColor};">${statusText}</span>`;
+};
+
 export default function AdminAnalyticsPage() {
     const [analytics, setAnalytics] = useState<AdminAnalyticsData>({});
     const [loading, setLoading] = useState(true); // ... (rest of the state variables)
@@ -248,6 +299,10 @@ export default function AdminAnalyticsPage() {
     const [studentSearchTerm, setStudentSearchTerm] = useState('');
     const [studentDropdownPage, setStudentDropdownPage] = useState(1);
     const studentDropdownRef = useRef<HTMLDivElement>(null);
+    const [isPrintModalOpen, setIsPrintModalOpen] = useState(false);
+    const [selectedStudentsToPrint, setSelectedStudentsToPrint] = useState<Set<string>>(new Set());
+    const [isGeneratingReport, setIsGeneratingReport] = useState(false);
+    const [printModalSearchTerm, setPrintModalSearchTerm] = useState('');
 
     useEffect(() => {
         const fetchAnalytics = async () => {
@@ -483,6 +538,385 @@ export default function AdminAnalyticsPage() {
 
     const overallClassAverageScore = analytics.overallAverageScore ?? 0;
 
+    // --- Print Logic (Student Selection) ---
+    const handleToggleStudentForPrint = (studentId: string) => {
+        setSelectedStudentsToPrint(prev => {
+            const newSet = new Set(prev);
+            if (newSet.has(studentId)) newSet.delete(studentId);
+            else newSet.add(studentId);
+            return newSet;
+        });
+    };
+
+    const handleSelectAllStudentsForPrint = (filteredStudents: typeof allUsers) => {
+        const allSelected = filteredStudents.every(u => selectedStudentsToPrint.has(u._id));
+        const newSet = new Set(selectedStudentsToPrint);
+        
+        filteredStudents.forEach(u => {
+            if (allSelected) newSet.delete(u._id);
+            else newSet.add(u._id);
+        });
+        setSelectedStudentsToPrint(newSet);
+    };
+
+    const handleBatchPrint = async () => {
+        if (selectedStudentsToPrint.size === 0) {
+            alert("Pilih setidaknya satu siswa untuk dicetak.");
+            return;
+        }
+
+        setIsGeneratingReport(true);
+
+        const printWindow = window.open('', '_blank');
+        if (!printWindow) {
+            alert("Pop-up diblokir. Izinkan pop-up untuk mencetak.");
+            setIsGeneratingReport(false);
+            return;
+        }
+
+        // Array to store collected data
+        const reportData: { name: string; data: StudentAnalyticsData }[] = [];
+
+        try {
+            printWindow.document.write(`
+            <html>
+                <head>
+                    <title>Menyiapkan Laporan...</title>
+                    <style>body { font-family: sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; color: #555; }</style>
+                </head>
+                <body>
+                    <h2>Sedang menyiapkan laporan untuk ${selectedStudentsToPrint.size} siswa...</h2>
+                </body>
+            </html>
+        `);
+
+            const studentsToPrint = allUsers.filter(u => selectedStudentsToPrint.has(u._id));
+            
+            for (const student of studentsToPrint) {
+                // Fetch data for each student individually
+                const res = await authFetch(`${process.env.NEXT_PUBLIC_API_URL}/api/analytics/student-analytics/${student._id}`);
+                if (!res.ok) continue;
+                const rawData: StudentAnalyticsData = await res.json();
+                
+                // Fallback logic: Hitung manual jika data API kosong agar tidak undefined saat dicetak
+                const totalSystemModules = analytics.moduleAnalytics?.length ?? 0;
+                const studentCompletedModules = rawData.detailedPerformance?.filter(p => p.moduleScore >= 0).length ?? 0;
+                const calculatedProgress = totalSystemModules > 0 ? Math.round((studentCompletedModules / totalSystemModules) * 100) : 0;
+
+                const data = {
+                    ...rawData,
+                    totalModules: rawData.totalModules ?? totalSystemModules,
+                    completedModules: rawData.completedModules ?? studentCompletedModules,
+                    progress: rawData.progress ?? calculatedProgress,
+                };
+
+                reportData.push({ name: student.name, data });
+            }
+
+            // Generate single HTML for all students
+            const finalHtml = generateBatchReportHTML(reportData);
+
+            printWindow.document.open();
+            printWindow.document.write(finalHtml);
+            printWindow.document.close();
+
+        } catch (error) {
+            console.error("Error generating report:", error);
+            printWindow.close();
+            alert("Terjadi kesalahan saat membuat laporan.");
+        } finally {
+            setIsGeneratingReport(false);
+            setIsPrintModalOpen(false);
+        }
+    };
+
+    const handlePrintModulePerformance = () => {
+        const printWindow = window.open('', '_blank');
+        if (!printWindow) {
+            alert("Pop-up diblokir. Izinkan pop-up untuk mencetak.");
+            return;
+        }
+
+        const dateStr = new Date().toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+
+        // Menggunakan logika yang sama dengan getStatusBadge yang sudah ada
+        const getPrintStatusBadge = (weightedScore: number, averageScore: number, averageTime: number) => {
+            if (averageScore === 0 && averageTime === 0) {
+                return '<span style="color: #4b5563; background-color: #f3f4f6; padding: 2px 6px; border-radius: 4px; font-size: 10px; font-weight: 600;">Belum ada data</span>';
+            }
+            if (weightedScore >= 1.4) {
+                return '<span style="color: #b91c1c; background-color: #fee2e2; padding: 2px 6px; border-radius: 4px; font-size: 10px; font-weight: 600;">Butuh Evaluasi</span>';
+            }
+            if (weightedScore >= 0.7) {
+                return '<span style="color: #b45309; background-color: #fef3c7; padding: 2px 6px; border-radius: 4px; font-size: 10px; font-weight: 600;">Butuh Pantauan</span>';
+            }
+            return '<span style="color: #15803d; background-color: #dcfce7; padding: 2px 6px; border-radius: 4px; font-size: 10px; font-weight: 600;">Baik</span>';
+        };
+
+        const tableRows = filteredData.map((modul, index) => {
+            const moduleRow = `
+                <tr style="background-color: #f9fafb;">
+                    <td class="center" style="font-weight: 600;">${index + 1}</td>
+                    <td style="font-weight: 600;">${modul.moduleTitle}</td>
+                    <td class="center" style="font-weight: 600;">${modul.averageScore}%</td>
+                    <td class="center" style="font-weight: 600;">${modul.remedialRate}%</td>
+                    <td class="center" style="font-weight: 600;">${formatTime(modul.averageTimeInSeconds)}</td>
+                    <td class="center">${getPrintStatusBadge(modul.weightedScore, modul.averageScore, modul.averageTimeInSeconds)}</td>
+                </tr>
+            `;
+
+            const topicRows = modul.topics.map(topic => `
+                <tr>
+                    <td></td>
+                    <td style="padding-left: 25px; color: #4b5563; font-size: 9pt;"><span style="color: #9ca3af; margin-right: 4px;">↳</span> ${topic.topicTitle}</td>
+                    <td class="center" style="color: #4b5563; font-size: 9pt;">${topic.averageScore}%</td>
+                    <td class="center" style="color: #4b5563; font-size: 9pt;">${topic.remedialRate}%</td>
+                    <td class="center" style="color: #4b5563; font-size: 9pt;">${formatTime(topic.averageTimeInSeconds)}</td>
+                    <td class="center">${getPrintStatusBadge(topic.weightedScore, topic.averageScore, topic.averageTimeInSeconds)}</td>
+                </tr>
+            `).join('');
+
+            return moduleRow + topicRows;
+        }).join('');
+
+        const htmlContent = `
+            <!DOCTYPE html>
+            <html lang="id">
+            <head>
+                <meta charset="UTF-8">
+                <title>Laporan Performa Modul</title>
+                <style>
+                    @page { size: A4; margin: 15mm; }
+                    body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; color: #1f2937; line-height: 1.5; font-size: 10pt; }
+                    .header { text-align: center; margin-bottom: 30px; padding-bottom: 20px; border-bottom: 2px solid #e5e7eb; }
+                    .header h1 { font-size: 18pt; font-weight: 700; margin: 0; color: #111827; text-transform: uppercase; letter-spacing: 0.5px; }
+                    .header p { font-size: 11pt; color: #6b7280; margin: 5px 0 0; }
+                    .meta-info { width: 100%; margin-bottom: 20px; font-size: 10pt; color: #4b5563; }
+                    table.report-table { width: 100%; border-collapse: collapse; margin-top: 10px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+                    table.report-table th { background-color: #f3f4f6; color: #374151; font-weight: 600; text-transform: uppercase; font-size: 8pt; padding: 12px 10px; border: 1px solid #e5e7eb; letter-spacing: 0.5px; }
+                    table.report-table td { border: 1px solid #e5e7eb; padding: 8px 10px; font-size: 9pt; vertical-align: middle; }
+                    .center { text-align: center; }
+                    .footer { margin-top: 40px; width: 100%; font-size: 9pt; color: #6b7280; }
+                    @media print {
+                        body { -webkit-print-color-adjust: exact; }
+                        th { background-color: #f3f4f6 !important; }
+                    }
+                </style>
+            </head>
+            <body>
+                <div class="header">
+                    <h1>Laporan Performa Modul</h1>
+                    <p>Analisis Rata-rata Nilai dan Waktu Pengerjaan</p>
+                </div>
+                <table class="meta-info">
+                    <tr>
+                        <td width="15%"><strong>Tanggal Cetak</strong></td>
+                        <td width="2%">:</td>
+                        <td width="33%">${dateStr}</td>
+                        <td width="15%"><strong>Total Modul</strong></td>
+                        <td width="2%">:</td>
+                        <td width="33%">${filteredData.length} Modul</td>
+                    </tr>
+                </table>
+                <table class="report-table">
+                    <thead>
+                        <tr>
+                            <th width="5%">No</th>
+                            <th width="35%">Modul / Topik</th>
+                            <th width="15%" class="center">Rata-rata Nilai</th>
+                            <th width="15%" class="center">Tingkat Remedial</th>
+                            <th width="15%" class="center">Rata-rata Waktu</th>
+                            <th width="15%" class="center">Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${tableRows}
+                    </tbody>
+                </table>
+                <div class="footer">
+                    <p style="margin-top: 30px; text-align: center; font-size: 8pt; opacity: 0.7;">Dicetak otomatis oleh KELAS.</p>
+                </div>
+                <script>
+                    window.onload = function() { window.print(); }
+                </script>
+            </body>
+            </html>
+        `;
+
+        printWindow.document.open();
+        printWindow.document.write(htmlContent);
+        printWindow.document.close();
+    };
+
+    const generateBatchReportHTML = (students: { name: string; data: StudentAnalyticsData }[]) => {
+        const dateStr = new Date().toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+        
+        let tableRows = '';
+        let no = 1;
+
+        students.forEach(({ name, data }) => {
+            const modules = data.detailedPerformance || [];
+            
+            // Hitung total baris (rowspan) untuk siswa ini
+            let studentRowCount = 0;
+            if (modules.length === 0) {
+                studentRowCount = 1;
+            } else {
+                modules.forEach(m => {
+                    studentRowCount += 1; // Baris untuk Modul
+                    studentRowCount += m.topics.length; // Baris untuk setiap Topik
+                });
+            }
+
+            let isFirstStudentRow = true;
+
+            if (modules.length === 0) {
+                 tableRows += `
+                    <tr>
+                        <td class="center">${no++}</td>
+                        <td><strong>${name}</strong></td>
+                        <td class="center">${data.progress ?? 0}%</td>
+                        <td class="center">${data.averageScore ?? 0}</td>
+                        <td class="center">-</td>
+                        <td colspan="2" class="center">Belum Ada Data</td>
+                    </tr>
+                `;
+            } else {
+                modules.forEach((mod) => {
+                    // 1. Baris Modul
+                    tableRows += '<tr>';
+
+                    // Kolom Siswa (Rowspan) - Hanya render di baris pertama siswa
+                    if (isFirstStudentRow) {
+                        const progress = data.progress ?? 0;
+                        const avgScore = data.averageScore ?? 0;
+                        const weakTopic = (data.weakestTopic && data.weakestTopic.score < 70) 
+                            ? `${data.weakestTopic.topicTitle} (${data.weakestTopic.score}%)` 
+                            : '-';
+                        const weakTopicStyle = (data.weakestTopic && data.weakestTopic.score < 70) ? 'color: #dc2626; font-weight: 600;' : 'color: #6b7280;';
+
+                        tableRows += `<td class="center" rowspan="${studentRowCount}" style="vertical-align: top; padding-top: 10px;">${no++}</td>`;
+                        tableRows += `<td rowspan="${studentRowCount}" style="vertical-align: top; padding-top: 10px;"><strong>${name}</strong></td>`;
+                        tableRows += `<td class="center" rowspan="${studentRowCount}" style="vertical-align: top; padding-top: 10px;">${progress}%</td>`;
+                        tableRows += `<td class="center" rowspan="${studentRowCount}" style="vertical-align: top; padding-top: 10px;">${avgScore}</td>`;
+                        tableRows += `<td rowspan="${studentRowCount}" style="vertical-align: top; padding-top: 10px; ${weakTopicStyle}">${weakTopic}</td>`;
+                        isFirstStudentRow = false;
+                    }
+
+                    // Kolom Modul (Judul & Nilai)
+                    const modScoreDisplay = mod.moduleScore > 0 ? mod.moduleScore : '-';
+                    const scoreClass = mod.moduleScore >= 70 ? 'score-good' : (mod.moduleScore > 0 ? 'score-bad' : '');
+                    
+                    tableRows += `<td style="font-weight: 600; background-color: #f9fafb; border-left: 1px solid #e5e7eb;">${mod.moduleTitle}</td>`;
+                    tableRows += `<td class="center" style="font-weight: 600; background-color: #f9fafb;"><span class="${scoreClass}">${modScoreDisplay}</span></td>`;
+                    
+                    tableRows += '</tr>';
+
+                    // 2. Baris Topik (Loop)
+                    mod.topics.forEach((topic) => {
+                        tableRows += '<tr>';
+                        // Tidak perlu render kolom siswa lagi (sudah rowspan)
+
+                        const topicScoreDisplay = topic.score > 0 ? topic.score : '-';
+                        const topicScoreClass = topic.score >= 70 ? 'text-good' : (topic.score > 0 ? 'text-bad' : '');
+
+                        tableRows += `<td style="padding-left: 25px; color: #4b5563; font-size: 9pt; border-left: 1px solid #e5e7eb;"><span style="color: #9ca3af; margin-right: 4px;">↳</span> ${topic.topicTitle}</td>`;
+                        tableRows += `<td class="center"><span class="${topicScoreClass}">${topicScoreDisplay}</span></td>`;
+                        
+                        tableRows += '</tr>';
+                    });
+                });
+            }
+        });
+
+        return `
+            <!DOCTYPE html>
+            <html lang="id">
+            <head>
+                <meta charset="UTF-8">
+                <title>Laporan Hasil Belajar</title>
+                <style>
+                    @page { size: A4 landscape; margin: 10mm; }
+                    body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; color: #1f2937; line-height: 1.5; font-size: 10pt; }
+                    
+                    .header { text-align: center; margin-bottom: 30px; padding-bottom: 20px; border-bottom: 2px solid #e5e7eb; }
+                    .header h1 { font-size: 18pt; font-weight: 700; margin: 0; color: #111827; text-transform: uppercase; letter-spacing: 0.5px; }
+                    .header p { font-size: 11pt; color: #6b7280; margin: 5px 0 0; }
+                    
+                    .meta-info { width: 100%; margin-bottom: 20px; font-size: 10pt; color: #4b5563; }
+                    .meta-info td { padding: 4px 0; }
+                    
+                    table.report-table { width: 100%; border-collapse: collapse; margin-top: 10px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+                    table.report-table th { background-color: #f3f4f6; color: #374151; font-weight: 600; text-transform: uppercase; font-size: 8pt; padding: 12px 10px; border: 1px solid #e5e7eb; letter-spacing: 0.5px; }
+                    table.report-table td { border: 1px solid #e5e7eb; padding: 8px 10px; font-size: 9pt; vertical-align: top; }
+                    
+                    .center { text-align: center; }
+                    .score-good { font-weight: bold; color: #059669; }
+                    .score-bad { font-weight: bold; color: #dc2626; }
+                    .text-good { color: #059669; }
+                    .text-bad { color: #dc2626; }
+
+                    .footer { margin-top: 40px; width: 100%; font-size: 9pt; color: #6b7280; }
+                    .signature-section { display: flex; justify-content: space-between; margin-top: 50px; page-break-inside: avoid; }
+                    .signature-box { width: 200px; text-align: center; }
+                    .signature-space { height: 80px; }
+                    .signature-line { border-top: 1px solid #9ca3af; margin-top: 5px; width: 80%; margin-left: auto; margin-right: auto; }
+                    
+                    @media print {
+                        body { -webkit-print-color-adjust: exact; }
+                        .no-print { display: none; }
+                        table { page-break-inside: auto; }
+                        tr { page-break-inside: avoid; }
+                        th { background-color: #f3f4f6 !important; }
+                    }
+                </style>
+            </head>
+            <body>
+                <div class="header">
+                    <h1>Laporan Hasil Belajar Siswa</h1>
+                    <p>Rekapitulasi Nilai Modul dan Topik</p>
+                </div>
+
+                <table class="meta-info">
+                    <tr>
+                        <td width="120"><strong>Tanggal Cetak</strong></td>
+                        <td width="10">:</td>
+                        <td width="250">${dateStr}</td>
+                        <td width="100"><strong>Total Siswa</strong></td>
+                        <td width="10">:</td>
+                        <td>${students.length} Orang</td>
+                    </tr>
+                </table>
+
+                <table class="report-table">
+                    <thead>
+                        <tr>
+                            <th width="3%">No</th>
+                            <th width="15%">Nama Siswa</th>
+                            <th width="8%" class="center">Progres</th>
+                            <th width="8%" class="center">Rata-rata</th>
+                            <th width="15%">Topik Perlu Perhatian</th>
+                            <th width="35%">Modul / Topik</th>
+                            <th width="10%" class="center">Nilai</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${tableRows}
+                    </tbody>
+                </table>
+                
+                <div class="footer">
+                 
+                    <p style="margin-top: 30px; text-align: center; font-size: 8pt; opacity: 0.7;">Dicetak otomatis oleh KELAS.</p>
+                </div>
+                <script>
+                    window.onload = function() { window.print(); }
+                </script>
+            </body>
+            </html>
+            `;
+    };
+
     if (loading) {
         return <div className="flex justify-center items-center h-screen"><p>Memuat data analitik...</p></div>;
     }
@@ -605,9 +1039,18 @@ export default function AdminAnalyticsPage() {
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-6">
-                    <div className="col-span-1 sm:col-span-2">
-                        <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-200">Detail Performa per Modul</h3>
-                        <p className="text-xs text-gray-500 dark:text-gray-400 ">Menampilkan data rata-rata hasil tes akhir setiap modul yang dikerjakan siswa.</p>
+                    <div className="col-span-1 sm:col-span-2 flex justify-between items-start">
+                        <div>
+                            <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-200">Detail Performa per Modul</h3>
+                            <p className="text-xs text-gray-500 dark:text-gray-400 ">Menampilkan data rata-rata hasil tes akhir setiap modul yang dikerjakan siswa.</p>
+                        </div>
+                        <button
+                            onClick={handlePrintModulePerformance}
+                            className="flex items-center gap-2 px-3 py-1.5 text-sm font-medium text-gray-600 bg-gray-100 hover:bg-gray-200 dark:text-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 rounded-lg transition-colors"
+                        >
+                            <Printer size={16} />
+                            Cetak
+                        </button>
                     </div>
                     {currentModules.length > 0 ? (
                         currentModules.map((modul) => (
@@ -755,7 +1198,18 @@ export default function AdminAnalyticsPage() {
             {/* SECTION 4: ANALITIK SISWA */}
             <div id="analitik-siswa" className="bg-white dark:bg-gray-800 shadow-lg rounded-xl p-4 sm:p-6 mb-12 border border-gray-100 dark:border-gray-700">
                 <div className="flex flex-col md:flex-row justify-between md:items-center mb-6">
-                    <h2 className="text-xl font-bold text-gray-800 dark:text-gray-200">Analitik Siswa Individual</h2>
+                    <div className="flex items-center gap-4">
+                        <h2 className="text-xl font-bold text-gray-800 dark:text-gray-200">Analitik Siswa Individual</h2>
+                        {allUsers.length > 0 && (
+                            <button
+                                onClick={() => setIsPrintModalOpen(true)}
+                                className="flex items-center gap-2 px-3 py-1.5 text-sm font-medium text-blue-600 bg-blue-50 hover:bg-blue-100 dark:text-blue-400 dark:bg-blue-900/20 dark:hover:bg-blue-900/40 rounded-lg transition-colors"
+                            >
+                                <Printer size={16} />
+                                Cetak Laporan
+                            </button>
+                        )}
+                    </div>
                     
                     {/* Custom Dropdown dengan Search & Pagination */}
                     <div className="mt-4 md:mt-0 md:w-1/3 relative" ref={studentDropdownRef}>
@@ -1062,6 +1516,71 @@ export default function AdminAnalyticsPage() {
                     <div className="text-center py-10 text-gray-500">Pilih siswa untuk melihat analitik individual.</div>
                 )}
             </div>
+
+            {/* MODAL CETAK LAPORAN */}
+            {isPrintModalOpen && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4">
+                    <div className="bg-white dark:bg-gray-800 rounded-xl shadow-2xl w-full max-w-lg flex flex-col max-h-[80vh]">
+                        <div className="p-5 border-b border-gray-200 dark:border-gray-700 flex justify-between items-center">
+                            <h3 className="text-lg font-bold text-gray-800 dark:text-white">Pilih Siswa untuk Dicetak</h3>
+                            <button onClick={() => setIsPrintModalOpen(false)} className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200">
+                                <X size={20} />
+                            </button>
+                        </div>
+                        
+                        <div className="p-4 border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/50">
+                            <input
+                                type="text"
+                                placeholder="Cari siswa..."
+                                value={printModalSearchTerm}
+                                onChange={(e) => setPrintModalSearchTerm(e.target.value)}
+                                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-sm focus:ring-2 focus:ring-blue-500 outline-none"
+                            />
+                        </div>
+
+                        <div className="flex-1 overflow-y-auto p-2">
+                            {(() => {
+                                const filtered = allUsers.filter(u => u.name.toLowerCase().includes(printModalSearchTerm.toLowerCase()));
+                                return (
+                                    <>
+                                        <div className="flex items-center px-3 py-2 hover:bg-gray-100 dark:hover:bg-gray-700/50 rounded-lg cursor-pointer" onClick={() => handleSelectAllStudentsForPrint(filtered)}>
+                                            <input 
+                                                type="checkbox" 
+                                                checked={filtered.length > 0 && filtered.every(u => selectedStudentsToPrint.has(u._id))}
+                                                readOnly
+                                                className="w-4 h-4 text-blue-600 rounded focus:ring-blue-500"
+                                            />
+                                            <span className="ml-3 text-sm font-medium text-gray-700 dark:text-gray-300">Pilih Semua ({filtered.length})</span>
+                                        </div>
+                                        <hr className="my-2 border-gray-200 dark:border-gray-700" />
+                                        {filtered.map(user => (
+                                            <div key={user._id} className="flex items-center px-3 py-2 hover:bg-gray-100 dark:hover:bg-gray-700/50 rounded-lg cursor-pointer" onClick={() => handleToggleStudentForPrint(user._id)}>
+                                                <input 
+                                                    type="checkbox" 
+                                                    checked={selectedStudentsToPrint.has(user._id)}
+                                                    readOnly
+                                                    className="w-4 h-4 text-blue-600 rounded focus:ring-blue-500"
+                                                />
+                                                <span className="ml-3 text-sm text-gray-700 dark:text-gray-300">{user.name}</span>
+                                            </div>
+                                        ))}
+                                    </>
+                                );
+                            })()}
+                        </div>
+
+                        <div className="p-5 border-t border-gray-200 dark:border-gray-700 flex justify-end gap-3 bg-gray-50 dark:bg-gray-900/50 rounded-b-xl">
+                            <button onClick={() => setIsPrintModalOpen(false)} className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-600 dark:hover:bg-gray-600">
+                                Batal
+                            </button>
+                            <button onClick={handleBatchPrint} disabled={isGeneratingReport || selectedStudentsToPrint.size === 0} className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed">
+                                {isGeneratingReport ? <Loader2 size={16} className="animate-spin" /> : <Printer size={16} />}
+                                {isGeneratingReport ? 'Memproses...' : `Cetak (${selectedStudentsToPrint.size})`}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
 
 
         </div>
