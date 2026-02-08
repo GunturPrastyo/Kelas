@@ -46,6 +46,18 @@ export default function Navbar() {
     }
   }, []);
 
+  // Tambahkan useEffect untuk mendengarkan event 'user-updated'
+  useEffect(() => {
+    const handleUserUpdate = () => {
+      const userRaw = localStorage.getItem('user');
+      if (userRaw) {
+        setUser(JSON.parse(userRaw));
+      }
+    };
+    window.addEventListener('user-updated', handleUserUpdate);
+    return () => window.removeEventListener('user-updated', handleUserUpdate);
+  }, []);
+
   // Logika untuk placeholder search bar
   const getPlaceholder = () => {
     if (pathname === '/admin/modul') return "Cari modul...";
