@@ -7,6 +7,8 @@ import { useUI } from '@/context/UIContext';
 import { Home, CheckCircle2, Activity, Lock, Rocket, Users, Clock } from "lucide-react";
 import { authFetch } from '@/lib/authFetch';
 import ModuleCardSkeleton from '@/components/ModuleCardSkeleton'; // Impor komponen skeleton
+import { driver } from "driver.js";
+import "driver.js/dist/driver.css";
 
 interface User {
     _id: string;
@@ -249,7 +251,63 @@ export default function ModulPage() {
             // Hapus filter berdasarkan searchQuery
             return selectedCategory ? mappedCategory === selectedCategory : true;
         });
-    }, [selectedCategory, modules]);
+    }, [selectedCategory, modules, userLevel]);
+
+    // --- Tour Guide Effect ---
+    useEffect(() => {
+        if (!loading && user) {
+            const tourKey = `hasSeenModulTour-${user._id}`;
+            const hasSeenTour = localStorage.getItem(tourKey);
+
+            if (!hasSeenTour) {
+                const steps = [
+                    {
+                        element: '#category-filters',
+                        popover: {
+                            title: 'Filter Kategori',
+                            description: 'Gunakan filter ini untuk memilah modul berdasarkan tingkat kesulitan.'
+                        }
+                    }
+                ];
+
+                // Cek apakah ada modul rekomendasi yang di-highlight
+                const hasRecommendation = personalizedModules.some(m => m.isHighlighted);
+                if (hasRecommendation) {
+                    steps.push({
+                        element: '#recommended-module',
+                        popover: {
+                            title: 'Rekomendasi Spesial',
+                            description: 'Modul dengan border biru ini adalah yang paling kami sarankan untuk kamu kerjakan saat ini.'
+                        }
+                    });
+                }
+
+                steps.push({
+                    element: '#module-grid',
+                    popover: {
+                        title: 'Daftar Modul',
+                        description: 'Ini adalah daftar semua modul. Modul yang terkunci akan terbuka seiring progres belajarmu.'
+                    }
+                });
+
+                const driverObj = driver({
+                    showProgress: true,
+                    animate: true,
+                    steps: steps,
+                    onDestroyStarted: () => {
+                        if (!driverObj.hasNextStep() || confirm("Apakah kamu yakin ingin mengakhiri tur pengenalan ini?")) {
+                            driverObj.destroy();
+                            localStorage.setItem(tourKey, 'true');
+                        }
+                    },
+                });
+
+                setTimeout(() => {
+                    driverObj.drive();
+                }, 1500);
+            }
+        }
+    }, [loading, user, personalizedModules]);
 
     const getStatusBadge = (status: ModuleStatus, progress: number) => {
         const base = "inline-flex items-center gap-1.5 text-xs font-medium px-2.5 py-1 rounded-full";
@@ -340,7 +398,7 @@ export default function ModulPage() {
             )}
 
             {!loading && <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
-                <div className="flex items-center gap-2 flex-wrap">
+                <div id="category-filters" className="flex items-center gap-2 flex-wrap">
                     <button onClick={() => setSelectedCategory('')} className={`px-3 py-1.5 text-xs font-medium rounded-full transition ${selectedCategory === '' ? 'bg-blue-600 text-white' : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700'}`}>
                         Semua
                     </button>
@@ -356,13 +414,14 @@ export default function ModulPage() {
                 </div>
             </div>}
 
-            {!loading && <div className="relative grid gap-6 sm:grid-cols-2 lg:grid-cols-3 grid-auto-rows-fr">
+            {!loading && <div id="module-grid" className="relative grid gap-6 sm:grid-cols-2 lg:grid-cols-3 grid-auto-rows-fr">
                 {/* Garis vertikal untuk tampilan mobile */}
                 <div className="absolute left-6 top-0 bottom-0 w-0.5 bg-gray-200 dark:bg-gray-700 md:hidden"></div>
 
                 {personalizedModules.map((modul) => (
                     <div
                         key={modul._id}
+                        id={modul.isHighlighted ? "recommended-module" : undefined}
                         // Wrapper untuk positioning nomor urut di mobile
                         className="relative sm:static"
                     >

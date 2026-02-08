@@ -14,6 +14,8 @@ import TopicContent from '@/components/TopicContent';
 import { Home, CheckCircle2, Lock, Rocket, Award, AlertTriangle, Star, Lightbulb, Target, Clock3, Activity, Eye, Menu, X, Play, LayoutGrid } from 'lucide-react';
 import { motion } from "framer-motion";
 import CodePlayground from '@/components/CodePlayground';
+import { driver } from "driver.js";
+import "driver.js/dist/driver.css";
 
 
 // --- Interface Definitions ---
@@ -715,6 +717,75 @@ export default function ModulDetailPage() {
 
     }, [openTopicId, activeTest, testIdx, currentQuestionForModal, modul]); // Dependensi diperbarui
 
+    // --- Tour Guide Effect ---
+    useEffect(() => {
+        if (!loading && modul && user) {
+            const tourKey = `hasSeenModuleDetailTour-${user._id}`;
+            const hasSeenTour = localStorage.getItem(tourKey);
+
+            if (!hasSeenTour) {
+                const steps = [
+                    {
+                        element: '#module-header',
+                        popover: {
+                            title: 'Detail Modul',
+                            description: 'Ini adalah halaman detail modul. Kamu bisa melihat progres dan ringkasan materi di sini.'
+                        }
+                    },
+                    {
+                        element: '#topic-list',
+                        popover: {
+                            title: 'Daftar Topik',
+                            description: 'Materi dibagi menjadi beberapa topik. Kerjakan secara berurutan ya!'
+                        }
+                    }
+                ];
+
+                if (nextTopic) {
+                    steps.push({
+                        element: `#topic-card-${nextTopic._id}`,
+                        popover: {
+                            title: 'Lanjutkan di Sini',
+                            description: 'Kami merekomendasikan kamu untuk melanjutkan pembelajaran pada topik ini.'
+                        }
+                    });
+                }
+
+                steps.push(
+                    {
+                        element: '#module-post-test',
+                        popover: {
+                            title: 'Tes Akhir Modul',
+                            description: 'Setelah semua topik selesai, kerjakan tes akhir ini untuk mendapatkan nilai modul.'
+                        }
+                    },
+                    {
+                        element: '#code-playground-btn',
+                        popover: {
+                            title: 'Live Code',
+                            description: 'Gunakan fitur ini untuk mencoba menulis dan menjalankan kode secara langsung.'
+                        }
+                    }
+                );
+
+                const driverObj = driver({
+                    showProgress: true,
+                    animate: true,
+                    steps: steps,
+                    onDestroyStarted: () => {
+                        if (!driverObj.hasNextStep() || confirm("Apakah kamu yakin ingin mengakhiri tur pengenalan ini?")) {
+                            driverObj.destroy();
+                            localStorage.setItem(tourKey, 'true');
+                        }
+                    },
+                });
+
+                setTimeout(() => {
+                    driverObj.drive();
+                }, 1500);
+            }
+        }
+    }, [loading, modul, user, nextTopic]);
 
 
     // --- Render Logic ---
@@ -1197,7 +1268,7 @@ export default function ModulDetailPage() {
             </nav>
 
             {/* Header Modul */}
-            <header className="relative overflow-hidden bg-gradient-to-r from-indigo-500 to-blue-600 dark:from-gray-800 dark:to-gray-800 rounded-xl p-6 mt-6 shadow-md text-white flex flex-col items-start gap-2 mb-6 md:flex-row md:items-center md:gap-4">
+            <header id="module-header" className="relative overflow-hidden bg-gradient-to-r from-indigo-500 to-blue-600 dark:from-gray-800 dark:to-gray-800 rounded-xl p-6 mt-6 shadow-md text-white flex flex-col items-start gap-2 mb-6 md:flex-row md:items-center md:gap-4">
                
                 {/* Ikon untuk desktop (di kiri) */}
                 <img src={`${process.env.NEXT_PUBLIC_API_URL}/uploads/${modul.icon}`} alt={modul.title} className="relative z-10 hidden md:block h-20 w-20 rounded-lg object-cover bg-white/20 p-1" />
@@ -1235,7 +1306,7 @@ export default function ModulDetailPage() {
             {/* Daftar Topik */}
             <main>
                 <h2 className="text-xl font-bold text-gray-800 dark:text-white mb-4">Daftar Topik</h2>
-                <div className="space-y-4">
+                <div id="topic-list" className="space-y-4">
                     {modul.topics.map((topik, index) => {
                         const prevTopic = index > 0 ? modul.topics[index - 1] : null;
                         const isLocked = prevTopic ? !prevTopic.isCompleted : false;
@@ -1327,7 +1398,7 @@ export default function ModulDetailPage() {
                 const isPostTestLocked = modul.progress < 100;
                 const hasCompletedModulPostTest = modul.hasCompletedModulPostTest;
                 return ( // Kartu ini akan muncul jika `hasModulPostTest` bernilai true
-                    <section className={`bg-white dark:bg-gray-800 p-4 rounded-2xl shadow-lg mt-5 transition-all border border-slate-200 dark:border-slate-700 ${isPostTestLocked ? 'opacity-60 cursor-not-allowed' : ''}`}>
+                    <section id="module-post-test" className={`bg-white dark:bg-gray-800 p-4 rounded-2xl shadow-lg mt-5 transition-all border border-slate-200 dark:border-slate-700 ${isPostTestLocked ? 'opacity-60 cursor-not-allowed' : ''}`}>
                         <div className="grid grid-cols-2 md:flex md:flex-row items-center md:items-start gap-4">
                             {/* Konten Teks */}
                             <div className="flex-1 p-0 sm:p-10  text-left w-full order-last md:order-first col-span-1">
@@ -1376,6 +1447,7 @@ export default function ModulDetailPage() {
 
             {/* Floating Action Button for Code Playground */}
             <button
+                id="code-playground-btn"
                 onClick={() => setIsPlaygroundOpen(true)}
                 className=" fixed bottom-6 right-6 z-50 flex flex-col items-center justify-center   bg-white/90 dark:bg-slate-800/90 backdrop-blur-sm border border-indigo-100 dark:border-indigo-500/30 rounded-4xl shadow-2xl shadow-indigo-500/20 dark:shadow-indigo-900/40 hover:scale-105 hover:border-indigo-300 dark:hover:border-indigo-400 transition-all duration-300 group"
                 title="Buka Code Playground"

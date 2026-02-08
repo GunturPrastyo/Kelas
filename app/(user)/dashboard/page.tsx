@@ -7,6 +7,8 @@ import { authFetch } from "@/lib/authFetch";
 import ModuleList from "@/components/ModuleList"
 import PreTestModal from "@/components/PreTestModal";
 import { BarChart2, Clock, TrendingUp, Target, PlayCircle, Rocket, ClipboardCheck } from "lucide-react";
+import { driver } from "driver.js";
+import "driver.js/dist/driver.css";
 
 
 type ModuleStatus = 'Selesai' | 'Berjalan' | 'Terkunci' | 'Belum Mulai';
@@ -16,13 +18,12 @@ interface Module {
   _id: string;
   title: string;
   slug: string;
-  // status akan dihitung di client-side, jadi tidak perlu dari API
   status: ModuleStatus;
   progress: number;
   icon: string;
   category: 'mudah' | 'sedang' | 'sulit';
   isHighlighted?: boolean;
-  firstTopicTitle?: string; // Menambahkan properti yang hilang
+  firstTopicTitle?: string; 
   order: number;
   completedTopics: number;
   totalTopics: number;
@@ -295,9 +296,77 @@ export default function DashboardPage() {
   const animatedHours = Math.floor(animatedStudySeconds / 3600);
   const animatedMinutes = Math.floor((animatedStudySeconds % 3600) / 60);
 
+  // --- Tour Guide Effect ---
+  useEffect(() => {
+    if (!loading && !showPreTestModal) {
+      // Ambil ID user dari localStorage untuk membuat key unik per user
+      const userRaw = localStorage.getItem('user');
+      let userId = '';
+      if (userRaw) {
+        try {
+          const parsedUser = JSON.parse(userRaw);
+          userId = parsedUser._id || parsedUser.id;
+        } catch (e) {
+          console.error("Error parsing user data:", e);
+        }
+      }
+
+      const tourKey = userId ? `hasSeenDashboardTour-${userId}` : 'hasSeenDashboardTour';
+      const hasSeenTour = localStorage.getItem(tourKey);
+      
+      if (!hasSeenTour) {
+        const driverObj = driver({
+          showProgress: true,
+          animate: true,
+          steps: [
+            { 
+                element: '#dashboard-stats', 
+                popover: { 
+                    title: 'Selamat Datang di Dashboard!', 
+                    description: 'Ini adalah pusat kendali belajarmu. Di sini kamu bisa melihat progres, waktu belajar, dan rekomendasi materi.' 
+                } 
+            },
+            { 
+                element: '#pre-test-card', 
+                popover: { 
+                    title: 'Langkah 1: Tes Awal', 
+                    description: 'Sebelum mulai, kerjakan Tes Awal ini dulu ya! Hasilnya akan menentukan modul mana yang terbuka untukmu.' 
+                } 
+            },
+            { 
+                element: '#recommendation-card', 
+                popover: { 
+                    title: 'Rekomendasi Spesial', 
+                    description: 'Perhatikan bagian ini! Bagian ini adalah tempat untuk melihat rekomendasi materi yang paling kami sarankan untuk kamu pelajari saat ini.' 
+                } 
+            },
+            { 
+                element: '#learning-path-section', 
+                popover: { 
+                    title: 'Jalur Pembelajaran', 
+                    description: 'Daftar semua modul ada di sini. Mulailah dari modul yang statusnya "Mulai" atau "Berjalan".' 
+                } 
+            }
+          ],
+          onDestroyStarted: () => {
+             if (!driverObj.hasNextStep() || confirm("Apakah kamu yakin ingin mengakhiri tur pengenalan ini?")) {
+                driverObj.destroy();
+                localStorage.setItem(tourKey, 'true');
+             }
+          },
+        });
+
+        // Delay sedikit untuk memastikan elemen sudah ter-render
+        setTimeout(() => {
+            driverObj.drive();
+        }, 1500);
+      }
+    }
+  }, [loading, showPreTestModal]);
+
   return (
     <>
-      <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 mt-22">
+      <section id="dashboard-stats" className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 mt-22">
         {/* Progres Belajar */}
         <div
           ref={progressCardRef}
@@ -371,7 +440,7 @@ export default function DashboardPage() {
         </div>
 
         {/* Rekomendasi */}
-        <div className="relative bg-gradient-to-br border border-slate-200 dark:border-slate-800 border-r-[5px] border-r-blue-500 dark:border-r-gray-600 from-blue-100 to-blue-200 dark:from-gray-900 dark:to-gray-800 p-4 sm:p-5 rounded-xl shadow flex items-center justify-between md:col-span-2 lg:col-span-1 overflow-hidden ">
+        <div id="recommendation-card" className="relative bg-gradient-to-br border border-slate-200 dark:border-slate-800 border-r-[5px] border-r-blue-500 dark:border-r-gray-600 from-blue-100 to-blue-200 dark:from-gray-900 dark:to-gray-800 p-4 sm:p-5 rounded-xl shadow flex items-center justify-between md:col-span-2 lg:col-span-1 overflow-hidden ">
           {/* Decorative Bubbles */}
           {/* <div className="absolute buttom-0 right-0 w-32 h-32 bg-gradient-to-br from-green-400/80 to-transparent dark:from-green-800/20 rounded-tl-[100px] -ml-64 -mb-32 transition-transform duration-500 group-hover:scale-110" /> */}
           <div className="absolute -top-12 -right-12 w-32 h-32 bg-blue-200 dark:bg-gray-900/20 rounded-full blur-2xl pointer-events-none"></div>
@@ -455,7 +524,7 @@ export default function DashboardPage() {
       <section className="grid grid-cols-1 lg:grid-cols-2 gap-6">
 
         {/* Pre-Test */}
-        <div className="bg-gradient-to-br from-blue-100 to-blue-200 dark:from-gray-900 dark:to-gray-800 p-4 sm:p-5 rounded-xl shadow flex items-center justify-between gap-4 border border-slate-200 dark:border-slate-800">
+        <div id="pre-test-card" className="bg-gradient-to-br from-blue-100 to-blue-200 dark:from-gray-900 dark:to-gray-800 p-4 sm:p-5 rounded-xl shadow flex items-center justify-between gap-4 border border-slate-200 dark:border-slate-800">
           {/* Kiri: teks dan tombol */}
           <div className="flex-1">
             <div className="flex items-center gap-3 mb-2">
@@ -586,7 +655,9 @@ export default function DashboardPage() {
         <div className="text-center p-8">Memuat modul...</div>
       ) : (
         // Gabungkan semua modul ke dalam satu section "Jalur Belajar"
-        <ModuleList title="Jalur Pembelajaran" allModules={personalizedModules} filter={() => true} />
+        <div id="learning-path-section">
+          <ModuleList title="Jalur Pembelajaran" allModules={personalizedModules} filter={() => true} />
+        </div>
       )}
 
       {/* Modal Pop-up Pre-Test */}

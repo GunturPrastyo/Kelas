@@ -6,6 +6,8 @@ import { useRouter } from "next/navigation";
 import { Award, TrendingUp, TrendingDown, LayoutDashboard, Activity, BarChartHorizontal, AlertTriangle, Users, Target, Play, Rocket, Sparkles } from "lucide-react";
 import { Chart, registerables } from "chart.js";
 import { ChevronDown, ChevronRight } from "lucide-react";
+import { driver } from "driver.js";
+import "driver.js/dist/driver.css";
 Chart.register(...registerables);
 
 interface SummaryData {
@@ -568,6 +570,87 @@ export default function AnalitikBelajarPage() {
     window.addEventListener('resize', updateItemsPerPage);
     return () => window.removeEventListener('resize', updateItemsPerPage);
   }, []);
+
+  // --- Tour Guide Effect ---
+  useEffect(() => {
+    if (!loading) {
+      const userRaw = localStorage.getItem('user');
+      let userId = '';
+      if (userRaw) {
+        try {
+          const parsedUser = JSON.parse(userRaw);
+          userId = parsedUser._id || parsedUser.id;
+        } catch (e) {
+          console.error("Error parsing user data:", e);
+        }
+      }
+
+      const tourKey = userId ? `hasSeenAnalyticsTour-${userId}` : 'hasSeenAnalyticsTour';
+      const hasSeenTour = localStorage.getItem(tourKey);
+
+      if (!hasSeenTour) {
+        const driverObj = driver({
+          showProgress: true,
+          animate: true,
+          steps: [
+            {
+              element: '#analytics-summary',
+              popover: {
+                title: 'Ringkasan Kemajuan',
+                description: 'Lihat statistik umum pencapaian belajarmu, termasuk modul selesai, rata-rata nilai, dan waktu belajar.'
+              }
+            },
+            {
+              element: '#weak-topics-section',
+              popover: {
+                title: 'Fokus Perbaikan',
+                description: 'Daftar topik yang perlu kamu pelajari ulang berdasarkan hasil tes. Klik "Pelajari Lagi" untuk langsung menuju materi.'
+              }
+            },
+            {
+              element: '#weekly-activity-chart',
+              popover: {
+                title: 'Aktivitas Mingguan',
+                description: 'Pantau konsistensi belajarmu setiap hari dibandingkan dengan rata-rata kelas.'
+              }
+            },
+            {
+              element: '#comparison-chart',
+              popover: {
+                title: 'Perbandingan Nilai',
+                description: 'Lihat posisi nilaimu dibandingkan dengan rata-rata teman sekelas di setiap modul.'
+              }
+            },
+            {
+              element: '#competency-map',
+              popover: {
+                title: 'Peta Kompetensi',
+                description: 'Visualisasi penguasaanmu pada level Dasar, Menengah, dan Lanjut. Penuhi syarat skor untuk naik level.'
+              }
+            },
+            {
+              element: '#learning-recommendations',
+              popover: {
+                title: 'Rekomendasi Cerdas',
+                description: 'Saran personal tentang apa yang sebaiknya kamu lakukan selanjutnya (mengulang modul, memperdalam topik, atau lanjut materi baru).'
+              }
+            }
+          ],
+          onDestroyStarted: () => {
+            if (!driverObj.hasNextStep() || confirm("Apakah kamu yakin ingin mengakhiri tur pengenalan ini?")) {
+              driverObj.destroy();
+              localStorage.setItem(tourKey, 'true');
+            }
+          },
+        });
+
+        setTimeout(() => {
+          driverObj.drive();
+        }, 1500);
+      }
+    }
+  }, [loading]);
+
   return (
     <div className="space-y-10 mt-22">
       <style jsx global>{`
@@ -584,7 +667,7 @@ export default function AnalitikBelajarPage() {
         }
       `}</style>
       {/* RINGKASAN */}
-      <section>
+      <section id="analytics-summary">
         <h2 ref={summaryCardRef} className="text-xl font-semibold text-gray-700 dark:text-gray-200 mb-3 flex items-center gap-2">
           <LayoutDashboard className="w-6 h-6" />
           Ringkasan Kemajuan
@@ -692,7 +775,7 @@ export default function AnalitikBelajarPage() {
       </section>
 
       {/* TOPIK YANG PERLU DIPERKUAT */}
-      <section className="relative overflow-hidden custom-pattern-bg p-6 rounded-2xl shadow-md border-l-6 border-yellow-400 dark:border-l-gray-600">
+      <section id="weak-topics-section" className="relative overflow-hidden custom-pattern-bg p-6 rounded-2xl shadow-md border-l-6 border-yellow-400 dark:border-l-gray-600">
         {/* Dekorasi Latar Belakang: Watermark Icon */}
         <div className="absolute -top-12 -right-12 opacity-[0.04] pointer-events-none select-none">
           <AlertTriangle className="w-64 h-64 text-yellow-600 dark:text-yellow-400 transform rotate-12" />
@@ -874,7 +957,7 @@ export default function AnalitikBelajarPage() {
 
       {/* GRAFIK */}
       <section className="grid lg:grid-cols-2 gap-8">
-        <div className="relative overflow-hidden bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-md border-l-6 border-blue-400 dark:border-l-gray-600">
+        <div id="weekly-activity-chart" className="relative overflow-hidden bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-md border-l-6 border-blue-400 dark:border-l-gray-600">
           {/* Dekorasi Latar Belakang: Watermark Icon */}
           <div className="absolute -top-6 -right-6 opacity-[0.04] pointer-events-none select-none">
             <Activity className="w-64 h-64 text-blue-600 dark:text-blue-400 transform -rotate-12" />
@@ -905,7 +988,7 @@ export default function AnalitikBelajarPage() {
         </div>
 
         {/* PERBANDINGAN DENGAN KELAS */}
-        <div className="relative overflow-hidden bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-md border-l-6 border-indigo-400 dark:border-l-gray-600">
+        <div id="comparison-chart" className="relative overflow-hidden bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-md border-l-6 border-indigo-400 dark:border-l-gray-600">
           {/* Dekorasi Latar Belakang: Watermark Icon */}
           <div className="absolute -top-6 -right-6 opacity-[0.04] pointer-events-none select-none">
             <Users className="w-64 h-64 text-indigo-600 dark:text-indigo-400 transform rotate-12" />
@@ -962,7 +1045,7 @@ export default function AnalitikBelajarPage() {
       </section>
 
       {/* PETA KOMPETENSI */}
-      <section className="bg-gradient-to-br from-violet-50 to-indigo-100 dark:from-gray-800 dark:to-slate-800 p-6 rounded-2xl shadow-md">
+      <section id="competency-map" className="bg-gradient-to-br from-violet-50 to-indigo-100 dark:from-gray-800 dark:to-slate-800 p-6 rounded-2xl shadow-md">
         <h3 className="text-sm sm:text-base font-semibold text-gray-700 dark:text-gray-200 mb-1 flex items-center gap-2">
           <Target className="w-5 h-5 text-indigo-500" />
           Peta Kompetensi Individu
@@ -1106,7 +1189,7 @@ export default function AnalitikBelajarPage() {
       </section>
 
       {/* REKOMENDASI */}
-      <section className="relative overflow-hidden bg-gradient-to-br from-blue-50 via-blue-100 to-gray-100 dark:from-gray-800 dark:via-gray-800 dark:to-gray-900 text-gray-800 dark:text-gray-100 p-6 rounded-2xl shadow-md border-r-8 border-purple-400 dark:border-r-gray-600">
+      <section id="learning-recommendations" className="relative overflow-hidden bg-gradient-to-br from-blue-50 via-blue-100 to-gray-100 dark:from-gray-800 dark:via-gray-800 dark:to-gray-900 text-gray-800 dark:text-gray-100 p-6 rounded-2xl shadow-md border-r-8 border-purple-400 dark:border-r-gray-600">
         {/* Dekorasi Latar Belakang: Watermark Icon */}
         <div className="absolute -top-6 -right-6 opacity-[0.04] pointer-events-none select-none">
           <Sparkles className="w-64 h-64 text-purple-600 dark:text-purple-400 transform rotate-12" />

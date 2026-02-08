@@ -9,6 +9,8 @@ import { Award, Download, Star, Info, Shield, Zap, Trophy, Hexagon, TrendingUp, 
 import { useAlert } from "@/context/AlertContext";
 import { useSearchParams } from "next/navigation";
 import { Chart, registerables } from "chart.js";
+import { driver } from "driver.js";
+import "driver.js/dist/driver.css";
 
 Chart.register(...registerables);
 
@@ -286,6 +288,68 @@ const ProfileContent = () => {
     }
   }, [competencyData]);
 
+  // --- Tour Guide Effect ---
+  useEffect(() => {
+    if (!loading && user) {
+      const tourKey = `hasSeenProfileTour-${user._id}`;
+      const hasSeenTour = localStorage.getItem(tourKey);
+
+      if (!hasSeenTour) {
+        const driverObj = driver({
+          showProgress: true,
+          animate: true,
+          steps: [
+            {
+              element: '#profile-header',
+              popover: {
+                title: 'Profil Pengguna',
+                description: 'Ini adalah kartu identitasmu. Lihat level, avatar, dan progres levelmu di sini.'
+              }
+            },
+            {
+              element: '#profile-stats',
+              popover: {
+                title: 'Statistik Singkat',
+                description: 'Ringkasan cepat tentang modul yang diselesaikan dan rata-rata skormu.'
+              }
+            },
+            {
+              element: '#certificate-section',
+              popover: {
+                title: 'Sertifikat',
+                description: 'Jika kamu sudah menyelesaikan semua modul, kamu bisa mengunduh sertifikat di sini.'
+              }
+            },
+            {
+              element: '#competency-chart',
+              popover: {
+                title: 'Tingkat Penguasaan',
+                description: 'Visualisasi tingkat penguasaan kompetensi materi '
+              }
+            },
+            {
+              element: '#profile-settings',
+              popover: {
+                title: 'Pengaturan Akun',
+                description: 'Ubah informasi akun, password, dan preferensi tampilan (font) di sini.'
+              }
+            }
+          ],
+          onDestroyStarted: () => {
+            if (!driverObj.hasNextStep() || confirm("Apakah kamu yakin ingin mengakhiri tur pengenalan ini?")) {
+              driverObj.destroy();
+              localStorage.setItem(tourKey, 'true');
+            }
+          },
+        });
+
+        setTimeout(() => {
+          driverObj.drive();
+        }, 1500);
+      }
+    }
+  }, [loading, user]);
+
   const handleAvatarChange = (e: ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
       const file = e.target.files[0];
@@ -540,6 +604,7 @@ const ProfileContent = () => {
 
       {/* === GAME PROFILE HEADER === */}
       <motion.div
+        id="profile-header"
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.15 }}
@@ -589,7 +654,7 @@ const ProfileContent = () => {
 
           {/* Middle: Stats & Actions */}
           <div className="flex-1 w-full lg:border-l lg:border-r border-gray-100 dark:border-gray-800 lg:px-8 flex flex-col justify-center">
-            <div className="grid grid-cols-1 min-[350px]:grid-cols-2 lg:grid-cols-1 2xl:grid-cols-2 gap-3 sm:gap-4 mb-6">
+            <div id="profile-stats" className="grid grid-cols-1 min-[350px]:grid-cols-2 lg:grid-cols-1 2xl:grid-cols-2 gap-3 sm:gap-4 mb-6">
               <div className="bg-blue-50 dark:bg-blue-900/20 p-3 sm:p-4 rounded-2xl border border-blue-100 dark:border-blue-800/50 flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4">
                 <div className="flex justify-between items-center w-full sm:w-auto">
                   <div className="p-2 sm:p-3 bg-blue-100 dark:bg-blue-800 rounded-xl text-blue-600 dark:text-blue-300">
@@ -626,7 +691,7 @@ const ProfileContent = () => {
               </div>
             </div>
 
-            <div className="bg-gray-50 dark:bg-gray-800/50 rounded-2xl p-5 border border-gray-100 dark:border-gray-700">
+            <div id="certificate-section" className="bg-gray-50 dark:bg-gray-800/50 rounded-2xl p-5 border border-gray-100 dark:border-gray-700">
               <div className="flex justify-between items-center mb-3">
                 <h3 className="font-bold text-gray-800 dark:text-gray-200 flex items-center gap-2">
                   <Award size={18} className="text-amber-500" />
@@ -654,7 +719,7 @@ const ProfileContent = () => {
           </div>
 
           {/* Right: Radar Chart (Stats) */}
-          <div className="w-full lg:w-1/3 flex flex-col">
+          <div id="competency-chart" className="w-full lg:w-1/3 flex flex-col">
             <div className="h-full bg-white dark:bg-gray-800/50 rounded-2xl border border-gray-100 dark:border-gray-700 p-6 flex flex-col relative overflow-hidden shadow-sm hover:shadow-md transition-shadow duration-300">
               {/* Decorative background blur */}
               <div className="absolute top-0 right-0 w-40 h-40 bg-blue-500/10 rounded-full blur-3xl -mr-20 -mt-20 pointer-events-none"></div>
@@ -698,6 +763,7 @@ const ProfileContent = () => {
 
       {/* === PROFILE & PASSWORD CARD WITH TABS === */}
       <motion.div
+        id="profile-settings"
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.2 }}
