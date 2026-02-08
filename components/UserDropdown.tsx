@@ -111,6 +111,18 @@ export default function UserDropdown() {
         return () => window.removeEventListener('progressUpdated', handleProgressUpdate);
     }, []); // Dependency kosong agar hanya berjalan sekali
 
+    // Tambahkan useEffect untuk mendengarkan event 'user-updated' agar data user sinkron
+    useEffect(() => {
+        const handleUserUpdate = () => {
+            const userRaw = localStorage.getItem('user');
+            if (userRaw) {
+                setUser(JSON.parse(userRaw));
+            }
+        };
+        window.addEventListener('user-updated', handleUserUpdate);
+        return () => window.removeEventListener('user-updated', handleUserUpdate);
+    }, []);
+
     // Efek untuk menangani logout otomatis saat browser/tab ditutup
     useEffect(() => {
         const handleBeforeUnload = () => {
@@ -170,7 +182,7 @@ export default function UserDropdown() {
                 <Avatar
                     user={user}
                     size={256}
-                    className="transition rounded-full w-8 sm:w-10 h-8 sm:h-10"
+                    className="transition rounded-full w-8 sm:w-10 h-8 sm:h-10 object-cover"
                 />
             </button>
 
@@ -189,7 +201,7 @@ export default function UserDropdown() {
                     {/* User Info */}
                     <div className="p-3 border-b border-gray-200 dark:border-gray-700">
                         <div className="flex items-center gap-3">
-                            <Avatar user={user} size={256} className="w-10 h-10 rounded-full" />
+                            <Avatar user={user} size={256} className="w-10 h-10 rounded-full object-cover" />
                             <div className="flex-1 min-w-0">
                                 <p className="font-semibold text-sm text-gray-800 dark:text-gray-200 truncate" title={user.name}>{user.name}</p>
                                 <p className="text-xs text-gray-500 dark:text-gray-400 truncate" title={user.email}>{user.email}</p>

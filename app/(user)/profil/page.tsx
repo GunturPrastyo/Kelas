@@ -32,6 +32,7 @@ interface User {
   email: string;
   avatar?: string; // Make avatar optional
   hasPassword?: boolean; // Tambahkan properti ini, buat opsional untuk kompatibilitas
+  learningLevel?: string;
 }
 
 interface CompetencyFeature {
@@ -158,10 +159,18 @@ const ProfileContent = () => {
       // If no features, don't draw
       if (allFeatures.length === 0) return;
 
-      const useShortLabels = allFeatures.length > 6;
-      const labels = useShortLabels
-        ? allFeatures.map((_, i) => `K${i + 1}`)
-        : allFeatures.map(f => f.name.split(' '));
+      // Logika label responsif: Gunakan F1, F2 dst untuk layar sangat kecil (range 320px)
+      const isVerySmallScreen = window.innerWidth <= 360;
+      let labels;
+      if (isVerySmallScreen) {
+        labels = allFeatures.map((_, i) => `F${i + 1}`);
+      } else {
+        const useShortLabels = allFeatures.length > 6;
+        labels = useShortLabels
+          ? allFeatures.map((_, i) => `K${i + 1}`)
+          : allFeatures.map(f => f.name.split(' '));
+      }
+
       const data = allFeatures.map(f => f.score);
       const averageData = allFeatures.map(f => f.average);
 
@@ -467,13 +476,14 @@ const ProfileContent = () => {
   }, [competencyData]);
 
   const userLevel = useMemo(() => {
-    const progress = overallProgress;
-    if (progress < 25) return "Pemula";
-    if (progress < 50) return "Murid";
-    if (progress < 75) return "Terampil";
-    if (progress < 100) return "Ahli";
-    return "Master";
-  }, [overallProgress]);
+    if (!user?.learningLevel) return "Novice";
+
+    const level = user.learningLevel.toLowerCase();
+    if (level === 'lanjutan' || level === 'lanjut') return "Expert";
+    if (level === 'menengah') return "Intermediate";
+    
+    return "Novice";
+  }, [user]);
 
   const competencyComparison = useMemo(() => {
     if (!competencyData) return null;
@@ -545,7 +555,7 @@ const ProfileContent = () => {
           <div className="flex flex-col items-center lg:items-center gap-4 min-w-[240px]">
             <div className="relative group">
               <div className="rounded-full p-1.5 bg-white dark:bg-gray-900 shadow-lg">
-                <Avatar user={user} size={140} className="rounded-full object-cover border-4 border-blue-50 dark:border-gray-800" />
+                <Avatar user={user} size={140} className="rounded-full object-cover border-4 border-blue-50 dark:border-gray-800 w-28 h-28" />
               </div>
               <div className="absolute -bottom-3 left-1/2 transform -translate-x-1/2 bg-gradient-to-r from-amber-400 to-orange-500 text-white text-xs font-bold px-3 py-1 rounded-full shadow-md border-2 border-white dark:border-gray-900 flex items-center gap-1 whitespace-nowrap">
                 <Trophy size={12} className="fill-current" />
@@ -579,23 +589,39 @@ const ProfileContent = () => {
 
           {/* Middle: Stats & Actions */}
           <div className="flex-1 w-full lg:border-l lg:border-r border-gray-100 dark:border-gray-800 lg:px-8 flex flex-col justify-center">
-            <div className="grid grid-cols-2 gap-4 mb-6">
-              <div className="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-2xl border border-blue-100 dark:border-blue-800/50 flex items-center gap-4">
-                <div className="p-3 bg-blue-100 dark:bg-blue-800 rounded-xl text-blue-600 dark:text-blue-300">
-                  <BookOpen size={24} />
+            <div className="grid grid-cols-1 min-[350px]:grid-cols-2 lg:grid-cols-1 2xl:grid-cols-2 gap-3 sm:gap-4 mb-6">
+              <div className="bg-blue-50 dark:bg-blue-900/20 p-3 sm:p-4 rounded-2xl border border-blue-100 dark:border-blue-800/50 flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4">
+                <div className="flex justify-between items-center w-full sm:w-auto">
+                  <div className="p-2 sm:p-3 bg-blue-100 dark:bg-blue-800 rounded-xl text-blue-600 dark:text-blue-300">
+                    <BookOpen className="w-5 h-5 sm:w-6 sm:h-6" />
+                  </div>
+                  <p className="text-lg font-bold text-gray-900 dark:text-white sm:hidden">{moduleStats.completed} / {moduleStats.total}</p>
                 </div>
-                <div>
-                  <p className="text-xs text-gray-500 dark:text-gray-400 font-medium uppercase">Modul Selesai</p>
-                  <p className="text-xl font-bold text-gray-900 dark:text-white">{moduleStats.completed} / {moduleStats.total}</p>
+                <div className="w-full">
+                  <p className="text-[10px] sm:text-xs text-gray-500 dark:text-gray-400 font-medium uppercase mb-0.5 sm:mb-0">Modul Selesai</p>
+                  <p className="text-xl font-bold text-gray-900 dark:text-white hidden sm:block">{moduleStats.completed} / {moduleStats.total}</p>
+                  {progressData && (
+                    <p className="text-[10px] sm:text-xs text-gray-500 dark:text-gray-400 mt-0.5 sm:mt-1 leading-tight">
+                      {progressData.completedTopics} dari {progressData.totalTopics} topik selesai
+                    </p>
+                  )}
                 </div>
               </div>
-              <div className="bg-purple-50 dark:bg-purple-900/20 p-4 rounded-2xl border border-purple-100 dark:border-purple-800/50 flex items-center gap-4">
-                <div className="p-3 bg-purple-100 dark:bg-purple-800 rounded-xl text-purple-600 dark:text-purple-300">
-                  <Star size={24} />
+              <div className="bg-purple-50 dark:bg-purple-900/20 p-3 sm:p-4 rounded-2xl border border-purple-100 dark:border-purple-800/50 flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4">
+                <div className="flex justify-between items-center w-full sm:w-auto">
+                  <div className="p-2 sm:p-3 bg-purple-100 dark:bg-purple-800 rounded-xl text-purple-600 dark:text-purple-300">
+                    <Star className="w-5 h-5 sm:w-6 sm:h-6" />
+                  </div>
+                  <p className="text-lg font-bold text-gray-900 dark:text-white sm:hidden">{averageScore}%</p>
                 </div>
-                <div>
-                  <p className="text-xs text-gray-500 dark:text-gray-400 font-medium uppercase">Rata-rata Skor</p>
-                  <p className="text-xl font-bold text-gray-900 dark:text-white">{averageScore}%</p>
+                <div className="w-full">
+                  <p className="text-[10px] sm:text-xs text-gray-500 dark:text-gray-400 font-medium uppercase mb-0.5 sm:mb-0">Rata-rata Skor</p>
+                  <p className="text-xl font-bold text-gray-900 dark:text-white hidden sm:block">{averageScore}%</p>
+                  {competencyComparison && (
+                    <p className={`text-[10px] sm:text-xs mt-0.5 sm:mt-1 leading-tight ${competencyComparison.color}`}>
+                      {competencyComparison.text} kelas
+                    </p>
+                  )}
                 </div>
               </div>
             </div>
@@ -629,29 +655,31 @@ const ProfileContent = () => {
 
           {/* Right: Radar Chart (Stats) */}
           <div className="w-full lg:w-1/3 flex flex-col">
-            <div className="h-full bg-white dark:bg-gray-800/50 rounded-2xl border border-gray-100 dark:border-gray-700 p-6 flex flex-col items-center justify-center relative overflow-hidden shadow-sm hover:shadow-md transition-shadow duration-300">
+            <div className="h-full bg-white dark:bg-gray-800/50 rounded-2xl border border-gray-100 dark:border-gray-700 p-6 flex flex-col relative overflow-hidden shadow-sm hover:shadow-md transition-shadow duration-300">
               {/* Decorative background blur */}
               <div className="absolute top-0 right-0 w-40 h-40 bg-blue-500/10 rounded-full blur-3xl -mr-20 -mt-20 pointer-events-none"></div>
               <div className="absolute bottom-0 left-0 w-40 h-40 bg-indigo-500/10 rounded-full blur-3xl -ml-20 -mb-20 pointer-events-none"></div>
 
-              <div className="w-full flex flex-col items-center justify-center mb-6 z-10 text-center">
-                <div className="flex items-center gap-2 mb-2">
-                  <div className="p-2 bg-indigo-50 dark:bg-indigo-900/20 rounded-xl ring-1 ring-indigo-100 dark:ring-indigo-800/50 shadow-sm">
-                    <Hexagon size={20} className="text-indigo-600 dark:text-indigo-400" />
-                  </div>
+              <div className="w-full flex justify-between items-start mb-4 z-10">
+                <div>
                   <h3 className="text-base font-bold text-gray-800 dark:text-gray-100">
-                    Tingkat Penguasaanmu
+                    Tingkat Penguasaan
                   </h3>
+                  {competencyComparison ? (
+                    <div className={`flex items-center gap-1.5 mt-1 text-xs font-medium ${competencyComparison.color}`}>
+                      {competencyComparison.text.includes("atas") ? <TrendingUp size={14} /> : competencyComparison.text.includes("bawah") ? <TrendingDown size={14} /> : <Activity size={14} />}
+                      <span>{competencyComparison.text}</span>
+                    </div>
+                  ) : (
+                    <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">Analisis performa belajar</p>
+                  )}
                 </div>
-                {competencyComparison && (
-                  <span className={`mt-1 flex items-center gap-1.5 text-xs font-medium px-3 py-1 rounded-full bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 shadow-sm ${competencyComparison.color}`}>
-                    {competencyComparison.text.includes("atas") ? <TrendingUp size={12} /> : competencyComparison.text.includes("bawah") ? <TrendingDown size={12} /> : <Activity size={12} />}
-                    {competencyComparison.text}
-                  </span>
-                )}
+                <div className="p-2 bg-indigo-50 dark:bg-indigo-900/20 rounded-xl ring-1 ring-indigo-100 dark:ring-indigo-800/50 shadow-sm text-indigo-600 dark:text-indigo-400">
+                  <Hexagon size={20} />
+                </div>
               </div>
 
-            <div className="relative w-full aspect-square z-10 max-h-[260px]">
+            <div className="relative w-full aspect-square z-10 max-h-[260px] mx-auto mt-auto mb-auto">
               {competencyData ? (
                 <canvas ref={chartRef} />
               ) : (
@@ -739,7 +767,7 @@ const ProfileContent = () => {
                       className="rounded-full object-cover border-4 border-blue-100 dark:border-gray-600 shadow-md w-28 h-28"
                     />
                   ) : (
-                    <Avatar user={user} size={256} className="border-4 border-blue-100 dark:border-gray-600 shadow-md rounded-full w-28 h-28" />
+                    <Avatar user={user} size={256}  className="border-4 border-blue-100 dark:border-gray-600 shadow-md rounded-full w-28 h-28 object-cover" />
                   )}
                   <label htmlFor="avatarInput" className="cursor-pointer mt-3 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-xl text-sm font-medium transition">
                     Ubah Foto
