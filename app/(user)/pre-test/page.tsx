@@ -5,7 +5,7 @@ import Link from 'next/link';
 import Breadcrumb from '@/components/Breadcrumb';
 import hljs from 'highlight.js';
 import 'highlight.js/styles/github-dark.css';
-import { Info, X } from 'lucide-react';
+import { Info, X, LayoutGrid } from 'lucide-react';
 import { authFetch } from "@/lib/authFetch";
 import { useAlert } from "@/context/AlertContext";
 
@@ -730,7 +730,7 @@ export default function PreTestPage() {
                         <div className="mb-0 p-5 bg-slate-50 dark:bg-gray-900/40 rounded-xl border border-slate-200 dark:border-gray-700/50 sticky top-24">
                             <div className="flex flex-wrap justify-between items-center mb-4 gap-2">
                                 <h3 className="text-sm font-bold text-gray-700 dark:text-gray-300 flex items-center gap-2">
-                                    <span className="w-1 h-4 bg-blue-500 rounded-full"></span>
+                                    <LayoutGrid className="w-5 h-5 text-blue-500" />
                                     Navigasi Soal
                                 </h3>
                                 <div className="flex gap-3 text-xs text-gray-500 dark:text-gray-400">
