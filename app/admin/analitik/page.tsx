@@ -685,6 +685,7 @@ export default function AdminAnalyticsPage() {
             <head>
                 <meta charset="UTF-8">
                 <title>Laporan Performa Modul</title>
+                <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
                 <style>
                     @page { size: A4; margin: 15mm; }
                     body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; color: #1f2937; line-height: 1.5; font-size: 10pt; }
@@ -704,6 +705,7 @@ export default function AdminAnalyticsPage() {
                 </style>
             </head>
             <body>
+                <div id="content">
                 <div class="header">
                     <h1>Laporan Performa Modul</h1>
                     <p>Analisis Rata-rata Nilai dan Waktu Pengerjaan</p>
@@ -736,8 +738,19 @@ export default function AdminAnalyticsPage() {
                 <div class="footer">
                     <p style="margin-top: 30px; text-align: center; font-size: 8pt; opacity: 0.7;">Dicetak otomatis oleh KELAS.</p>
                 </div>
+                </div>
                 <script>
-                    window.onload = function() { window.print(); }
+                    window.onload = function() {
+                        const element = document.getElementById('content');
+                        const opt = {
+                            margin: 10,
+                            filename: 'Laporan_Performa_Modul.pdf',
+                            image: { type: 'jpeg', quality: 0.98 },
+                            html2canvas: { scale: 2 },
+                            jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+                        };
+                        html2pdf().set(opt).from(element).save();
+                    }
                 </script>
             </body>
             </html>
@@ -835,6 +848,7 @@ export default function AdminAnalyticsPage() {
             <head>
                 <meta charset="UTF-8">
                 <title>Laporan Hasil Belajar</title>
+                <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
                 <style>
                     @page { size: A4 landscape; margin: 10mm; }
                     body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; color: #1f2937; line-height: 1.5; font-size: 10pt; }
@@ -872,6 +886,7 @@ export default function AdminAnalyticsPage() {
                 </style>
             </head>
             <body>
+                <div id="content">
                 <div class="header">
                     <h1>Laporan Hasil Belajar Siswa</h1>
                     <p>Rekapitulasi Nilai Modul dan Topik</p>
@@ -909,8 +924,19 @@ export default function AdminAnalyticsPage() {
                  
                     <p style="margin-top: 30px; text-align: center; font-size: 8pt; opacity: 0.7;">Dicetak otomatis oleh KELAS.</p>
                 </div>
+                </div>
                 <script>
-                    window.onload = function() { window.print(); }
+                    window.onload = function() {
+                        const element = document.getElementById('content');
+                        const opt = {
+                            margin: 10,
+                            filename: 'Laporan_Hasil_Belajar_Siswa.pdf',
+                            image: { type: 'jpeg', quality: 0.98 },
+                            html2canvas: { scale: 2 },
+                            jsPDF: { unit: 'mm', format: 'a4', orientation: 'landscape' }
+                        };
+                        html2pdf().set(opt).from(element).save();
+                    }
                 </script>
             </body>
             </html>
