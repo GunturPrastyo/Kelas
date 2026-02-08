@@ -11,7 +11,7 @@ import { authFetch } from '@/lib/authFetch'; // <-- Import helper baru
 import { useAlert } from '@/context/AlertContext';
 
 import TopicContent from '@/components/TopicContent';
-import { Home, CheckCircle2, Lock, Rocket, Award, AlertTriangle, Star, Lightbulb, Target, Clock3, Activity, Eye, Menu, X, Play } from 'lucide-react';
+import { Home, CheckCircle2, Lock, Rocket, Award, AlertTriangle, Star, Lightbulb, Target, Clock3, Activity, Eye, Menu, X, Play, LayoutGrid } from 'lucide-react';
 import { motion } from "framer-motion";
 import CodePlayground from '@/components/CodePlayground';
 
@@ -748,7 +748,7 @@ export default function ModulDetailPage() {
                                     onClick={() => setShowMobileNav(!showMobileNav)}
                                     className="lg:hidden p-1.5 sm:p-2 -ml-1 sm:-ml-2 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors flex-shrink-0"
                                 >
-                                    {showMobileNav ? <X size={20} /> : <Menu size={20} />}
+                                    {showMobileNav ? <X size={20} /> : <LayoutGrid size={20} />}
                                 </button>
                             )}
                             <div className="min-w-0 flex-1">
@@ -1022,12 +1022,18 @@ export default function ModulDetailPage() {
                             ${showMobileNav ? 'absolute inset-0 z-20 w-full block' : 'hidden'}
                         `}>
                             <div className="flex justify-between items-center mb-4 lg:hidden">
-                                <h3 className="text-sm font-bold text-gray-700 dark:text-gray-300">Navigasi Soal</h3>
+                                <h3 className="text-sm font-bold text-gray-700 dark:text-gray-300 flex items-center gap-2">
+                                    <LayoutGrid size={18} className="text-blue-500" />
+                                    Navigasi Soal
+                                </h3>
                                 <button onClick={() => setShowMobileNav(false)} className="p-1 text-gray-500 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-full transition-colors">
                                     <X size={20} />
                                 </button>
                             </div>
-                            <h3 className="text-sm font-bold text-gray-700 dark:text-gray-300 mb-4 hidden lg:block">Navigasi Soal</h3>
+                            <h3 className="text-sm font-bold text-gray-700 dark:text-gray-300 mb-4 hidden lg:flex items-center gap-2">
+                                <LayoutGrid size={18} className="text-blue-500" />
+                                Navigasi Soal
+                            </h3>
                             <div className="grid grid-cols-5 gap-2">
                                 {activeTest.questions.map((q, idx) => {
                                     const isAnswered = testAnswers[q._id] !== undefined;
@@ -1110,14 +1116,29 @@ export default function ModulDetailPage() {
                                             </button>
                                         ) : (
                                             <button
-                                                onClick={() => showAlert({
-                                                    type: 'confirm',
-                                                    title: 'Kirim Jawaban?',
-                                                    message: 'Apakah kamu yakin ingin mengirimkan jawaban dan melihat hasilnya?',
-                                                    confirmText: 'Ya, Kirim',
-                                                    cancelText: 'Batal',
-                                                    onConfirm: submitTest,
-                                                })}
+                                                onClick={() => {
+                                                    const unansweredIndices = activeTest.questions
+                                                        .map((q, index) => (!testAnswers[q._id] ? index + 1 : null))
+                                                        .filter((idx) => idx !== null);
+
+                                                    if (unansweredIndices.length > 0) {
+                                                        showAlert({
+                                                            title: 'Jawaban Belum Lengkap',
+                                                            message: `Kamu belum menjawab soal nomor: ${unansweredIndices.join(', ')}. Silakan lengkapi semua jawaban sebelum mengirim.`,
+                                                            type: 'alert'
+                                                        });
+                                                        return;
+                                                    }
+
+                                                    showAlert({
+                                                        type: 'confirm',
+                                                        title: 'Kirim Jawaban?',
+                                                        message: 'Apakah kamu yakin ingin mengirimkan jawaban dan melihat hasilnya?',
+                                                        confirmText: 'Ya, Kirim',
+                                                        cancelText: 'Batal',
+                                                        onConfirm: submitTest,
+                                                    });
+                                                }}
                                                 disabled={isSubmitting}
                                                 className="px-4 py-2 text-xs sm:text-base bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50"
                                             >

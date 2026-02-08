@@ -6,7 +6,7 @@ import { authFetch } from "@/lib/authFetch";
 import hljs from 'highlight.js';
 import 'highlight.js/styles/github-dark.css';
 import Link from "next/link";
-import { Home, Target, Clock3, Activity, Eye, Lightbulb, Star } from 'lucide-react';
+import { Home, Target, Clock3, Activity, Eye, Lightbulb, Star, LayoutGrid } from 'lucide-react';
 import { useAlert } from "@/context/AlertContext";
 
 interface Question {
@@ -650,14 +650,29 @@ export default function PostTestPage() {
                                     </button>
                                 ) : (
                                     <button
-                                        onClick={() => showAlert({
-                                            type: 'confirm',
-                                            title: 'Kirim Jawaban?',
-                                            message: 'Apakah kamu yakin ingin mengirimkan jawaban dan melihat hasilnya?',
-                                            confirmText: 'Ya, Kirim',
-                                            cancelText: 'Batal',
-                                            onConfirm: gradeTest,
-                                        })}
+                                        onClick={() => {
+                                            const unansweredIndices = questions
+                                                .map((q, index) => (!answers[q._id] ? index + 1 : null))
+                                                .filter((idx) => idx !== null);
+
+                                            if (unansweredIndices.length > 0) {
+                                                showAlert({
+                                                    title: 'Jawaban Belum Lengkap',
+                                                    message: `Kamu belum menjawab soal nomor: ${unansweredIndices.join(', ')}. Silakan lengkapi semua jawaban sebelum mengirim.`,
+                                                    type: 'alert'
+                                                });
+                                                return;
+                                            }
+
+                                            showAlert({
+                                                type: 'confirm',
+                                                title: 'Kirim Jawaban?',
+                                                message: 'Apakah kamu yakin ingin mengirimkan jawaban dan melihat hasilnya?',
+                                                confirmText: 'Ya, Kirim',
+                                                cancelText: 'Batal',
+                                                onConfirm: gradeTest,
+                                            });
+                                        }}
                                         disabled={isSubmitting}
                                         className="flex-1 sm:flex-none text-xs sm:text-base bg-green-600 text-white border-none px-4 py-2.5 rounded-lg cursor-pointer hover:bg-green-700 transition disabled:opacity-50"
                                     >
@@ -680,7 +695,7 @@ export default function PostTestPage() {
                         <div className="mb-0 p-5 bg-slate-50 dark:bg-gray-900/40 rounded-xl border border-slate-200 dark:border-gray-700/50 sticky top-24">
                             <div className="flex flex-wrap justify-between items-center mb-4 gap-2">
                                 <h3 className="text-sm font-bold text-gray-700 dark:text-gray-300 flex items-center gap-2">
-                                    <span className="w-1 h-4 bg-blue-500 rounded-full"></span>
+                                    <LayoutGrid className="w-5 h-5 text-blue-500" />
                                     Navigasi Soal
                                 </h3>
                                 <div className="flex gap-3 text-xs text-gray-500 dark:text-gray-400">
