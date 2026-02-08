@@ -540,13 +540,13 @@ const ProfileContent = () => {
   }, [competencyData]);
 
   const userLevel = useMemo(() => {
-    if (!user?.learningLevel) return "Novice";
+    if (!user?.learningLevel) return "Pemula";
 
     const level = user.learningLevel.toLowerCase();
-    if (level === 'lanjutan' || level === 'lanjut') return "Expert";
-    if (level === 'menengah') return "Intermediate";
+    if (level === 'lanjutan' || level === 'lanjut') return "Mahir";
+    if (level === 'menengah') return "Menengah";
     
-    return "Novice";
+    return "Pemula";
   }, [user]);
 
   const competencyComparison = useMemo(() => {
