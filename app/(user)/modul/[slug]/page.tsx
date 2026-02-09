@@ -537,8 +537,8 @@ export default function ModulDetailPage() {
 
             // Buat notifikasi berdasarkan hasil tes topik
             const notifMessage = finalResult.score >= 70
-                ? `Selamat! Kamu lulus post-test "${activeTest.title}" dengan skor ${finalResult.score}.`
-                : `Kamu mendapatkan skor ${finalResult.score}% untuk post-test "${activeTest.title}". Coba lagi!`;
+                ? `Selamat! Kamu lulus uji pemahaman "${activeTest.title}" dengan skor ${finalResult.score}.`
+                : `Kamu mendapatkan skor ${finalResult.score}% untuk uji pemahaman "${activeTest.title}". Coba lagi!`;
             createNotification(notifMessage, `/modul/${modul?.slug}#${activeTest._id}`);
 
 
@@ -755,8 +755,8 @@ export default function ModulDetailPage() {
                     {
                         element: '#module-post-test',
                         popover: {
-                            title: 'Tes Akhir Modul',
-                            description: 'Setelah semua topik selesai, kerjakan tes akhir ini untuk mendapatkan nilai modul.'
+                            title: 'Uji Pemahaman Akhir Modul',
+                            description: 'Setelah semua topik selesai, kerjakan uji pemahaman akhir ini untuk mendapatkan nilai modul.'
                         }
                     },
                     {
@@ -773,9 +773,22 @@ export default function ModulDetailPage() {
                     animate: true,
                     steps: steps,
                     onDestroyStarted: () => {
-                        if (!driverObj.hasNextStep() || confirm("Apakah kamu yakin ingin mengakhiri tur pengenalan ini?")) {
+                        if (!driverObj.hasNextStep()) {
                             driverObj.destroy();
                             localStorage.setItem(tourKey, 'true');
+                        } else {
+                            showAlert({
+                                type: 'confirm',
+                                title: 'Akhiri Tur?',
+                                message: 'Apakah kamu yakin ingin mengakhiri tur pengenalan ini?',
+                                confirmText: 'Ya, Akhiri',
+                                cancelText: 'Batal',
+                                onConfirm: () => {
+                                    driverObj.destroy();
+                                    localStorage.setItem(tourKey, 'true');
+                                }
+                            });
+                            return false;
                         }
                     },
                 });
@@ -1403,17 +1416,17 @@ export default function ModulDetailPage() {
                             {/* Konten Teks */}
                             <div className="flex-1 p-0 sm:p-10  text-left w-full order-last md:order-first col-span-1">
                                 <h2 className="text-sm sm:text-xl lg:text-2xl font-bold text-gray-800 dark:text-gray-100 mb-1 sm:mb-2">
-                                    Uji Pemahaman Akhir
+                                    Uji Pemahaman Akhir Modul
                                 </h2>
                                 {isPostTestLocked ? (
                                     <p className="text-xs sm:text-sm lg:text-base text-gray-500 dark:text-gray-400 mb-3 sm:mb-6">
-                                        Selesaikan semua topik di modul ini untuk membuka uji pemahaman akhir.
+                                        Selesaikan semua topik di modul ini untuk membuka uji pemahaman akhir modul.
                                     </p>
                                 ) : (
                                     <p className="text-xs sm:text-sm lg:text-base text-gray-600 dark:text-gray-400 mb-3 sm:mb-6">
                                         {hasCompletedModulPostTest
-                                            ? "Kerja bagus! Kamu telah menyelesaikan uji pemahaman akhir untuk modul ini."
-                                            : "Selamat! Kamu telah menyelesaikan semua topik. Uji pemahaman akhir Kamu untuk menyelesaikan modul ini."}
+                                            ? "Kerja bagus! Kamu telah menyelesaikan uji pemahaman akhir modul ini."
+                                            : "Selamat! Kamu telah menyelesaikan semua topik. Kerjakan uji pemahaman akhir modul untuk menyelesaikan modul ini."}
                                     </p>
                                 )}
 

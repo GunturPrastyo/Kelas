@@ -160,7 +160,7 @@ export default function TopicContent({ topik, onStartTest, onViewScore, hasAttem
                             onClick={() => onStartTest(topik, hasAttempted)}
                             className="text-sm px-4 py-2 bg-yellow-400 hover:bg-yellow-300 text-black font-semibold rounded-xl shadow-md transition transform hover:scale-105 active:scale-95 focus:ring-2 focus:ring-yellow-200 sm:px-5 sm:py-2"
                         >
-                            {hasAttempted ? "Ulangi Tes" : "Mulai Tes"}
+                            {hasAttempted ? "Ulangi Uji Pemahaman" : "Mulai Uji Pemahaman"}
                         </button>
 
                         {hasAttempted && (

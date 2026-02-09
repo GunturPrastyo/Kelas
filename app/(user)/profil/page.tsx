@@ -47,6 +47,11 @@ interface GroupedCompetencyData {
   [level: string]: CompetencyFeature[];
 }
 
+interface AnalyticsData {
+  averageScore: number;
+  classAverageScore: number;
+}
+
 const getCompetencyFeedback = (score: number) => {
   if (score >= 85) {
     return {
@@ -75,6 +80,7 @@ const ProfileContent = () => {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const [progressData, setProgressData] = useState<ProgressData | null>(null);
+  const [analyticsData, setAnalyticsData] = useState<AnalyticsData | null>(null);
 
   const [competencyData, setCompetencyData] = useState<GroupedCompetencyData | null>(null);
   const [name, setName] = useState("");
@@ -144,9 +150,22 @@ const ProfileContent = () => {
       }
     };
 
+    const fetchAnalytics = async () => {
+      try {
+        const res = await authFetch(`${process.env.NEXT_PUBLIC_API_URL}/api/results/analytics`);
+        if (res.ok) {
+          const data = await res.json();
+          setAnalyticsData(data);
+        }
+      } catch (error) {
+        console.error("Gagal memuat data analitik:", error);
+      }
+    };
+
     if (userRaw) {
       fetchProgress();
       fetchCompetencyProfile();
+      fetchAnalytics();
     }
   }, []);
 
@@ -336,9 +355,22 @@ const ProfileContent = () => {
             }
           ],
           onDestroyStarted: () => {
-            if (!driverObj.hasNextStep() || confirm("Apakah kamu yakin ingin mengakhiri tur pengenalan ini?")) {
+            if (!driverObj.hasNextStep()) {
               driverObj.destroy();
               localStorage.setItem(tourKey, 'true');
+            } else {
+              showAlert({
+                type: 'confirm',
+                title: 'Akhiri Tur?',
+                message: 'Apakah kamu yakin ingin mengakhiri tur pengenalan ini?',
+                confirmText: 'Ya, Akhiri',
+                cancelText: 'Batal',
+                onConfirm: () => {
+                  driverObj.destroy();
+                  localStorage.setItem(tourKey, 'true');
+                }
+              });
+              return false;
             }
           },
         });
@@ -527,17 +559,9 @@ const ProfileContent = () => {
   }, [progressData]);
 
   const averageScore = useMemo(() => {
-    if (!competencyData) return 0;
-    let total = 0;
-    let count = 0;
-    Object.values(competencyData).forEach(features => {
-      features.forEach(f => {
-        total += f.score;
-        count++;
-      });
-    });
-    return count > 0 ? Math.round(total / count) : 0;
-  }, [competencyData]);
+    if (analyticsData) return analyticsData.averageScore;
+    return 0;
+  }, [analyticsData]);
 
   const userLevel = useMemo(() => {
     if (!user?.learningLevel) return "Pemula";
@@ -549,20 +573,41 @@ const ProfileContent = () => {
     return "Pemula";
   }, [user]);
 
+  const scoreComparison = useMemo(() => {
+    if (!analyticsData) return null;
+    const { averageScore, classAverageScore } = analyticsData;
+    const diff = averageScore - classAverageScore;
+
+    if (diff > 0) return { text: `Di atas rata-rata kelas (${classAverageScore}%)`, color: "text-green-500" };
+    if (diff < 0) return { text: `Di bawah rata-rata kelas (${classAverageScore}%)`, color: "text-yellow-500" };
+    return { text: `Setara rata-rata kelas (${classAverageScore}%)`, color: "text-blue-500" };
+  }, [analyticsData]);
+
   const competencyComparison = useMemo(() => {
     if (!competencyData) return null;
-    const allFeatures: CompetencyFeature[] = [];
-    Object.values(competencyData).forEach(features => allFeatures.push(...features));
     
-    if (allFeatures.length === 0) return null;
+    let userTotal = 0;
+    let classTotal = 0;
+    let count = 0;
 
-    const userTotal = allFeatures.reduce((acc, f) => acc + f.score, 0);
-    const classTotal = allFeatures.reduce((acc, f) => acc + f.average, 0);
-    const diff = (userTotal - classTotal) / allFeatures.length;
+    Object.values(competencyData).forEach(features => {
+      features.forEach(f => {
+        userTotal += f.score;
+        classTotal += f.average;
+        count++;
+      });
+    });
 
-    if (diff > 5) return { text: "Di atas rata-rata", color: "text-green-500" };
-    if (diff < -5) return { text: "Di bawah rata-rata", color: "text-yellow-500" };
-    return { text: "Setara dengan rata-rata", color: "text-blue-500" };
+    if (count === 0) return null;
+
+    const userAvg = userTotal / count;
+    const classAvg = classTotal / count;
+    const diff = userAvg - classAvg;
+    const roundedClassAvg = Math.round(classAvg);
+
+    if (diff > 0) return { text: `Di atas rata-rata kelas (${roundedClassAvg}%)`, color: "text-green-500" };
+    if (diff < 0) return { text: `Di bawah rata-rata kelas (${roundedClassAvg}%)`, color: "text-yellow-500" };
+    return { text: `Setara rata-rata kelas (${roundedClassAvg}%)`, color: "text-blue-500" };
   }, [competencyData]);
 
   if (loading) return <div className="p-6 text-center text-gray-500">Memuat...</div>;
@@ -682,9 +727,9 @@ const ProfileContent = () => {
                 <div className="w-full">
                   <p className="text-[10px] sm:text-xs text-gray-500 dark:text-gray-400 font-medium uppercase mb-0.5 sm:mb-0">Rata-rata Skor</p>
                   <p className="text-xl font-bold text-gray-900 dark:text-white hidden sm:block">{averageScore}%</p>
-                  {competencyComparison && (
-                    <p className={`text-[10px] sm:text-xs mt-0.5 sm:mt-1 leading-tight ${competencyComparison.color}`}>
-                      {competencyComparison.text} kelas
+                  {scoreComparison && (
+                    <p className={`text-[10px] sm:text-xs mt-0.5 sm:mt-1 leading-tight ${scoreComparison.color}`}>
+                      {scoreComparison.text}
                     </p>
                   )}
                 </div>
