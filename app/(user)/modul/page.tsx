@@ -9,7 +9,6 @@ import { authFetch } from '@/lib/authFetch';
 import ModuleCardSkeleton from '@/components/ModuleCardSkeleton'; // Impor komponen skeleton
 import { driver } from "driver.js";
 import "driver.js/dist/driver.css";
-import { useAlert } from "@/context/AlertContext";
 
 interface User {
     _id: string;
@@ -46,7 +45,6 @@ export default function ModulPage() {
     const [userLevel, setUserLevel] = useState<UserLevel>(null); // State untuk level pengguna
     const [recommendation, setRecommendation] = useState({ title: '', description: '', icon: '', bgClass: '', textClass: '' });
     const [user, setUser] = useState<User | null>(null); 
-    const { showAlert } = useAlert();
     // const { searchQuery, setSearchQuery } = useUI(); // Hapus atau komentari baris ini
 
     useEffect(() => {
@@ -302,22 +300,20 @@ export default function ModulPage() {
                         if (isDestroying) return;
 
                         if (!driverObj.hasNextStep()) {
-                            driverObj.destroy();
                             localStorage.setItem(tourKey, 'true');
+                            driverObj.destroy();
                         } else {
-                            showAlert({
-                                type: 'confirm',
-                                title: 'Akhiri Tur?',
-                                message: 'Apakah kamu yakin ingin mengakhiri tur pengenalan ini?',
-                                confirmText: 'Ya, Akhiri',
-                                cancelText: 'Batal',
-                                onConfirm: () => {
+                            const activeIndex = driverObj.getActiveIndex();
+                            driverObj.destroy();
+                            setTimeout(() => {
+                                const confirmed = window.confirm("Apakah kamu yakin ingin mengakhiri tur pengenalan ini?");
+                                if (confirmed) {
                                     isDestroying = true;
-                                    driverObj.destroy();
                                     localStorage.setItem(tourKey, 'true');
+                                } else if (typeof activeIndex === 'number') {
+                                    driverObj.drive(activeIndex);
                                 }
-                            });
-                            return false;
+                            }, 100);
                         }
                     },
                 });

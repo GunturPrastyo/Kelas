@@ -9,7 +9,6 @@ import PreTestModal from "@/components/PreTestModal";
 import { BarChart2, Clock, TrendingUp, Target, PlayCircle, Rocket, ClipboardCheck } from "lucide-react";
 import { driver } from "driver.js";
 import "driver.js/dist/driver.css";
-import { useAlert } from "@/context/AlertContext";
 
 
 type ModuleStatus = 'Selesai' | 'Berjalan' | 'Terkunci' | 'Belum Mulai';
@@ -120,7 +119,6 @@ const useCountUp = (end: number, duration: number = 1500, start: boolean = true)
 };
 
 export default function DashboardPage() {
-  const { showAlert } = useAlert();
   const [modules, setModules] = useState<Module[]>([]);
   const [loading, setLoading] = useState(true);
   const [userLevel, setUserLevel] = useState<string | null>(null);
@@ -356,22 +354,20 @@ export default function DashboardPage() {
              if (isDestroying) return;
 
              if (!driverObj.hasNextStep()) {
-                driverObj.destroy();
                 localStorage.setItem(tourKey, 'true');
+                driverObj.destroy();
              } else {
-                showAlert({
-                    type: 'confirm',
-                    title: 'Akhiri Tur?',
-                    message: 'Apakah kamu yakin ingin mengakhiri tur pengenalan ini?',
-                    confirmText: 'Ya, Akhiri',
-                    cancelText: 'Batal',
-                    onConfirm: () => {
+                const activeIndex = driverObj.getActiveIndex();
+                driverObj.destroy();
+                setTimeout(() => {
+                    const confirmed = window.confirm("Apakah kamu yakin ingin mengakhiri tur pengenalan ini?");
+                    if (confirmed) {
                         isDestroying = true;
-                        driverObj.destroy();
                         localStorage.setItem(tourKey, 'true');
+                    } else if (typeof activeIndex === 'number') {
+                        driverObj.drive(activeIndex);
                     }
-                });
-                return false;
+                }, 100);
              }
           },
         });
