@@ -317,6 +317,8 @@ export default function DashboardPage() {
       const hasSeenTour = localStorage.getItem(tourKey);
       
       if (!hasSeenTour) {
+        let isDestroying = false;
+
         const driverObj = driver({
           showProgress: true,
           animate: true,
@@ -351,6 +353,8 @@ export default function DashboardPage() {
             }
           ],
           onDestroyStarted: () => {
+             if (isDestroying) return;
+
              if (!driverObj.hasNextStep()) {
                 driverObj.destroy();
                 localStorage.setItem(tourKey, 'true');
@@ -362,6 +366,7 @@ export default function DashboardPage() {
                     confirmText: 'Ya, Akhiri',
                     cancelText: 'Batal',
                     onConfirm: () => {
+                        isDestroying = true;
                         driverObj.destroy();
                         localStorage.setItem(tourKey, 'true');
                     }
