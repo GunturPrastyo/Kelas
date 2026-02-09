@@ -360,22 +360,20 @@ const ProfileContent = () => {
             if (isDestroying) return;
 
             if (!driverObj.hasNextStep()) {
-              driverObj.destroy();
               localStorage.setItem(tourKey, 'true');
+              driverObj.destroy();
             } else {
-              showAlert({
-                type: 'confirm',
-                title: 'Akhiri Tur?',
-                message: 'Apakah kamu yakin ingin mengakhiri tur pengenalan ini?',
-                confirmText: 'Ya, Akhiri',
-                cancelText: 'Batal',
-                onConfirm: () => {
+              const activeIndex = driverObj.getActiveIndex();
+              driverObj.destroy();
+              setTimeout(() => {
+                const confirmed = window.confirm("Apakah kamu yakin ingin mengakhiri tur pengenalan ini?");
+                if (confirmed) {
                   isDestroying = true;
-                  driverObj.destroy();
                   localStorage.setItem(tourKey, 'true');
+                } else if (typeof activeIndex === 'number') {
+                  driverObj.drive(activeIndex);
                 }
-              });
-              return false;
+              }, 100);
             }
           },
         });
