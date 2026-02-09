@@ -314,6 +314,8 @@ const ProfileContent = () => {
       const hasSeenTour = localStorage.getItem(tourKey);
 
       if (!hasSeenTour) {
+        let isDestroying = false;
+
         const driverObj = driver({
           showProgress: true,
           animate: true,
@@ -355,6 +357,8 @@ const ProfileContent = () => {
             }
           ],
           onDestroyStarted: () => {
+            if (isDestroying) return;
+
             if (!driverObj.hasNextStep()) {
               driverObj.destroy();
               localStorage.setItem(tourKey, 'true');
@@ -366,6 +370,7 @@ const ProfileContent = () => {
                 confirmText: 'Ya, Akhiri',
                 cancelText: 'Batal',
                 onConfirm: () => {
+                  isDestroying = true;
                   driverObj.destroy();
                   localStorage.setItem(tourKey, 'true');
                 }

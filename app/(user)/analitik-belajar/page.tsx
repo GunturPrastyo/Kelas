@@ -591,6 +591,8 @@ export default function AnalitikBelajarPage() {
       const hasSeenTour = localStorage.getItem(tourKey);
 
       if (!hasSeenTour) {
+        let isDestroying = false;
+
         const driverObj = driver({
           showProgress: true,
           animate: true,
@@ -639,6 +641,8 @@ export default function AnalitikBelajarPage() {
             }
           ],
           onDestroyStarted: () => {
+            if (isDestroying) return;
+
             if (!driverObj.hasNextStep()) {
               driverObj.destroy();
               localStorage.setItem(tourKey, 'true');
@@ -650,6 +654,7 @@ export default function AnalitikBelajarPage() {
                 confirmText: 'Ya, Akhiri',
                 cancelText: 'Batal',
                 onConfirm: () => {
+                  isDestroying = true;
                   driverObj.destroy();
                   localStorage.setItem(tourKey, 'true');
                 }

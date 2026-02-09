@@ -292,11 +292,15 @@ export default function ModulPage() {
                     }
                 });
 
+                let isDestroying = false;
+
                 const driverObj = driver({
                     showProgress: true,
                     animate: true,
                     steps: steps,
                     onDestroyStarted: () => {
+                        if (isDestroying) return;
+
                         if (!driverObj.hasNextStep()) {
                             driverObj.destroy();
                             localStorage.setItem(tourKey, 'true');
@@ -308,6 +312,7 @@ export default function ModulPage() {
                                 confirmText: 'Ya, Akhiri',
                                 cancelText: 'Batal',
                                 onConfirm: () => {
+                                    isDestroying = true;
                                     driverObj.destroy();
                                     localStorage.setItem(tourKey, 'true');
                                 }
