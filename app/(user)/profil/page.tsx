@@ -366,13 +366,22 @@ const ProfileContent = () => {
               const activeIndex = driverObj.getActiveIndex();
               driverObj.destroy();
               setTimeout(() => {
-                const confirmed = window.confirm("Apakah kamu yakin ingin mengakhiri tur pengenalan ini?");
-                if (confirmed) {
-                  isDestroying = true;
-                  localStorage.setItem(tourKey, 'true');
-                } else if (typeof activeIndex === 'number') {
-                  driverObj.drive(activeIndex);
-                }
+                showAlert({
+                  type: 'confirm',
+                  title: 'Akhiri Tur?',
+                  message: 'Apakah kamu yakin ingin mengakhiri tur pengenalan ini?',
+                  confirmText: 'Ya, Akhiri',
+                  cancelText: 'Lanjut Tur',
+                  onConfirm: () => {
+                    isDestroying = true;
+                    localStorage.setItem(tourKey, 'true');
+                  },
+                  onCancel: () => {
+                    if (typeof activeIndex === 'number') {
+                      driverObj.drive(activeIndex);
+                    }
+                  }
+                });
               }, 100);
             }
           },

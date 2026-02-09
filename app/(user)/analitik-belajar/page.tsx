@@ -8,6 +8,7 @@ import { Chart, registerables } from "chart.js";
 import { ChevronDown, ChevronRight } from "lucide-react";
 import { driver } from "driver.js";
 import "driver.js/dist/driver.css";
+import { useAlert } from "@/context/AlertContext";
 Chart.register(...registerables);
 
 interface SummaryData {
@@ -187,6 +188,7 @@ const patternDark = `data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg
 
 export default function AnalitikBelajarPage() {
   const router = useRouter();
+  const { showAlert } = useAlert();
   const [summaryCardRef, isSummaryCardInView] = useInView({ threshold: 0.2, triggerOnce: true }) as [React.RefObject<HTMLHeadingElement>, boolean];
   const [chartPerbandinganRef, isChartPerbandinganInView] = useInView({ threshold: 0.5, triggerOnce: true }) as [React.RefObject<HTMLCanvasElement>, boolean];
   const [summary, setSummary] = useState<SummaryData | null>(null);
@@ -648,13 +650,22 @@ export default function AnalitikBelajarPage() {
               const activeIndex = driverObj.getActiveIndex();
               driverObj.destroy();
               setTimeout(() => {
-                const confirmed = window.confirm("Apakah kamu yakin ingin mengakhiri tur pengenalan ini?");
-                if (confirmed) {
-                  isDestroying = true;
-                  localStorage.setItem(tourKey, 'true');
-                } else if (typeof activeIndex === 'number') {
-                  driverObj.drive(activeIndex);
-                }
+                showAlert({
+                  type: 'confirm',
+                  title: 'Akhiri Tur?',
+                  message: 'Apakah kamu yakin ingin mengakhiri tur pengenalan ini?',
+                  confirmText: 'Ya, Akhiri',
+                  cancelText: 'Lanjut Tur',
+                  onConfirm: () => {
+                    isDestroying = true;
+                    localStorage.setItem(tourKey, 'true');
+                  },
+                  onCancel: () => {
+                    if (typeof activeIndex === 'number') {
+                      driverObj.drive(activeIndex);
+                    }
+                  }
+                });
               }, 100);
             }
           },

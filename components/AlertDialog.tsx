@@ -35,7 +35,7 @@ export default function AlertDialog() {
   };
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 z-[1000000000] flex justify-center items-center p-4">
+    <div className="fixed inset-0 bg-black bg-opacity-50 z-[2147483647] flex justify-center items-center p-4">
       <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl w-full max-w-sm p-6 text-center transform transition-all animate-in fade-in-0 zoom-in-95">
         <div className="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-gray-100 dark:bg-gray-700 mb-4">
           {getIcon()}
