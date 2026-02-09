@@ -234,8 +234,8 @@ export default function PostTestPage() {
 
                 // Proses hasil soal
                 if (!questionsResponse.ok) {
-                    if (questionsResponse.status === 404) setError("Tidak ada soal post-test yang tersedia untuk modul ini.");
-                    else throw new Error("Gagal memuat soal post-test.");
+                    if (questionsResponse.status === 404) setError("Tidak ada soal uji pemahaman akhir modul yang tersedia untuk modul ini.");
+                    else throw new Error("Gagal memuat soal uji pemahaman akhir modul.");
                 } else {
                     const questionsData: { questions: Question[] } = await questionsResponse.json();
                     setQuestions(questionsData.questions);
@@ -322,8 +322,8 @@ export default function PostTestPage() {
         if (!user || !modul) return;
         showAlert({
             type: 'confirm',
-            title: 'Ulangi Tes?',
-            message: 'Apakah kamu yakin ingin mengulang tes untuk modul ini? Hasil sebelumnya akan tetap tersimpan jika skormu saat ini lebih rendah.',
+            title: 'Ulangi Uji Pemahaman?',
+            message: 'Apakah kamu yakin ingin mengulang uji pemahaman akhir modul ini? Hasil sebelumnya akan tetap tersimpan jika skormu saat ini lebih rendah.',
             confirmText: 'Ya, Ulangi',
             onConfirm: async () => {
                 try {
@@ -389,7 +389,7 @@ export default function PostTestPage() {
                             </Link>
                         </li>
                         <li><div className="flex items-center"><svg className="rtl:rotate-180 w-3 h-3 text-slate-400 mx-1" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 6 10"><path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="m1 9 4-4-4-4" /></svg><Link href={`/modul/${slug}`} className="ms-1 text-sm font-medium hover:text-blue-600 md:ms-2 dark:hover:text-blue-400">{modul?.title || "..."}</Link></div></li>
-                        <li aria-current="page"><div className="flex items-center"><svg className="rtl:rotate-180 w-3 h-3 text-slate-400 mx-1" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 6 10"><path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="m1 9 4-4-4-4" /></svg><span className="ms-1 text-sm font-medium text-gray-800 dark:text-gray-200 md:ms-2">Hasil Post Test</span></div></li>
+                        <li aria-current="page"><div className="flex items-center"><svg className="rtl:rotate-180 w-3 h-3 text-slate-400 mx-1" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 6 10"><path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="m1 9 4-4-4-4" /></svg><span className="ms-1 text-sm font-medium text-gray-800 dark:text-gray-200 md:ms-2">Hasil Uji Pemahaman Akhir Modul</span></div></li>
                     </ol>
                 </nav>
 
@@ -594,7 +594,7 @@ export default function PostTestPage() {
                         </Link>
                     </li>
                     <li><div className="flex items-center"><svg className="rtl:rotate-180 w-3 h-3 text-slate-400 mx-1" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 6 10"><path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="m1 9 4-4-4-4" /></svg><Link href={`/modul/${slug}`} className="ms-1 text-sm font-medium hover:text-blue-600 md:ms-2 dark:hover:text-blue-400">{modul?.title || "..."}</Link></div></li>
-                    <li aria-current="page"><div className="flex items-center"><svg className="rtl:rotate-180 w-3 h-3 text-slate-400 mx-1" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 6 10"><path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="m1 9 4-4-4-4" /></svg><span className="ms-1 text-sm font-medium text-gray-800 dark:text-gray-200 md:ms-2">Post Test Akhir</span></div></li>
+                    <li aria-current="page"><div className="flex items-center"><svg className="rtl:rotate-180 w-3 h-3 text-slate-400 mx-1" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 6 10"><path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="m1 9 4-4-4-4" /></svg><span className="ms-1 text-sm font-medium text-gray-800 dark:text-gray-200 md:ms-2">Uji Pemahaman Akhir Modul</span></div></li>
                 </ol>
             </nav>
 

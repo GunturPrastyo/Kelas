@@ -9,6 +9,7 @@ import { authFetch } from '@/lib/authFetch';
 import ModuleCardSkeleton from '@/components/ModuleCardSkeleton'; // Impor komponen skeleton
 import { driver } from "driver.js";
 import "driver.js/dist/driver.css";
+import { useAlert } from "@/context/AlertContext";
 
 interface User {
     _id: string;
@@ -45,6 +46,7 @@ export default function ModulPage() {
     const [userLevel, setUserLevel] = useState<UserLevel>(null); // State untuk level pengguna
     const [recommendation, setRecommendation] = useState({ title: '', description: '', icon: '', bgClass: '', textClass: '' });
     const [user, setUser] = useState<User | null>(null); 
+    const { showAlert } = useAlert();
     // const { searchQuery, setSearchQuery } = useUI(); // Hapus atau komentari baris ini
 
     useEffect(() => {
@@ -295,9 +297,22 @@ export default function ModulPage() {
                     animate: true,
                     steps: steps,
                     onDestroyStarted: () => {
-                        if (!driverObj.hasNextStep() || confirm("Apakah kamu yakin ingin mengakhiri tur pengenalan ini?")) {
+                        if (!driverObj.hasNextStep()) {
                             driverObj.destroy();
                             localStorage.setItem(tourKey, 'true');
+                        } else {
+                            showAlert({
+                                type: 'confirm',
+                                title: 'Akhiri Tur?',
+                                message: 'Apakah kamu yakin ingin mengakhiri tur pengenalan ini?',
+                                confirmText: 'Ya, Akhiri',
+                                cancelText: 'Batal',
+                                onConfirm: () => {
+                                    driverObj.destroy();
+                                    localStorage.setItem(tourKey, 'true');
+                                }
+                            });
+                            return false;
                         }
                     },
                 });
@@ -382,7 +397,7 @@ export default function ModulPage() {
                     <Image src="/warning-test.webp" alt="Pre-test" width={480} height={480} className="w-20 h-20" />
                     <div>
                         <h2 className="text-lg font-semibold text-yellow-800 dark:text-yellow-300">Tentukan Jalur Belajarmu!</h2>
-                        <p className="text-sm text-gray-600 dark:text-gray-400">Ambil pre-test terlebih dahulu untuk membuka modul yang sesuai dengan level kemampuanmu. <Link href="/pre-test" className="font-semibold text-blue-600 hover:underline">Mulai Pre-test</Link></p>
+                        <p className="text-sm text-gray-600 dark:text-gray-400">Ambil tes awal terlebih dahulu untuk membuka modul yang sesuai dengan level kemampuanmu. <Link href="/pre-test" className="font-semibold text-blue-600 hover:underline">Mulai Tes Awal</Link></p>
                     </div>
                 </section>
             )}

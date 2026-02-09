@@ -335,7 +335,7 @@ export default function PreTestPage() {
         showAlert({
             type: 'confirm',
             title: 'Konfirmasi',
-            message: 'Apakah kamu yakin ingin memulai ulang pre-test? Semua progress dan hasil sebelumnya akan dihapus.',
+            message: 'Apakah kamu yakin ingin memulai ulang tes awal? Semua progress dan hasil sebelumnya akan dihapus.',
             confirmText: 'Ya, Ulangi',
             cancelText: 'Batal',
             onConfirm: () => {
@@ -411,14 +411,14 @@ export default function PreTestPage() {
                 <header className="flex items-center justify-between gap-2 font-poppins mt-6">
                     <div className="flex items-center gap-2">
                         <img src="/logo1.webp" width={256} height={256} className="h-10 w-auto" alt="Logo" />
-                        <h1 className="text-lg font-bold text-slate-800 dark:text-slate-200">Hasil Pre-test</h1>
+                        <h1 className="text-lg font-bold text-slate-800 dark:text-slate-200">Hasil Tes Awal</h1>
                     </div>
                 </header>
 
                 <section className="bg-gradient-to-r from-indigo-500 to-blue-600 rounded-xl p-4 mt-6 shadow-md text-white flex items-center gap-4">
                     <img src="/test.webp" width={256} height={256} className="h-24 w-24" alt="pre test" />
                     <div>
-                        <h2 className="text-base font-bold ">Pre-test Selesai!</h2>
+                        <h2 className="text-base font-bold ">Tes Awal Selesai!</h2>
                         <p className="text-sm opacity-90">Berikut adalah hasil dan rekomendasi jalur belajarmu.</p>
                     </div>
                 </section>
@@ -474,7 +474,7 @@ export default function PreTestPage() {
                     </div>
                  
                     <div className="mt-6 flex gap-2">
-                        <button onClick={handleRetake} className="bg-transparent text-blue-600 dark:text-blue-400 border border-blue-500/20 dark:border-blue-400/20 px-3.5 py-2.5 rounded-lg cursor-pointer hover:bg-blue-50 dark:hover:bg-blue-900/20 transition text-sm sm:text-base">Ulangi Pre-test</button>
+                        <button onClick={handleRetake} className="bg-transparent text-blue-600 dark:text-blue-400 border border-blue-500/20 dark:border-blue-400/20 px-3.5 py-2.5 rounded-lg cursor-pointer hover:bg-blue-50 dark:hover:bg-blue-900/20 transition text-sm sm:text-base">Ulangi Tes Awal</button>
                         <Link href="/modul" className="bg-blue-600 hover:bg-blue-700 text-white border-none px-3.5 py-2.5 rounded-lg cursor-pointer text-sm sm:text-base">Lihat Rekomendasi Modul</Link>
                     </div>
                    
@@ -501,7 +501,7 @@ export default function PreTestPage() {
                             </div>
 
                             <p className="text-sm text-gray-600 dark:text-gray-300 mb-4">
-                                Sistem akan memberi rekomendasi jalur belajar berdasarkan hasil pre-test kamu di tiga bagian : materi
+                                Sistem akan memberi rekomendasi jalur belajar berdasarkan hasil tes awal kamu di tiga bagian : materi
                                 <span className="font-semibold"> Dasar </span>
                                 ,
                                 <span className="font-semibold"> Menengah</span> dan
@@ -592,7 +592,7 @@ export default function PreTestPage() {
                 <div className="flex items-center gap-2">
                 
                     <img src="/logo1.webp" width={256} height={256} className="h-10 w-auto" alt="Logo" />
-                    <h1 className="text-lg font-bold text-slate-800 dark:text-slate-200">Pre-test</h1>
+                    <h1 className="text-lg font-bold text-slate-800 dark:text-slate-200">Tes Awal</h1>
                 </div>
                 <div className="flex gap-2 sm:gap-3 items-center justify-center text-slate-500 dark:text-slate-400 text-xs sm:text-sm bg-slate-100 dark:bg-gray-800 px-2 sm:px-3 py-1.5 rounded-lg border border-slate-200 dark:border-gray-700">
                     <span className="hidden sm:inline">Soal: </span><span>{idx + 1}/{total}</span>
@@ -604,7 +604,7 @@ export default function PreTestPage() {
             <section className="bg-gradient-to-r from-indigo-500 to-blue-600 rounded-xl p-4 mt-6 shadow-md text-white flex items-center gap-4">
                 <img src="/test.webp" width={256} height={256} className="h-24 w-24" alt="pre test" />
                 <div>
-                    <h2 className="text-base font-bold ">Selamat Datang di Pre-test</h2>
+                    <h2 className="text-base font-bold ">Selamat Datang di Tes Awal</h2>
                     <p className="text-sm opacity-90">Kerjakan soal ini untuk menentukan level belajar yang sesuai denganmu</p>
                 </div>
             </section>
