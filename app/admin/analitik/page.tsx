@@ -642,20 +642,20 @@ export default function AdminAnalyticsPage() {
         // Menggunakan logika yang sama dengan getStatusBadge yang sudah ada
         const getPrintStatusBadge = (weightedScore: number, averageScore: number, averageTime: number) => {
             if (averageScore === 0 && averageTime === 0) {
-                return '<span style="color: #4b5563; background-color: #f3f4f6; padding: 2px 6px; border-radius: 4px; font-size: 10px; font-weight: 600;">Belum ada data</span>';
+                return '<span style="color: #4b5563; background-color: #f3f4f6; padding: 4px 8px; border-radius: 12px; font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;">Belum ada data</span>';
             }
             if (weightedScore >= 1.4) {
-                return '<span style="color: #b91c1c; background-color: #fee2e2; padding: 2px 6px; border-radius: 4px; font-size: 10px; font-weight: 600;">Butuh Evaluasi</span>';
+                return '<span style="color: #b91c1c; background-color: #fee2e2; padding: 4px 8px; border-radius: 12px; font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;">Butuh Evaluasi</span>';
             }
             if (weightedScore >= 0.7) {
-                return '<span style="color: #b45309; background-color: #fef3c7; padding: 2px 6px; border-radius: 4px; font-size: 10px; font-weight: 600;">Butuh Pantauan</span>';
+                return '<span style="color: #b45309; background-color: #fef3c7; padding: 4px 8px; border-radius: 12px; font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;">Butuh Pantauan</span>';
             }
-            return '<span style="color: #15803d; background-color: #dcfce7; padding: 2px 6px; border-radius: 4px; font-size: 10px; font-weight: 600;">Baik</span>';
+            return '<span style="color: #15803d; background-color: #dcfce7; padding: 4px 8px; border-radius: 12px; font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;">Baik</span>';
         };
 
         const tableRows = filteredData.map((modul, index) => {
             const moduleRow = `
-                <tr style="background-color: #f9fafb;">
+                <tr style="background-color: #f8fafc; border-bottom: 1px solid #e2e8f0;">
                     <td class="center" style="font-weight: 600;">${index + 1}</td>
                     <td style="font-weight: 600;">${modul.moduleTitle}</td>
                     <td class="center" style="font-weight: 600;">${modul.averageScore}%</td>
@@ -666,9 +666,9 @@ export default function AdminAnalyticsPage() {
             `;
 
             const topicRows = modul.topics.map(topic => `
-                <tr>
+                <tr style="border-bottom: 1px solid #f1f5f9;">
                     <td></td>
-                    <td style="padding-left: 25px; color: #4b5563; font-size: 9pt;"><span style="color: #9ca3af; margin-right: 4px;">↳</span> ${topic.topicTitle}</td>
+                    <td style="padding-left: 25px; color: #64748b; font-size: 9pt;"><span style="color: #cbd5e1; margin-right: 6px;">↳</span> ${topic.topicTitle}</td>
                     <td class="center" style="color: #4b5563; font-size: 9pt;">${topic.averageScore}%</td>
                     <td class="center" style="color: #4b5563; font-size: 9pt;">${topic.remedialRate}%</td>
                     <td class="center" style="color: #4b5563; font-size: 9pt;">${formatTime(topic.averageTimeInSeconds)}</td>
@@ -688,56 +688,73 @@ export default function AdminAnalyticsPage() {
                 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
                 <style>
                     @page { size: A4; margin: 15mm; }
-                    body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; color: #1f2937; line-height: 1.5; font-size: 10pt; }
-                    .header { text-align: center; margin-bottom: 30px; padding-bottom: 20px; border-bottom: 2px solid #e5e7eb; }
-                    .header h1 { font-size: 18pt; font-weight: 700; margin: 0; color: #111827; text-transform: uppercase; letter-spacing: 0.5px; }
-                    .header p { font-size: 11pt; color: #6b7280; margin: 5px 0 0; }
-                    .meta-info { width: 100%; margin-bottom: 20px; font-size: 10pt; color: #4b5563; }
-                    table.report-table { width: 100%; border-collapse: collapse; margin-top: 10px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
-                    table.report-table th { background-color: #f3f4f6; color: #374151; font-weight: 600; text-transform: uppercase; font-size: 8pt; padding: 12px 10px; border: 1px solid #e5e7eb; letter-spacing: 0.5px; }
-                    table.report-table td { border: 1px solid #e5e7eb; padding: 8px 10px; font-size: 9pt; vertical-align: middle; }
-                    .center { text-align: center; }
-                    .footer { margin-top: 40px; width: 100%; font-size: 9pt; color: #6b7280; }
-                    @media print {
-                        body { -webkit-print-color-adjust: exact; }
-                        th { background-color: #f3f4f6 !important; }
-                    }
+                    body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; color: #333; line-height: 1.6; font-size: 10pt; -webkit-print-color-adjust: exact; }
+                    
+                    /* Decorative Top Bar */
+                    .top-bar { height: 8px; background: linear-gradient(90deg, #3b82f6 0%, #8b5cf6 100%); width: 100%; position: absolute; top: 0; left: 0; }
+                    
+                    .container { padding: 20px 0; }
+                    
+                    .header { text-align: center; margin-bottom: 40px; position: relative; }
+                    .header h1 { font-size: 24pt; font-weight: 800; margin: 0; color: #1e293b; letter-spacing: -0.5px; }
+                    .header p { font-size: 12pt; color: #64748b; margin: 5px 0 0; font-weight: 500; }
+                    .header::after { content: ''; display: block; width: 60px; height: 4px; background: #3b82f6; margin: 15px auto 0; border-radius: 2px; }
+
+                    .meta-box { background-color: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 15px; margin-bottom: 30px; display: flex; justify-content: space-between; }
+                    .meta-item { display: flex; flex-direction: column; }
+                    .meta-label { font-size: 8pt; text-transform: uppercase; color: #64748b; font-weight: 700; letter-spacing: 0.5px; }
+                    .meta-value { font-size: 11pt; font-weight: 600; color: #334155; }
+
+                    table.report-table { width: 100%; border-collapse: collapse; margin-top: 10px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); border-radius: 8px; overflow: hidden; }
+                    table.report-table th { background-color: #f1f5f9; color: #475569; font-weight: 700; text-transform: uppercase; font-size: 8pt; padding: 12px 15px; border-bottom: 2px solid #e2e8f0; letter-spacing: 0.5px; text-align: left; }
+                    table.report-table td { border-bottom: 1px solid #f1f5f9; padding: 10px 15px; font-size: 9pt; vertical-align: middle; color: #334155; }
+                    table.report-table tr:last-child td { border-bottom: none; }
+                    
+                    .center { text-align: center !important; }
+                    
+                    .footer { margin-top: 50px; border-top: 1px solid #e2e8f0; padding-top: 20px; display: flex; justify-content: space-between; align-items: center; font-size: 8pt; color: #94a3b8; }
+                    .footer-brand { font-weight: 700; color: #cbd5e1; letter-spacing: 1px; }
                 </style>
             </head>
             <body>
+                <div class="top-bar"></div>
                 <div id="content">
-                <div class="header">
-                    <h1>Laporan Performa Modul</h1>
-                    <p>Analisis Rata-rata Nilai dan Waktu Pengerjaan</p>
-                </div>
-                <table class="meta-info">
-                    <tr>
-                        <td width="15%"><strong>Tanggal Cetak</strong></td>
-                        <td width="2%">:</td>
-                        <td width="33%">${dateStr}</td>
-                        <td width="15%"><strong>Total Modul</strong></td>
-                        <td width="2%">:</td>
-                        <td width="33%">${filteredData.length} Modul</td>
-                    </tr>
-                </table>
-                <table class="report-table">
-                    <thead>
-                        <tr>
-                            <th width="5%">No</th>
-                            <th width="35%">Modul / Topik</th>
-                            <th width="15%" class="center">Rata-rata Nilai</th>
-                            <th width="15%" class="center">Tingkat Remedial</th>
-                            <th width="15%" class="center">Rata-rata Waktu</th>
-                            <th width="15%" class="center">Status</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        ${tableRows}
-                    </tbody>
-                </table>
-                <div class="footer">
-                    <p style="margin-top: 30px; text-align: center; font-size: 8pt; opacity: 0.7;">Dicetak otomatis oleh KELAS.</p>
-                </div>
+                    <div class="header">
+                        <h1>LAPORAN PERFORMA MODUL</h1>
+                        <p>Analisis Rata-rata Nilai dan Waktu Pengerjaan</p>
+                    </div>
+                    
+                    <div class="meta-box">
+                        <div class="meta-item">
+                            <span class="meta-label">Tanggal Cetak</span>
+                            <span class="meta-value">${dateStr}</span>
+                        </div>
+                        <div class="meta-item" style="text-align: right;">
+                            <span class="meta-label">Total Modul</span>
+                            <span class="meta-value">${filteredData.length} Modul</span>
+                        </div>
+                    </div>
+
+                    <table class="report-table">
+                        <thead>
+                            <tr>
+                                <th width="5%" class="center">No</th>
+                                <th width="35%">Modul / Topik</th>
+                                <th width="15%" class="center">Rata-rata Nilai</th>
+                                <th width="15%" class="center">Tingkat Remedial</th>
+                                <th width="15%" class="center">Rata-rata Waktu</th>
+                                <th width="15%" class="center">Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${tableRows}
+                        </tbody>
+                    </table>
+                    
+                    <div class="footer">
+                        <span>Dicetak otomatis oleh sistem KELAS.</span>
+                        <span class="footer-brand">KELAS ANALYTICS</span>
+                    </div>
                 </div>
                 <script>
                     window.onload = function() {
@@ -851,79 +868,77 @@ export default function AdminAnalyticsPage() {
                 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
                 <style>
                     @page { size: A4 landscape; margin: 10mm; }
-                    body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; color: #1f2937; line-height: 1.5; font-size: 10pt; }
+                    body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; color: #333; line-height: 1.5; font-size: 10pt; -webkit-print-color-adjust: exact; }
                     
-                    .header { text-align: center; margin-bottom: 30px; padding-bottom: 20px; border-bottom: 2px solid #e5e7eb; }
-                    .header h1 { font-size: 18pt; font-weight: 700; margin: 0; color: #111827; text-transform: uppercase; letter-spacing: 0.5px; }
-                    .header p { font-size: 11pt; color: #6b7280; margin: 5px 0 0; }
+                    .top-bar { height: 8px; background: linear-gradient(90deg, #3b82f6 0%, #8b5cf6 100%); width: 100%; position: absolute; top: 0; left: 0; }
                     
-                    .meta-info { width: 100%; margin-bottom: 20px; font-size: 10pt; color: #4b5563; }
-                    .meta-info td { padding: 4px 0; }
+                    .container { padding: 20px 0; }
+
+                    .header { text-align: center; margin-bottom: 30px; position: relative; }
+                    .header h1 { font-size: 22pt; font-weight: 800; margin: 0; color: #1e293b; letter-spacing: -0.5px; }
+                    .header p { font-size: 11pt; color: #64748b; margin: 5px 0 0; font-weight: 500; }
+                    .header::after { content: ''; display: block; width: 60px; height: 4px; background: #3b82f6; margin: 15px auto 0; border-radius: 2px; }
                     
-                    table.report-table { width: 100%; border-collapse: collapse; margin-top: 10px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
-                    table.report-table th { background-color: #f3f4f6; color: #374151; font-weight: 600; text-transform: uppercase; font-size: 8pt; padding: 12px 10px; border: 1px solid #e5e7eb; letter-spacing: 0.5px; }
-                    table.report-table td { border: 1px solid #e5e7eb; padding: 8px 10px; font-size: 9pt; vertical-align: top; }
+                    .meta-box { background-color: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 15px; margin-bottom: 20px; display: flex; justify-content: space-between; }
+                    .meta-item { display: flex; flex-direction: column; }
+                    .meta-label { font-size: 8pt; text-transform: uppercase; color: #64748b; font-weight: 700; letter-spacing: 0.5px; }
+                    .meta-value { font-size: 11pt; font-weight: 600; color: #334155; }
+                    
+                    table.report-table { width: 100%; border-collapse: collapse; margin-top: 10px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); border-radius: 8px; overflow: hidden; }
+                    table.report-table th { background-color: #f1f5f9; color: #475569; font-weight: 700; text-transform: uppercase; font-size: 8pt; padding: 10px 12px; border-bottom: 2px solid #e2e8f0; letter-spacing: 0.5px; text-align: left; }
+                    table.report-table td { border-bottom: 1px solid #f1f5f9; padding: 8px 12px; font-size: 9pt; vertical-align: top; color: #334155; }
+                    table.report-table tr:last-child td { border-bottom: none; }
                     
                     .center { text-align: center; }
-                    .score-good { font-weight: bold; color: #059669; }
-                    .score-bad { font-weight: bold; color: #dc2626; }
+                    .score-good { font-weight: 700; color: #059669; }
+                    .score-bad { font-weight: 700; color: #dc2626; }
                     .text-good { color: #059669; }
                     .text-bad { color: #dc2626; }
 
-                    .footer { margin-top: 40px; width: 100%; font-size: 9pt; color: #6b7280; }
-                    .signature-section { display: flex; justify-content: space-between; margin-top: 50px; page-break-inside: avoid; }
-                    .signature-box { width: 200px; text-align: center; }
-                    .signature-space { height: 80px; }
-                    .signature-line { border-top: 1px solid #9ca3af; margin-top: 5px; width: 80%; margin-left: auto; margin-right: auto; }
-                    
-                    @media print {
-                        body { -webkit-print-color-adjust: exact; }
-                        .no-print { display: none; }
-                        table { page-break-inside: auto; }
-                        tr { page-break-inside: avoid; }
-                        th { background-color: #f3f4f6 !important; }
-                    }
+                    .footer { margin-top: 40px; border-top: 1px solid #e2e8f0; padding-top: 15px; display: flex; justify-content: space-between; align-items: center; font-size: 8pt; color: #94a3b8; }
+                    .footer-brand { font-weight: 700; color: #cbd5e1; letter-spacing: 1px; }
                 </style>
             </head>
             <body>
+                <div class="top-bar"></div>
                 <div id="content">
-                <div class="header">
-                    <h1>Laporan Hasil Belajar Siswa</h1>
-                    <p>Rekapitulasi Nilai Modul dan Topik</p>
-                </div>
+                    <div class="header">
+                        <h1>LAPORAN HASIL BELAJAR SISWA</h1>
+                        <p>Rekapitulasi Nilai Modul dan Topik</p>
+                    </div>
 
-                <table class="meta-info">
-                    <tr>
-                        <td width="120"><strong>Tanggal Cetak</strong></td>
-                        <td width="10">:</td>
-                        <td width="250">${dateStr}</td>
-                        <td width="100"><strong>Total Siswa</strong></td>
-                        <td width="10">:</td>
-                        <td>${students.length} Orang</td>
-                    </tr>
-                </table>
+                    <div class="meta-box">
+                        <div class="meta-item">
+                            <span class="meta-label">Tanggal Cetak</span>
+                            <span class="meta-value">${dateStr}</span>
+                        </div>
+                        <div class="meta-item" style="text-align: right;">
+                            <span class="meta-label">Total Siswa</span>
+                            <span class="meta-value">${students.length} Orang</span>
+                        </div>
+                    </div>
 
-                <table class="report-table">
-                    <thead>
-                        <tr>
-                            <th width="3%">No</th>
-                            <th width="15%">Nama Siswa</th>
-                            <th width="8%" class="center">Progres</th>
-                            <th width="8%" class="center">Rata-rata</th>
-                            <th width="15%">Topik Perlu Perhatian</th>
-                            <th width="35%">Modul / Topik</th>
-                            <th width="10%" class="center">Nilai</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        ${tableRows}
-                    </tbody>
-                </table>
-                
-                <div class="footer">
-                 
-                    <p style="margin-top: 30px; text-align: center; font-size: 8pt; opacity: 0.7;">Dicetak otomatis oleh KELAS.</p>
-                </div>
+                    <table class="report-table">
+                        <thead>
+                            <tr>
+                                <th width="3%" class="center">No</th>
+                                <th width="15%">Nama Siswa</th>
+                                <th width="8%" class="center">Progres</th>
+                                <th width="8%" class="center">Rata-rata</th>
+                                <th width="15%">Topik Perlu Perhatian</th>
+                                <th width="35%">Modul / Topik</th>
+                                <th width="10%" class="center">Nilai</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${tableRows}
+                        </tbody>
+                    </table>
+                    
+                    <div class="footer">
+                        <span>Dicetak otomatis oleh sistem KELAS.</span>
+                        <span class="footer-brand">KELAS ANALYTICS</span>
+                    </div>
                 </div>
                 <script>
                     window.onload = function() {

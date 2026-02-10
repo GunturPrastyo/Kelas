@@ -13,6 +13,7 @@ import TaskList from "@tiptap/extension-task-list";
 import TaskItem from "@tiptap/extension-task-item";
 import HorizontalRule from "@tiptap/extension-horizontal-rule";
 import Image from "@tiptap/extension-image";
+import CodeBlock from "@tiptap/extension-code-block";
 
 import { Color } from "@tiptap/extension-color";
 import {
@@ -38,7 +39,7 @@ import {
   Subscript as SubIcon,
   Superscript as SuperIcon,
   Minus,
-  Captions,
+  Captions,  PlayCircle,
 } from "lucide-react"; 
 import { useCallback, useRef, useState, useEffect } from "react"; 
 import { authFetch } from "@/lib/authFetch";
@@ -155,6 +156,26 @@ const ResizableImage = Image.extend({
   }
 });
 
+// Ekstensi CodeBlock kustom dengan atribut 'runnable'
+const CustomCodeBlock = CodeBlock.extend({
+  addAttributes() {
+    return {
+      ...this.parent?.(),
+      runnable: {
+        default: false,
+        // The attribute will be on the <pre> tag.
+        parseHTML: element => element.getAttribute('data-runnable') === 'true',
+        renderHTML: attributes => {
+          return {
+            // This will be rendered on the <pre> tag
+            'data-runnable': attributes.runnable ? 'true' : 'false',
+          };
+        },
+      },
+    };
+  },
+});
+
 const MenuBar = ({ editor }: { editor: Editor | null }) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -263,6 +284,19 @@ const MenuBar = ({ editor }: { editor: Editor | null }) => {
       <ToolButton onClick={() => editor.chain().focus().toggleCode().run()} isActive={editor.isActive("code")} icon={Code} title="Inline Code" />
       <ToolButton onClick={() => editor.chain().focus().toggleCodeBlock().run()} isActive={editor.isActive("codeBlock")} icon={SquareCode} title="Code Block" />
 
+      {/* Tombol Toggle Runnable untuk Code Block */}
+      {editor.isActive('codeBlock') && (
+        <ToolButton
+          onClick={() => {
+            const isRunnable = editor.getAttributes('codeBlock').runnable;
+            editor.chain().focus().updateAttributes('codeBlock', { runnable: !isRunnable }).run();
+          }}
+          isActive={editor.getAttributes('codeBlock').runnable}
+          icon={PlayCircle}
+          title="Toggle Runnable (Bisa Dijalankan)"
+        />
+      )}
+
       <div className="w-px h-6 bg-gray-300 mx-1" />
 
       {/* Align tools */}
@@ -336,7 +370,7 @@ export default function TiptapEditor({
         orderedList: {
           HTMLAttributes: { class: 'list-decimal pl-5' },
         },
-        codeBlock: {},
+        codeBlock: false, // Nonaktifkan default agar bisa pakai yang kustom
         blockquote: {}, // Aktifkan blockquote
         horizontalRule: false,
       }),
@@ -349,8 +383,9 @@ export default function TiptapEditor({
       TaskItem.configure({ nested: true }),
       HorizontalRule,
       Color,
-      ResizableImage, // Gunakan ResizableImage menggantikan Image standar
-      StyleAttribute, // Tambahkan ekstensi kustom di sini
+      ResizableImage,
+      StyleAttribute,
+      CustomCodeBlock, // Gunakan CodeBlock kustom
     ],
     content,
     onUpdate: ({ editor }) => onChange(editor.getHTML()),
