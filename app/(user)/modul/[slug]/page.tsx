@@ -667,12 +667,6 @@ export default function ModulDetailPage() {
                         isRunnable = classes.includes('language-javascript') || classes.includes('language-js') ||
                             classes.includes('language-html') || classes.includes('language-xml');
                     }
-
-                    if (!isRunnable) {
-                        codeElement.style.background = '#2d333b'; // Abu-abu lebih terang (GitHub Dimmed)
-                        preElement.style.background = '#2d333b';
-                        preElement.style.border = '1px solid #444c56';
-                    }
                 }
 
                 let runButton: HTMLButtonElement | null = null;
