@@ -106,6 +106,7 @@ export default function ModulDetailPage() {
     const [changedQuestionIds, setChangedQuestionIds] = useState<Set<string>>(new Set()); // State baru untuk melacak ID unik
     const [tabExitCount, setTabExitCount] = useState(0);
     const [isPlaygroundOpen, setIsPlaygroundOpen] = useState(false);
+    const [playgroundCode, setPlaygroundCode] = useState('');
     const [showMobileNav, setShowMobileNav] = useState(false);
     
     const [fontSize, setFontSize] = useState<string>('16px');
@@ -653,8 +654,39 @@ export default function ModulDetailPage() {
 
                 // 1. Terapkan Syntax Highlighting
                 const codeElement = preElement.querySelector('code');
+                let isRunnable = false;
                 if (codeElement) {
                     hljs.highlightElement(codeElement as HTMLElement);
+                    // 1. Cek atribut eksplisit dari editor (data-runnable) pada tag <pre>
+                    const runnableAttr = preElement.getAttribute('data-runnable');
+                    if (runnableAttr !== null) {
+                        isRunnable = runnableAttr === 'true';
+                    } else {
+                        // 2. Fallback: Deteksi bahasa (untuk konten lama yang belum diedit)
+                        const classes = codeElement.className.toLowerCase();
+                        isRunnable = classes.includes('language-javascript') || classes.includes('language-js') ||
+                            classes.includes('language-html') || classes.includes('language-xml');
+                    }
+
+                    if (!isRunnable) {
+                        codeElement.style.background = '#2d333b'; // Abu-abu lebih terang (GitHub Dimmed)
+                        preElement.style.background = '#2d333b';
+                        preElement.style.border = '1px solid #444c56';
+                    }
+                }
+
+                let runButton: HTMLButtonElement | null = null;
+                if (isRunnable) {
+                    runButton = document.createElement('button');
+                    runButton.title = 'Jalankan kode';
+                    runButton.className = 'run-button absolute top-2 right-12 p-2 bg-indigo-600/80 text-white rounded-md hover:bg-indigo-500 transition-all duration-200 z-10';
+                    runButton.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>`;
+                    
+                    runButton.addEventListener('click', () => {
+                        const codeToRun = codeElement ? codeElement.innerText : '';
+                        setPlaygroundCode(codeToRun);
+                        setIsPlaygroundOpen(true);
+                    });
                 }
 
                 const copyButton = document.createElement('button');
@@ -685,6 +717,7 @@ export default function ModulDetailPage() {
                 wrapper.className = 'code-block-wrapper relative'; // Hapus 'group' karena tidak lagi diperlukan untuk hover
 
                 // 3. Tambahkan tombol salin ke dalam wrapper
+                if (runButton) wrapper.appendChild(runButton);
                 wrapper.appendChild(copyButton);
 
                 // 4. Pindahkan <pre> ke dalam wrapper, setelah tombol
@@ -693,14 +726,10 @@ export default function ModulDetailPage() {
 
                 // 5. Logika untuk font responsif
                 const observer = new ResizeObserver(entries => {
-                    for (let entry of entries) {
+                    for (const entry of entries) {
                         const pre = entry.target as HTMLElement;
                         // Jika konten lebih lebar dari kontainernya (ada scroll horizontal)
-                        if (pre.scrollWidth > pre.clientWidth) {
-                            pre.classList.add('code-overflow');
-                        } else {
-                            pre.classList.remove('code-overflow');
-                        }
+                        pre.classList.toggle('code-overflow', pre.scrollWidth > pre.clientWidth);
                     }
                 });
 
@@ -714,8 +743,7 @@ export default function ModulDetailPage() {
             observers.forEach(observer => observer.disconnect());
             // Tidak perlu disconnect observer lagi
         };
-
-    }, [openTopicId, activeTest, testIdx, currentQuestionForModal, modul]); // Dependensi diperbarui
+    }, [activeTest, openTopicId]);
 
     // --- Tour Guide Effect ---
     useEffect(() => {
@@ -1503,7 +1531,7 @@ export default function ModulDetailPage() {
                 </div>
             </button>
 
-            <CodePlayground isOpen={isPlaygroundOpen} onClose={() => setIsPlaygroundOpen(false)} />
+            <CodePlayground isOpen={isPlaygroundOpen} onClose={() => setIsPlaygroundOpen(false)} initialCode={playgroundCode} />
         </div>
     );
 }

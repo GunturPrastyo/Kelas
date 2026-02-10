@@ -7,9 +7,10 @@ import { Play, Trash2, X, Terminal, FileCode, Eye } from 'lucide-react';
 interface CodePlaygroundProps {
     isOpen: boolean;
     onClose: () => void;
+    initialCode?: string;
 }
 
-export default function CodePlayground({ isOpen, onClose }: CodePlaygroundProps) {
+export default function CodePlayground({ isOpen, onClose, initialCode }: CodePlaygroundProps) {
     const [mode, setMode] = useState<'html' | 'js'>('html');
     const [htmlCode, setHtmlCode] = useState(`<!DOCTYPE html>
 <html lang="id">
@@ -63,6 +64,20 @@ console.log(\`Luas persegi panjang (\${p} x \${l}) = \`, hitungLuas(p, l));
     const [jsOutput, setJsOutput] = useState<{level: 'log' | 'error' | 'warn', message: string}[]>([]);
     const [iframeSrc, setIframeSrc] = useState("");
 
+    // Efek untuk memuat kode awal saat modal dibuka
+    useEffect(() => {
+        if (isOpen && initialCode) {
+            // Heuristik sederhana: jika kode tidak mengandung tag HTML dan tidak kosong, anggap itu JS.
+            if (!/<[a-z][\s\S]*>/i.test(initialCode) && initialCode.trim().length > 0) {
+                setMode('js');
+                setJsCode(initialCode);
+            } else {
+                setMode('html');
+                setHtmlCode(initialCode);
+            }
+        }
+    }, [isOpen, initialCode]);
+
     // Listener untuk menangkap pesan console dari iframe
     useEffect(() => {
         const handleMessage = (event: MessageEvent) => {
@@ -84,9 +99,18 @@ console.log(\`Luas persegi panjang (\${p} x \${l}) = \`, hitungLuas(p, l));
                         var oldLog = console.log;
                         var oldError = console.error;
                         var oldWarn = console.warn;
+
+                        function safeStringify(obj) {
+                            try {
+                                return JSON.stringify(obj, null, 2);
+                            } catch(e) {
+                                return '[Object]';
+                            }
+                        }
+
                         function send(level, args) {
                             try {
-                                var msg = args.map(arg => typeof arg === 'object' ? JSON.stringify(arg) : String(arg)).join(' ');
+                                var msg = args.map(arg => typeof arg === 'object' ? safeStringify(arg) : String(arg)).join(' ');
                                 window.parent.postMessage({ type: 'console', level: level, message: msg }, '*');
                             } catch(e) {}
                         }
@@ -94,10 +118,27 @@ console.log(\`Luas persegi panjang (\${p} x \${l}) = \`, hitungLuas(p, l));
                         console.error = function(...args) { oldError.apply(console, args); send('error', args); };
                         console.warn = function(...args) { oldWarn.apply(console, args); send('warn', args); };
                         window.onerror = function(msg, url, line) { send('error', [msg + ' (Line: ' + line + ')']); };
+                        
+                        // Intercept alert agar muncul di console juga
+                        var oldAlert = window.alert;
+                        window.alert = function(msg) {
+                            send('log', ['[Alert]', msg]);
+                            if (oldAlert) oldAlert(msg);
+                        };
                     })();
                 </script>
             `;
-            setIframeSrc(consoleInterceptor + htmlCode);
+            
+            // Inject interceptor secara cerdas agar tidak merusak struktur HTML
+            let finalHtml = htmlCode;
+            if (finalHtml.includes('<head>')) {
+                finalHtml = finalHtml.replace('<head>', '<head>' + consoleInterceptor);
+            } else if (finalHtml.includes('<body>')) {
+                finalHtml = finalHtml.replace('<body>', '<body>' + consoleInterceptor);
+            } else {
+                finalHtml = consoleInterceptor + finalHtml;
+            }
+            setIframeSrc(finalHtml);
         } else {
             // Mode JS: Jalankan langsung di runtime JS (tanpa iframe)
             setJsOutput([]); // Reset JS console
@@ -196,7 +237,7 @@ console.log(\`Luas persegi panjang (\${p} x \${l}) = \`, hitungLuas(p, l));
                                 </div>
                                 <div className="flex-1 w-full h-full bg-white relative">
                                     {iframeSrc ? (
-                                        <iframe srcDoc={iframeSrc} className="w-full h-full border-none" title="Preview" sandbox="allow-scripts" />
+                                        <iframe srcDoc={iframeSrc} className="w-full h-full border-none" title="Preview" sandbox="allow-scripts allow-same-origin allow-modals" />
                                     ) : (
                                         <div className="h-full flex flex-col items-center justify-center text-gray-400 space-y-2">
                                             <Eye size={32} className="opacity-20" />
