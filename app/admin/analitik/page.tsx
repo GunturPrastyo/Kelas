@@ -669,6 +669,17 @@ export default function AdminAnalyticsPage() {
 
             const studentsToPrint = allUsers.filter(u => selectedStudentsToPrint.has(u._id));
             
+            // Urutkan siswa berdasarkan filter yang dipilih (printSortOrder)
+            studentsToPrint.sort((a, b) => {
+                if (printSortOrder === 'name_asc') {
+                    return a.name.localeCompare(b.name);
+                } else if (printSortOrder === 'score_asc') {
+                    return (a.averageScore || 0) - (b.averageScore || 0);
+                } else {
+                    return (b.averageScore || 0) - (a.averageScore || 0);
+                }
+            });
+
             for (const student of studentsToPrint) {
                 // Fetch data for each student individually
                 const res = await authFetch(`${process.env.NEXT_PUBLIC_API_URL}/api/analytics/student-analytics/${student._id}`);
@@ -1382,10 +1393,10 @@ export default function AdminAnalyticsPage() {
                                     <div className="flex items-center gap-1 mt-2 justify-end">
                                         <span className="text-[10px] text-gray-500 dark:text-gray-400 mr-1">Urutkan:</span>
                                         <button onClick={() => setSortOrder('score_asc')} className={`p-1 rounded transition-colors ${sortOrder === 'score_asc' ? 'bg-blue-100 text-blue-600 dark:bg-blue-900/40 dark:text-blue-400' : 'text-gray-400 hover:text-gray-600 dark:hover:text-gray-300'}`} title="Nilai Terendah (Jelek ke Bagus)">
-                                            <ArrowUpNarrowWide size={14} />
+                                            <ArrowDownNarrowWide size={14} />
                                         </button>
                                         <button onClick={() => setSortOrder('score_desc')} className={`p-1 rounded transition-colors ${sortOrder === 'score_desc' ? 'bg-blue-100 text-blue-600 dark:bg-blue-900/40 dark:text-blue-400' : 'text-gray-400 hover:text-gray-600 dark:hover:text-gray-300'}`} title="Nilai Tertinggi (Bagus ke Jelek)">
-                                            <ArrowDownNarrowWide size={14} />
+                                            <ArrowUpNarrowWide size={14} />
                                         </button>
                                         <button onClick={() => setSortOrder('name_asc')} className={`p-1 rounded transition-colors ${sortOrder === 'name_asc' ? 'bg-blue-100 text-blue-600 dark:bg-blue-900/40 dark:text-blue-400' : 'text-gray-400 hover:text-gray-600 dark:hover:text-gray-300'}`} title="Nama A-Z">
                                             <ArrowDownAZ size={14} />
@@ -1897,10 +1908,10 @@ export default function AdminAnalyticsPage() {
                             <div className="flex items-center gap-1 mt-3 justify-end">
                                 <span className="text-[10px] text-gray-500 dark:text-gray-400 mr-1">Urutkan:</span>
                                 <button onClick={() => setPrintSortOrder('score_asc')} className={`p-1 rounded transition-colors ${printSortOrder === 'score_asc' ? 'bg-blue-100 text-blue-600 dark:bg-blue-900/40 dark:text-blue-400' : 'text-gray-400 hover:text-gray-600 dark:hover:text-gray-300'}`} title="Nilai Terendah">
-                                    <ArrowUpNarrowWide size={14} />
+                                    <ArrowDownNarrowWide size={14} />
                                 </button>
                                 <button onClick={() => setPrintSortOrder('score_desc')} className={`p-1 rounded transition-colors ${printSortOrder === 'score_desc' ? 'bg-blue-100 text-blue-600 dark:bg-blue-900/40 dark:text-blue-400' : 'text-gray-400 hover:text-gray-600 dark:hover:text-gray-300'}`} title="Nilai Tertinggi">
-                                    <ArrowDownNarrowWide size={14} />
+                                    <ArrowUpNarrowWide size={14} />
                                 </button>
                                 <button onClick={() => setPrintSortOrder('name_asc')} className={`p-1 rounded transition-colors ${printSortOrder === 'name_asc' ? 'bg-blue-100 text-blue-600 dark:bg-blue-900/40 dark:text-blue-400' : 'text-gray-400 hover:text-gray-600 dark:hover:text-gray-300'}`} title="Nama A-Z">
                                     <ArrowDownAZ size={14} />
