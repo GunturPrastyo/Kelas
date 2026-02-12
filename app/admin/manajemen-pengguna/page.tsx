@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback, FormEvent, useRef } from 'react';
 import { authFetch } from '../../../lib/authFetch';
+import { useAlert } from '@/context/AlertContext';
 import { Trash2, UserPlus, Users, AlertCircle, CheckCircle, Search, Edit2, ChevronLeft, ChevronRight, CheckSquare, Square, X, Layers } from 'lucide-react';
 import Image from 'next/image';
 
@@ -41,6 +42,7 @@ const getAvatarUrl = (user: User): string => {
 
 export default function ManajemenPenggunaPage() {
     const editModalRef = useRef<HTMLDivElement>(null);
+    const { showAlert } = useAlert();
     const [users, setUsers] = useState<User[]>([]);
     const [searchTerm, setSearchTerm] = useState('');
     const [activeTab, setActiveTab] = useState<'all' | 'class_student' | 'general_student' | 'staff'>('class_student');
@@ -158,32 +160,38 @@ export default function ManajemenPenggunaPage() {
             return;
         }
 
-        if (window.confirm(`Apakah Anda yakin ingin menghapus pengguna "${userName}"? Tindakan ini tidak dapat dibatalkan.`)) {
-            try {
-                const response = await authFetch(`${process.env.NEXT_PUBLIC_API_URL}/api/users/${userId}`, {
-                    method: 'DELETE',
-                });
-
-                const responseText = await response.text();
-                let data;
+        showAlert({
+            title: 'Hapus Pengguna?',
+            message: `Apakah Anda yakin ingin menghapus pengguna "${userName}"? Tindakan ini tidak dapat dibatalkan.`,
+            type: 'confirm',
+            confirmText: 'Ya, Hapus',
+            cancelText: 'Batal',
+            onConfirm: async () => {
                 try {
-                    data = JSON.parse(responseText);
-                } catch (e) {
-                    throw new Error(`Gagal memproses respon server (${response.status})`);
+                    const response = await authFetch(`${process.env.NEXT_PUBLIC_API_URL}/api/users/${userId}`, {
+                        method: 'DELETE',
+                    });
+
+                    const responseText = await response.text();
+                    let data;
+                    try {
+                        data = JSON.parse(responseText);
+                    } catch (e) {
+                        throw new Error(`Gagal memproses respon server (${response.status})`);
+                    }
+
+                    if (!response.ok) {
+                        throw new Error(data.message || 'Gagal menghapus pengguna');
+                    }
+
+                    showNotification('success', data.message);
+                    fetchUsers(); // Muat ulang daftar pengguna
+                } catch (error) {
+                    console.error(error);
+                    showNotification('error', error instanceof Error ? error.message : 'Terjadi kesalahan');
                 }
-
-                if (!response.ok) {
-                    throw new Error(data.message || 'Gagal menghapus pengguna');
-                }
-
-                showNotification('success', data.message);
-                fetchUsers(); // Muat ulang daftar pengguna
-
-            } catch (error) {
-                console.error(error);
-                showNotification('error', error instanceof Error ? error.message : 'Terjadi kesalahan');
             }
-        }
+        });
     };
 
     // Function to open the edit modal
@@ -328,43 +336,61 @@ export default function ManajemenPenggunaPage() {
     };
 
     const handleBulkDelete = async () => {
-        if (!window.confirm(`Apakah Anda yakin ingin menghapus ${selectedUserIds.size} pengguna terpilih?`)) return;
-        setIsSubmitting(true);
-        try {
-            await Promise.all(Array.from(selectedUserIds).map(id => 
-                authFetch(`${process.env.NEXT_PUBLIC_API_URL}/api/users/${id}`, { method: 'DELETE' })
-            ));
-            showNotification('success', `${selectedUserIds.size} pengguna berhasil dihapus.`);
-            setSelectedUserIds(new Set());
-            fetchUsers();
-        } catch (e) {
-            showNotification('error', 'Gagal menghapus beberapa pengguna.');
-        } finally {
-            setIsSubmitting(false);
-        }
+        showAlert({
+            title: 'Hapus Banyak Pengguna?',
+            message: `Apakah Anda yakin ingin menghapus ${selectedUserIds.size} pengguna terpilih?`,
+            type: 'confirm',
+            confirmText: 'Hapus Semua',
+            cancelText: 'Batal',
+            onConfirm: async () => {
+                setIsSubmitting(true);
+                try {
+                    await Promise.all(Array.from(selectedUserIds).map(id => 
+                        authFetch(`${process.env.NEXT_PUBLIC_API_URL}/api/users/${id}`, { method: 'DELETE' })
+                    ));
+                    showNotification('success', `${selectedUserIds.size} pengguna berhasil dihapus.`);
+                    setSelectedUserIds(new Set());
+                    fetchUsers();
+                } catch (e) {
+                    showNotification('error', 'Gagal menghapus beberapa pengguna.');
+                } finally {
+                    setIsSubmitting(false);
+                }
+            }
+        });
     };
 
     const handleBulkEdit = async (e: FormEvent) => {
         e.preventDefault();
-        setIsSubmitting(true);
-        const kelasStr = `Kelas ${bulkAngkatan} RPL ${bulkClassNumber}`;
-        try {
-            await Promise.all(Array.from(selectedUserIds).map(id => 
-                authFetch(`${process.env.NEXT_PUBLIC_API_URL}/api/users/${id}`, {
-                    method: 'PUT',
-                    headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify({ kelas: kelasStr })
-                })
-            ));
-            showNotification('success', `Kelas untuk ${selectedUserIds.size} pengguna berhasil diperbarui.`);
-            setIsBulkEditModalOpen(false);
-            setSelectedUserIds(new Set());
-            fetchUsers();
-        } catch (e) {
-            showNotification('error', 'Gagal memperbarui kelas pengguna.');
-        } finally {
-            setIsSubmitting(false);
-        }
+        
+        showAlert({
+            title: 'Konfirmasi Edit Massal',
+            message: `Apakah Anda yakin ingin mengubah kelas untuk ${selectedUserIds.size} pengguna terpilih?`,
+            type: 'confirm',
+            confirmText: 'Ya, Simpan',
+            cancelText: 'Batal',
+            onConfirm: async () => {
+                setIsSubmitting(true);
+                const kelasStr = `Kelas ${bulkAngkatan} RPL ${bulkClassNumber}`;
+                try {
+                    await Promise.all(Array.from(selectedUserIds).map(id => 
+                        authFetch(`${process.env.NEXT_PUBLIC_API_URL}/api/users/${id}`, {
+                            method: 'PUT',
+                            headers: {'Content-Type': 'application/json'},
+                            body: JSON.stringify({ kelas: kelasStr })
+                        })
+                    ));
+                    showNotification('success', `Kelas untuk ${selectedUserIds.size} pengguna berhasil diperbarui.`);
+                    setIsBulkEditModalOpen(false);
+                    setSelectedUserIds(new Set());
+                    fetchUsers();
+                } catch (e) {
+                    showNotification('error', 'Gagal memperbarui kelas pengguna.');
+                } finally {
+                    setIsSubmitting(false);
+                }
+            }
+        });
     };
 
     return (
@@ -573,7 +599,18 @@ export default function ManajemenPenggunaPage() {
                             {/* Input Kelas (Edit) */}
                             {editRole === 'user' && (
                                 <div className="mb-6">
-                                    <label htmlFor="editKelas" className="block text-sm font-medium text-gray-700 dark:text-gray-300">Kelas</label>
+                                    <div className="flex justify-between items-center mb-2">
+                                        <label htmlFor="editKelas" className="block text-sm font-medium text-gray-700 dark:text-gray-300">Kelas</label>
+                                        {(editAngkaKelas || editClassNumber) && (
+                                            <button 
+                                                type="button"
+                                                onClick={() => { setEditAngkaKelas(''); setEditClassNumber(''); }}
+                                                className="text-xs font-medium text-red-500 hover:text-red-600 dark:text-red-400 dark:hover:text-red-300 transition-colors bg-red-50 dark:bg-red-900/20 px-2 py-1 rounded"
+                                            >
+                                                Reset ke Siswa Umum
+                                            </button>
+                                        )}
+                                    </div>
                                     <div className="flex gap-2 mb-2">
                                         <select
                                             id="editAngkatan"
