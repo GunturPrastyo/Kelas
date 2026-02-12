@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback, FormEvent, useRef } from 'react';
 import { authFetch } from '../../../lib/authFetch';
-import { Trash2, UserPlus, Users, AlertCircle, CheckCircle } from 'lucide-react';
+import { Trash2, UserPlus, Users, AlertCircle, CheckCircle, Search, Edit2, ChevronLeft, ChevronRight } from 'lucide-react';
 import Image from 'next/image';
 
 interface User {
@@ -42,6 +42,12 @@ const getAvatarUrl = (user: User): string => {
 export default function ManajemenPenggunaPage() {
     const editModalRef = useRef<HTMLDivElement>(null);
     const [users, setUsers] = useState<User[]>([]);
+    const [searchTerm, setSearchTerm] = useState('');
+    const [activeTab, setActiveTab] = useState<'all' | 'class_student' | 'general_student' | 'staff'>('class_student');
+    const [currentPage, setCurrentPage] = useState(1);
+    const usersPerPage = 10;
+    const [selectedClasses, setSelectedClasses] = useState<Set<string>>(new Set());
+
     const [loading, setLoading] = useState(true);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [notification, setNotification] = useState<NotificationType | null>(null);
@@ -56,7 +62,11 @@ export default function ManajemenPenggunaPage() {
     const [editName, setEditName] = useState('');
     const [editEmail, setEditEmail] = useState('');
     const [editRole, setEditRole] = useState<'user' | 'admin' | 'super_admin'>('user');
+    const [editAngkaKelas, setEditAngkaKelas] = useState('');
+    const [editClassNumber, setEditClassNumber] = useState('');
     const [newKelas, setNewKelas] = useState('');
+    const [newAngkaKelas, setNewAngkaKelas] = useState('');
+    const [newClassNumber, setNewClassNumber] = useState('');    
     const [isSubmitting, setIsSubmitting] = useState(false);
 
     const fetchUsers = useCallback(async () => {
@@ -94,11 +104,13 @@ export default function ManajemenPenggunaPage() {
         // Jika akun google, nama diambil dari email. Jika manual, dari input.
         const finalName = accountType === 'google' ? newEmail.split('@')[0] : newName;
 
+       const finalKelas = newRole === 'user' && newAngkaKelas ? `Kelas ${newAngkaKelas} RPL ${newClassNumber}` : newKelas;
+
         try {
-            const response = await authFetch(`${process.env.NEXT_PUBLIC_API_URL}/api/users`, {
+            const response = await authFetch(`${process.env.NEXT_PUBLIC_API_URL}/api/users/`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ name: finalName, email: newEmail, role: newRole, kelas: newKelas }),
+                body: JSON.stringify({ name: finalName, email: newEmail, role: newRole, kelas: finalKelas }),
             });
 
             const responseText = await response.text();
@@ -116,13 +128,15 @@ export default function ManajemenPenggunaPage() {
             showNotification('success', `Pengguna "${data.user.name}" berhasil ditambahkan.`);
             setIsModalOpen(false);
             fetchUsers(); // Muat ulang daftar pengguna
+            
 
             // Reset form
             setNewName('');
             setNewEmail('');
             setNewRole('user');
             setNewKelas('');
-            setAccountType('google');
+            setNewAngkaKelas('');            
+            setNewClassNumber('');
 
         } catch (error) {
             console.error(error);
@@ -172,12 +186,23 @@ export default function ManajemenPenggunaPage() {
         setEditName(user.name);
         setEditEmail(user.email);
         setEditRole(user.role);
+        
+        setEditAngkaKelas('');
+        setEditClassNumber('');
+
+        if (user.role === 'user' && user.kelas) {
+            const match = user.kelas.match(/Kelas (\d+) RPL (.+)/);
+            if (match) {
+                setEditAngkaKelas(match[1]);
+                setEditClassNumber(match[2]);
+            }
+        }
         setIsEditModalOpen(true);
     };
 
     // Function to handle the update of a user
     const handleUpdateUser = async (e: FormEvent) => {
-        e.preventDefault();
+       e.preventDefault();
         setIsSubmitting(true);
 
         if (!editingUser) {
@@ -185,11 +210,13 @@ export default function ManajemenPenggunaPage() {
             return;
         }
 
+        const finalKelas = editRole === 'user' && editAngkaKelas ? `Kelas ${editAngkaKelas} RPL ${editClassNumber}` : '';
+
         try {
             const response = await authFetch(`${process.env.NEXT_PUBLIC_API_URL}/api/users/${editingUser._id}`, {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ name: editName, email: editEmail, role: editRole }),
+                body: JSON.stringify({ name: editName, email: editEmail, role: editRole, kelas: finalKelas }),
             });
 
             const responseText = await response.text();
@@ -212,6 +239,8 @@ export default function ManajemenPenggunaPage() {
             setEditName('');
             setEditEmail('');
             setEditRole('user');
+            setEditAngkaKelas('');
+            setEditClassNumber('');
             setEditingUser(null);
 
         } catch (error) {
@@ -233,24 +262,66 @@ export default function ManajemenPenggunaPage() {
             document.removeEventListener('mousedown', handleClickOutside);
         };
     }, [editModalRef]);
+
+    // Filter & Pagination Logic
+    const filteredUsers = users.filter(user => {
+        const matchesSearch = user.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
+                              user.email.toLowerCase().includes(searchTerm.toLowerCase());
+        
+        let matchesTab = true;
+        if (activeTab === 'class_student') {
+             matchesTab = user.role === 'user' && !!user.kelas;
+            // Filter tambahan jika ada kelas yang dipilih via checkbox
+            if (matchesTab && selectedClasses.size > 0) {
+                matchesTab = user.kelas ? selectedClasses.has(user.kelas) : false;
+            }
+        } else if (activeTab === 'general_student') {
+            matchesTab = user.role === 'user' && !user.kelas;
+        } else if (activeTab === 'staff') {
+            matchesTab = user.role === 'admin' || user.role === 'super_admin';
+        }
+
+        return matchesSearch && matchesTab;
+    });
+
+    const handleToggleClass = (className: string) => {
+        setSelectedClasses(prev => {
+            const newSet = new Set(prev);
+            newSet.has(className) ? newSet.delete(className) : newSet.add(className);
+            return newSet;
+        });
+    };
+    const indexOfLastUser = currentPage * usersPerPage;
+    
+    const indexOfFirstUser = indexOfLastUser - usersPerPage;
+    const currentUsers = filteredUsers.slice(indexOfFirstUser, indexOfLastUser);
+    const totalPages = Math.ceil(filteredUsers.length / usersPerPage);
+
     return (
-        <div>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 font-poppins">
+           
+                <script src="https://cdn.tailwindcss.com"></script>
+            
+
             {/* Notifikasi */}
             {notification && (
-                <div className={`fixed top-20 right-5 p-4 rounded-lg shadow-lg text-white flex items-center gap-3 z-50 ${notification.type === 'success' ? 'bg-green-500' : 'bg-red-500'}`}>
+                <div className={`fixed top-24 right-5 p-4 rounded-xl shadow-xl text-white flex items-center gap-3 z-50 animate-in slide-in-from-right duration-300 ${notification.type === 'success' ? 'bg-emerald-500' : 'bg-red-500'}`}>
                     {notification.type === 'success' ? <CheckCircle size={20} /> : <AlertCircle size={20} />}
-                    <span>{notification.message}</span>
+                    <span className="font-medium">{notification.message}</span>
                 </div>
             )}
 
-            <header className="flex justify-between items-center mb-6 mt-22">
-                <h1 className="text-2xl font-bold text-gray-800 dark:text-white flex items-center gap-3">
-                    <Users />
-                    Manajemen Pengguna
-                </h1>
+            <header className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4 mt-16">
+                <div>
+                    <h1 className="text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-600 dark:from-blue-400 dark:to-indigo-400 flex items-center gap-3">
+                        <Users className="text-blue-600 dark:text-blue-400" size={32} />
+                        Manajemen Pengguna
+                    </h1>
+                    <p className="text-gray-500 dark:text-gray-400 mt-2 text-sm font-medium">Kelola data siswa, guru, dan administrator dalam satu tempat.</p>
+                </div>
                 <button
                     onClick={() => setIsModalOpen(true)}
-                    className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                    className="flex items-center gap-2 px-5 py-2.5 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-all shadow-lg shadow-blue-600/20 hover:shadow-blue-600/40 font-medium"
                 >
                     <UserPlus size={18} />
                     <span>Tambah Pengguna</span>
@@ -260,7 +331,7 @@ export default function ManajemenPenggunaPage() {
             {/* Modal Tambah Pengguna */}
             {isModalOpen && (
                 <div className="fixed inset-0 bg-black bg-opacity-50 z-40 flex justify-center items-center">
-                    <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl p-6 w-full max-w-md">
+                    <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl p-6 w-full max-w-md transform transition-all scale-100">
                         <h2 className="text-xl font-bold mb-4">Tambah Pengguna Baru</h2>
                         <form onSubmit={handleAddUser}>
                             {/* Pilihan Tipe Akun */}
@@ -325,35 +396,53 @@ export default function ManajemenPenggunaPage() {
                             </div>
 
                             {/* Input Kelas (Hanya muncul jika role adalah user/siswa) */}
-                            {newRole === 'user' && (
+                            {newRole === 'user' && (                                
                                 <div className="mb-6">
                                     <label htmlFor="kelas" className="block text-sm font-medium text-gray-700 dark:text-gray-300">Kelas</label>
-                                    <select
-                                        id="kelas"
-                                        value={newKelas}
-                                        onChange={(e) => setNewKelas(e.target.value)}
-                                        className="mt-1 block w-full px-3 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-                                    >
-                                        <option value="">-- Pilih Kelas --</option>
-                                        <option value="RPL Kelas 10">RPL Kelas 10</option>
-                                        <option value="RPL Kelas 11">RPL Kelas 11</option>
-                                        <option value="RPL Kelas 12">RPL Kelas 12</option>
-                                    </select>
+                                    <div className="flex gap-2 mb-2">
+                                        <select
+                                            id="angkatan"
+                                            value={newAngkaKelas}
+                                            onChange={(e) => setNewAngkaKelas(e.target.value)}
+                                            className="block w-1/3 px-3 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                                            required
+                                        >
+                                            <option value="">Angkatan</option>
+                                            <option value="10">10</option>
+                                            <option value="11">11</option>
+                                            <option value="12">12</option>
+                                        </select>
+                                        <div className="flex items-center justify-center w-1/3 bg-gray-100 dark:bg-gray-600 border border-gray-300 dark:border-gray-500 rounded-md text-gray-500 dark:text-gray-300 font-medium">
+                                            RPL
+                                        </div>
+                                        <input
+                                            type="text"
+                                            placeholder="No. (1, 2...)"
+                                            value={newClassNumber}
+                                            onChange={(e) => setNewClassNumber(e.target.value)}
+                                            className="block w-1/3 px-3 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                                            required
+                                        />
+                                    </div>
+                                    <p className="text-xs text-gray-500 dark:text-gray-400">
+                                        Preview: {newAngkaKelas ? `Kelas ${newAngkaKelas} RPL ${newClassNumber}` : '-'}
+                                    </p>
                                 </div>
                             )}
+
 
                             <div className="flex justify-end gap-3">
                                 <button
                                     type="button"
                                     onClick={() => setIsModalOpen(false)}
-                                    className="px-4 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 dark:bg-gray-600 dark:text-white dark:hover:bg-gray-500"
+                                    className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600 font-medium transition-colors"
                                 >
                                     Batal
                                 </button>
                                 <button
                                     type="submit"
                                     disabled={isSubmitting}
-                                    className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
+                                    className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 font-medium transition-colors shadow-sm"
                                 >
                                     {isSubmitting ? 'Menyimpan...' : 'Simpan Pengguna'}
                                 </button>
@@ -365,7 +454,7 @@ export default function ManajemenPenggunaPage() {
             {/* Modal Edit Pengguna */}
             {isEditModalOpen && editingUser && (
                 <div className="fixed inset-0 bg-black bg-opacity-50 z-40 flex justify-center items-center">
-                    <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl p-6 w-full max-w-md" ref={editModalRef}>
+                    <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl p-6 w-full max-w-md" ref={editModalRef}>
                         <h2 className="text-xl font-bold mb-4">Edit Pengguna</h2>
                         <form onSubmit={handleUpdateUser}>
                             {/* Input Nama */}
@@ -411,18 +500,53 @@ export default function ManajemenPenggunaPage() {
                                 </select>
                             </div>
 
+                            {/* Input Kelas (Edit) */}
+                            {editRole === 'user' && (
+                                <div className="mb-6">
+                                    <label htmlFor="editKelas" className="block text-sm font-medium text-gray-700 dark:text-gray-300">Kelas</label>
+                                    <div className="flex gap-2 mb-2">
+                                        <select
+                                            id="editAngkatan"
+                                            value={editAngkaKelas}
+                                            onChange={(e) => setEditAngkaKelas(e.target.value)}
+                                            className="block w-1/3 px-3 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                                            required
+                                        >
+                                            <option value="">Angkatan</option>
+                                            <option value="10">10</option>
+                                            <option value="11">11</option>
+                                            <option value="12">12</option>
+                                        </select>
+                                        <div className="flex items-center justify-center w-1/3 bg-gray-100 dark:bg-gray-600 border border-gray-300 dark:border-gray-500 rounded-md text-gray-500 dark:text-gray-300 font-medium">
+                                            RPL
+                                        </div>
+                                        <input
+                                            type="text"
+                                            placeholder="No. (1, 2...)"
+                                            value={editClassNumber}
+                                            onChange={(e) => setEditClassNumber(e.target.value)}
+                                            className="block w-1/3 px-3 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                                            required
+                                        />
+                                    </div>
+                                    <p className="text-xs text-gray-500 dark:text-gray-400">
+                                        Preview: {editAngkaKelas ? `Kelas ${editAngkaKelas} RPL ${editClassNumber}` : '-'}
+                                    </p>
+                                </div>
+                            )}
+
                             <div className="flex justify-end gap-3">
                                 <button
                                     type="button"
                                     onClick={() => setIsEditModalOpen(false)}
-                                    className="px-4 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 dark:bg-gray-600 dark:text-white dark:hover:bg-gray-500"
+                                    className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600 font-medium transition-colors"
                                 >
                                     Batal
                                 </button>
                                 <button
                                     type="submit"
                                     disabled={isSubmitting}
-                                    className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
+                                    className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 font-medium transition-colors shadow-sm"
                                 >
                                     {isSubmitting ? 'Menyimpan...' : 'Simpan Perubahan'}
                                 </button>
@@ -432,116 +556,187 @@ export default function ManajemenPenggunaPage() {
                 </div>
             )}
 
+            {/* Search and Filter Section */}
+            <div className="flex flex-col md:flex-row gap-5 justify-between items-center mb-8">
+                {/* Search Bar */}
+                <div className="relative w-full md:w-96">
+                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <Search className="h-5 w-5 text-gray-400" />
+                    </div>
+                    <input
+                        type="text"
+                        placeholder="Cari nama atau email..."
+                        value={searchTerm}
+                        onChange={(e) => { setSearchTerm(e.target.value); setCurrentPage(1); }}
+                        className="w-full pl-10 pr-4 py-2.5 border border-gray-200 dark:border-gray-600 rounded-full focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 dark:bg-gray-800 dark:text-white focus:outline-none transition-all shadow-sm"
+                    />
+                </div>
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-            {/* Daftar Pengguna */}
-            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden">
-                <div className="overflow-x-auto">
-                    <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-                        <thead className="bg-gray-50 dark:bg-gray-700">
-                            <tr>
-                                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Pengguna</th>
-                                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Role</th>
-                                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Tanggal Daftar</th>
-                                <th scope="col" className="relative px-6 py-3">
-                                    <span className="sr-only">Aksi</span>
-                                </th>
-                            </tr>
-                        </thead>
-                        <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
-                            {loading ? (
-                                <tr>
-                                    <td colSpan={4} className="text-center py-10 text-gray-500">Memuat data...</td>
-                                </tr>
-                            ) : users.length > 0 ? (
-                                users.map((user) => (
-                                    <tr key={user._id} className="hover:bg-gray-50 dark:hover:bg-gray-700/50">
-                                        <td className="px-6 py-4 whitespace-nowrap">
-                                            <div className="flex items-center">
-                                                <div className="flex-shrink-0 h-10 w-10">
-                                                    <Image
-                                                        className="h-10 w-10 rounded-full object-cover"
-                                                        src={getAvatarUrl(user)}
-                                                        alt={user.name}
-                                                        width={40}
-                                                        height={40}
-                                                    />
-                                                </div>
-                                                <div className="ml-4">
-                                                    <div className="text-sm font-medium text-gray-900 dark:text-white">{user.name}</div>
-                                                    <div className="text-sm text-gray-500 dark:text-gray-400">{user.email}</div>
-                                                </div>
-                                            </div>
-                                        </td>
-                                        <td className="px-6 py-4 whitespace-nowrap">
-                                            <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
-                                                user.role === 'super_admin' 
-                                                    ? 'bg-purple-100 text-purple-800 dark:bg-purple-900/50 dark:text-purple-300' 
-                                                    : user.role === 'admin' 
-                                                        ? 'bg-blue-100 text-blue-800 dark:bg-blue-900/50 dark:text-blue-300' 
-                                                        : 'bg-green-100 text-green-800 dark:bg-green-900/50 dark:text-green-300'
-                                            }`}>
-                                                {user.role === 'user' ? 'Siswa' : user.role === 'admin' ? 'Guru' : 'Super Admin'}
-                                            </span>
-                                            {user.kelas && (
-                                                <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                                                    {user.kelas}
-                                                </div>
-                                            )}
-                                        </td>
-                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
-                                            {new Date(user.createdAt).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })}
-                                        </td>
-                                        <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                                            {user.role !== 'super_admin' && (
-                                                <>
-                                                <button
-                                                    onClick={() => openEditModal(user)}
-                                                    className="text-indigo-600 hover:text-indigo-900 dark:text-indigo-500 dark:hover:text-indigo-400 mr-3"
-                                                    title={`Edit ${user.name}`}
-                                                >
-                                                    Edit
-                                                </button>
-                                                <button
-                                                    onClick={() => handleDeleteUser(user._id, user.name, user.role)}
-                                                    className="text-red-600 hover:text-red-900 dark:text-red-500 dark:hover:text-red-400"
-                                                    title={`Hapus ${user.name}`}
-                                                >
-                                                    <Trash2 size={18} />
-                                                </button>
-                                                </>
-                                            )}
-                                        </td>
-                                    </tr>
-                                ))
-                            ) : (
-                                <tr>
-                                    <td colSpan={4} className="text-center py-10 text-gray-500">Tidak ada pengguna yang ditemukan.</td>
-                                </tr>
-                            )}
-                        </tbody>
-                    </table>
+                {/* Badge Filters */}
+                <div className="flex gap-2 overflow-x-auto pb-2 w-full md:w-auto no-scrollbar">
+                    {[
+                        { id: 'class_student', label: 'Siswa Kelas' },
+                        { id: 'general_student', label: 'Siswa Umum' },
+                        { id: 'staff', label: 'Staf / Pengajar' },
+                    ].map((tab) => (
+                        <button
+                            key={tab.id}
+                            onClick={() => { setActiveTab(tab.id as any); setCurrentPage(1); }}
+                            className={`
+                                px-4 py-2 rounded-full text-sm font-medium transition-all whitespace-nowrap border
+                                ${activeTab === tab.id 
+                                    ? 'bg-blue-600 text-white border-blue-600 shadow-md shadow-blue-200 dark:shadow-none' 
+                                    : 'bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-300 border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700'}
+                            `}
+                        >
+                            {tab.label}
+                        </button>
+                    ))}
                 </div>
             </div>
+               {activeTab === 'class_student' && (
+                    <div className="mt-4 mb-8 flex flex-wrap gap-2">
+                        {Array.from(new Set(users.filter(user => user.kelas).map(user => user.kelas))).map(kelas => (
+                            <label key={kelas} className="inline-flex items-center">
+                                <input
+                                    type="checkbox"
+                                    className="form-checkbox h-4 w-4 text-blue-600 rounded"
+                                    value={kelas}
+                                    checked={selectedClasses.has(kelas)}
+                                    onChange={() => handleToggleClass(kelas)}
+                                />
+                                <span className="ml-2 text-gray-700 dark:text-gray-300">{kelas}</span>
+                            </label>
+                        ))}
+                    </div>
+                )}
+             
+
+
+
+   
+        
+
+
+
+
+
+
+            {/* User Grid (Cards) */}
+            {loading ? (
+                <div className="text-center py-20 text-gray-500">Memuat data...</div>
+            ) : currentUsers.length > 0 ? (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {currentUsers.map((user) => (
+                        <div key={user._id} className="bg-white dark:bg-gray-800 rounded-2xl p-5 border border-gray-100 dark:border-gray-700 shadow-sm hover:shadow-md transition-shadow flex flex-col">
+                            <div className="flex justify-between items-start mb-4">
+                                <div className="flex items-center gap-3">
+                                    <div className="relative h-12 w-12 flex-shrink-0">
+                                        <Image
+                                            className="rounded-full object-cover border border-gray-100 dark:border-gray-600"
+                                            src={getAvatarUrl(user)}
+                                            alt={user.name}
+                                            fill
+                                            sizes="48px"
+                                        />
+                                    </div>
+                                    <div className="min-w-0">
+                                        <h3 className="font-bold text-gray-900 dark:text-white line-clamp-1 text-base">{user.name}</h3>
+                                        <p className="text-xs text-gray-500 dark:text-gray-400 line-clamp-1">{user.email}</p>
+                                    </div>
+                                </div>
+                                <span className={`flex-shrink-0 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider rounded-lg border ${
+                                    user.role === 'super_admin' 
+                                        ? 'bg-purple-50 text-purple-700 border-purple-100 dark:bg-purple-900/20 dark:text-purple-300 dark:border-purple-800' 
+                                        : user.role === 'admin' 
+                                            ? 'bg-blue-50 text-blue-700 border-blue-100 dark:bg-blue-900/20 dark:text-blue-300 dark:border-blue-800' 
+                                            : 'bg-emerald-50 text-emerald-700 border-emerald-100 dark:bg-emerald-900/20 dark:text-emerald-300 dark:border-emerald-800'
+                                }`}>
+                                    {user.role === 'user' ? 'Siswa' : user.role === 'admin' ? 'Guru' : 'Super Admin'}
+                                </span>
+                            </div>
+
+                            <div className="space-y-3 mb-6 flex-1">
+                                {user.kelas ? (
+                                    <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-300 bg-gray-50 dark:bg-gray-700/50 p-2.5 rounded-xl">
+                                        <div className="w-2 h-2 rounded-full bg-indigo-500"></div>
+                                        <span className="font-medium">{user.kelas}</span>
+                                    </div>
+                                ) : (
+                                    <div className="flex items-center gap-2 text-sm text-gray-400 dark:text-gray-500 bg-gray-50 dark:bg-gray-700/50 p-2.5 rounded-xl">
+                                        <div className="w-2 h-2 rounded-full bg-gray-300 dark:bg-gray-600"></div>
+                                        <span className="italic">Tidak ada kelas</span>
+                                    </div>
+                                )}
+                                <div className="flex items-center gap-2 text-xs text-gray-500 dark:text-gray-400 px-1">
+                                    <span>Bergabung:</span>
+                                    <span className="font-medium">{new Date(user.createdAt).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })}</span>
+                                </div>
+                            </div>
+
+                            <div className="flex gap-2 pt-4 border-t border-gray-100 dark:border-gray-700">
+                                {user.role !== 'super_admin' && (
+                                    <>
+                                        {!(user.role === 'user' && !user.kelas) && (
+                                            <button
+                                                onClick={() => openEditModal(user)}
+                                                className="flex-1 flex items-center justify-center gap-2 py-2 rounded-lg text-sm font-medium text-gray-600 hover:text-blue-600 hover:bg-blue-50 dark:text-gray-300 dark:hover:bg-blue-900/20 transition-colors"
+                                            >
+                                                <Edit2 size={16} />
+                                                Edit
+                                            </button>
+                                        )}
+                                        <button
+                                            onClick={() => handleDeleteUser(user._id, user.name, user.role)}
+                                            className="flex-1 flex items-center justify-center gap-2 py-2 rounded-lg text-sm font-medium text-gray-600 hover:text-red-600 hover:bg-red-50 dark:text-gray-300 dark:hover:bg-red-900/20 transition-colors"
+                                        >
+                                            <Trash2 size={16} />
+                                            Hapus
+                                        </button>
+                                    </>
+                                )}
+                                {user.role === 'super_admin' && (
+                                    <div className="w-full text-center py-2 text-xs text-gray-400 italic">
+                                        Akses Terkunci
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+                    ))}
+                </div>
+            ) : (
+                <div className="text-center py-20 text-gray-500 bg-white dark:bg-gray-800 rounded-2xl border border-dashed border-gray-300 dark:border-gray-700">
+                    <Users className="mx-auto h-12 w-12 text-gray-300 mb-3" />
+                    <p>Tidak ada pengguna yang ditemukan.</p>
+                </div>
+            )}
+
+            {/* Pagination */}
+            {totalPages > 1 && (
+                <div className="flex flex-col sm:flex-row justify-between items-center mt-8 gap-4">
+                    <div className="text-sm text-gray-500 dark:text-gray-400">
+                        Halaman {currentPage} dari {totalPages}
+                    </div>
+                    <div className="flex gap-2">
+                        <button
+                            onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                            disabled={currentPage === 1}
+                            className="flex items-center gap-1 px-4 py-2 border border-gray-200 dark:border-gray-600 rounded-lg disabled:opacity-50 hover:bg-gray-100 dark:hover:bg-gray-700 text-sm font-medium transition-colors bg-white dark:bg-gray-800"
+                        >
+                            <ChevronLeft size={16} />
+                            Sebelumnya
+                        </button>
+                        <button
+                            onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+                            disabled={currentPage === totalPages}
+                            className="flex items-center gap-1 px-4 py-2 border border-gray-200 dark:border-gray-600 rounded-lg disabled:opacity-50 hover:bg-gray-100 dark:hover:bg-gray-700 text-sm font-medium transition-colors bg-white dark:bg-gray-800"
+                        >
+                            Selanjutnya
+                            <ChevronRight size={16} />
+                        </button>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }

@@ -3,7 +3,7 @@
 import React, { useEffect, useMemo, useState, FC, ReactNode, useRef } from 'react';
 import { BarChart as RechartsBarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar } from 'recharts';
 import { authFetch } from '@/lib/authFetch';
-import { BarChart as BarChartIcon, Users, Clock, Percent, Activity, TrendingUp, TrendingDown, AlertTriangle, CheckCircle, PieChart, UserCheck, ChevronDown, ChevronRight, BookOpen, Target, BarChart2, Search, ChevronUp, Printer, X, Loader2 } from 'lucide-react';
+import { BarChart as BarChartIcon, Users, Clock, Percent, Activity, TrendingUp, TrendingDown, AlertTriangle, CheckCircle, PieChart, UserCheck, ChevronDown, ChevronRight, BookOpen, Target, BarChart2, Search, ChevronUp, Printer, X, Loader2, ArrowUpNarrowWide, ArrowDownNarrowWide, ArrowDownAZ } from 'lucide-react';
 
 interface AdminAnalyticsData {
     totalUsers?: number;
@@ -287,7 +287,7 @@ export default function AdminAnalyticsPage() {
     const [modulesPerPage, setModulesPerPage] = useState(6); // ... (rest of the state variables)
     const [expandedModules, setExpandedModules] = useState<Set<string>>(new Set()); // ... (rest of the state variables)
     const [searchTerm, setSearchTerm] = useState(''); // ... (rest of the state variables)
-    const [allUsers, setAllUsers] = useState<{ _id: string, name: string, kelas?: string }[]>([]); // ... (rest of the state variables)
+    const [allUsers, setAllUsers] = useState<{ _id: string, name: string, kelas?: string, averageScore?: number }[]>([]); // ... (rest of the state variables)
     const [selectedStudentId, setSelectedStudentId] = useState<string>(''); // ... (rest of the state variables)
     const [studentAnalytics, setStudentAnalytics] = useState<StudentAnalyticsData | null>(null); // ... (rest of the state variables)
     const [studentLoading, setStudentLoading] = useState(false); // ... (rest of the state variables)
@@ -299,12 +299,15 @@ export default function AdminAnalyticsPage() {
     const [studentSearchTerm, setStudentSearchTerm] = useState('');
     const [studentDropdownPage, setStudentDropdownPage] = useState(1);
     const [userFilterType, setUserFilterType] = useState<'class' | 'general'>('class');
+    const [sortOrder, setSortOrder] = useState<'name_asc' | 'score_asc' | 'score_desc'>('score_asc');
     const studentDropdownRef = useRef<HTMLDivElement>(null);
     const [isPrintModalOpen, setIsPrintModalOpen] = useState(false);
     const [selectedStudentsToPrint, setSelectedStudentsToPrint] = useState<Set<string>>(new Set());
     const [isGeneratingReport, setIsGeneratingReport] = useState(false);
     const [printModalSearchTerm, setPrintModalSearchTerm] = useState('');
     const [printFilterType, setPrintFilterType] = useState<'class' | 'general'>('class');
+    const [printSortOrder, setPrintSortOrder] = useState<'name_asc' | 'score_asc' | 'score_desc'>('score_asc');
+    const [selectedClassesForPrint, setSelectedClassesForPrint] = useState<Set<string>>(new Set());
 
     useEffect(() => {
         const fetchAnalytics = async () => {
@@ -357,6 +360,23 @@ export default function AdminAnalyticsPage() {
     useEffect(() => {
         setTopicPages({});
     }, [modulesPerPage]);
+
+    const uniqueClasses = useMemo(() => {
+        const classes = new Set<string>();
+        allUsers.forEach(u => {
+            if (u.kelas) classes.add(u.kelas);
+        });
+        return Array.from(classes).sort();
+    }, [allUsers]);
+
+    const handleToggleClassFilter = (className: string) => {
+        setSelectedClassesForPrint(prev => {
+            const newSet = new Set(prev);
+            if (newSet.has(className)) newSet.delete(className);
+            else newSet.add(className);
+            return newSet;
+        });
+    };
 
     // Fix: Scroll otomatis ke section (hash) setelah loading selesai
     useEffect(() => {
@@ -489,9 +509,19 @@ export default function AdminAnalyticsPage() {
             filtered = filtered.filter(u => !u.kelas);
         }
 
-        filtered.sort((a, b) => a.name.localeCompare(b.name));
+        // Sorting logic
+        filtered.sort((a, b) => {
+            if (sortOrder === 'name_asc') {
+                return a.name.localeCompare(b.name);
+            } else if (sortOrder === 'score_asc') {
+                return (a.averageScore || 0) - (b.averageScore || 0);
+            } else {
+                return (b.averageScore || 0) - (a.averageScore || 0);
+            }
+        });
+
         return filtered;
-    }, [allUsers, studentSearchTerm, userFilterType]);
+    }, [allUsers, studentSearchTerm, userFilterType, sortOrder]);
 
     const paginatedStudents = useMemo(() => {
         const start = (studentDropdownPage - 1) * studentsPerPage;
@@ -1312,6 +1342,20 @@ export default function AdminAnalyticsPage() {
                                             User Umum
                                         </button>
                                     </div>
+                                    
+                                    {/* Sort Controls */}
+                                    <div className="flex items-center gap-1 mt-2 justify-end">
+                                        <span className="text-[10px] text-gray-500 dark:text-gray-400 mr-1">Urutkan:</span>
+                                        <button onClick={() => setSortOrder('score_asc')} className={`p-1 rounded transition-colors ${sortOrder === 'score_asc' ? 'bg-blue-100 text-blue-600 dark:bg-blue-900/40 dark:text-blue-400' : 'text-gray-400 hover:text-gray-600 dark:hover:text-gray-300'}`} title="Nilai Terendah (Jelek ke Bagus)">
+                                            <ArrowUpNarrowWide size={14} />
+                                        </button>
+                                        <button onClick={() => setSortOrder('score_desc')} className={`p-1 rounded transition-colors ${sortOrder === 'score_desc' ? 'bg-blue-100 text-blue-600 dark:bg-blue-900/40 dark:text-blue-400' : 'text-gray-400 hover:text-gray-600 dark:hover:text-gray-300'}`} title="Nilai Tertinggi (Bagus ke Jelek)">
+                                            <ArrowDownNarrowWide size={14} />
+                                        </button>
+                                        <button onClick={() => setSortOrder('name_asc')} className={`p-1 rounded transition-colors ${sortOrder === 'name_asc' ? 'bg-blue-100 text-blue-600 dark:bg-blue-900/40 dark:text-blue-400' : 'text-gray-400 hover:text-gray-600 dark:hover:text-gray-300'}`} title="Nama A-Z">
+                                            <ArrowDownAZ size={14} />
+                                        </button>
+                                    </div>
                                 </div>
 
                                 {/* List Siswa */}
@@ -1329,13 +1373,18 @@ export default function AdminAnalyticsPage() {
                                                 >
                                                     <div className="flex justify-between items-center">
                                                         <span>{user.name}</span>
-                                                        {user.kelas ? (
-                                                            <span className="text-[10px] bg-indigo-100 text-indigo-700 dark:bg-indigo-900/50 dark:text-indigo-300 px-2 py-0.5 rounded-full border border-indigo-200 dark:border-indigo-800">
-                                                                {user.kelas}
+                                                        <div className="flex items-center gap-2">
+                                                            <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded ${ (user.averageScore || 0) < 60 ? 'bg-red-100 text-red-600' : (user.averageScore || 0) < 80 ? 'bg-yellow-100 text-yellow-600' : 'bg-green-100 text-green-600' }`}>
+                                                                {user.averageScore || 0}%
                                                             </span>
-                                                        ) : (
-                                                            <span className="text-[10px] text-gray-400 dark:text-gray-500 italic">Umum</span>
-                                                        )}
+                                                            {user.kelas ? (
+                                                                <span className="text-[10px] bg-indigo-100 text-indigo-700 dark:bg-indigo-900/50 dark:text-indigo-300 px-2 py-0.5 rounded-full border border-indigo-200 dark:border-indigo-800">
+                                                                    {user.kelas}
+                                                                </span>
+                                                            ) : (
+                                                                <span className="text-[10px] text-gray-400 dark:text-gray-500 italic">Umum</span>
+                                                            )}
+                                                        </div>
                                                     </div>
                                                 </button>
                                             </li>
@@ -1632,6 +1681,40 @@ export default function AdminAnalyticsPage() {
                                     User Umum
                                 </button>
                             </div>
+                            
+                            {/* Sort Controls for Print */}
+                            <div className="flex items-center gap-1 mt-3 justify-end">
+                                <span className="text-[10px] text-gray-500 dark:text-gray-400 mr-1">Urutkan:</span>
+                                <button onClick={() => setPrintSortOrder('score_asc')} className={`p-1 rounded transition-colors ${printSortOrder === 'score_asc' ? 'bg-blue-100 text-blue-600 dark:bg-blue-900/40 dark:text-blue-400' : 'text-gray-400 hover:text-gray-600 dark:hover:text-gray-300'}`} title="Nilai Terendah">
+                                    <ArrowUpNarrowWide size={14} />
+                                </button>
+                                <button onClick={() => setPrintSortOrder('score_desc')} className={`p-1 rounded transition-colors ${printSortOrder === 'score_desc' ? 'bg-blue-100 text-blue-600 dark:bg-blue-900/40 dark:text-blue-400' : 'text-gray-400 hover:text-gray-600 dark:hover:text-gray-300'}`} title="Nilai Tertinggi">
+                                    <ArrowDownNarrowWide size={14} />
+                                </button>
+                                <button onClick={() => setPrintSortOrder('name_asc')} className={`p-1 rounded transition-colors ${printSortOrder === 'name_asc' ? 'bg-blue-100 text-blue-600 dark:bg-blue-900/40 dark:text-blue-400' : 'text-gray-400 hover:text-gray-600 dark:hover:text-gray-300'}`} title="Nama A-Z">
+                                    <ArrowDownAZ size={14} />
+                                </button>
+                            </div>
+
+                            {/* Filter Checkbox Kelas */}
+                            {printFilterType === 'class' && uniqueClasses.length > 0 && (
+                                <div className="mt-3">
+                                    <p className="text-xs font-semibold text-gray-500 dark:text-gray-400 mb-2">Filter Kelas:</p>
+                                    <div className="flex flex-wrap gap-2 max-h-24 overflow-y-auto custom-scrollbar">
+                                        {uniqueClasses.map(cls => (
+                                            <label key={cls} className={`inline-flex items-center px-2.5 py-1.5 rounded-md border cursor-pointer transition-colors ${selectedClassesForPrint.has(cls) ? 'bg-blue-50 border-blue-200 dark:bg-blue-900/20 dark:border-blue-800' : 'bg-white border-gray-200 dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700'}`}>
+                                                <input
+                                                    type="checkbox"
+                                                    className="w-3.5 h-3.5 text-blue-600 rounded focus:ring-blue-500 border-gray-300 dark:border-gray-600"
+                                                    checked={selectedClassesForPrint.has(cls)}
+                                                    onChange={() => handleToggleClassFilter(cls)}
+                                                />
+                                                <span className={`ml-2 text-xs font-medium ${selectedClassesForPrint.has(cls) ? 'text-blue-700 dark:text-blue-300' : 'text-gray-700 dark:text-gray-300'}`}>{cls}</span>
+                                            </label>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
                         </div>
 
                         <div className="flex-1 overflow-y-auto p-2">
@@ -1640,11 +1723,23 @@ export default function AdminAnalyticsPage() {
                                 
                                 if (printFilterType === 'class') {
                                     filtered = filtered.filter(u => u.kelas);
+                                    if (selectedClassesForPrint.size > 0) {
+                                        filtered = filtered.filter(u => u.kelas && selectedClassesForPrint.has(u.kelas));
+                                    }
                                 } else {
                                     filtered = filtered.filter(u => !u.kelas);
-                                }
+                                }                                
                                 
-                                filtered.sort((a, b) => a.name.localeCompare(b.name));
+                                // Sorting for print modal
+                                filtered.sort((a, b) => {
+                                    if (printSortOrder === 'name_asc') {
+                                        return a.name.localeCompare(b.name);
+                                    } else if (printSortOrder === 'score_asc') {
+                                        return (a.averageScore || 0) - (b.averageScore || 0);
+                                    } else {
+                                        return (b.averageScore || 0) - (a.averageScore || 0);
+                                    }
+                                });
 
                                 return (
                                     <>
@@ -1667,7 +1762,10 @@ export default function AdminAnalyticsPage() {
                                                     className="w-4 h-4 text-blue-600 rounded focus:ring-blue-500"
                                                 />
                                                 <div className="ml-3 flex flex-col">
-                                                    <span className="text-sm text-gray-700 dark:text-gray-300">{user.name}</span>
+                                                    <div className="flex items-center gap-2">
+                                                        <span className="text-sm text-gray-700 dark:text-gray-300">{user.name}</span>
+                                                        <span className={`text-[10px] font-bold px-1.5 rounded ${ (user.averageScore || 0) < 60 ? 'bg-red-100 text-red-600' : (user.averageScore || 0) < 80 ? 'bg-yellow-100 text-yellow-600' : 'bg-green-100 text-green-600' }`}>{user.averageScore || 0}%</span>
+                                                    </div>
                                                     {user.kelas && <span className="text-[10px] text-gray-500">{user.kelas}</span>}
                                                 </div>
                                             </div>
