@@ -8,9 +8,10 @@ interface CodePlaygroundProps {
     isOpen: boolean;
     onClose: () => void;
     initialCode?: string;
+    autoRun?: boolean;
 }
 
-export default function CodePlayground({ isOpen, onClose, initialCode }: CodePlaygroundProps) {
+export default function CodePlayground({ isOpen, onClose, initialCode, autoRun = false }: CodePlaygroundProps) {
     const [mode, setMode] = useState<'html' | 'js'>('html');
     const [htmlCode, setHtmlCode] = useState(`<!DOCTYPE html>
 <html lang="id">
@@ -67,16 +68,27 @@ console.log(\`Luas persegi panjang (\${p} x \${l}) = \`, hitungLuas(p, l));
     // Efek untuk memuat kode awal saat modal dibuka
     useEffect(() => {
         if (isOpen && initialCode) {
+            let detectedMode: 'html' | 'js' = 'html';
             // Heuristik sederhana: jika kode tidak mengandung tag HTML dan tidak kosong, anggap itu JS.
             if (!/<[a-z][\s\S]*>/i.test(initialCode) && initialCode.trim().length > 0) {
+                detectedMode = 'js';
                 setMode('js');
                 setJsCode(initialCode);
             } else {
+                detectedMode = 'html';
                 setMode('html');
                 setHtmlCode(initialCode);
             }
+
+            if (autoRun) {
+                // Gunakan timeout kecil untuk memastikan state modal/iframe siap sebelum eksekusi
+                setTimeout(() => {
+                    runCode(initialCode, detectedMode);
+                }, 300);
+            }
         }
-    }, [isOpen, initialCode]);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [isOpen, initialCode, autoRun]);
 
     // Listener untuk menangkap pesan console dari iframe
     useEffect(() => {
@@ -89,8 +101,13 @@ console.log(\`Luas persegi panjang (\${p} x \${l}) = \`, hitungLuas(p, l));
         return () => window.removeEventListener('message', handleMessage);
     }, []);
 
-    const runCode = useCallback(() => {
-        if (mode === 'html') {
+    const runCode = useCallback((codeOverride?: string | React.MouseEvent, modeOverride?: 'html' | 'js') => {
+        // Determine if we are using an override (from autoRun) or current state
+        const isOverride = typeof codeOverride === 'string';
+        const activeMode = (isOverride && modeOverride) ? modeOverride : mode;
+        const activeCode = isOverride ? (codeOverride as string) : (activeMode === 'html' ? htmlCode : jsCode);
+
+        if (activeMode === 'html') {
             setHtmlOutput([]); // Reset HTML console
             // Script injeksi untuk menangkap console.log dari dalam iframe (HTML Mode)
             const consoleInterceptor = `
@@ -130,7 +147,7 @@ console.log(\`Luas persegi panjang (\${p} x \${l}) = \`, hitungLuas(p, l));
             `;
             
             // Inject interceptor secara cerdas agar tidak merusak struktur HTML
-            let finalHtml = htmlCode;
+            let finalHtml = activeCode;
             if (finalHtml.includes('<head>')) {
                 finalHtml = finalHtml.replace('<head>', '<head>' + consoleInterceptor);
             } else if (finalHtml.includes('<body>')) {
@@ -154,7 +171,7 @@ console.log(\`Luas persegi panjang (\${p} x \${l}) = \`, hitungLuas(p, l));
                 // Gunakan Function constructor untuk isolasi scope sederhana
                 // Kita passing 'console' sebagai argumen agar kode user menggunakan mockConsole kita
                 // eslint-disable-next-line no-new-func
-                const run = new Function('console', jsCode);
+                const run = new Function('console', activeCode);
                 run(mockConsole);
             } catch (e) {
                 mockConsole.error(e instanceof Error ? e.message : String(e));

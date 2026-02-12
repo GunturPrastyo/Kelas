@@ -43,12 +43,7 @@ export default function SidebarAdmin() {
     if (!user) {
       return [];
     }
-    return adminNavLinks.filter(link => {
-      if (link.href === "/admin/manajemen-pengguna") {
-        return user.role === 'super_admin';
-      }
-      return true;
-    });
+    return adminNavLinks;
   }, [user]);
 
   const isActive = (href: string) => {
