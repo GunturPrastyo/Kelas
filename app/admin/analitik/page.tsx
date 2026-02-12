@@ -287,7 +287,7 @@ export default function AdminAnalyticsPage() {
     const [modulesPerPage, setModulesPerPage] = useState(6); // ... (rest of the state variables)
     const [expandedModules, setExpandedModules] = useState<Set<string>>(new Set()); // ... (rest of the state variables)
     const [searchTerm, setSearchTerm] = useState(''); // ... (rest of the state variables)
-    const [allUsers, setAllUsers] = useState<{ _id: string, name: string }[]>([]); // ... (rest of the state variables)
+    const [allUsers, setAllUsers] = useState<{ _id: string, name: string, kelas?: string }[]>([]); // ... (rest of the state variables)
     const [selectedStudentId, setSelectedStudentId] = useState<string>(''); // ... (rest of the state variables)
     const [studentAnalytics, setStudentAnalytics] = useState<StudentAnalyticsData | null>(null); // ... (rest of the state variables)
     const [studentLoading, setStudentLoading] = useState(false); // ... (rest of the state variables)
@@ -298,11 +298,13 @@ export default function AdminAnalyticsPage() {
     const [isStudentDropdownOpen, setIsStudentDropdownOpen] = useState(false);
     const [studentSearchTerm, setStudentSearchTerm] = useState('');
     const [studentDropdownPage, setStudentDropdownPage] = useState(1);
+    const [userFilterType, setUserFilterType] = useState<'class' | 'general'>('class');
     const studentDropdownRef = useRef<HTMLDivElement>(null);
     const [isPrintModalOpen, setIsPrintModalOpen] = useState(false);
     const [selectedStudentsToPrint, setSelectedStudentsToPrint] = useState<Set<string>>(new Set());
     const [isGeneratingReport, setIsGeneratingReport] = useState(false);
     const [printModalSearchTerm, setPrintModalSearchTerm] = useState('');
+    const [printFilterType, setPrintFilterType] = useState<'class' | 'general'>('class');
 
     useEffect(() => {
         const fetchAnalytics = async () => {
@@ -478,8 +480,18 @@ export default function AdminAnalyticsPage() {
     // Logika Filter & Paginasi untuk Dropdown Siswa
     const studentsPerPage = 10;
     const filteredStudents = useMemo(() => {
-        return allUsers.filter(user => user.name.toLowerCase().includes(studentSearchTerm.toLowerCase()));
-    }, [allUsers, studentSearchTerm]);
+        let filtered = allUsers.filter(user => user.name.toLowerCase().includes(studentSearchTerm.toLowerCase()));
+        
+        // Filter berdasarkan tab yang aktif (terisolasi)
+        if (userFilterType === 'class') {
+            filtered = filtered.filter(u => u.kelas);
+        } else {
+            filtered = filtered.filter(u => !u.kelas);
+        }
+
+        filtered.sort((a, b) => a.name.localeCompare(b.name));
+        return filtered;
+    }, [allUsers, studentSearchTerm, userFilterType]);
 
     const paginatedStudents = useMemo(() => {
         const start = (studentDropdownPage - 1) * studentsPerPage;
@@ -489,7 +501,7 @@ export default function AdminAnalyticsPage() {
     const totalStudentPages = Math.ceil(filteredStudents.length / studentsPerPage);
 
     // Reset halaman dropdown saat pencarian berubah
-    useEffect(() => setStudentDropdownPage(1), [studentSearchTerm]);
+    useEffect(() => setStudentDropdownPage(1), [studentSearchTerm, userFilterType]);
 
     const radarChartInsight = useMemo(() => {
         const data = analytics.moduleScoreDistribution;
@@ -1261,7 +1273,11 @@ export default function AdminAnalyticsPage() {
                             className="flex items-center justify-between w-full p-2.5 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-700 text-gray-800 dark:text-gray-200 focus:ring-2 focus:ring-blue-500 transition-colors"
                         >
                             <span className="truncate font-medium">
-                                {allUsers.find(u => u._id === selectedStudentId)?.name || "Pilih Siswa"}
+                                {(() => {
+                                    const selected = allUsers.find(u => u._id === selectedStudentId);
+                                    if (!selected) return "Pilih Siswa";
+                                    return selected.kelas ? `${selected.name} (${selected.kelas})` : selected.name;
+                                })()}
                             </span>
                             {isStudentDropdownOpen ? <ChevronUp size={18} className="text-gray-500" /> : <ChevronDown size={18} className="text-gray-500" />}
                         </button>
@@ -1270,7 +1286,7 @@ export default function AdminAnalyticsPage() {
                             <div className="absolute z-20 w-full mt-1 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg shadow-xl overflow-hidden animate-in fade-in zoom-in-95 duration-100">
                                 {/* Search Bar */}
                                 <div className="p-2 border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800">
-                                    <div className="relative">
+                                    <div className="relative mb-2">
                                         <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-gray-400" />
                                         <input
                                             type="text"
@@ -1280,6 +1296,21 @@ export default function AdminAnalyticsPage() {
                                             className="w-full pl-9 pr-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-200 focus:outline-none focus:ring-1 focus:ring-blue-500"
                                             autoFocus
                                         />
+                                    </div>
+                                    {/* Tab Filter Terisolasi */}
+                                    <div className="flex p-1 bg-gray-200 dark:bg-gray-700 rounded-lg gap-1">
+                                        <button
+                                            onClick={() => setUserFilterType('class')}
+                                            className={`flex-1 py-1.5 text-xs font-medium rounded-md transition-all ${userFilterType === 'class' ? 'bg-white dark:bg-gray-600 text-blue-600 dark:text-blue-400 shadow-sm' : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'}`}
+                                        >
+                                            Siswa Kelas
+                                        </button>
+                                        <button
+                                            onClick={() => setUserFilterType('general')}
+                                            className={`flex-1 py-1.5 text-xs font-medium rounded-md transition-all ${userFilterType === 'general' ? 'bg-white dark:bg-gray-600 text-blue-600 dark:text-blue-400 shadow-sm' : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'}`}
+                                        >
+                                            User Umum
+                                        </button>
                                     </div>
                                 </div>
 
@@ -1296,7 +1327,16 @@ export default function AdminAnalyticsPage() {
                                                     }}
                                                     className={`w-full text-left px-4 py-2.5 text-sm hover:bg-blue-50 dark:hover:bg-gray-700 transition-colors ${selectedStudentId === user._id ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 font-semibold' : 'text-gray-700 dark:text-gray-300'}`}
                                                 >
-                                                    {user.name}
+                                                    <div className="flex justify-between items-center">
+                                                        <span>{user.name}</span>
+                                                        {user.kelas ? (
+                                                            <span className="text-[10px] bg-indigo-100 text-indigo-700 dark:bg-indigo-900/50 dark:text-indigo-300 px-2 py-0.5 rounded-full border border-indigo-200 dark:border-indigo-800">
+                                                                {user.kelas}
+                                                            </span>
+                                                        ) : (
+                                                            <span className="text-[10px] text-gray-400 dark:text-gray-500 italic">Umum</span>
+                                                        )}
+                                                    </div>
                                                 </button>
                                             </li>
                                         ))
@@ -1575,13 +1615,37 @@ export default function AdminAnalyticsPage() {
                                 placeholder="Cari siswa..."
                                 value={printModalSearchTerm}
                                 onChange={(e) => setPrintModalSearchTerm(e.target.value)}
-                                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-sm focus:ring-2 focus:ring-blue-500 outline-none"
+                                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-sm focus:ring-2 focus:ring-blue-500 outline-none mb-3"
                             />
+                            {/* Tab Filter Terisolasi untuk Print */}
+                            <div className="flex p-1 bg-gray-200 dark:bg-gray-700 rounded-lg gap-1">
+                                <button
+                                    onClick={() => setPrintFilterType('class')}
+                                    className={`flex-1 py-1.5 text-xs font-medium rounded-md transition-all ${printFilterType === 'class' ? 'bg-white dark:bg-gray-600 text-blue-600 dark:text-blue-400 shadow-sm' : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'}`}
+                                >
+                                    Siswa Kelas
+                                </button>
+                                <button
+                                    onClick={() => setPrintFilterType('general')}
+                                    className={`flex-1 py-1.5 text-xs font-medium rounded-md transition-all ${printFilterType === 'general' ? 'bg-white dark:bg-gray-600 text-blue-600 dark:text-blue-400 shadow-sm' : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'}`}
+                                >
+                                    User Umum
+                                </button>
+                            </div>
                         </div>
 
                         <div className="flex-1 overflow-y-auto p-2">
                             {(() => {
-                                const filtered = allUsers.filter(u => u.name.toLowerCase().includes(printModalSearchTerm.toLowerCase()));
+                                let filtered = allUsers.filter(u => u.name.toLowerCase().includes(printModalSearchTerm.toLowerCase()));
+                                
+                                if (printFilterType === 'class') {
+                                    filtered = filtered.filter(u => u.kelas);
+                                } else {
+                                    filtered = filtered.filter(u => !u.kelas);
+                                }
+                                
+                                filtered.sort((a, b) => a.name.localeCompare(b.name));
+
                                 return (
                                     <>
                                         <div className="flex items-center px-3 py-2 hover:bg-gray-100 dark:hover:bg-gray-700/50 rounded-lg cursor-pointer" onClick={() => handleSelectAllStudentsForPrint(filtered)}>
@@ -1602,9 +1666,15 @@ export default function AdminAnalyticsPage() {
                                                     readOnly
                                                     className="w-4 h-4 text-blue-600 rounded focus:ring-blue-500"
                                                 />
-                                                <span className="ml-3 text-sm text-gray-700 dark:text-gray-300">{user.name}</span>
+                                                <div className="ml-3 flex flex-col">
+                                                    <span className="text-sm text-gray-700 dark:text-gray-300">{user.name}</span>
+                                                    {user.kelas && <span className="text-[10px] text-gray-500">{user.kelas}</span>}
+                                                </div>
                                             </div>
                                         ))}
+                                        {filtered.length === 0 && (
+                                            <div className="text-center py-4 text-sm text-gray-500">Tidak ada siswa ditemukan.</div>
+                                        )}
                                     </>
                                 );
                             })()}
