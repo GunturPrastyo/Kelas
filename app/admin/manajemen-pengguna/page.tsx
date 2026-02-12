@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback, FormEvent, useRef } from 'react';
 import { authFetch } from '../../../lib/authFetch';
-import { Trash2, UserPlus, Users, AlertCircle, CheckCircle, Search, Edit2, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Trash2, UserPlus, Users, AlertCircle, CheckCircle, Search, Edit2, ChevronLeft, ChevronRight, CheckSquare, Square, X, Layers } from 'lucide-react';
 import Image from 'next/image';
 
 interface User {
@@ -51,6 +51,12 @@ export default function ManajemenPenggunaPage() {
     const [loading, setLoading] = useState(true);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [notification, setNotification] = useState<NotificationType | null>(null);
+
+    // State untuk Bulk Actions
+    const [selectedUserIds, setSelectedUserIds] = useState<Set<string>>(new Set());
+    const [isBulkEditModalOpen, setIsBulkEditModalOpen] = useState(false);
+    const [bulkAngkatan, setBulkAngkatan] = useState('');
+    const [bulkClassNumber, setBulkClassNumber] = useState('');
 
     // State untuk form tambah user
     const [accountType, setAccountType] = useState<'google' | 'manual'>('google');
@@ -296,6 +302,70 @@ export default function ManajemenPenggunaPage() {
     const indexOfFirstUser = indexOfLastUser - usersPerPage;
     const currentUsers = filteredUsers.slice(indexOfFirstUser, indexOfLastUser);
     const totalPages = Math.ceil(filteredUsers.length / usersPerPage);
+
+    // Bulk Action Handlers
+    const toggleSelection = (id: string) => {
+        setSelectedUserIds(prev => {
+            const newSet = new Set(prev);
+            if (newSet.has(id)) newSet.delete(id);
+            else newSet.add(id);
+            return newSet;
+        });
+    };
+
+    const isAllSelected = currentUsers.length > 0 && currentUsers.every(u => selectedUserIds.has(u._id));
+
+    const handleSelectAllPage = () => {
+        setSelectedUserIds(prev => {
+            const newSet = new Set(prev);
+            if (isAllSelected) {
+                currentUsers.forEach(u => newSet.delete(u._id));
+            } else {
+                currentUsers.forEach(u => newSet.add(u._id));
+            }
+            return newSet;
+        });
+    };
+
+    const handleBulkDelete = async () => {
+        if (!window.confirm(`Apakah Anda yakin ingin menghapus ${selectedUserIds.size} pengguna terpilih?`)) return;
+        setIsSubmitting(true);
+        try {
+            await Promise.all(Array.from(selectedUserIds).map(id => 
+                authFetch(`${process.env.NEXT_PUBLIC_API_URL}/api/users/${id}`, { method: 'DELETE' })
+            ));
+            showNotification('success', `${selectedUserIds.size} pengguna berhasil dihapus.`);
+            setSelectedUserIds(new Set());
+            fetchUsers();
+        } catch (e) {
+            showNotification('error', 'Gagal menghapus beberapa pengguna.');
+        } finally {
+            setIsSubmitting(false);
+        }
+    };
+
+    const handleBulkEdit = async (e: FormEvent) => {
+        e.preventDefault();
+        setIsSubmitting(true);
+        const kelasStr = `Kelas ${bulkAngkatan} RPL ${bulkClassNumber}`;
+        try {
+            await Promise.all(Array.from(selectedUserIds).map(id => 
+                authFetch(`${process.env.NEXT_PUBLIC_API_URL}/api/users/${id}`, {
+                    method: 'PUT',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({ kelas: kelasStr })
+                })
+            ));
+            showNotification('success', `Kelas untuk ${selectedUserIds.size} pengguna berhasil diperbarui.`);
+            setIsBulkEditModalOpen(false);
+            setSelectedUserIds(new Set());
+            fetchUsers();
+        } catch (e) {
+            showNotification('error', 'Gagal memperbarui kelas pengguna.');
+        } finally {
+            setIsSubmitting(false);
+        }
+    };
 
     return (
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 font-poppins">
@@ -554,6 +624,64 @@ export default function ManajemenPenggunaPage() {
                 </div>
             )}
 
+            {/* Modal Bulk Edit Kelas */}
+            {isBulkEditModalOpen && (
+                <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex justify-center items-center">
+                    <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl p-6 w-full max-w-md animate-in zoom-in-95 duration-200">
+                        <h2 className="text-xl font-bold mb-4 flex items-center gap-2">
+                            <Layers size={24} className="text-blue-600" />
+                            Edit Kelas Massal
+                        </h2>
+                        <p className="text-sm text-gray-500 mb-6">Mengubah kelas untuk <b>{selectedUserIds.size}</b> pengguna terpilih.</p>
+                        <form onSubmit={handleBulkEdit}>
+                            <div className="mb-6">
+                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Kelas Baru</label>
+                                <div className="flex gap-2">
+                                    <select
+                                        value={bulkAngkatan}
+                                        onChange={(e) => setBulkAngkatan(e.target.value)}
+                                        className="block w-1/3 px-3 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                                        required
+                                    >
+                                        <option value="">Angkatan</option>
+                                        <option value="10">10</option>
+                                        <option value="11">11</option>
+                                        <option value="12">12</option>
+                                    </select>
+                                    <div className="flex items-center justify-center w-1/3 bg-gray-100 dark:bg-gray-600 border border-gray-300 dark:border-gray-500 rounded-md text-gray-500 dark:text-gray-300 font-medium">
+                                        RPL
+                                    </div>
+                                    <input
+                                        type="text"
+                                        placeholder="No."
+                                        value={bulkClassNumber}
+                                        onChange={(e) => setBulkClassNumber(e.target.value)}
+                                        className="block w-1/3 px-3 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                                        required
+                                    />
+                                </div>
+                            </div>
+                            <div className="flex justify-end gap-3">
+                                <button
+                                    type="button"
+                                    onClick={() => setIsBulkEditModalOpen(false)}
+                                    className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600 font-medium transition-colors"
+                                >
+                                    Batal
+                                </button>
+                                <button
+                                    type="submit"
+                                    disabled={isSubmitting}
+                                    className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 font-medium transition-colors shadow-sm"
+                                >
+                                    {isSubmitting ? 'Menyimpan...' : 'Simpan Perubahan'}
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            )}
+
             {/* Search and Filter Section */}
             <div className="flex flex-col md:flex-row gap-5 justify-between items-center mb-8">
                 {/* Search Bar */}
@@ -591,6 +719,15 @@ export default function ManajemenPenggunaPage() {
                         </button>
                     ))}
                 </div>
+
+                {/* Select All Button (Mobile/Desktop) */}
+                <button
+                    onClick={handleSelectAllPage}
+                    className={`flex items-center gap-2 px-4 py-2.5 rounded-full text-sm font-medium transition-all border ${isAllSelected ? 'bg-blue-50 text-blue-600 border-blue-200 dark:bg-blue-900/20 dark:text-blue-300 dark:border-blue-800' : 'bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-300 border-gray-200 dark:border-gray-700 hover:bg-gray-50'}`}
+                >
+                    {isAllSelected ? <CheckSquare size={18} /> : <Square size={18} />}
+                    <span>Pilih Semua</span>
+                </button>
             </div>
                {activeTab === 'class_student' && (
                     <div className="mt-4 mb-8 flex flex-wrap gap-2">
@@ -609,24 +746,25 @@ export default function ManajemenPenggunaPage() {
                     </div>
                 )}
              
-
-
-
-   
-        
-
-
-
-
-
-
             {/* User Grid (Cards) */}
             {loading ? (
                 <div className="text-center py-20 text-gray-500">Memuat data...</div>
             ) : currentUsers.length > 0 ? (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     {currentUsers.map((user) => (
-                        <div key={user._id} className="bg-white dark:bg-gray-800 rounded-2xl p-5 border border-gray-100 dark:border-gray-700 shadow-sm hover:shadow-md transition-shadow flex flex-col">
+                        <div key={user._id} className={`relative bg-white dark:bg-gray-800 rounded-2xl p-5 border shadow-sm hover:shadow-md transition-all flex flex-col ${selectedUserIds.has(user._id) ? 'border-blue-400 ring-1 ring-blue-400 dark:border-blue-500 dark:ring-blue-500 bg-blue-50/10' : 'border-gray-100 dark:border-gray-700'}`}>
+                            {/* Checkbox Selection */}
+                            <button 
+                                onClick={() => toggleSelection(user._id)}
+                                className="absolute top-4 right-4 z-10 text-gray-300 hover:text-blue-500 transition-colors"
+                            >
+                                {selectedUserIds.has(user._id) ? (
+                                    <CheckSquare className="text-blue-500 fill-blue-50 dark:fill-blue-900/50" size={24} />
+                                ) : (
+                                    <Square size={24} />
+                                )}
+                            </button>
+
                             <div className="flex justify-between items-start mb-4">
                                 <div className="flex items-center gap-3">
                                     <div className="relative h-12 w-12 flex-shrink-0">
@@ -638,12 +776,12 @@ export default function ManajemenPenggunaPage() {
                                             sizes="48px"
                                         />
                                     </div>
-                                    <div className="min-w-0">
+                                    <div className="min-w-0 pr-8">
                                         <h3 className="font-bold text-gray-900 dark:text-white line-clamp-1 text-base">{user.name}</h3>
                                         <p className="text-xs text-gray-500 dark:text-gray-400 line-clamp-1">{user.email}</p>
                                     </div>
                                 </div>
-                                <span className={`flex-shrink-0 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider rounded-lg border ${
+                                <span className={`absolute top-4 right-12 flex-shrink-0 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider rounded-lg border ${
                                     user.role === 'super_admin' 
                                         ? 'bg-purple-50 text-purple-700 border-purple-100 dark:bg-purple-900/20 dark:text-purple-300 dark:border-purple-800' 
                                         : user.role === 'admin' 
@@ -704,6 +842,23 @@ export default function ManajemenPenggunaPage() {
                 <div className="text-center py-20 text-gray-500 bg-white dark:bg-gray-800 rounded-2xl border border-dashed border-gray-300 dark:border-gray-700">
                     <Users className="mx-auto h-12 w-12 text-gray-300 mb-3" />
                     <p>Tidak ada pengguna yang ditemukan.</p>
+                </div>
+            )}
+
+            {/* Floating Bulk Actions Bar */}
+            {selectedUserIds.size > 0 && (
+                <div className="fixed bottom-6 left-1/2 transform -translate-x-1/2 bg-white dark:bg-gray-800 shadow-2xl border border-gray-200 dark:border-gray-700 rounded-full px-6 py-3 flex items-center gap-4 z-40 animate-in slide-in-from-bottom-10 fade-in duration-300">
+                    <span className="font-semibold text-gray-700 dark:text-gray-200 whitespace-nowrap">{selectedUserIds.size} Dipilih</span>
+                    <div className="h-6 w-px bg-gray-300 dark:bg-gray-600"></div>
+                    <button onClick={() => setIsBulkEditModalOpen(true)} className="flex items-center gap-2 text-blue-600 hover:text-blue-700 font-medium whitespace-nowrap">
+                        <Edit2 size={18} /> <span className="hidden sm:inline">Edit Kelas</span>
+                    </button>
+                    <button onClick={handleBulkDelete} className="flex items-center gap-2 text-red-600 hover:text-red-700 font-medium whitespace-nowrap">
+                        <Trash2 size={18} /> <span className="hidden sm:inline">Hapus</span>
+                    </button>
+                    <button onClick={() => setSelectedUserIds(new Set())} className="ml-2 p-1 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-500">
+                        <X size={20} />
+                    </button>
                 </div>
             )}
 
