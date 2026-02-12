@@ -1,7 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback, FormEvent } from 'react';
-import { useRouter } from 'next/navigation';
+import { useState, useEffect, useCallback, FormEvent, useRef } from 'react';
 import { authFetch } from '../../../lib/authFetch';
 import { Trash2, UserPlus, Users, AlertCircle, CheckCircle } from 'lucide-react';
 import Image from 'next/image';
@@ -13,6 +12,7 @@ interface User {
     role: 'user' | 'admin' | 'super_admin';
     avatar?: string;
     createdAt: string;
+    kelas?: string;
 }
 
 type NotificationType = {
@@ -40,7 +40,7 @@ const getAvatarUrl = (user: User): string => {
 };
 
 export default function ManajemenPenggunaPage() {
-    const router = useRouter();
+    const editModalRef = useRef<HTMLDivElement>(null);
     const [users, setUsers] = useState<User[]>([]);
     const [loading, setLoading] = useState(true);
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -51,6 +51,12 @@ export default function ManajemenPenggunaPage() {
     const [newName, setNewName] = useState('');
     const [newEmail, setNewEmail] = useState('');
     const [newRole, setNewRole] = useState<'user' | 'admin' | 'super_admin'>('user');
+    const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+    const [editingUser, setEditingUser] = useState<User | null>(null);
+    const [editName, setEditName] = useState('');
+    const [editEmail, setEditEmail] = useState('');
+    const [editRole, setEditRole] = useState<'user' | 'admin' | 'super_admin'>('user');
+    const [newKelas, setNewKelas] = useState('');
     const [isSubmitting, setIsSubmitting] = useState(false);
 
     const fetchUsers = useCallback(async () => {
@@ -74,26 +80,6 @@ export default function ManajemenPenggunaPage() {
         fetchUsers();
     }, [fetchUsers]);
 
-    // Proteksi Halaman: Hanya Super Admin yang boleh akses
-    useEffect(() => {
-        const verifyAccess = async () => {
-            try {
-                // Pastikan endpoint ini sesuai dengan API Anda (misal: /api/auth/me atau /api/users/profile)
-                const response = await authFetch(`${process.env.NEXT_PUBLIC_API_URL}/api/auth/me`);
-                if (response.ok) {
-                    const userData = await response.json();
-                    if (userData.role !== 'super_admin') {
-                        setNotification({ type: 'error', message: 'Akses ditolak. Halaman ini khusus Super Admin.' });
-                        setTimeout(() => router.push('/admin/dashboard'), 2000);
-                    }
-                }
-            } catch (error) {
-                console.error('Gagal memverifikasi akses:', error);
-            }
-        };
-        verifyAccess();
-    }, [router]);
-
     const showNotification = (type: 'success' | 'error', message: string) => {
         setNotification({ type, message });
         setTimeout(() => {
@@ -112,10 +98,16 @@ export default function ManajemenPenggunaPage() {
             const response = await authFetch(`${process.env.NEXT_PUBLIC_API_URL}/api/users`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ name: finalName, email: newEmail, role: newRole }),
+                body: JSON.stringify({ name: finalName, email: newEmail, role: newRole, kelas: newKelas }),
             });
 
-            const data = await response.json();
+            const responseText = await response.text();
+            let data;
+            try {
+                data = JSON.parse(responseText);
+            } catch (e) {
+                throw new Error(`Gagal memproses respon server (${response.status})`);
+            }
 
             if (!response.ok) {
                 throw new Error(data.message || 'Gagal menambahkan pengguna');
@@ -129,6 +121,7 @@ export default function ManajemenPenggunaPage() {
             setNewName('');
             setNewEmail('');
             setNewRole('user');
+            setNewKelas('');
             setAccountType('google');
 
         } catch (error) {
@@ -151,7 +144,13 @@ export default function ManajemenPenggunaPage() {
                     method: 'DELETE',
                 });
 
-                const data = await response.json();
+                const responseText = await response.text();
+                let data;
+                try {
+                    data = JSON.parse(responseText);
+                } catch (e) {
+                    throw new Error(`Gagal memproses respon server (${response.status})`);
+                }
 
                 if (!response.ok) {
                     throw new Error(data.message || 'Gagal menghapus pengguna');
@@ -167,6 +166,73 @@ export default function ManajemenPenggunaPage() {
         }
     };
 
+    // Function to open the edit modal
+    const openEditModal = (user: User) => {
+        setEditingUser(user);
+        setEditName(user.name);
+        setEditEmail(user.email);
+        setEditRole(user.role);
+        setIsEditModalOpen(true);
+    };
+
+    // Function to handle the update of a user
+    const handleUpdateUser = async (e: FormEvent) => {
+        e.preventDefault();
+        setIsSubmitting(true);
+
+        if (!editingUser) {
+            showNotification('error', 'Tidak ada pengguna yang dipilih untuk diedit.');
+            return;
+        }
+
+        try {
+            const response = await authFetch(`${process.env.NEXT_PUBLIC_API_URL}/api/users/${editingUser._id}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ name: editName, email: editEmail, role: editRole }),
+            });
+
+            const responseText = await response.text();
+            let data;
+            try {
+                data = JSON.parse(responseText);
+            } catch (e) {
+                throw new Error(`Gagal memproses respon server (${response.status})`);
+            }
+
+            if (!response.ok) {
+                throw new Error(data.message || 'Gagal memperbarui pengguna');
+            }
+
+            showNotification('success', `Pengguna "${data.name}" berhasil diperbarui.`);
+            setIsEditModalOpen(false);
+            fetchUsers(); // Muat ulang daftar pengguna
+
+            // Reset form
+            setEditName('');
+            setEditEmail('');
+            setEditRole('user');
+            setEditingUser(null);
+
+        } catch (error) {
+            console.error(error);
+            showNotification('error', error instanceof Error ? error.message : 'Terjadi kesalahan');
+        } finally {
+            setIsSubmitting(false);
+        }
+    };
+
+    useEffect(() => {
+        const handleClickOutside = (event: MouseEvent) => {
+            if (editModalRef.current && !editModalRef.current.contains(event.target as Node)) {
+                setIsEditModalOpen(false);
+            }
+        };
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside);
+        };
+    }, [editModalRef]);
     return (
         <div>
             {/* Notifikasi */}
@@ -177,7 +243,7 @@ export default function ManajemenPenggunaPage() {
                 </div>
             )}
 
-            <header className="flex justify-between items-center mb-6">
+            <header className="flex justify-between items-center mb-6 mt-22">
                 <h1 className="text-2xl font-bold text-gray-800 dark:text-white flex items-center gap-3">
                     <Users />
                     Manajemen Pengguna
@@ -257,6 +323,25 @@ export default function ManajemenPenggunaPage() {
                                     {accountType === 'manual' ? 'Password akan diatur ke default `password123`.' : 'Pengguna akan login menggunakan akun Google-nya.'}
                                 </p>
                             </div>
+
+                            {/* Input Kelas (Hanya muncul jika role adalah user/siswa) */}
+                            {newRole === 'user' && (
+                                <div className="mb-6">
+                                    <label htmlFor="kelas" className="block text-sm font-medium text-gray-700 dark:text-gray-300">Kelas</label>
+                                    <select
+                                        id="kelas"
+                                        value={newKelas}
+                                        onChange={(e) => setNewKelas(e.target.value)}
+                                        className="mt-1 block w-full px-3 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                                    >
+                                        <option value="">-- Pilih Kelas --</option>
+                                        <option value="RPL Kelas 10">RPL Kelas 10</option>
+                                        <option value="RPL Kelas 11">RPL Kelas 11</option>
+                                        <option value="RPL Kelas 12">RPL Kelas 12</option>
+                                    </select>
+                                </div>
+                            )}
+
                             <div className="flex justify-end gap-3">
                                 <button
                                     type="button"
@@ -277,6 +362,96 @@ export default function ManajemenPenggunaPage() {
                     </div>
                 </div>
             )}
+            {/* Modal Edit Pengguna */}
+            {isEditModalOpen && editingUser && (
+                <div className="fixed inset-0 bg-black bg-opacity-50 z-40 flex justify-center items-center">
+                    <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl p-6 w-full max-w-md" ref={editModalRef}>
+                        <h2 className="text-xl font-bold mb-4">Edit Pengguna</h2>
+                        <form onSubmit={handleUpdateUser}>
+                            {/* Input Nama */}
+                            <div className="mb-4">
+                                <label htmlFor="editName" className="block text-sm font-medium text-gray-700 dark:text-gray-300">Nama Lengkap</label>
+                                <input
+                                    type="text"
+                                    id="editName"
+                                    value={editName}
+                                    onChange={(e) => setEditName(e.target.value)}
+                                    className="mt-1 block w-full px-3 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                                    placeholder="John Doe"
+                                    required
+                                />
+                            </div>
+
+                            {/* Input Email */}
+                            <div className="mb-4">
+                                <label htmlFor="editEmail" className="block text-sm font-medium text-gray-700 dark:text-gray-300">Alamat Email</label>
+                                <input
+                                    type="email"
+                                    id="editEmail"
+                                    value={editEmail}
+                                    onChange={(e) => setEditEmail(e.target.value)}
+                                    className="mt-1 block w-full px-3 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                                    placeholder="pengguna@contoh.com"
+                                    required
+                                />
+                            </div>
+
+                            {/* Input Role */}
+                            <div className="mb-6">
+                                <label htmlFor="editRole" className="block text-sm font-medium text-gray-700 dark:text-gray-300">Role</label>
+                                <select
+                                    id="editRole"
+                                    value={editRole}
+                                    onChange={(e) => setEditRole(e.target.value as 'user' | 'admin' | 'super_admin')}
+                                    className="mt-1 block w-full px-3 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500" required
+                                >
+                                    <option value="user">User (Siswa)</option>
+                                    <option value="admin">Admin (Guru)</option>
+                                    <option value="super_admin">Super Admin</option>
+                                </select>
+                            </div>
+
+                            <div className="flex justify-end gap-3">
+                                <button
+                                    type="button"
+                                    onClick={() => setIsEditModalOpen(false)}
+                                    className="px-4 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 dark:bg-gray-600 dark:text-white dark:hover:bg-gray-500"
+                                >
+                                    Batal
+                                </button>
+                                <button
+                                    type="submit"
+                                    disabled={isSubmitting}
+                                    className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
+                                >
+                                    {isSubmitting ? 'Menyimpan...' : 'Simpan Perubahan'}
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            )}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
             {/* Daftar Pengguna */}
             <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden">
@@ -327,12 +502,25 @@ export default function ManajemenPenggunaPage() {
                                             }`}>
                                                 {user.role === 'user' ? 'Siswa' : user.role === 'admin' ? 'Guru' : 'Super Admin'}
                                             </span>
+                                            {user.kelas && (
+                                                <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                                                    {user.kelas}
+                                                </div>
+                                            )}
                                         </td>
                                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
                                             {new Date(user.createdAt).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })}
                                         </td>
                                         <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                                             {user.role !== 'super_admin' && (
+                                                <>
+                                                <button
+                                                    onClick={() => openEditModal(user)}
+                                                    className="text-indigo-600 hover:text-indigo-900 dark:text-indigo-500 dark:hover:text-indigo-400 mr-3"
+                                                    title={`Edit ${user.name}`}
+                                                >
+                                                    Edit
+                                                </button>
                                                 <button
                                                     onClick={() => handleDeleteUser(user._id, user.name, user.role)}
                                                     className="text-red-600 hover:text-red-900 dark:text-red-500 dark:hover:text-red-400"
@@ -340,6 +528,7 @@ export default function ManajemenPenggunaPage() {
                                                 >
                                                     <Trash2 size={18} />
                                                 </button>
+                                                </>
                                             )}
                                         </td>
                                     </tr>

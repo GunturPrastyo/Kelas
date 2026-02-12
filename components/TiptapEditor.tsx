@@ -399,7 +399,7 @@ export default function TiptapEditor({
     editorProps: {
       attributes: {
         class:
-          "prose pre max-w-none min-h-[200px] px-4 py-3 mt-2 border border-gray-200 dark:border-gray-700 rounded-md focus:outline-none [&_pre]:bg-gray-900",
+          "prose pre max-w-none min-h-[200px] max-h-[60vh] overflow-y-auto px-4 py-3 mt-2 border border-gray-200 dark:border-gray-700 rounded-md focus:outline-none [&_pre]:bg-gray-900",
       },
     },
     immediatelyRender: false,
@@ -407,7 +407,9 @@ export default function TiptapEditor({
 
   return (
     <div className="space-y-2 my-4" ref={containerRef}>
-      <MenuBar editor={editor} />
+      <div className="bg-white dark:bg-gray-900 py-2">
+        <MenuBar editor={editor} />
+      </div>
       <EditorContent
         editor={editor}
         className="prose pre max-w-none [&_pre]:text-sm [&_pre]:p-3 [&_pre]:rounded-md [&_code]:font-mono"

@@ -107,6 +107,7 @@ export default function ModulDetailPage() {
     const [tabExitCount, setTabExitCount] = useState(0);
     const [isPlaygroundOpen, setIsPlaygroundOpen] = useState(false);
     const [playgroundCode, setPlaygroundCode] = useState('');
+    const [autoRunPlayground, setAutoRunPlayground] = useState(false);
     const [showMobileNav, setShowMobileNav] = useState(false);
     
     const [fontSize, setFontSize] = useState<string>('16px');
@@ -679,6 +680,7 @@ export default function ModulDetailPage() {
                     runButton.addEventListener('click', () => {
                         const codeToRun = codeElement ? codeElement.innerText : '';
                         setPlaygroundCode(codeToRun);
+                                        setAutoRunPlayground(true);
                         setIsPlaygroundOpen(true);
                     });
                 }
@@ -737,7 +739,7 @@ export default function ModulDetailPage() {
             observers.forEach(observer => observer.disconnect());
             // Tidak perlu disconnect observer lagi
         };
-    }, [activeTest, openTopicId]);
+    }, [activeTest, openTopicId, isPlaygroundOpen]);
 
     // --- Tour Guide Effect ---
     useEffect(() => {
@@ -1495,7 +1497,10 @@ export default function ModulDetailPage() {
             {/* Floating Action Button for Code Playground */}
             <button
                 id="code-playground-btn"
-                onClick={() => setIsPlaygroundOpen(true)}
+                onClick={() => {
+                    setIsPlaygroundOpen(true);
+                    setAutoRunPlayground(false);
+                }}
                 className=" fixed bottom-6 right-6 z-50 flex flex-col items-center justify-center   bg-white/90 dark:bg-slate-800/90 backdrop-blur-sm border border-indigo-100 dark:border-indigo-500/30 rounded-4xl shadow-2xl shadow-indigo-500/20 dark:shadow-indigo-900/40 hover:scale-105 hover:border-indigo-300 dark:hover:border-indigo-400 transition-all duration-300 group"
                 title="Buka Code Playground"
             >
@@ -1525,7 +1530,12 @@ export default function ModulDetailPage() {
                 </div>
             </button>
 
-            <CodePlayground isOpen={isPlaygroundOpen} onClose={() => setIsPlaygroundOpen(false)} initialCode={playgroundCode} />
+            <CodePlayground 
+                isOpen={isPlaygroundOpen} 
+                onClose={() => setIsPlaygroundOpen(false)} 
+                initialCode={playgroundCode} 
+                autoRun={autoRunPlayground}
+            />
         </div>
     );
 }
