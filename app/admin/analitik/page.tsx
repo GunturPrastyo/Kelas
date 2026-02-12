@@ -3,7 +3,7 @@
 import React, { useEffect, useMemo, useState, FC, ReactNode, useRef } from 'react';
 import { BarChart as RechartsBarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar } from 'recharts';
 import { authFetch } from '@/lib/authFetch';
-import { BarChart as BarChartIcon, Users, Clock, Percent, Activity, TrendingUp, TrendingDown, AlertTriangle, CheckCircle, PieChart, UserCheck, ChevronDown, ChevronRight, BookOpen, Target, BarChart2, Search, ChevronUp, Printer, X, Loader2, ArrowUpNarrowWide, ArrowDownNarrowWide, ArrowDownAZ } from 'lucide-react';
+import { BarChart as BarChartIcon, Users, Clock, Percent, Activity, TrendingUp, TrendingDown, AlertTriangle, CheckCircle, PieChart, UserCheck, ChevronDown, ChevronRight, ChevronLeft, BookOpen, Target, BarChart2, Search, ChevronUp, Printer, X, Loader2, ArrowUpNarrowWide, ArrowDownNarrowWide, ArrowDownAZ, Trophy, Filter } from 'lucide-react';
 
 interface AdminAnalyticsData {
     totalUsers?: number;
@@ -308,6 +308,13 @@ export default function AdminAnalyticsPage() {
     const [printFilterType, setPrintFilterType] = useState<'class' | 'general'>('class');
     const [printSortOrder, setPrintSortOrder] = useState<'name_asc' | 'score_asc' | 'score_desc'>('score_asc');
     const [selectedClassesForPrint, setSelectedClassesForPrint] = useState<Set<string>>(new Set());
+    
+    const [leaderboardData, setLeaderboardData] = useState<{ moduleTitle: string, students: { name: string, score: number, kelas?: string }[] }[]>([]);
+    const [leaderboardFilter, setLeaderboardFilter] = useState<'global' | 'class'>('global');
+    const [selectedLeaderboardClasses, setSelectedLeaderboardClasses] = useState<Set<string>>(new Set());
+    const [selectedLeaderboardModule, setSelectedLeaderboardModule] = useState<string>('');
+    const [leaderboardPage, setLeaderboardPage] = useState(1);
+    const leaderboardItemsPerPage = 5;
 
     useEffect(() => {
         const fetchAnalytics = async () => {
@@ -338,8 +345,23 @@ export default function AdminAnalyticsPage() {
                 }
             } catch (error) { console.error("Gagal memuat daftar siswa:", error); }
         };
+
+        const fetchLeaderboard = async () => {
+            try {
+                const res = await authFetch(`${process.env.NEXT_PUBLIC_API_URL}/api/analytics/module-leaderboard`);
+                if (res.ok) {
+                    const data = await res.json();
+                    setLeaderboardData(data);
+                    if (data.length > 0) {
+                        setSelectedLeaderboardModule(data[0].moduleTitle);
+                    }
+                }
+            } catch (e) { console.error("Gagal memuat leaderboard:", e); }
+        };
+
         fetchAnalytics();
         fetchUsers();
+        fetchLeaderboard();
     }, []);
 
     useEffect(() => {
@@ -377,6 +399,19 @@ export default function AdminAnalyticsPage() {
             return newSet;
         });
     };
+
+    const handleToggleLeaderboardClass = (className: string) => {
+        setSelectedLeaderboardClasses(prev => {
+            const newSet = new Set(prev);
+            if (newSet.has(className)) newSet.delete(className);
+            else newSet.add(className);
+            return newSet;
+        });
+    };
+
+    useEffect(() => {
+        setLeaderboardPage(1);
+    }, [selectedLeaderboardModule, leaderboardFilter, selectedLeaderboardClasses]);
 
     // Fix: Scroll otomatis ke section (hash) setelah loading selesai
     useEffect(() => {
@@ -1645,6 +1680,182 @@ export default function AdminAnalyticsPage() {
                 ) : (
                     <div className="text-center py-10 text-gray-500">Pilih siswa untuk melihat analitik individual.</div>
                 )}
+            </div>
+
+            {/* SECTION 5: PERINGKAT SISWA PER MODUL */}
+            <div className="bg-white dark:bg-gray-800 shadow-lg rounded-xl p-6 mb-12 border border-gray-100 dark:border-gray-700">
+                <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
+                    <div>
+                        <h2 className="text-xl font-bold text-gray-800 dark:text-gray-200 flex items-center gap-2">
+                            <Trophy className="text-yellow-500" size={24} />
+                            Peringkat Siswa per Modul
+                        </h2>
+                        <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">Ranking siswa berdasarkan nilai rata-rata (Post-Test) di setiap modul.</p>
+                    </div>
+                    
+                    <div className="flex flex-col sm:flex-row gap-3 items-center">
+                        {leaderboardData.length > 0 && (
+                            <select
+                                value={selectedLeaderboardModule}
+                                onChange={(e) => setSelectedLeaderboardModule(e.target.value)}
+                                className="block w-full sm:w-64 pl-3 pr-10 py-2 text-sm border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 rounded-lg dark:bg-gray-700 dark:border-gray-600 dark:text-white shadow-sm"
+                            >
+                                {leaderboardData.map((modul) => (
+                                    <option key={modul.moduleTitle} value={modul.moduleTitle}>{modul.moduleTitle}</option>
+                                ))}
+                            </select>
+                        )}
+                        <div className="flex bg-gray-100 dark:bg-gray-700 p-1 rounded-lg">
+                            <button
+                                onClick={() => setLeaderboardFilter('global')}
+                                className={`px-4 py-1.5 text-sm font-medium rounded-md transition-all ${leaderboardFilter === 'global' ? 'bg-white dark:bg-gray-600 text-blue-600 dark:text-blue-400 shadow-sm' : 'text-gray-500 dark:text-gray-400 hover:text-gray-700'}`}
+                            >
+                                Global (Campuran)
+                            </button>
+                            <button
+                                onClick={() => setLeaderboardFilter('class')}
+                                className={`px-4 py-1.5 text-sm font-medium rounded-md transition-all ${leaderboardFilter === 'class' ? 'bg-white dark:bg-gray-600 text-blue-600 dark:text-blue-400 shadow-sm' : 'text-gray-500 dark:text-gray-400 hover:text-gray-700'}`}
+                            >
+                                Per Kelas
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                {leaderboardFilter === 'class' && uniqueClasses.length > 0 && (
+                    <div className="mb-6 p-4 bg-gray-50 dark:bg-gray-900/50 rounded-xl border border-gray-200 dark:border-gray-700">
+                        <div className="flex items-center gap-2 mb-3 text-sm font-semibold text-gray-700 dark:text-gray-300">
+                            <Filter size={16} />
+                            Filter Kelas:
+                        </div>
+                        <div className="flex flex-wrap gap-2">
+                            {uniqueClasses.map(cls => (
+                                <label key={cls} className={`inline-flex items-center px-3 py-1.5 rounded-full border cursor-pointer transition-all ${selectedLeaderboardClasses.has(cls) ? 'bg-blue-100 border-blue-300 text-blue-700 dark:bg-blue-900/40 dark:border-blue-700 dark:text-blue-300' : 'bg-white border-gray-200 text-gray-600 dark:bg-gray-800 dark:border-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700'}`}>
+                                    <input
+                                        type="checkbox"
+                                        className="hidden"
+                                        checked={selectedLeaderboardClasses.has(cls)}
+                                        onChange={() => handleToggleLeaderboardClass(cls)}
+                                    />
+                                    <span className="text-xs font-medium">{cls}</span>
+                                </label>
+                            ))}
+                        </div>
+                        {selectedLeaderboardClasses.size === 0 && (
+                            <p className="text-xs text-orange-500 mt-2 italic">* Pilih minimal satu kelas untuk melihat data.</p>
+                        )}
+                    </div>
+                )}
+
+                <div className="mt-4">
+                    {(() => {
+                        const modul = leaderboardData.find(m => m.moduleTitle === selectedLeaderboardModule);
+                        if (!modul) return <div className="text-center py-10 text-gray-500">Data modul tidak ditemukan.</div>;
+
+                        // Filter logic
+                        let students = modul.students;
+                        if (leaderboardFilter === 'class') {
+                            if (selectedLeaderboardClasses.size > 0) {
+                                students = students.filter(s => s.kelas && selectedLeaderboardClasses.has(s.kelas));
+                            } else {
+                                students = []; // Hide if no class selected in class mode
+                            }
+                        }
+                        // If global, show everyone (mixed)
+
+                        const indexOfLastStudent = leaderboardPage * leaderboardItemsPerPage;
+                        const indexOfFirstStudent = indexOfLastStudent - leaderboardItemsPerPage;
+                        const currentStudents = students.slice(indexOfFirstStudent, indexOfLastStudent);
+                        const totalLeaderboardPages = Math.ceil(students.length / leaderboardItemsPerPage);
+
+                        return (
+                            <div className="bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-2xl overflow-hidden shadow-lg shadow-gray-100/50 dark:shadow-none flex flex-col">
+                                <div className="px-6 py-5 bg-gradient-to-r from-gray-50 to-white dark:from-gray-800 dark:to-gray-800/50 border-b border-gray-100 dark:border-gray-700 flex justify-between items-center">
+                                    <h3 className="font-bold text-gray-800 dark:text-gray-200 text-base line-clamp-1" title={modul.moduleTitle}>{modul.moduleTitle}</h3>
+                                    <span className="text-xs font-medium px-3 py-1 bg-blue-50 text-blue-600 dark:bg-blue-900/20 dark:text-blue-300 rounded-full">{students.length} Siswa</span>
+                                </div>
+                                <div className="flex-1 p-0">
+                                    {students.length > 0 ? (
+                                        <>
+                                        <table className="w-full text-sm text-left">
+                                            <thead className="text-xs text-gray-500 uppercase bg-gray-50/50 dark:bg-gray-700/50">
+                                                <tr>
+                                                    <th className="px-6 py-4 font-semibold text-gray-400 w-16 text-center">#</th>
+                                                    <th className="px-6 py-4 font-semibold text-gray-400">Siswa</th>
+                                                    <th className="px-6 py-4 font-semibold text-gray-400 text-right">Skor</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {currentStudents.map((student, idx) => {
+                                                    const actualIdx = indexOfFirstStudent + idx;
+                                                    return (
+                                                    <tr key={idx} className="border-b border-gray-50 dark:border-gray-700/50 hover:bg-blue-50/30 dark:hover:bg-gray-700/30 transition-colors last:border-0">
+                                                        <td className="px-6 py-4 text-center font-medium text-gray-500 dark:text-gray-400">
+                                                            {actualIdx === 0 ? (
+                                                                <div className="w-6 h-6 mx-auto bg-yellow-100 text-yellow-600 rounded-full flex items-center justify-center text-xs font-bold">1</div>
+                                                            ) : actualIdx === 1 ? (
+                                                                <div className="w-6 h-6 mx-auto bg-gray-100 text-gray-600 rounded-full flex items-center justify-center text-xs font-bold">2</div>
+                                                            ) : actualIdx === 2 ? (
+                                                                <div className="w-6 h-6 mx-auto bg-orange-100 text-orange-600 rounded-full flex items-center justify-center text-xs font-bold">3</div>
+                                                            ) : (
+                                                                actualIdx + 1
+                                                            )}
+                                                        </td>
+                                                        <td className="px-6 py-4">
+                                                            <div className="font-semibold text-gray-700 dark:text-gray-200">{student.name}</div>
+                                                            {student.kelas && (
+                                                                <div className="text-[11px] text-gray-400 dark:text-gray-500 mt-0.5">{student.kelas}</div>
+                                                            )}
+                                                        </td>
+                                                        <td className="px-6 py-4 text-right">
+                                                            <span className={`font-bold px-3 py-1 rounded-full text-xs ${student.score >= 80 ? 'bg-green-50 text-green-600 dark:bg-green-900/20 dark:text-green-400' : student.score >= 60 ? 'bg-blue-50 text-blue-600 dark:bg-blue-900/20 dark:text-blue-400' : 'bg-red-50 text-red-600 dark:bg-red-900/20 dark:text-red-400'}`}>
+                                                                {student.score}
+                                                            </span>
+                                                        </td>
+                                                    </tr>
+                                                    );
+                                                })}
+                                            </tbody>
+                                        </table>
+                                        
+                                        {/* Pagination Controls */}
+                                        {totalLeaderboardPages > 1 && (
+                                            <div className="flex justify-between items-center px-6 py-4 border-t border-gray-100 dark:border-gray-700 bg-gray-50/30 dark:bg-gray-800/30">
+                                                <div className="text-xs text-gray-500 dark:text-gray-400">
+                                                    Hal {leaderboardPage} dari {totalLeaderboardPages}
+                                                </div>
+                                                <div className="flex gap-2">
+                                                    <button
+                                                        onClick={() => setLeaderboardPage(p => Math.max(1, p - 1))}
+                                                        disabled={leaderboardPage === 1}
+                                                        className="flex items-center gap-1 px-3 py-1.5 text-xs font-medium text-gray-600 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed dark:bg-gray-700 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-600 transition-all shadow-sm"
+                                                    >
+                                                        <ChevronLeft size={14} />
+                                                        Sebelumnya
+                                                    </button>
+                                                    <button
+                                                        onClick={() => setLeaderboardPage(p => Math.min(totalLeaderboardPages, p + 1))}
+                                                        disabled={leaderboardPage === totalLeaderboardPages}
+                                                        className="flex items-center gap-1 px-3 py-1.5 text-xs font-medium text-gray-600 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed dark:bg-gray-700 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-600 transition-all shadow-sm"
+                                                    >
+                                                        Selanjutnya
+                                                        <ChevronRight size={14} />
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        )}
+                                        </>
+                                    ) : (
+                                        <div className="flex flex-col items-center justify-center h-64 text-gray-400 dark:text-gray-500 p-4 text-center">
+                                            <Users size={48} className="mb-3 opacity-20" />
+                                            <p className="text-sm">Belum ada data siswa untuk filter ini.</p>
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+                        );
+                    })()}
+                </div>
             </div>
 
             {/* MODAL CETAK LAPORAN */}
