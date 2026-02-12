@@ -510,7 +510,6 @@ export default function ManajemenPenggunaPage() {
                                             value={editAngkaKelas}
                                             onChange={(e) => setEditAngkaKelas(e.target.value)}
                                             className="block w-1/3 px-3 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-                                            required
                                         >
                                             <option value="">Angkatan</option>
                                             <option value="10">10</option>
@@ -526,7 +525,6 @@ export default function ManajemenPenggunaPage() {
                                             value={editClassNumber}
                                             onChange={(e) => setEditClassNumber(e.target.value)}
                                             className="block w-1/3 px-3 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-                                            required
                                         />
                                     </div>
                                     <p className="text-xs text-gray-500 dark:text-gray-400">
@@ -677,15 +675,13 @@ export default function ManajemenPenggunaPage() {
                             <div className="flex gap-2 pt-4 border-t border-gray-100 dark:border-gray-700">
                                 {user.role !== 'super_admin' && (
                                     <>
-                                        {!(user.role === 'user' && !user.kelas) && (
-                                            <button
-                                                onClick={() => openEditModal(user)}
-                                                className="flex-1 flex items-center justify-center gap-2 py-2 rounded-lg text-sm font-medium text-gray-600 hover:text-blue-600 hover:bg-blue-50 dark:text-gray-300 dark:hover:bg-blue-900/20 transition-colors"
-                                            >
-                                                <Edit2 size={16} />
-                                                Edit
-                                            </button>
-                                        )}
+                                        <button
+                                            onClick={() => openEditModal(user)}
+                                            className="flex-1 flex items-center justify-center gap-2 py-2 rounded-lg text-sm font-medium text-gray-600 hover:text-blue-600 hover:bg-blue-50 dark:text-gray-300 dark:hover:bg-blue-900/20 transition-colors"
+                                        >
+                                            <Edit2 size={16} />
+                                            Edit
+                                        </button>
                                         <button
                                             onClick={() => handleDeleteUser(user._id, user.name, user.role)}
                                             className="flex-1 flex items-center justify-center gap-2 py-2 rounded-lg text-sm font-medium text-gray-600 hover:text-red-600 hover:bg-red-50 dark:text-gray-300 dark:hover:bg-red-900/20 transition-colors"
