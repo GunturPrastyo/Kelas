@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
-import { Eye, EyeOff } from 'lucide-react';
+import { Eye, EyeOff, Lock } from 'lucide-react';
 
 const ResetPassword = () => {
   const params = useParams();
@@ -81,92 +81,123 @@ const ResetPassword = () => {
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-[#EAF0FF] dark:bg-gray-900 p-4">
-      <div className="max-w-md w-full bg-[#EAF0FF] dark:bg-gray-900 rounded-3xl shadow-2xl border border-white/30 p-8 sm:p-10 relative">
+      <div className="grid grid-cols-1 md:grid-cols-2 max-w-5xl w-full rounded-3xl shadow-2xl overflow-hidden border border-white/30">
         
-        <div className="flex justify-center mb-6">
-          <img src="/logo1.webp" alt="Logo" width={150} height={150} className="w-20 h-auto drop-shadow-md" />
+        {/* === MOBILE HEADER === */}
+        <div className="md:hidden relative w-full h-auto bg-gradient-to-br from-blue-600 to-indigo-600 z-0">
+          <img
+            src="/login-illustration.webp"
+            alt="Ilustrasi Reset Password"
+            width={800}
+            height={800}
+            className="w-full h-auto object-containt rounded-xl"
+          />
         </div>
 
-        <h2 className="text-2xl font-bold text-center text-gray-900 dark:text-white mb-2">
-          Reset Password
-        </h2>
-        <p className="text-center text-gray-500 dark:text-gray-400 text-sm mb-8">
-          Silakan buat password baru untuk akunmu.
-        </p>
+        <div className="p-10 md:p-14 bg-[#EAF0FF] dark:bg-gray-900 rounded-4xl z-30 -mt-5 sm:m-0">
+          <div className="flex justify-center mb-6">
+            <img src="/logo1.webp" alt="Logo" width={150} height={150} className="w-20 h-auto drop-shadow-md" />
+          </div>
 
-        <form className="space-y-6" onSubmit={handleSubmit}>
-          <div>
-            <label htmlFor="password" className="text-sm font-medium text-gray-700 dark:text-gray-200 block mb-1">Password Baru</label>
-            <div className="relative">
-              <input
-                id="password"
-                name="password"
-                type={showPassword ? "text" : "password"}
-                required
-                className="w-full px-4 py-2 rounded-xl bg-white border border-gray-300 dark:text-white dark:bg-gray-800 dark:border-gray-700 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition placeholder-gray-400 pr-10"
-                placeholder="Minimal 8 karakter"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                minLength={8}
-              />
+          <h2 className="text-2xl font-bold text-center text-gray-900 dark:text-white mb-2">
+            Reset Password
+          </h2>
+          <p className="text-center text-gray-500 dark:text-gray-400 text-sm mb-8">
+            Silakan buat password baru untuk akunmu.
+          </p>
+
+          <form className="space-y-6" onSubmit={handleSubmit}>
+            <div>
+              <label htmlFor="password" className="text-sm font-medium text-gray-700 dark:text-gray-200 block mb-1">Password Baru</label>
+              <div className="relative mt-1">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <Lock className="h-5 w-5 text-gray-400" />
+                </div>
+                <input
+                  id="password"
+                  name="password"
+                  type={showPassword ? "text" : "password"}
+                  required
+                  className="w-full pl-10 px-4 py-2 rounded-xl bg-white border border-gray-300 dark:text-white dark:bg-gray-800 dark:border-gray-700 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition placeholder-gray-400 pr-10"
+                  placeholder="Minimal 8 karakter"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  minLength={8}
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-600 dark:text-gray-300 hover:text-gray-800 dark:hover:text-white transition"
+                >
+                  {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                </button>
+              </div>
+            </div>
+
+            <div>
+              <label htmlFor="confirm-password" className="text-sm font-medium text-gray-700 dark:text-gray-200 block mb-1">Konfirmasi Password</label>
+              <div className="relative mt-1">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <Lock className="h-5 w-5 text-gray-400" />
+                </div>
+                <input
+                  id="confirm-password"
+                  name="confirm-password"
+                  type={showConfirmPassword ? "text" : "password"}
+                  required
+                  className="w-full pl-10 px-4 py-2 rounded-xl bg-white border border-gray-300 dark:text-white dark:bg-gray-800 dark:border-gray-700 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition placeholder-gray-400 pr-10"
+                  placeholder="Ulangi password baru"
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  minLength={8}
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                  className="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-600 dark:text-gray-300 hover:text-gray-800 dark:hover:text-white transition"
+                >
+                  {showConfirmPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                </button>
+              </div>
+            </div>
+
+            {status === 'error' && (
+              <div className="text-red-700 bg-red-100 p-3 text-center rounded-lg text-sm border border-red-300">
+                {message}
+              </div>
+            )}
+
+            <div>
               <button
-                type="button"
-                onClick={() => setShowPassword(!showPassword)}
-                className="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-600 dark:text-gray-300 hover:text-gray-800 dark:hover:text-white transition"
+                type="submit"
+                disabled={status === 'loading'}
+                className="w-full py-3 font-semibold text-white rounded-xl bg-blue-600 hover:bg-blue-700 focus:ring-4 focus:ring-blue-300 disabled:bg-gray-400 shadow-md transition flex justify-center items-center"
               >
-                {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                {status === 'loading' ? (
+                  <>
+                    <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    Memproses...
+                  </>
+                ) : 'Ubah Password'}
               </button>
             </div>
-          </div>
+          </form>
+        </div>
 
-          <div>
-            <label htmlFor="confirm-password" className="text-sm font-medium text-gray-700 dark:text-gray-200 block mb-1">Konfirmasi Password</label>
-            <div className="relative">
-              <input
-                id="confirm-password"
-                name="confirm-password"
-                type={showConfirmPassword ? "text" : "password"}
-                required
-                className="w-full px-4 py-2 rounded-xl bg-white border border-gray-300 dark:text-white dark:bg-gray-800 dark:border-gray-700 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition placeholder-gray-400 pr-10"
-                placeholder="Ulangi password baru"
-                value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
-                minLength={8}
-              />
-              <button
-                type="button"
-                onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                className="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-600 dark:text-gray-300 hover:text-gray-800 dark:hover:text-white transition"
-              >
-                {showConfirmPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
-              </button>
-            </div>
-          </div>
+        {/* === DESKTOP ILUSTRASI === */}
+        <div className="hidden md:flex items-center justify-center bg-gradient-to-br from-blue-600 to-indigo-600 p-8">
+          <img
+            src="/login-illustration.webp"
+            alt="Ilustrasi Reset Password"
+            width={600}
+            height={600}
+            className="w-full h-auto drop-shadow-2xl"
+          />
+        </div>
 
-          {status === 'error' && (
-            <div className="text-red-700 bg-red-100 p-3 text-center rounded-lg text-sm border border-red-300">
-              {message}
-            </div>
-          )}
-
-          <div>
-            <button
-              type="submit"
-              disabled={status === 'loading'}
-              className="w-full py-3 font-semibold text-white rounded-xl bg-blue-600 hover:bg-blue-700 focus:ring-4 focus:ring-blue-300 disabled:bg-gray-400 shadow-md transition flex justify-center items-center"
-            >
-              {status === 'loading' ? (
-                <>
-                  <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                  </svg>
-                  Memproses...
-                </>
-              ) : 'Ubah Password'}
-            </button>
-          </div>
-        </form>
       </div>
     </div>
   );
