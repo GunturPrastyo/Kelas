@@ -190,6 +190,9 @@ export default function ModulPage() {
                     // Lanjut: Buka Semua
                     isLocked = false;
                 }
+            } else {
+                // Jika userLevel belum ada (belum pre-test), kunci semua modul
+                isLocked = true;
             }
 
             // Hitung ulang status berdasarkan progress agar konsisten dengan logika frontend
