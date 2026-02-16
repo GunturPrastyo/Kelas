@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { authFetch } from "@/lib/authFetch";
 import { useRouter } from "next/navigation";
-import { Award, TrendingUp, TrendingDown, LayoutDashboard, Activity, BarChartHorizontal, AlertTriangle, Users, Target, Play, Rocket, Sparkles } from "lucide-react";
+import { Award, TrendingUp, TrendingDown, LayoutDashboard, Activity, BarChartHorizontal, AlertTriangle, Users, Target, Play, Rocket, Sparkles, Flame, Crown } from "lucide-react";
 import { Chart, registerables } from "chart.js";
 import { ChevronDown, ChevronRight } from "lucide-react";
 import { driver } from "driver.js";
@@ -88,6 +88,13 @@ interface WeakTopicData {
     subMateriId: string;
   }[];
   status: "Perlu review" | "Butuh latihan" | "Sudah bagus";
+}
+
+interface LeaderboardUser {
+  _id: string;
+  name: string;
+  dailyStreak: number;
+  avatar?: string;
 }
 
 // Opsi untuk useInView, termasuk properti kustom `triggerOnce`
@@ -198,12 +205,15 @@ export default function AnalitikBelajarPage() {
   const [comparisonData, setComparisonData] = useState<ComparisonData | null>(null);
   const [recommendations, setRecommendations] = useState<RecommendationData | null>(null);
   const [weakTopics, setWeakTopics] = useState<WeakTopicData[]>([]);
+  const [leaderboardData, setLeaderboardData] = useState<LeaderboardUser[]>([]);
   const [loading, setLoading] = useState(true);
   const [weakTopicSearch, setWeakTopicSearch] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [competencyCurrentPage, setCompetencyCurrentPage] = useState(1);
   const ITEMS_PER_PAGE = 5;
   const [openCompetency, setOpenCompetency] = useState<string | null>(null);
+  const [userName, setUserName] = useState("Kamu");
+  const [currentUserId, setCurrentUserId] = useState<string | null>(null);
 
   const [userLearningLevel, setUserLearningLevel] = useState<string | null>(null);
   // Definisikan ref dan state inView untuk chart aktivitas di sini
@@ -215,7 +225,7 @@ export default function AnalitikBelajarPage() {
       try {
         setLoading(true);
 
-        const [progressRes, analyticsRes, weeklyActivityRes, classWeeklyActivityRes, competencyProfileRes, comparisonRes, recommendationsRes, weakTopicsRes] =
+        const [progressRes, analyticsRes, weeklyActivityRes, classWeeklyActivityRes, competencyProfileRes, comparisonRes, recommendationsRes, weakTopicsRes, leaderboardRes] =
           await Promise.all([
             authFetch(`${process.env.NEXT_PUBLIC_API_URL}/api/modul/progress`),
             authFetch(`${process.env.NEXT_PUBLIC_API_URL}/api/results/analytics`),
@@ -225,6 +235,7 @@ export default function AnalitikBelajarPage() {
             authFetch(`${process.env.NEXT_PUBLIC_API_URL}/api/results/comparison-analytics`),
             authFetch(`${process.env.NEXT_PUBLIC_API_URL}/api/results/recommendations`),
             authFetch(`${process.env.NEXT_PUBLIC_API_URL}/api/results/topics-to-reinforce`),
+            authFetch(`${process.env.NEXT_PUBLIC_API_URL}/api/results/streak-leaderboard`),
           ]);
 
         // --- Penanganan Error yang Lebih Baik ---
@@ -241,6 +252,8 @@ export default function AnalitikBelajarPage() {
         if (userRaw) {
           const parsedUser = JSON.parse(userRaw);
           setUserLearningLevel(parsedUser.learningLevel);
+          setUserName(parsedUser.name || "Kamu");
+          setCurrentUserId(parsedUser._id || parsedUser.id);
           // Buka accordion level pengguna saat ini secara default
           if (parsedUser.learningLevel) {
             const formattedLevel = parsedUser.learningLevel.charAt(0).toUpperCase() + parsedUser.learningLevel.slice(1);
@@ -257,6 +270,7 @@ export default function AnalitikBelajarPage() {
         const comparisonData = await checkResponse(comparisonRes, 'comparison');
         const recommendationsData: RecommendationData | null = await checkResponse(recommendationsRes, 'recommendations');
         const weakTopicsData = await checkResponse(weakTopicsRes, 'weak topics');
+        const leaderboardDataRes = await checkResponse(leaderboardRes, 'leaderboard');
 
         const completedModules = progressData.filter((m: ModulProgress) => m.progress === 100).length;
         const totalModules = progressData.length;
@@ -316,6 +330,10 @@ export default function AnalitikBelajarPage() {
         }).filter((t: WeakTopicData) => t.status !== "Sudah bagus" && t.modulSlug);
 
         setWeakTopics(enrichedWeakTopics);
+
+        if (leaderboardDataRes) {
+          setLeaderboardData(leaderboardDataRes);
+        }
 
         setSummary({
           completedModules,
@@ -630,6 +648,13 @@ export default function AnalitikBelajarPage() {
               popover: {
                 title: 'Peta Kompetensi',
                 description: 'Visualisasi penguasaanmu pada level Dasar, Menengah, dan Lanjut. Penuhi syarat skor untuk naik level.'
+              }
+            },
+            {
+              element: '#leaderboard-streak',
+              popover: {
+                title: 'Leaderboard Streak',
+                description: 'Lihat peringkat konsistensi belajarmu dibandingkan teman sekelas. Pertahankan streak harianmu untuk naik peringkat!'
               }
             },
             {
@@ -1072,7 +1097,9 @@ export default function AnalitikBelajarPage() {
       </section>
 
       {/* PETA KOMPETENSI */}
-      <section id="competency-map" className="bg-gradient-to-br from-violet-50 to-indigo-100 dark:from-gray-800 dark:to-slate-800 p-6 rounded-2xl shadow-md">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <section id="competency-map" className="lg:col-span-2 bg-gradient-to-br from-violet-50 to-indigo-100 dark:from-gray-800 dark:to-slate-800 p-6 rounded-2xl shadow-md h-full flex flex-col">
+        <div className="flex-grow">
         <h3 className="text-sm sm:text-base font-semibold text-gray-700 dark:text-gray-200 mb-1 flex items-center gap-2">
           <Target className="w-5 h-5 text-indigo-500" />
           Peta Kompetensi Individu
@@ -1147,18 +1174,20 @@ export default function AnalitikBelajarPage() {
                               <img src={info.icon} alt={`${info.title} icon`} width={128} height={128} className="w-24 sm:w-12 h-auto object-contain" />
                             </div>
                             <div>
-                              <h4 className="font-bold text-md text-gray-800 dark:text-gray-100">{info.title}</h4>
+                              <div className="flex items-center gap-2 flex-wrap">
+                                <h4 className="font-bold text-md text-gray-800 dark:text-gray-100">{info.title}</h4>
+                                {isCurrentUserLevel && (
+                                  <span className="flex items-center justify-center px-2 py-0.5 rounded-full text-[10px] font-medium bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200 border border-blue-200 dark:border-blue-800 whitespace-nowrap">
+                                    <Target className="w-3 h-3 mr-1" />
+                                    Level Kamu
+                                  </span>
+                                )}
+                              </div>
                               <p className="text-sm sm:text-md text-gray-500 dark:text-gray-400 mt-1 leading-relaxed max-w-md" dangerouslySetInnerHTML={{ __html: info.unlockInfo }} />
                             </div>
                           </div>
 
                           <div className="flex items-center gap-3 self-end sm:self-center">
-                            {isCurrentUserLevel && (
-                              <span className="flex sm:inline-flex items-center justify-center px-3 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200 border border-blue-200 dark:border-blue-800">
-                                <Target className="w-3 h-3 mr-1.5" />
-                                Level Kamu
-                              </span>
-                            )}
                             <div className={`p-1 rounded-full transition-transform duration-300 ${isOpen ? 'rotate-180 bg-gray-200 dark:bg-gray-600' : ''}`}>
                               <ChevronDown className="w-5 h-5 text-gray-500 dark:text-gray-400" />
                             </div>
@@ -1177,7 +1206,6 @@ export default function AnalitikBelajarPage() {
                                       <span className="text-sm font-medium text-gray-700 dark:text-gray-300 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">{feature.name}</span>
                                       <div className="text-right">
                                         <span className={`text-sm font-bold ${feedback.textColor}`}>{score}%</span>
-                                        <p className={`text-[10px] font-medium ${feedback.textColor} opacity-80`}>{feedback.level}</p>
                                       </div>
                                     </div>
                                     <div className="h-2.5 w-full bg-gray-100 dark:bg-gray-700 rounded-full overflow-hidden">
@@ -1185,6 +1213,7 @@ export default function AnalitikBelajarPage() {
                                         <div className="absolute inset-0 bg-white/20 animate-pulse"></div>
                                       </div>
                                     </div>
+                                    <p className={`text-[10px] font-medium ${feedback.textColor} opacity-80 text-right mt-1`}>{feedback.level}</p>
                                   </div>
                                 );
                               })}
@@ -1201,6 +1230,7 @@ export default function AnalitikBelajarPage() {
         ) : (
           <p className="text-center text-sm text-gray-600 dark:text-gray-400 py-8">Data kompetensi belum tersedia. Kerjakan tes awal untuk melihatnya.</p>
         )}
+        </div>
         {/* Tombol Tingkatkan dipindahkan ke luar dari pengecekan loading */}
         {!loading && competencyData?.nextModuleToImprove && (
           <div className="mt-8 text-center md:text-left">
@@ -1214,6 +1244,117 @@ export default function AnalitikBelajarPage() {
           </div>
         )}
       </section>
+      
+        {/* LEADERBOARD */}
+        <div id="leaderboard-streak" className="bg-white dark:bg-gray-800 rounded-2xl shadow-md border border-slate-200 dark:border-slate-700 flex flex-col overflow-hidden h-full">
+          {/* Header with Top 3 Badges */}
+          <div className="p-4 bg-gradient-to-b from-blue-50 to-white dark:from-gray-700 dark:to-gray-800 border-b border-slate-100 dark:border-slate-700">
+            <div className="flex items-center gap-2 mb-1">
+              <div className="bg-orange-100 dark:bg-orange-900/30 p-1.5 rounded-lg">
+                <Flame className="text-orange-500 fill-orange-500" size={18} />
+              </div>
+              <h3 className="font-bold text-gray-800 dark:text-white text-md">Leaderboard Streak</h3>
+            </div>
+            <p className="text-sm text-gray-500 dark:text-gray-400 mb-4 ml-1">Peringkat konsistensi belajarmu dibandingkan temanmu.</p>
+            
+            {leaderboardData.length >= 3 ? (
+            <div className="flex justify-center items-end gap-2 mb-1">
+              {/* Rank 2 */}
+              <div className="flex flex-col items-center">
+                <div className="w-10 h-10 rounded-full bg-gray-100 border-2 border-gray-300 flex items-center justify-center relative shadow-sm">
+                  <span className="absolute -top-2 -right-1 text-sm">🥈</span>
+                  <div className="w-full h-full rounded-full overflow-hidden bg-gray-200 flex items-center justify-center text-xs font-bold text-gray-500">
+                    {leaderboardData[1].name.substring(0, 2).toUpperCase()}
+                  </div>
+                </div>
+                <span className="text-[10px] font-bold mt-1 text-gray-700 dark:text-gray-300 truncate max-w-[60px]">{leaderboardData[1].name}</span>
+                <span className="text-[10px] text-orange-500 font-bold">{leaderboardData[1].dailyStreak}🔥</span>
+              </div>
+              
+              {/* Rank 1 */}
+              <div className="flex flex-col items-center -mt-4 z-10">
+                <div className="w-12 h-12 rounded-full bg-yellow-50 border-2 border-yellow-400 flex items-center justify-center relative shadow-md ring-2 ring-yellow-100 dark:ring-yellow-900">
+                  <Crown className="absolute -top-4 text-yellow-500 fill-yellow-500" size={20} />
+                  <div className="w-full h-full rounded-full overflow-hidden bg-yellow-100 flex items-center justify-center text-xs font-bold text-yellow-600">
+                    {leaderboardData[0].name.substring(0, 2).toUpperCase()}
+                  </div>
+                </div>
+                <span className="text-xs font-bold mt-1 text-gray-800 dark:text-white truncate max-w-[70px]">{leaderboardData[0].name}</span>
+                <span className="text-xs text-orange-500 font-bold">{leaderboardData[0].dailyStreak}🔥</span>
+              </div>
+
+              {/* Rank 3 */}
+              <div className="flex flex-col items-center">
+                <div className="w-10 h-10 rounded-full bg-orange-50 border-2 border-orange-300 flex items-center justify-center relative shadow-sm">
+                  <span className="absolute -top-2 -left-1 text-sm">🥉</span>
+                  <div className="w-full h-full rounded-full overflow-hidden bg-orange-100 flex items-center justify-center text-xs font-bold text-orange-600">
+                    {leaderboardData[2].name.substring(0, 2).toUpperCase()}
+                  </div>
+                </div>
+                <span className="text-[10px] font-bold mt-1 text-gray-700 dark:text-gray-300 truncate max-w-[60px]">{leaderboardData[2].name}</span>
+                <span className="text-[10px] text-orange-500 font-bold">{leaderboardData[2].dailyStreak}🔥</span>
+              </div>
+            </div>
+            ) : (
+                <div className="text-center py-4 text-xs text-gray-500">Belum cukup data untuk Top 3</div>
+            )}
+          </div>
+
+          {/* Content List 4-10 with Blur Effect */}
+          <div className="overflow-hidden relative bg-white dark:bg-gray-800 flex-grow">
+            <div className="absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-white dark:from-gray-800 to-transparent pointer-events-none z-10" />
+            <div className="overflow-y-auto h-full p-3 space-y-2 custom-scrollbar">
+              {leaderboardData.slice(3).map((u, index) => (
+                <div key={u._id} className="flex items-center justify-between p-2 rounded-lg hover:bg-slate-50 dark:hover:bg-gray-700/50 transition-colors">
+                  <div className="flex items-center gap-3">
+                    <span className="text-xs font-bold text-gray-400 w-4 text-center">{index + 4}</span>
+                    <div className="w-6 h-6 rounded-full bg-gray-100 dark:bg-gray-700 flex items-center justify-center text-[10px] font-bold text-gray-500 dark:text-gray-400 overflow-hidden">
+                        {u.avatar ? (
+                            <img src={u.avatar.startsWith('http') ? u.avatar : `${process.env.NEXT_PUBLIC_API_URL}/uploads/${u.avatar}`} alt={u.name} className="w-full h-full object-cover" />
+                        ) : (
+                            u.name.substring(0, 2).toUpperCase()
+                        )}
+                    </div>
+                    <span className="text-xs font-medium text-gray-700 dark:text-gray-300 truncate max-w-[100px]">{u.name}</span>
+                  </div>
+                  <span className="text-xs font-bold text-orange-500">{u.dailyStreak}🔥</span>
+                </div>
+              ))}
+              {leaderboardData.length === 0 && (
+                  <div className="text-center py-10 text-gray-400 text-sm">Belum ada data leaderboard.</div>
+              )}
+            </div>
+          </div>
+
+          {/* Footer Current User Rank */}
+          <div className="p-3 bg-slate-50 dark:bg-gray-900 border-t border-slate-200 dark:border-slate-700 flex items-center justify-between relative z-20 mt-auto">
+            <div className="flex items-center gap-3">
+              <span className="font-bold text-gray-500 text-xs w-4 text-center">
+                {/* Cari rank user saat ini */}
+                {(() => {
+                    if(currentUserId) {
+                        const rank = leaderboardData.findIndex(u => u._id === currentUserId);
+                        return rank !== -1 ? `#${rank + 1}` : '-';
+                    }
+                    return '-';
+                })()}
+              </span>
+              <div className="flex items-center gap-2">
+                <div className="w-8 h-8 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center text-blue-600 dark:text-blue-400 font-bold text-[10px] border border-blue-200 dark:border-blue-800">
+                  ME
+                </div>
+                <div className="flex flex-col">
+                  <span className="text-xs font-bold text-gray-800 dark:text-white truncate max-w-[80px]">{userName}</span>
+                  <span className="text-[10px] text-gray-500 dark:text-gray-400">
+                    {summary?.dailyStreak && summary.dailyStreak > 0 ? "Keep it up!" : "Mulai streak!"}
+                  </span>
+                </div>
+              </div>
+            </div>
+            <span className="font-bold text-orange-500 text-sm">{summary?.dailyStreak || 0}🔥</span>
+          </div>
+        </div>
+      </div>
 
       {/* REKOMENDASI */}
       <section id="learning-recommendations" className="relative overflow-hidden bg-gradient-to-br from-blue-50 via-blue-100 to-gray-100 dark:from-gray-800 dark:via-gray-800 dark:to-gray-900 text-gray-800 dark:text-gray-100 p-6 rounded-2xl shadow-md border-r-8 border-purple-400 dark:border-r-gray-600">
@@ -1393,7 +1534,7 @@ export default function AnalitikBelajarPage() {
             </ul>
           )}
         </div>
-      </section>
+        </section>
 
 
     </div>
