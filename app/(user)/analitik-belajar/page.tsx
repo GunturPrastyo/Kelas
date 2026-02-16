@@ -9,6 +9,7 @@ import { ChevronDown, ChevronRight } from "lucide-react";
 import { driver } from "driver.js";
 import "driver.js/dist/driver.css";
 import { useAlert } from "@/context/AlertContext";
+
 Chart.register(...registerables);
 
 interface SummaryData {
@@ -1255,10 +1256,10 @@ export default function AnalitikBelajarPage() {
               </div>
               <h3 className="font-bold text-gray-800 dark:text-white text-md">Leaderboard Streak</h3>
             </div>
-            <p className="text-sm text-gray-500 dark:text-gray-400 mb-4 ml-1">Peringkat konsistensi belajarmu dibandingkan temanmu.</p>
+            <p className="text-sm text-gray-500 dark:text-gray-400 mb-8 ml-1">Peringkat konsistensi belajarmu dibandingkan temanmu.</p>
             
             {leaderboardData.length >= 3 ? (
-            <div className="flex justify-center items-end gap-2 mb-1">
+            <div className="flex justify-center items-end gap-2 mb-2">
               {/* Rank 2 */}
               <div className="flex flex-col items-center">
                 <div className="w-10 h-10 rounded-full bg-gray-100 border-2 border-gray-300 flex items-center justify-center relative shadow-sm">

@@ -6,7 +6,7 @@ import Link from "next/link"
 import { authFetch } from "@/lib/authFetch";
 import ModuleList from "@/components/ModuleList"
 import PreTestModal from "@/components/PreTestModal";
-import { BarChart2, Clock, TrendingUp, Target, PlayCircle, Rocket, ClipboardCheck, Flame, X } from "lucide-react";
+import { BarChart2, Clock, TrendingUp, Target, PlayCircle, Rocket, ClipboardCheck } from "lucide-react";
 import { driver } from "driver.js";
 import "driver.js/dist/driver.css";
 import { useAlert } from "@/context/AlertContext";
@@ -120,47 +120,6 @@ const useCountUp = (end: number, duration: number = 1500, start: boolean = true)
   return count;
 };
 
-// --- Komponen Modal Streak ---
-const StreakModal = ({ isOpen, onClose, streak }: { isOpen: boolean; onClose: () => void; streak: number }) => {
-  if (!isOpen) return null;
-
-  return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-in fade-in duration-300">
-      <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl w-full max-w-sm p-6 text-center relative transform transition-all scale-100 animate-in zoom-in-95 duration-300 border-2 border-orange-100 dark:border-orange-900/50">
-        <button 
-          onClick={onClose}
-          className="absolute top-3 right-3 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition-colors"
-        >
-          <X size={20} />
-        </button>
-        
-        <div className="mb-5 flex justify-center">
-          <div className="relative">
-            <div className="absolute inset-0 bg-orange-500 blur-2xl opacity-20 rounded-full animate-pulse"></div>
-            <div className="bg-gradient-to-br from-orange-400 to-red-500 p-4 rounded-full shadow-lg relative z-10">
-                <Flame size={48} className="text-white fill-white" />
-            </div>
-          </div>
-        </div>
-        
-        <h2 className="text-2xl font-bold text-gray-800 dark:text-white mb-2">
-          Streak {streak} Hari! 🔥
-        </h2>
-        <p className="text-gray-600 dark:text-gray-300 mb-6 text-sm leading-relaxed">
-          Luar biasa! Kamu telah konsisten belajar selama <span className="font-bold text-orange-500">{streak} hari</span> berturut-turut. Pertahankan momentum ini!
-        </p>
-        
-        <button
-          onClick={onClose}
-          className="w-full py-3 px-4 bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white font-bold rounded-xl shadow-lg shadow-orange-500/30 transition-all transform hover:scale-[1.02] active:scale-[0.98]"
-        >
-          Siap Lanjut Belajar!
-        </button>
-      </div>
-    </div>
-  );
-};
-
 export default function DashboardPage() {
   const { showAlert } = useAlert();
   const [modules, setModules] = useState<Module[]>([]);
@@ -179,7 +138,6 @@ export default function DashboardPage() {
     continueToModule: null,
   });
   const [showPreTestModal, setShowPreTestModal] = useState(false);
-  const [showStreakModal, setShowStreakModal] = useState(false);
 
 
   useEffect(() => {
@@ -271,23 +229,6 @@ export default function DashboardPage() {
 
     fetchDashboardData();
   }, []);
-
-  // --- Efek untuk Cek & Tampilkan Streak Modal ---
-  useEffect(() => {
-    // Tampilkan modal hanya jika streak > 0 dan belum ditampilkan hari ini
-    if (analytics.dailyStreak && analytics.dailyStreak > 0) {
-      const today = new Date().toDateString();
-      const lastShown = localStorage.getItem('lastStreakShownDate');
-      
-      if (lastShown !== today) {
-        const timer = setTimeout(() => {
-            setShowStreakModal(true);
-            localStorage.setItem('lastStreakShownDate', today);
-        }, 1500); // Delay sedikit agar tidak bertabrakan dengan loading awal
-        return () => clearTimeout(timer);
-      }
-    }
-  }, [analytics.dailyStreak]);
 
   const personalizedModules = useMemo(() => {
     const categoryMap: Record<string, string> = { 
@@ -753,13 +694,6 @@ export default function DashboardPage() {
       <PreTestModal
         isOpen={showPreTestModal}
         onClose={() => setShowPreTestModal(false)}
-      />
-
-      {/* Modal Pop-up Daily Streak */}
-      <StreakModal
-        isOpen={showStreakModal}
-        onClose={() => setShowStreakModal(false)}
-        streak={analytics.dailyStreak || 0}
       />
     </>
   )
