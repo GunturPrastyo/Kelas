@@ -81,6 +81,7 @@ interface TestResult {
         focus: number;
     };
     bestScore?: number; // Tambahkan properti opsional untuk skor terbaik
+    previousBestScore?: number | null; // Tambahkan properti untuk skor sebelumnya
 }
 
 export default function ModulDetailPage() {
@@ -536,6 +537,21 @@ export default function ModulDetailPage() {
 
             const finalResult = resultData.data; // Backend mengembalikan { message, data: newResult }
             setTestResult(finalResult);
+
+            // Cek kenaikan nilai dan tampilkan alert
+            if (finalResult.previousBestScore !== null && finalResult.previousBestScore !== undefined) {
+                if (finalResult.score > finalResult.previousBestScore) {
+                    const diff = Math.round(finalResult.score - finalResult.previousBestScore);
+                    const percentIncrease = finalResult.previousBestScore > 0 
+                        ? Math.round((diff / finalResult.previousBestScore) * 100) 
+                        : 0;
+                    showAlert({
+                        title: 'Peningkatan Nilai! 🎉',
+                        message: `Nilai kamu sekarang <strong>${Math.round(finalResult.score)}</strong>. Naik <strong>${diff} poin</strong> ${finalResult.previousBestScore > 0 ? `(<strong>${percentIncrease}%</strong>)` : ''} dari nilai sebelumnya (${Math.round(finalResult.previousBestScore)}).`,
+                        confirmText: 'Mantap!',
+                    });
+                }
+            }
 
             // Buat notifikasi berdasarkan hasil tes topik
             const notifMessage = finalResult.score >= 70

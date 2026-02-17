@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Flame, X } from 'lucide-react';
 import { authFetch } from '@/lib/authFetch';
 import { usePathname } from 'next/navigation';
@@ -14,6 +14,7 @@ export default function GlobalStreakAlert() {
     const [streakCount, setStreakCount] = useState(0);
     const [user, setUser] = useState<User | null>(null);
     const pathname = usePathname();
+    const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
     useEffect(() => {
         const loadUser = () => {
@@ -44,19 +45,21 @@ export default function GlobalStreakAlert() {
                 const res = await authFetch(`${process.env.NEXT_PUBLIC_API_URL}/api/results/analytics`);
                 if (res.ok) {
                     const data = await res.json();
-                    const streak = data.dailyStreak || 0;
+                    const currentStreak = data.dailyStreak || 0;
                     
-                    if (streak > 0) {
+                    if (currentStreak > 0) {
                         const today = new Date().toDateString();
-                        const lastShown = localStorage.getItem('lastStreakShownDate');
+                        const lastShownDate = localStorage.getItem('lastStreakShownDate');
+                        const lastShownStreak = parseInt(localStorage.getItem('lastStreakShownCount') || '0', 10);
                         
-                        if (lastShown !== today) {
-                            const timer = setTimeout(() => {
-                                setStreakCount(streak);
-                                setShowStreakModal(true);
-                                localStorage.setItem('lastStreakShownDate', today);
-                            }, 2000);
-                            return () => clearTimeout(timer);
+                        // Tampilkan jika:
+                        // 1. Belum pernah ditampilkan hari ini
+                        // 2. ATAU streak bertambah (misal dari 5 jadi 6 karena aktivitas baru saat ini)
+                        if (lastShownDate !== today || currentStreak > lastShownStreak) {
+                            setStreakCount(currentStreak);
+                            setShowStreakModal(true);
+                            localStorage.setItem('lastStreakShownDate', today);
+                            localStorage.setItem('lastStreakShownCount', currentStreak.toString());
                         }
                     }
                 }
@@ -66,6 +69,13 @@ export default function GlobalStreakAlert() {
         };
 
         checkStreak();
+
+        // Polling setiap 1 menit (60000 ms) untuk mengecek update streak saat user aktif
+        intervalRef.current = setInterval(checkStreak, 60000);
+
+        return () => {
+            if (intervalRef.current) clearInterval(intervalRef.current);
+        };
     }, [user, pathname]);
 
     if (!showStreakModal) return null;
