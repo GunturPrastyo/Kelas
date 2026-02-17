@@ -542,12 +542,12 @@ export default function ModulDetailPage() {
             if (finalResult.previousBestScore !== null && finalResult.previousBestScore !== undefined) {
                 if (finalResult.score > finalResult.previousBestScore) {
                     const diff = Math.round(finalResult.score - finalResult.previousBestScore);
-                    const percentIncrease = finalResult.previousBestScore > 0 
-                        ? Math.round((diff / finalResult.previousBestScore) * 100) 
-                        : 0;
+                    // Hitung persentase peningkatan terhadap skala total (100), bukan terhadap nilai sebelumnya
+                    // agar tidak melebihi 100% (misal dari 10 ke 90 bukan naik 800%, tapi naik 80% dari total skala)
+                    const percentIncrease = Math.round((diff / 100) * 100);
                     showAlert({
                         title: 'Peningkatan Nilai! 🎉',
-                        message: `Nilai kamu sekarang <strong>${Math.round(finalResult.score)}</strong>. Naik <strong>${diff} poin</strong> ${finalResult.previousBestScore > 0 ? `(<strong>${percentIncrease}%</strong>)` : ''} dari nilai sebelumnya (${Math.round(finalResult.previousBestScore)}).`,
+                        message: `Nilai kamu sekarang <strong>${Math.round(finalResult.score)}</strong>. Naik <strong>${diff} poin</strong> (<strong>${percentIncrease}%</strong>) dari nilai sebelumnya (${Math.round(finalResult.previousBestScore)}).`,
                         confirmText: 'Mantap!',
                     });
                 }

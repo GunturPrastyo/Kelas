@@ -6,7 +6,7 @@ import { authFetch } from "@/lib/authFetch";
 import hljs from 'highlight.js';
 import 'highlight.js/styles/github-dark.css';
 import Link from "next/link";
-import { Home, Target, Clock3, Activity, Eye, Lightbulb, Star, LayoutGrid } from 'lucide-react';
+import { Home, Target, Clock3, Activity, Eye, Lightbulb, Star, LayoutGrid, TrendingUp, ArrowRight, X } from 'lucide-react';
 import { useAlert } from "@/context/AlertContext";
 import LevelUpAlert from "@/components/LevelUpAlert";
 
@@ -80,6 +80,9 @@ export default function PostTestPage() {
     const [showLevelUpAlert, setShowLevelUpAlert] = useState(false);
     const [newLevel, setNewLevel] = useState("");
     const [oldLevelForAlert, setOldLevelForAlert] = useState("");
+    const [showCompetencyModal, setShowCompetencyModal] = useState(false);
+    const [pendingLevelUp, setPendingLevelUp] = useState(false);
+    const [pendingScoreAlert, setPendingScoreAlert] = useState<string | null>(null);
 
     const { showAlert } = useAlert();
     const questionAreaRef = useRef<HTMLDivElement>(null);
@@ -97,6 +100,19 @@ export default function PostTestPage() {
     const questionOptionsHtml = useMemo(() => {
         return currentQuestion?.options.map(opt => ({ __html: opt })) || [];
     }, [currentQuestion]);
+
+    const handleCloseCompetencyModal = () => {
+        setShowCompetencyModal(false);
+        if (pendingLevelUp) {
+            setShowLevelUpAlert(true);
+        } else if (pendingScoreAlert) {
+            showAlert({
+                title: 'Peningkatan Nilai! 🎉',
+                message: pendingScoreAlert,
+                confirmText: 'Mantap!',
+            });
+        }
+    };
 
     const gradeTest = useCallback(async () => {
         if (!user || !modul) return;
@@ -140,6 +156,7 @@ export default function PostTestPage() {
 
             // Cek Level Up
             const finalResultData = resultData.data;
+            let hasLevelUp = false;
             if (user && user.learningLevel && finalResultData.learningPath && user.learningLevel !== finalResultData.learningPath) {
                 const previousLevel = user.learningLevel;
                 setOldLevelForAlert(previousLevel);
@@ -153,17 +170,17 @@ export default function PostTestPage() {
                 window.dispatchEvent(new Event('user-updated'));
                 
                 setNewLevel(finalResultData.learningPath);
-                setShowLevelUpAlert(true);
+                hasLevelUp = true;
             }
 
             // Cek kenaikan nilai dan tampilkan alert
             const finalResult = resultData.data;
             let alertMessage = "";
-            let hasImprovement = false;
+            let hasScoreImprovement = false;
 
             if (finalResult.previousBestScore !== null && finalResult.previousBestScore !== undefined) {
                 if (finalResult.score > finalResult.previousBestScore) {
-                    hasImprovement = true;
+                    hasScoreImprovement = true;
                     const diff = Math.round(finalResult.score - finalResult.previousBestScore);
                     const percentIncrease = finalResult.previousBestScore > 0 
                         ? Math.round((diff / finalResult.previousBestScore) * 100) 
@@ -172,19 +189,20 @@ export default function PostTestPage() {
                 }
             }
 
-            if (finalResult.competencyUpdates && finalResult.competencyUpdates.length > 0) {
-                hasImprovement = true;
-                if (alertMessage) alertMessage += `<br/><br/>`;
-                const trendingUpIcon = `<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-trending-up inline-block mr-1"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline><polyline points="17 6 23 6 23 12"></polyline></svg>`;
-                alertMessage += `<strong>Peningkatan Kompetensi:</strong><ul class="text-left mt-2 space-y-1 text-sm">` + finalResult.competencyUpdates.map((update: any) => `<li>• ${update.featureName}: ${update.oldScore} → <strong>${update.newScore}</strong> <span class="inline-flex items-center font-bold text-green-600 dark:text-green-400 bg-green-100 dark:bg-green-900/30 px-1.5 py-0.5 rounded-full text-xs ml-1">${trendingUpIcon}${update.percentIncrease}%</span></li>`).join('') + `</ul>`;
-            }
+            const hasCompetencyUpdates = finalResult.competencyUpdates && finalResult.competencyUpdates.length > 0;
 
-            if (hasImprovement) {
+            if (hasCompetencyUpdates) {
+                setPendingLevelUp(hasLevelUp);
+                setPendingScoreAlert(hasScoreImprovement ? alertMessage : null);
+                setShowCompetencyModal(true);
+            } else if (hasLevelUp) {
+                setShowLevelUpAlert(true);
+            } else if (hasScoreImprovement) {
                 showAlert({
-                        title: 'Peningkatan Nilai! 🎉',
-                        message: alertMessage,
-                        confirmText: 'Mantap!',
-                    });
+                    title: 'Peningkatan Nilai! 🎉',
+                    message: alertMessage,
+                    confirmText: 'Mantap!',
+                });
             }
 
         } catch (err) {
@@ -617,7 +635,6 @@ export default function PostTestPage() {
                             </ul>
                         </div>
                     )}
-
 
                     {/* === TOMBOL === */}
                     <div className="mt-8 flex justify-between items-center">
