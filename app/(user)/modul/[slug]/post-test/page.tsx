@@ -8,6 +8,7 @@ import 'highlight.js/styles/github-dark.css';
 import Link from "next/link";
 import { Home, Target, Clock3, Activity, Eye, Lightbulb, Star, LayoutGrid } from 'lucide-react';
 import { useAlert } from "@/context/AlertContext";
+import LevelUpAlert from "@/components/LevelUpAlert";
 
 interface Question {
     _id: string;
@@ -24,6 +25,8 @@ interface Modul {
 
 interface User {
     _id: string;
+    learningLevel?: string;
+    name?: string;
 }
 
 interface TestResult {
@@ -45,6 +48,14 @@ interface TestResult {
         score: number;
     }[];
     previousBestScore?: number | null;
+    learningPath?: string; // Tambahkan ini untuk menangkap level baru dari backend
+    competencyUpdates?: {
+        featureName: string;
+        oldScore: number;
+        newScore: number;
+        diff: number;
+        percentIncrease: number;
+    }[];
 }
 
 export default function PostTestPage() {
@@ -65,6 +76,10 @@ export default function PostTestPage() {
     const [isSubmitting, setIsSubmitting] = useState(false); // State baru untuk melacak ID unik
     const [changedQuestionIds, setChangedQuestionIds] = useState<Set<string>>(new Set());
     const [tabExitCount, setTabExitCount] = useState(0);
+    
+    const [showLevelUpAlert, setShowLevelUpAlert] = useState(false);
+    const [newLevel, setNewLevel] = useState("");
+    const [oldLevelForAlert, setOldLevelForAlert] = useState("");
 
     const { showAlert } = useAlert();
     const questionAreaRef = useRef<HTMLDivElement>(null);
@@ -123,20 +138,53 @@ export default function PostTestPage() {
 
             setResult(resultData.data);
 
+            // Cek Level Up
+            const finalResultData = resultData.data;
+            if (user && user.learningLevel && finalResultData.learningPath && user.learningLevel !== finalResultData.learningPath) {
+                const previousLevel = user.learningLevel;
+                setOldLevelForAlert(previousLevel);
+
+                // Update user di localStorage agar sinkron
+                const updatedUser = { ...user, learningLevel: finalResultData.learningPath };
+                localStorage.setItem('user', JSON.stringify(updatedUser));
+                setUser(updatedUser);
+                
+                // Trigger event agar komponen lain (seperti Navbar) tahu ada update
+                window.dispatchEvent(new Event('user-updated'));
+                
+                setNewLevel(finalResultData.learningPath);
+                setShowLevelUpAlert(true);
+            }
+
             // Cek kenaikan nilai dan tampilkan alert
             const finalResult = resultData.data;
+            let alertMessage = "";
+            let hasImprovement = false;
+
             if (finalResult.previousBestScore !== null && finalResult.previousBestScore !== undefined) {
                 if (finalResult.score > finalResult.previousBestScore) {
+                    hasImprovement = true;
                     const diff = Math.round(finalResult.score - finalResult.previousBestScore);
                     const percentIncrease = finalResult.previousBestScore > 0 
                         ? Math.round((diff / finalResult.previousBestScore) * 100) 
                         : 0;
-                    showAlert({
-                        title: 'Peningkatan Nilai!',
-                        message: `Nilai kamu sekarang <strong>${Math.round(finalResult.score)}</strong>. Naik <strong>${diff} poin</strong> ${finalResult.previousBestScore > 0 ? `(<strong>${percentIncrease}%</strong>)` : ''} dari nilai sebelumnya (${Math.round(finalResult.previousBestScore)}).`,
+                    alertMessage += `Nilai kamu sekarang <strong>${Math.round(finalResult.score)}</strong>. Naik <strong>${diff} poin</strong> ${finalResult.previousBestScore > 0 ? `(<strong>${percentIncrease}%</strong>)` : ''} dari nilai sebelumnya (${Math.round(finalResult.previousBestScore)}).`;
+                }
+            }
+
+            if (finalResult.competencyUpdates && finalResult.competencyUpdates.length > 0) {
+                hasImprovement = true;
+                if (alertMessage) alertMessage += `<br/><br/>`;
+                const trendingUpIcon = `<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-trending-up inline-block mr-1"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline><polyline points="17 6 23 6 23 12"></polyline></svg>`;
+                alertMessage += `<strong>Peningkatan Kompetensi:</strong><ul class="text-left mt-2 space-y-1 text-sm">` + finalResult.competencyUpdates.map((update: any) => `<li>• ${update.featureName}: ${update.oldScore} → <strong>${update.newScore}</strong> <span class="inline-flex items-center font-bold text-green-600 dark:text-green-400 bg-green-100 dark:bg-green-900/30 px-1.5 py-0.5 rounded-full text-xs ml-1">${trendingUpIcon}${update.percentIncrease}%</span></li>`).join('') + `</ul>`;
+            }
+
+            if (hasImprovement) {
+                showAlert({
+                        title: 'Peningkatan Nilai! 🎉',
+                        message: alertMessage,
                         confirmText: 'Mantap!',
                     });
-                }
             }
 
         } catch (err) {
@@ -385,6 +433,13 @@ export default function PostTestPage() {
         const isPassed = result.score >= 70;
         return (
             <div className="mt-20 max-w-full mx-auto px-1.5 sm:px-3 lg:px-5 py-2 font-sans">
+                <LevelUpAlert 
+                    isOpen={showLevelUpAlert} 
+                    onClose={() => setShowLevelUpAlert(false)} 
+                    newLevel={newLevel}
+                    oldLevel={oldLevelForAlert}
+                />
+
                 <nav className="flex mb-6" aria-label="Breadcrumb">
                     <ol className="inline-flex items-center md:space-x-2 rtl:space-x-reverse text-slate-700 dark:text-slate-300">
                         <li className="inline-flex items-center">
