@@ -44,6 +44,7 @@ interface TestResult {
         slug: string;
         score: number;
     }[];
+    previousBestScore?: number | null;
 }
 
 export default function PostTestPage() {
@@ -121,6 +122,22 @@ export default function PostTestPage() {
             if (!response.ok) throw new Error(resultData.message || "Gagal mengirimkan jawaban.");
 
             setResult(resultData.data);
+
+            // Cek kenaikan nilai dan tampilkan alert
+            const finalResult = resultData.data;
+            if (finalResult.previousBestScore !== null && finalResult.previousBestScore !== undefined) {
+                if (finalResult.score > finalResult.previousBestScore) {
+                    const diff = Math.round(finalResult.score - finalResult.previousBestScore);
+                    const percentIncrease = finalResult.previousBestScore > 0 
+                        ? Math.round((diff / finalResult.previousBestScore) * 100) 
+                        : 0;
+                    showAlert({
+                        title: 'Peningkatan Nilai!',
+                        message: `Nilai kamu sekarang <strong>${Math.round(finalResult.score)}</strong>. Naik <strong>${diff} poin</strong> ${finalResult.previousBestScore > 0 ? `(<strong>${percentIncrease}%</strong>)` : ''} dari nilai sebelumnya (${Math.round(finalResult.previousBestScore)}).`,
+                        confirmText: 'Mantap!',
+                    });
+                }
+            }
 
         } catch (err) {
             showAlert({
@@ -326,20 +343,8 @@ export default function PostTestPage() {
             message: 'Apakah kamu yakin ingin mengulang uji pemahaman akhir modul ini? Hasil sebelumnya akan tetap tersimpan jika skormu saat ini lebih rendah.',
             confirmText: 'Ya, Ulangi',
             onConfirm: async () => {
-                try {
-                    // Hapus hasil dari DB
-                    await authFetch(`${process.env.NEXT_PUBLIC_API_URL}/api/results/by-type/post-test-modul?modulId=${modul._id}`, {
-                        method: 'DELETE'
-                    });
-
-                    // Reload halaman dengan parameter retake
-                    router.push(`/modul/${slug}/post-test?retake=true&modulId=${modul._id}`);
-
-                } catch (err) {
-                    setError(err instanceof Error ? err.message : "Terjadi kesalahan saat memulai ulang tes.");
-                } finally {
-                    setLoading(false);
-                }
+                // Reload halaman dengan parameter retake tanpa menghapus data lama
+                router.push(`/modul/${slug}/post-test?retake=true&modulId=${modul._id}`);
             },
         });
     };
