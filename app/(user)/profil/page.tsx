@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, ChangeEvent, FormEvent, useMemo, Suspense, useRef } from "react";
 import { authFetch } from "@/lib/authFetch";
-import Avatar from "@/components/Avatar"; // Ganti Image dengan komponen Avatar
+import Avatar from "@/components/Avatar"; 
 import Breadcrumb from "@/components/Breadcrumb";
 import { motion } from "framer-motion";
 import { Award, Download, Star, Info, Shield, Zap, Trophy, Hexagon, TrendingUp, TrendingDown, Activity, Swords, Target, Sparkles, BookOpen } from "lucide-react";
@@ -32,8 +32,8 @@ interface User {
   _id: string;
   name: string;
   email: string;
-  avatar?: string; // Make avatar optional
-  hasPassword?: boolean; // Tambahkan properti ini, buat opsional untuk kompatibilitas
+  avatar?: string; 
+  hasPassword?: boolean; 
   learningLevel?: string;
 }
 
@@ -87,7 +87,7 @@ const ProfileContent = () => {
   const [email, setEmail] = useState("");
   const [avatarFile, setAvatarFile] = useState<File | null>(null);
   const [avatarPreview, setAvatarPreview] = useState<string>("/user-placeholder.png");
-  const [certificateName, setCertificateName] = useState(""); // New state for certificate name
+  const [certificateName, setCertificateName] = useState(""); 
 
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
@@ -172,15 +172,15 @@ const ProfileContent = () => {
   useEffect(() => {
     if (competencyData && chartRef.current) {
       const allFeatures: CompetencyFeature[] = [];
-      // Flatten features for the chart
+    
       Object.values(competencyData).forEach(features => {
         allFeatures.push(...features);
       });
 
-      // If no features, don't draw
+      
       if (allFeatures.length === 0) return;
 
-      // Logika label responsif: Gunakan F1, F2 dst untuk layar sangat kecil (range 320px)
+      // Logika label responsif: F1, F2 dst untuk layar sangat kecil (range 320px)
       const isVerySmallScreen = window.innerWidth <= 360;
       let labels;
       if (isVerySmallScreen) {
@@ -192,7 +192,7 @@ const ProfileContent = () => {
           : allFeatures.map(f => f.name.split(' '));
       }
 
-      const data = allFeatures.map(f => Math.round(f.score)); // Membulatkan nilai skor pengguna
+      const data = allFeatures.map(f => Math.round(f.score)); 
       const averageData = allFeatures.map(f => f.average);
 
       const ctx = chartRef.current.getContext("2d");
@@ -207,8 +207,8 @@ const ProfileContent = () => {
             chartRef.current.height / 2,
             chartRef.current.width / 2
         );
-        bgGradient.addColorStop(0, 'rgba(99, 102, 241, 0.3)'); // Indigo-500 center (lebih kalem)
-        bgGradient.addColorStop(1, 'rgba(99, 102, 241, 0.05)'); // Fade out
+        bgGradient.addColorStop(0, 'rgba(99, 102, 241, 0.3)'); 
+        bgGradient.addColorStop(1, 'rgba(99, 102, 241, 0.05)'); 
       }
 
       const chartInstance = new Chart(chartRef.current, {

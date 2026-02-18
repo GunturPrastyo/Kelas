@@ -219,6 +219,7 @@ export default function AnalitikBelajarPage() {
   const [userLearningLevel, setUserLearningLevel] = useState<string | null>(null);
   // Definisikan ref dan state inView untuk chart aktivitas di sini
   const [chartAktivitasRef, isChartAktivitasInView] = useInView({ threshold: 0.5, triggerOnce: true }) as [React.RefObject<HTMLCanvasElement>, boolean];
+  const [activeTooltip, setActiveTooltip] = useState<string | null>(null);
 
   // --- 1️⃣ FETCH DATA SEKALI SAJA ---
   useEffect(() => {
@@ -1268,7 +1269,20 @@ export default function AnalitikBelajarPage() {
                     {leaderboardData[1].name.substring(0, 2).toUpperCase()}
                   </div>
                 </div>
-                <span className="text-[10px] font-bold mt-1 text-gray-700 dark:text-gray-300 truncate max-w-[60px]">{leaderboardData[1].name}</span>
+                <div 
+                  className="relative mt-1 cursor-pointer"
+                  onClick={() => setActiveTooltip(activeTooltip === leaderboardData[1]._id ? null : leaderboardData[1]._id)}
+                >
+                  <div className="text-[10px] font-bold text-gray-700 dark:text-gray-300 truncate max-w-[60px] text-center">
+                    {leaderboardData[1].name}
+                  </div>
+                  {activeTooltip === leaderboardData[1]._id && (
+                    <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 bg-gray-900 text-white text-[10px] rounded shadow-lg z-50 whitespace-nowrap">
+                      {leaderboardData[1].name}
+                      <div className="absolute top-full left-1/2 transform -translate-x-1/2 border-4 border-transparent border-t-gray-900"></div>
+                    </div>
+                  )}
+                </div>
                 <span className="text-[10px] text-orange-500 font-bold">{leaderboardData[1].dailyStreak}🔥</span>
               </div>
               
@@ -1280,7 +1294,20 @@ export default function AnalitikBelajarPage() {
                     {leaderboardData[0].name.substring(0, 2).toUpperCase()}
                   </div>
                 </div>
-                <span className="text-xs font-bold mt-1 text-gray-800 dark:text-white truncate max-w-[70px]">{leaderboardData[0].name}</span>
+                <div 
+                  className="relative mt-1 cursor-pointer"
+                  onClick={() => setActiveTooltip(activeTooltip === leaderboardData[0]._id ? null : leaderboardData[0]._id)}
+                >
+                  <div className="text-xs font-bold text-gray-800 dark:text-white truncate max-w-[70px] text-center">
+                    {leaderboardData[0].name}
+                  </div>
+                  {activeTooltip === leaderboardData[0]._id && (
+                    <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 bg-gray-900 text-white text-[10px] rounded shadow-lg z-50 whitespace-nowrap">
+                      {leaderboardData[0].name}
+                      <div className="absolute top-full left-1/2 transform -translate-x-1/2 border-4 border-transparent border-t-gray-900"></div>
+                    </div>
+                  )}
+                </div>
                 <span className="text-xs text-orange-500 font-bold">{leaderboardData[0].dailyStreak}🔥</span>
               </div>
 
@@ -1292,7 +1319,20 @@ export default function AnalitikBelajarPage() {
                     {leaderboardData[2].name.substring(0, 2).toUpperCase()}
                   </div>
                 </div>
-                <span className="text-[10px] font-bold mt-1 text-gray-700 dark:text-gray-300 truncate max-w-[60px]">{leaderboardData[2].name}</span>
+                <div 
+                  className="relative mt-1 cursor-pointer"
+                  onClick={() => setActiveTooltip(activeTooltip === leaderboardData[2]._id ? null : leaderboardData[2]._id)}
+                >
+                  <div className="text-[10px] font-bold text-gray-700 dark:text-gray-300 truncate max-w-[60px] text-center">
+                    {leaderboardData[2].name}
+                  </div>
+                  {activeTooltip === leaderboardData[2]._id && (
+                    <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 bg-gray-900 text-white text-[10px] rounded shadow-lg z-50 whitespace-nowrap">
+                      {leaderboardData[2].name}
+                      <div className="absolute top-full left-1/2 transform -translate-x-1/2 border-4 border-transparent border-t-gray-900"></div>
+                    </div>
+                  )}
+                </div>
                 <span className="text-[10px] text-orange-500 font-bold">{leaderboardData[2].dailyStreak}🔥</span>
               </div>
             </div>
@@ -1316,7 +1356,20 @@ export default function AnalitikBelajarPage() {
                             u.name.substring(0, 2).toUpperCase()
                         )}
                     </div>
-                    <span className="text-xs font-medium text-gray-700 dark:text-gray-300 truncate max-w-[100px]">{u.name}</span>
+                    <div 
+                      className="relative cursor-pointer"
+                      onClick={() => setActiveTooltip(activeTooltip === u._id ? null : u._id)}
+                    >
+                      <div className="text-xs font-medium text-gray-700 dark:text-gray-300 truncate max-w-[100px]">
+                        {u.name}
+                      </div>
+                      {activeTooltip === u._id && (
+                        <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 bg-gray-900 text-white text-[10px] rounded shadow-lg z-50 whitespace-nowrap">
+                          {u.name}
+                          <div className="absolute top-full left-1/2 transform -translate-x-1/2 border-4 border-transparent border-t-gray-900"></div>
+                        </div>
+                      )}
+                    </div>
                   </div>
                   <span className="text-xs font-bold text-orange-500">{u.dailyStreak}🔥</span>
                 </div>
