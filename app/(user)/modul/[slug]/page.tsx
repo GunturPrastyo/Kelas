@@ -643,16 +643,6 @@ export default function ModulDetailPage() {
         return () => clearInterval(timerInterval);
     }, [activeTest, testStartTime, testResult, submitTest]);
 
-    // useEffect untuk syntax highlighting di modal, sekarang di top-level
-    useEffect(() => {
-        if (questionModalRef.current && currentQuestionForModal) {
-            // Temukan semua blok <pre><code> di dalam area pertanyaan dan terapkan highlight
-            questionModalRef.current.querySelectorAll('pre code').forEach((block) => {
-                hljs.highlightElement(block as HTMLElement);
-            });
-        }
-    }, [activeTest, testIdx, currentQuestionForModal]); // Dependency lebih spesifik
-
     // --- Add Copy Button to Code Blocks ---
     useEffect(() => {
         // Tentukan elemen container: modal tes atau kartu topik
@@ -748,14 +738,14 @@ export default function ModulDetailPage() {
                 observer.observe(preElement);
                 observers.push(observer);
             });
-        }, 500);
+        }, 100);
 
         return () => {
             clearTimeout(timeoutId);
             observers.forEach(observer => observer.disconnect());
             // Tidak perlu disconnect observer lagi
         };
-    }, [activeTest, openTopicId, isPlaygroundOpen]);
+    }, [activeTest, openTopicId, isPlaygroundOpen, testIdx]);
 
     // --- Tour Guide Effect ---
     useEffect(() => {

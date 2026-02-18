@@ -192,7 +192,7 @@ const ProfileContent = () => {
           : allFeatures.map(f => f.name.split(' '));
       }
 
-      const data = allFeatures.map(f => f.score);
+      const data = allFeatures.map(f => Math.round(f.score)); // Membulatkan nilai skor pengguna
       const averageData = allFeatures.map(f => f.average);
 
       const ctx = chartRef.current.getContext("2d");
