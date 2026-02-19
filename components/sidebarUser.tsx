@@ -10,7 +10,7 @@ import { authFetch } from "@/lib/authFetch";
 const navLinks = [
     { href: "/dashboard", label: "Dashboard", icon: "/dashboard.png", alt: "Dashboard Icon" },
     { href: "/modul", label: "Modul", icon: "/modules.png", alt: "Modul Icon" },
-    // { href: "/pre-test", label: "Pre Tes & Post", icon: "/exam.png", alt: "Tes Icon" },
+  
     { href: "/analitik-belajar", label: "Analitik Belajar", icon: "/analitik.png", alt: "Analitik Icon" },
     { href: "/profil", label: "Profil", icon: "/profile.png", alt: "Profil Icon" },
 ];
@@ -21,12 +21,12 @@ export default function Sidebar() {
   const router = useRouter();
 
   useEffect(() => {
-    // Set sidebar to collapsed on initial desktop load
+   
     if (window.innerWidth >= 768 && !isSidebarCollapsed) {
-      // We call toggleSidebar only if it's not already collapsed
+    
       toggleSidebar();
     }
-  }, []); // Empty dependency array ensures this runs only once on mount
+  }, []); 
 
   const isActive = (href: string) => {
     if (href === "/dashboard") return pathname === href;
@@ -41,9 +41,9 @@ export default function Sidebar() {
     } catch (error) {
       console.error("Gagal melakukan logout di server:", error);
     } finally {
-      // Hapus data sisi klien apa pun yang terjadi
+    
       localStorage.removeItem("user");
-      localStorage.removeItem("token"); // Hapus sisa token jika masih ada
+      localStorage.removeItem("token"); 
       router.push("/login");
     }
   };

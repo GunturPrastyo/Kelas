@@ -543,11 +543,11 @@ export default function ModulDetailPage() {
                 if (finalResult.score > finalResult.previousBestScore) {
                     const diff = Math.round(finalResult.score - finalResult.previousBestScore);
                     // Hitung persentase peningkatan terhadap skala total (100), bukan terhadap nilai sebelumnya
-                    // agar tidak melebihi 100% (misal dari 10 ke 90 bukan naik 800%, tapi naik 80% dari total skala)
+                    
                     const percentIncrease = Math.round((diff / 100) * 100);
                     showAlert({
                         title: 'Peningkatan Nilai! 🎉',
-                        message: `Nilai kamu sekarang <strong>${Math.round(finalResult.score)}</strong>. Naik <strong>${diff} poin</strong> (<strong>${percentIncrease}%</strong>) dari nilai sebelumnya (${Math.round(finalResult.previousBestScore)}).`,
+                        message: `Nilai kamu sekarang <strong>${Math.round(finalResult.score)}</strong>.Naik <strong>${diff} poin</strong> (<strong>${percentIncrease}%</strong>) dari nilai sebelumnya <strong>${Math.round(finalResult.previousBestScore)}</strong>.`,
                         confirmText: 'Mantap!',
                     });
                 }
@@ -749,11 +749,16 @@ export default function ModulDetailPage() {
 
     // --- Tour Guide Effect ---
     useEffect(() => {
-        if (!loading && modul && user) {
-            const tourKey = `hasSeenModuleDetailTour-${user._id}`;
-            const hasSeenTour = localStorage.getItem(tourKey);
+        let driverObj: any;
+        let timeoutId: NodeJS.Timeout;
 
-            if (!hasSeenTour) {
+        const initTour = async () => {
+            if (!loading && modul && user) {
+                try {
+                    const res = await authFetch(`${process.env.NEXT_PUBLIC_API_URL}/api/results/user-status`);
+                    if (res.ok) {
+                        const data = await res.json();
+                        if (!data.hasSeenModuleDetailTour) {
                 const steps = [
                     {
                         element: '#module-header',
@@ -800,7 +805,7 @@ export default function ModulDetailPage() {
 
                 let isDestroying = false;
 
-                const driverObj = driver({
+                driverObj = driver({
                     showProgress: true,
                     animate: true,
                     steps: steps,
@@ -808,7 +813,11 @@ export default function ModulDetailPage() {
                         if (isDestroying) return;
 
                         if (!driverObj.hasNextStep()) {
-                            localStorage.setItem(tourKey, 'true');
+                            authFetch(`${process.env.NEXT_PUBLIC_API_URL}/api/results/user-status`, {
+                                method: 'PUT',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({ key: 'hasSeenModuleDetailTour', value: true })
+                            });
                             driverObj.destroy();
                         } else {
                             const activeIndex = driverObj.getActiveIndex();
@@ -822,7 +831,11 @@ export default function ModulDetailPage() {
                                     cancelText: 'Lanjut Tur',
                                     onConfirm: () => {
                                         isDestroying = true;
-                                        localStorage.setItem(tourKey, 'true');
+                                        authFetch(`${process.env.NEXT_PUBLIC_API_URL}/api/results/user-status`, {
+                                            method: 'PUT',
+                                            headers: { 'Content-Type': 'application/json' },
+                                            body: JSON.stringify({ key: 'hasSeenModuleDetailTour', value: true })
+                                        });
                                     },
                                     onCancel: () => {
                                         if (typeof activeIndex === 'number') {
@@ -835,11 +848,20 @@ export default function ModulDetailPage() {
                     },
                 });
 
-                setTimeout(() => {
+                timeoutId = setTimeout(() => {
                     driverObj.drive();
                 }, 1500);
             }
         }
+                } catch (e) { console.error(e); }
+            }
+        };
+        initTour();
+
+        return () => {
+            if (timeoutId) clearTimeout(timeoutId);
+            if (driverObj) driverObj.destroy();
+        };
     }, [loading, modul, user, nextTopic]);
 
 

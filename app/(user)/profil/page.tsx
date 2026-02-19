@@ -309,14 +309,19 @@ const ProfileContent = () => {
 
   // --- Tour Guide Effect ---
   useEffect(() => {
-    if (!loading && user) {
-      const tourKey = `hasSeenProfileTour-${user._id}`;
-      const hasSeenTour = localStorage.getItem(tourKey);
+    let driverObj: any;
+    let timeoutId: NodeJS.Timeout;
 
-      if (!hasSeenTour) {
+    const initTour = async () => {
+      if (!loading && user) {
+        try {
+          const res = await authFetch(`${process.env.NEXT_PUBLIC_API_URL}/api/results/user-status`);
+          if (res.ok) {
+            const data = await res.json();
+            if (!data.hasSeenProfileTour) {
         let isDestroying = false;
 
-        const driverObj = driver({
+        driverObj = driver({
           showProgress: true,
           animate: true,
           steps: [
@@ -360,7 +365,11 @@ const ProfileContent = () => {
             if (isDestroying) return;
 
             if (!driverObj.hasNextStep()) {
-              localStorage.setItem(tourKey, 'true');
+              authFetch(`${process.env.NEXT_PUBLIC_API_URL}/api/results/user-status`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ key: 'hasSeenProfileTour', value: true })
+              });
               driverObj.destroy();
             } else {
               const activeIndex = driverObj.getActiveIndex();
@@ -374,7 +383,11 @@ const ProfileContent = () => {
                   cancelText: 'Lanjut Tur',
                   onConfirm: () => {
                     isDestroying = true;
-                    localStorage.setItem(tourKey, 'true');
+                    authFetch(`${process.env.NEXT_PUBLIC_API_URL}/api/results/user-status`, {
+                        method: 'PUT',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ key: 'hasSeenProfileTour', value: true })
+                    });
                   },
                   onCancel: () => {
                     if (typeof activeIndex === 'number') {
@@ -387,11 +400,20 @@ const ProfileContent = () => {
           },
         });
 
-        setTimeout(() => {
+        timeoutId = setTimeout(() => {
           driverObj.drive();
         }, 1500);
       }
     }
+        } catch (e) { console.error(e); }
+      }
+    };
+    initTour();
+
+    return () => {
+        if (timeoutId) clearTimeout(timeoutId);
+        if (driverObj) driverObj.destroy();
+    };
   }, [loading, user]);
 
   const handleAvatarChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -864,21 +886,6 @@ const ProfileContent = () => {
         {/* Tab Content */}
         <div className="pt-6">
           {/* Informasi Akun Tab */}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
           {activeTab === "info" && (
             <form onSubmit={handleProfileUpdate} className="space-y-6">
               <div className="flex flex-col sm:flex-row items-center gap-8">
@@ -916,38 +923,6 @@ const ProfileContent = () => {
               </div>
             </form>
           )}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
           {/* Ubah Password Tab */}
           {activeTab === "password" && user.hasPassword && (

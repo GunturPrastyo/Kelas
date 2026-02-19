@@ -7,7 +7,6 @@
   --background: #ffffff;
   --foreground: #171717;
 
-  /* Tambahkan ini agar Poppins dipakai global */
   --font-sans: var(--font-poppins);
   --font-mono: var(--font-geist-mono);
 }
@@ -42,7 +41,7 @@ body {
 }
 
 .prose h1, .prose h2, .prose h3 {
-  scroll-margin-top: 100px; /* biar enak kalau pakai anchor */
+  scroll-margin-top: 100px; 
 }
 
 
@@ -58,11 +57,11 @@ body {
 
   /* Menambahkan gaya untuk blockquote di dalam .prose */
   .prose blockquote {
-    border-left-width: 0.25rem; /* Garis kiri tebal */
-    border-left-color: #d1d5db; /* Warna garis kiri (abu-abu muda) */
-    padding-left: 1em; /* Jarak dari garis kiri */
-    font-style: italic; /* Teks miring */
-    color: #6b7280; /* Warna teks sedikit redup */
+    border-left-width: 0.25rem; 
+    border-left-color: #d1d5db; 
+    padding-left: 1em; 
+    font-style: italic; 
+    color: #6b7280; 
     margin-bottom: 1em;
   }
 
@@ -76,7 +75,7 @@ body {
   /* Mengatur indentasi list agar lebih menjorok ke dalam */
   .prose ul,
   .prose ol {
-    padding-left: 2.5em; /* Sesuaikan nilai ini untuk mengatur kedalaman indentasi */
+    padding-left: 2.5em; 
   }
 }
 

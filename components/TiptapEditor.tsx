@@ -370,8 +370,8 @@ export default function TiptapEditor({
         orderedList: {
           HTMLAttributes: { class: 'list-decimal pl-5' },
         },
-        codeBlock: false, // Nonaktifkan default agar bisa pakai yang kustom
-        blockquote: {}, // Aktifkan blockquote
+        codeBlock: false, 
+        blockquote: {}, 
         horizontalRule: false,
       }),
       Highlight,
@@ -385,7 +385,7 @@ export default function TiptapEditor({
       Color,
       ResizableImage,
       StyleAttribute,
-      CustomCodeBlock, // Gunakan CodeBlock kustom
+      CustomCodeBlock, 
     ],
     content,
     onUpdate: ({ editor }) => onChange(editor.getHTML()),
