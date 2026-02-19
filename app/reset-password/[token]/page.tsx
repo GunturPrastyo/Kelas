@@ -7,7 +7,7 @@ import { Eye, EyeOff, Lock } from 'lucide-react';
 const ResetPassword = () => {
   const params = useParams();
   const router = useRouter();
-  // Mengambil token dari URL
+ 
   const token = params.token as string;
 
   const [password, setPassword] = useState('');

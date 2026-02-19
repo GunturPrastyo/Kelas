@@ -18,7 +18,7 @@ export default function TopicCard({ topik, modulId, modulSlug, onDelete }: Props
   const [hasPostTest, setHasPostTest] = useState(false);
   const router = useRouter();
 
-  // ✅ Cek apakah topik ini sudah punya post test berdasarkan modulId & topikId
+  // Cek apakah topik ini sudah punya post test berdasarkan modulId & topikId
   useEffect(() => {
     const checkPostTest = async () => {
       try {

@@ -595,25 +595,19 @@ export default function AnalitikBelajarPage() {
 
   // --- Tour Guide Effect ---
   useEffect(() => {
-    if (!loading) {
-      const userRaw = localStorage.getItem('user');
-      let userId = '';
-      if (userRaw) {
+    let driverObj: any;
+    let timeoutId: NodeJS.Timeout;
+
+    const initTour = async () => {
+      if (!loading) {
         try {
-          const parsedUser = JSON.parse(userRaw);
-          userId = parsedUser._id || parsedUser.id;
-        } catch (e) {
-          console.error("Error parsing user data:", e);
-        }
-      }
-
-      const tourKey = userId ? `hasSeenAnalyticsTour-${userId}` : 'hasSeenAnalyticsTour';
-      const hasSeenTour = localStorage.getItem(tourKey);
-
-      if (!hasSeenTour) {
+          const res = await authFetch(`${process.env.NEXT_PUBLIC_API_URL}/api/results/user-status`);
+          if (res.ok) {
+            const data = await res.json();
+            if (!data.hasSeenAnalyticsTour) {
         let isDestroying = false;
 
-        const driverObj = driver({
+        driverObj = driver({
           showProgress: true,
           animate: true,
           steps: [
@@ -671,7 +665,11 @@ export default function AnalitikBelajarPage() {
             if (isDestroying) return;
 
             if (!driverObj.hasNextStep()) {
-              localStorage.setItem(tourKey, 'true');
+              authFetch(`${process.env.NEXT_PUBLIC_API_URL}/api/results/user-status`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ key: 'hasSeenAnalyticsTour', value: true })
+              });
               driverObj.destroy();
             } else {
               const activeIndex = driverObj.getActiveIndex();
@@ -685,7 +683,11 @@ export default function AnalitikBelajarPage() {
                   cancelText: 'Lanjut Tur',
                   onConfirm: () => {
                     isDestroying = true;
-                    localStorage.setItem(tourKey, 'true');
+                    authFetch(`${process.env.NEXT_PUBLIC_API_URL}/api/results/user-status`, {
+                        method: 'PUT',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ key: 'hasSeenAnalyticsTour', value: true })
+                    });
                   },
                   onCancel: () => {
                     if (typeof activeIndex === 'number') {
@@ -698,11 +700,20 @@ export default function AnalitikBelajarPage() {
           },
         });
 
-        setTimeout(() => {
+        timeoutId = setTimeout(() => {
           driverObj.drive();
         }, 1500);
       }
     }
+        } catch (e) { console.error(e); }
+      }
+    };
+    initTour();
+
+    return () => {
+        if (timeoutId) clearTimeout(timeoutId);
+        if (driverObj) driverObj.destroy();
+    };
   }, [loading]);
 
   return (

@@ -18,7 +18,7 @@ interface Topik {
     slug: string;
     materi?: Materi | null;
     isCompleted: boolean;
-    questions: any[]; // Tipe bisa disesuaikan
+    questions: any[]; 
 }
 
 interface TopicContentProps {

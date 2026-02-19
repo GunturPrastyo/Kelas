@@ -28,7 +28,6 @@ interface Module {
 
 interface User {
     _id: string;
-    // tambahkan properti lain jika perlu
 }
 
 export default function PreTestPage() {

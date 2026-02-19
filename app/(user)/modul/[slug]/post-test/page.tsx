@@ -9,6 +9,7 @@ import Link from "next/link";
 import { Home, Target, Clock3, Activity, Eye, Lightbulb, Star, LayoutGrid, TrendingUp, ArrowRight, X } from 'lucide-react';
 import { useAlert } from "@/context/AlertContext";
 import LevelUpAlert from "@/components/LevelUpAlert";
+import CompetencyUpdateModal from "@/components/CompetencyUpdateModal";
 
 interface Question {
     _id: string;
@@ -48,7 +49,7 @@ interface TestResult {
         score: number;
     }[];
     previousBestScore?: number | null;
-    learningPath?: string; // Tambahkan ini untuk menangkap level baru dari backend
+    learningPath?: string; 
     competencyUpdates?: {
         featureName: string;
         oldScore: number;
@@ -61,7 +62,7 @@ interface TestResult {
 export default function PostTestPage() {
     const params = useParams();
     const router = useRouter();
-    const searchParams = useSearchParams(); // 1. Dapatkan search params
+    const searchParams = useSearchParams(); 
     const slug = params.slug as string;
     const [modul, setModul] = useState<Modul | null>(null);
     const [user, setUser] = useState<User | null>(null);
@@ -73,7 +74,7 @@ export default function PostTestPage() {
     const [result, setResult] = useState<TestResult | null>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
-    const [isSubmitting, setIsSubmitting] = useState(false); // State baru untuk melacak ID unik
+    const [isSubmitting, setIsSubmitting] = useState(false); 
     const [changedQuestionIds, setChangedQuestionIds] = useState<Set<string>>(new Set());
     const [tabExitCount, setTabExitCount] = useState(0);
     
@@ -83,6 +84,7 @@ export default function PostTestPage() {
     const [showCompetencyModal, setShowCompetencyModal] = useState(false);
     const [pendingLevelUp, setPendingLevelUp] = useState(false);
     const [pendingScoreAlert, setPendingScoreAlert] = useState<string | null>(null);
+    const [competencyUpdates, setCompetencyUpdates] = useState<any[]>([]);
 
     const { showAlert } = useAlert();
     const questionAreaRef = useRef<HTMLDivElement>(null);
@@ -153,6 +155,9 @@ export default function PostTestPage() {
             if (!response.ok) throw new Error(resultData.message || "Gagal mengirimkan jawaban.");
 
             setResult(resultData.data);
+            if (resultData.data.competencyUpdates) {
+                setCompetencyUpdates(resultData.data.competencyUpdates);
+            }
 
             // Cek Level Up
             const finalResultData = resultData.data;
@@ -273,17 +278,14 @@ export default function PostTestPage() {
                     if (resultResponse.ok) {
                         const latestResult = await resultResponse.json();
                         if (latestResult) {
-                            // SAFETY CHECK: Pastikan result yang diterima benar-benar milik modul ini
-                            // Ini mencegah tampilan hasil modul A muncul di modul B jika backend salah kirim
-                            // Gunakan String() untuk memastikan perbandingan aman antara ObjectId dan string
                             if (latestResult.modulId && String(latestResult.modulId) !== String(modulData._id)) {
                                 console.error(`[PostTest] Mismatch result detected! Expected: ${modulData._id}, Got: ${latestResult.modulId}. Ignoring stale data.`);
-                                // FIX: Jangan set result jika mismatch. Anggap belum ada hasil.
-                                setResult(null); // Pastikan state result kosong
+
+                                setResult(null); 
                             } else if (isMounted) {
                                 setResult(latestResult);
                                 setLoading(false);
-                                return; // Stop di sini jika sudah ada hasil (dan bukan retake)
+                                return; 
                             }
                         }
                     }
@@ -296,6 +298,7 @@ export default function PostTestPage() {
                     setTestIdx(0);
                     setChangedQuestionIds(new Set());
                     setTabExitCount(0);
+                    setCompetencyUpdates([]);
                 }
 
                 // Ambil soal dan progress secara paralel
@@ -409,7 +412,6 @@ export default function PostTestPage() {
             message: 'Apakah kamu yakin ingin mengulang uji pemahaman akhir modul ini? Hasil sebelumnya akan tetap tersimpan jika skormu saat ini lebih rendah.',
             confirmText: 'Ya, Ulangi',
             onConfirm: async () => {
-                // Reload halaman dengan parameter retake tanpa menghapus data lama
                 router.push(`/modul/${slug}/post-test?retake=true&modulId=${modul._id}`);
             },
         });
@@ -432,7 +434,6 @@ export default function PostTestPage() {
                             <Home className="w-4 h-4 me-2.5" /> Dashboard
                         </Link>
                     </li>
-                    {/* Breadcrumb lainnya bisa ditambahkan di sini */}
                 </ol>
             </nav>
             <div className="mt-6 text-center p-6 bg-red-50 dark:bg-red-900/20 rounded-lg">
@@ -456,6 +457,12 @@ export default function PostTestPage() {
                     onClose={() => setShowLevelUpAlert(false)} 
                     newLevel={newLevel}
                     oldLevel={oldLevelForAlert}
+                />
+
+                <CompetencyUpdateModal
+                    isOpen={showCompetencyModal}
+                    onClose={handleCloseCompetencyModal}
+                    updates={competencyUpdates}
                 />
 
                 <nav className="flex mb-6" aria-label="Breadcrumb">

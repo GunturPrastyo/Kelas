@@ -42,24 +42,29 @@ export default function GlobalStreakAlert() {
             if (!user || user.role !== 'user' || pathname === '/login' || pathname === '/register') return;
 
             try {
-                const res = await authFetch(`${process.env.NEXT_PUBLIC_API_URL}/api/results/analytics`);
-                if (res.ok) {
-                    const data = await res.json();
-                    const currentStreak = data.dailyStreak || 0;
+                const [analyticsRes, statusRes] = await Promise.all([
+                    authFetch(`${process.env.NEXT_PUBLIC_API_URL}/api/results/analytics`),
+                    authFetch(`${process.env.NEXT_PUBLIC_API_URL}/api/results/user-status`)
+                ]);
+
+                if (analyticsRes.ok && statusRes.ok) {
+                    const analyticsData = await analyticsRes.json();
+                    const statusData = await statusRes.json();
+                    const currentStreak = analyticsData.dailyStreak || 0;
                     
                     if (currentStreak > 0) {
                         const today = new Date().toDateString();
-                        const lastShownDate = localStorage.getItem('lastStreakShownDate');
-                        const lastShownStreak = parseInt(localStorage.getItem('lastStreakShownCount') || '0', 10);
+                        const lastShownDate = statusData.lastStreakShownDate ? new Date(statusData.lastStreakShownDate).toDateString() : null;
                         
-                        // Tampilkan jika:
-                        // 1. Belum pernah ditampilkan hari ini
-                        // 2. ATAU streak bertambah (misal dari 5 jadi 6 karena aktivitas baru saat ini)
-                        if (lastShownDate !== today || currentStreak > lastShownStreak) {
+                        // Tampilkan jika belum pernah ditampilkan hari ini
+                        if (lastShownDate !== today) {
                             setStreakCount(currentStreak);
                             setShowStreakModal(true);
-                            localStorage.setItem('lastStreakShownDate', today);
-                            localStorage.setItem('lastStreakShownCount', currentStreak.toString());
+                            await authFetch(`${process.env.NEXT_PUBLIC_API_URL}/api/results/user-status`, {
+                                method: 'PUT',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({ key: 'lastStreakShownDate', value: new Date() })
+                            });
                         }
                     }
                 }

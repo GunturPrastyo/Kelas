@@ -6,14 +6,13 @@ import Image from 'next/image';
 import { useUI } from '@/context/UIContext';
 import { Home, CheckCircle2, Activity, Lock, Rocket, Users, Clock } from "lucide-react";
 import { authFetch } from '@/lib/authFetch';
-import ModuleCardSkeleton from '@/components/ModuleCardSkeleton'; // Impor komponen skeleton
+import ModuleCardSkeleton from '@/components/ModuleCardSkeleton'; 
 import { driver } from "driver.js";
 import "driver.js/dist/driver.css";
 import { useAlert } from "@/context/AlertContext";
 
 interface User {
     _id: string;
-    // tambahkan properti lain jika perlu
 }
 
 type Category = 'mudah' | 'sedang' | 'sulit';
@@ -30,7 +29,7 @@ export interface Module {
     slug: string;
     status: ModuleStatus;
     isHighlighted?: boolean;
-    isLocked?: boolean; // Tambahkan properti isLocked
+    isLocked?: boolean;
     order: number;
     completedTopics?: number;
     totalTopics?: number;
@@ -43,17 +42,17 @@ export default function ModulPage() {
     const [modules, setModules] = useState<Module[]>([]);
     const [loading, setLoading] = useState(true);
     const [selectedCategory, setSelectedCategory] = useState('');
-    const [userLevel, setUserLevel] = useState<UserLevel>(null); // State untuk level pengguna
+    const [userLevel, setUserLevel] = useState<UserLevel>(null); 
     const [recommendation, setRecommendation] = useState({ title: '', description: '', icon: '', bgClass: '', textClass: '' });
     const [user, setUser] = useState<User | null>(null); 
     const { showAlert } = useAlert();
-    // const { searchQuery, setSearchQuery } = useUI(); // Hapus atau komentari baris ini
+
 
     useEffect(() => {
         const userRaw = localStorage.getItem('user');
         if (userRaw) {
             const parsedUser = JSON.parse(userRaw);
-            setUser(parsedUser); // Simpan data user ke state
+            setUser(parsedUser);
 
             // Ambil level pengguna langsung dari field 'learningLevel' di objek user
             const learningLevel = parsedUser.learningLevel?.toLowerCase();
@@ -260,11 +259,16 @@ export default function ModulPage() {
 
     // --- Tour Guide Effect ---
     useEffect(() => {
-        if (!loading && user) {
-            const tourKey = `hasSeenModulTour-${user._id}`;
-            const hasSeenTour = localStorage.getItem(tourKey);
+        let driverObj: any;
+        let timeoutId: NodeJS.Timeout;
 
-            if (!hasSeenTour) {
+        const initTour = async () => {
+            if (!loading && user) {
+                try {
+                    const res = await authFetch(`${process.env.NEXT_PUBLIC_API_URL}/api/results/user-status`);
+                    if (res.ok) {
+                        const data = await res.json();
+                        if (!data.hasSeenModulTour) {
                 const steps = [
                     {
                         element: '#category-filters',
@@ -297,7 +301,7 @@ export default function ModulPage() {
 
                 let isDestroying = false;
 
-                const driverObj = driver({
+                driverObj = driver({
                     showProgress: true,
                     animate: true,
                     steps: steps,
@@ -305,7 +309,11 @@ export default function ModulPage() {
                         if (isDestroying) return;
 
                         if (!driverObj.hasNextStep()) {
-                            localStorage.setItem(tourKey, 'true');
+                            authFetch(`${process.env.NEXT_PUBLIC_API_URL}/api/results/user-status`, {
+                                method: 'PUT',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({ key: 'hasSeenModulTour', value: true })
+                            });
                             driverObj.destroy();
                         } else {
                             const activeIndex = driverObj.getActiveIndex();
@@ -319,7 +327,11 @@ export default function ModulPage() {
                                     cancelText: 'Lanjut Tur',
                                     onConfirm: () => {
                                         isDestroying = true;
-                                        localStorage.setItem(tourKey, 'true');
+                                        authFetch(`${process.env.NEXT_PUBLIC_API_URL}/api/results/user-status`, {
+                                            method: 'PUT',
+                                            headers: { 'Content-Type': 'application/json' },
+                                            body: JSON.stringify({ key: 'hasSeenModulTour', value: true })
+                                        });
                                     },
                                     onCancel: () => {
                                         if (typeof activeIndex === 'number') {
@@ -332,11 +344,22 @@ export default function ModulPage() {
                     },
                 });
 
-                setTimeout(() => {
+                timeoutId = setTimeout(() => {
                     driverObj.drive();
                 }, 1500);
             }
         }
+                } catch (e) {
+                    console.error("Failed to check tour status", e);
+                }
+            }
+        };
+        initTour();
+
+        return () => {
+            if (timeoutId) clearTimeout(timeoutId);
+            if (driverObj) driverObj.destroy();
+        };
     }, [loading, user, personalizedModules]);
 
     const getStatusBadge = (status: ModuleStatus, progress: number) => {

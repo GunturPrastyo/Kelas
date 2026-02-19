@@ -26,7 +26,7 @@ const ForgotPassword: React.FC = () => {
             const data = await response.json();
 
             if (response.ok) {
-                // Cek flag success dari backend (untuk menangani error logis dengan status 200)
+               
                 if (data.success === false) {
                     setErrorMessage(data.message || 'Terjadi kesalahan.');
                     setStatus('error');

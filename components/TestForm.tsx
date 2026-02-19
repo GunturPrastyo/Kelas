@@ -44,7 +44,7 @@ interface Question {
   options: string[];
   answer: string;
   topikId?: string;
-  modulId?: string; // Ganti 'features' dengan 'modulId'
+  modulId?: string; 
   features?: FeatureWeight[];
   durationPerQuestion?: number;
   subMateriId?: string;
@@ -220,7 +220,7 @@ export default function TestForm({
       questionText: q.questionText,
       options: q.options,
       answer: q.answer,
-      modulId: q.modulId || null, // Kirim modulId
+      modulId: q.modulId || null, 
       topikId: q.topikId || null,
       durationPerQuestion: q.durationPerQuestion || 60,
       subMateriId: q.subMateriId || null
@@ -229,7 +229,7 @@ export default function TestForm({
 
     if (testType === "pre-test-global") {
       endpoint = isEditing ? `/api/questions/pre-test` : `/api/questions`;
-      method = isEditing ? "PUT" : "POST"; // Pre-test bisa jadi dibuat pertama kali
+      method = isEditing ? "PUT" : "POST"; 
       body = { ...body, testType: "pre-test-global" };
     } else if (testType === "post-test-topik" && modulId && topikId) {
       endpoint = isEditing
