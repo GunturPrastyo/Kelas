@@ -16,7 +16,7 @@ const TiptapEditor = dynamic(() => import("@/components/TiptapEditor"), {
 });
 
 interface SubMateri {
-  _id?: string; // Akan ada saat fetch, tidak ada saat baru dibuat
+  _id?: string; 
   title: string;
   content: string;
 }
