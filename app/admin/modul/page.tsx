@@ -3,9 +3,9 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import ModulCard from "@/components/ModulCard"; // Card untuk setiap modul
-import { Button } from "@/components/ui/button"; // Import Button
-import { Edit, PlusCircle, List, LayoutGrid, Info, Shield, Zap, Trophy, CheckCircle2 } from "lucide-react"; // Import ikon
+import ModulCard from "@/components/ModulCard"; 
+import { Button } from "@/components/ui/button"; 
+import { Edit, PlusCircle, List, LayoutGrid, Info, Shield, Zap, Trophy, CheckCircle2 } from "lucide-react"; 
 import { authFetch } from "@/lib/authFetch";
 import ModulOrder from "@/components/ModulOrder"; 
 import FeatureManager from "@/components/FeatureManager";
