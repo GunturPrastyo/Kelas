@@ -59,6 +59,16 @@ interface TestResult {
     }[];
 }
 
+// --- Helper: Shuffle Array ---
+const shuffleArray = <T,>(array: T[]): T[] => {
+    const newArray = [...array];
+    for (let i = newArray.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [newArray[i], newArray[j]] = [newArray[j], newArray[i]];
+    }
+    return newArray;
+};
+
 export default function PostTestPage() {
     const params = useParams();
     const router = useRouter();
@@ -309,14 +319,7 @@ export default function PostTestPage() {
 
                 if (!isMounted) return;
 
-                // Proses hasil progress jika ada
-                if (progressResponse && progressResponse.ok) {
-                    const progressData = await progressResponse.json();
-                    if (progressData?.answers?.length > 0) {
-                        setAnswers(progressData.answers.reduce((acc: { [key: string]: string }, ans: { questionId: string, selectedOption: string }) => { acc[ans.questionId] = ans.selectedOption; return acc; }, {}) || {});
-                        setTestIdx(progressData.currentIndex || 0);
-                    }
-                }
+                let fetchedQuestions: Question[] = [];
 
                 // Proses hasil soal
                 if (!questionsResponse.ok) {
@@ -324,8 +327,25 @@ export default function PostTestPage() {
                     else throw new Error("Gagal memuat soal uji pemahaman akhir modul.");
                 } else {
                     const questionsData: { questions: Question[] } = await questionsResponse.json();
-                    setQuestions(questionsData.questions);
-                    setStartTime(Date.now());
+                    fetchedQuestions = questionsData.questions;
+                }
+
+                // Acak soal
+                const shuffledQuestions = shuffleArray(fetchedQuestions);
+                setQuestions(shuffledQuestions);
+                setStartTime(Date.now());
+
+                // Proses hasil progress jika ada
+                if (progressResponse && progressResponse.ok) {
+                    const progressData = await progressResponse.json();
+                    if (progressData?.answers?.length > 0) {
+                        const loadedAnswers = progressData.answers.reduce((acc: { [key: string]: string }, ans: { questionId: string, selectedOption: string }) => { acc[ans.questionId] = ans.selectedOption; return acc; }, {});
+                        setAnswers(loadedAnswers || {});
+                        
+                        // Cari soal pertama yang belum dijawab pada urutan yang sudah diacak
+                        const nextIndex = shuffledQuestions.findIndex(q => !loadedAnswers[q._id]);
+                        setTestIdx(nextIndex !== -1 ? nextIndex : 0);
+                    }
                 }
             } catch (err) {
                 if (isMounted) setError(err instanceof Error ? err.message : "Terjadi kesalahan.");
