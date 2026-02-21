@@ -3,11 +3,9 @@
 import { useState, useEffect, useCallback, useRef, use, useMemo } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
-// 1. Import highlight.js dan tema CSS-nya
 import hljs from 'highlight.js';
-// Selalu gunakan tema gelap untuk konsistensi tampilan block code
 import 'highlight.js/styles/github-dark.css';
-import { authFetch } from '@/lib/authFetch'; // <-- Import helper baru
+import { authFetch } from '@/lib/authFetch'; 
 import { useAlert } from '@/context/AlertContext';
 
 import TopicContent from '@/components/TopicContent';
@@ -18,7 +16,6 @@ import { driver } from "driver.js";
 import "driver.js/dist/driver.css";
 
 
-// --- Interface Definitions ---
 interface User {
     _id: string;
 }
@@ -27,7 +24,7 @@ interface Question {
     _id: string;
     questionText: string;
     options: string[];
-    answer?: string; // Optional, as it's not sent to the client initially
+    answer?: string; 
     durationPerQuestion?: number;
 }
 
@@ -62,7 +59,7 @@ interface Modul {
     completedTopics: number;
     totalTopics: number;
     topics: Topik[];
-    hasCompletedModulPostTest?: boolean; // Tambahkan properti ini
+    hasCompletedModulPostTest?: boolean;
 }
 
 interface TestResult {
@@ -80,9 +77,19 @@ interface TestResult {
         stability: number;
         focus: number;
     };
-    bestScore?: number; // Tambahkan properti opsional untuk skor terbaik
-    previousBestScore?: number | null; // Tambahkan properti untuk skor sebelumnya
+    bestScore?: number; 
+    previousBestScore?: number | null; 
 }
+
+// --- Helper: Shuffle Array ---
+const shuffleArray = <T,>(array: T[]): T[] => {
+    const newArray = [...array];
+    for (let i = newArray.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [newArray[i], newArray[j]] = [newArray[j], newArray[i]];
+    }
+    return newArray;
+};
 
 export default function ModulDetailPage() {
     const params = useParams();
@@ -103,8 +110,8 @@ export default function ModulDetailPage() {
     const [testTimeLeft, setTestTimeLeft] = useState(0);
     const [testResult, setTestResult] = useState<TestResult | null>(null);
     const [isSubmitting, setIsSubmitting] = useState(false);
-    const [answerChangesCount, setAnswerChangesCount] = useState(0); // Tetap gunakan nama ini untuk konsistensi, tapi ubah cara kerjanya
-    const [changedQuestionIds, setChangedQuestionIds] = useState<Set<string>>(new Set()); // State baru untuk melacak ID unik
+    const [answerChangesCount, setAnswerChangesCount] = useState(0); 
+    const [changedQuestionIds, setChangedQuestionIds] = useState<Set<string>>(new Set()); 
     const [tabExitCount, setTabExitCount] = useState(0);
     const [isPlaygroundOpen, setIsPlaygroundOpen] = useState(false);
     const [playgroundCode, setPlaygroundCode] = useState('');
@@ -379,8 +386,12 @@ export default function ModulDetailPage() {
             return;
         }
 
+        // Acak urutan soal setiap kali tes dimulai
+        const shuffledQuestions = shuffleArray(topik.questions);
+        const shuffledTopic = { ...topik, questions: shuffledQuestions };
+
         setTestResult(null);
-        setActiveTest(topik);
+        setActiveTest(shuffledTopic);
         
         // RESET STATE DI AWAL: Pastikan bersih dari data topik sebelumnya
         setTestAnswers({});
@@ -405,17 +416,15 @@ export default function ModulDetailPage() {
                     const progressData = await progressRes.json();
                     if (progressData && progressData.answers && Array.isArray(progressData.answers) && progressData.answers.length > 0) {
                         // Jika ada progress pengerjaan, muat progress tersebut
-                        setTestAnswers(progressData.answers.reduce((acc: { [key: string]: string }, ans: { questionId: string, selectedOption: string }) => {
+                        const loadedAnswers = progressData.answers.reduce((acc: { [key: string]: string }, ans: { questionId: string, selectedOption: string }) => {
                             acc[ans.questionId] = ans.selectedOption;
                             return acc;
-                        }, {}) || {});
+                        }, {});
+                        setTestAnswers(loadedAnswers || {});
                         
-                        // PERBAIKAN: Validasi currentIndex agar tidak melebihi jumlah soal (terutama jika data soal dideduplikasi)
-                        let savedIndex = progressData.currentIndex || 0;
-                        if (savedIndex < 0 || savedIndex >= topik.questions.length) {
-                            savedIndex = 0; // Reset ke awal jika index tidak valid
-                        }
-                        setTestIdx(savedIndex);
+                        // Cari soal pertama yang belum dijawab pada urutan yang sudah diacak
+                        const nextIndex = shuffledQuestions.findIndex(q => !loadedAnswers[q._id]);
+                        setTestIdx(nextIndex !== -1 ? nextIndex : 0);
 
                         setAnswerChangesCount(progressData.answerChangesCount || 0);
                         setChangedQuestionIds(new Set(progressData.changedQuestionIds || [])); // Muat progress untuk Set
