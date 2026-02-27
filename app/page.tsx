@@ -52,22 +52,22 @@ const mentors = [
 // Data Dummy Fitur
 const features = [
   {
-    icon: <Compass className="w-14 h-14 text-blue-600 dark:text-blue-400" strokeWidth={1.5} />,
+    icon: <Compass className="w-10 h-10 md:w-14 md:h-14 text-blue-600 dark:text-blue-400" strokeWidth={1.5} />,
     title: "Jalur Belajar Personal",
     desc: "Sistem kami menyesuaikan materi berdasarkan hasil Pre-Test kamu. Tidak perlu belajar hal yang sudah kamu kuasai."
   },
   {
-    icon: <Laptop className="w-14 h-14 text-purple-600 dark:text-purple-400" strokeWidth={1.5} />,
+    icon: <Laptop className="w-10 h-10 md:w-14 md:h-14 text-purple-600 dark:text-purple-400" strokeWidth={1.5} />,
     title: "Modul Interaktif",
     desc: "Materi disajikan dengan video, kuis, dan coding playground yang membuat belajar tidak membosankan."
   },
   {
-    icon: <Award className="w-14 h-14 text-yellow-500 dark:text-yellow-400" strokeWidth={1.5} />,
+    icon: <Award className="w-10 h-10 md:w-14 md:h-14 text-yellow-500 dark:text-yellow-400" strokeWidth={1.5} />,
     title: "Gamifikasi & Sertifikat",
     desc: "Dapatkan lencana setiap menyelesaikan tantangan dan sertifikat resmi untuk menunjang karirmu."
   },
   {
-    icon: <Users className="w-14 h-14 text-green-600 dark:text-green-400" strokeWidth={1.5} />,
+    icon: <Users className="w-10 h-10 md:w-14 md:h-14 text-green-600 dark:text-green-400" strokeWidth={1.5} />,
     title: "Komunitas Belajar",
     desc: "Bergabung dengan komunitas pelajar lainnya untuk berdiskusi dan berbagi pengetahuan."
   }
@@ -350,9 +350,24 @@ export default function LandingPage() {
               />
             </div>
 
-            <p className="text-lg text-slate-600 dark:text-slate-400 max-w-2xl text-justify lg:text-left">
-              KELAS membantu kamu menemukan jalur belajar yang tepat sesuai kemampuanmu. Ikuti pre-tes, dapatkan rekomendasi, dan mulai tingkatkan skillmu hari ini.
-            </p>
+            <div className="flex flex-col md:flex-row lg:flex-col items-center gap-8 lg:gap-6">
+              <p className="text-lg text-slate-600 dark:text-slate-400 max-w-2xl text-left flex-1">
+                KELAS membantu kamu menemukan jalur belajar yang tepat sesuai kemampuanmu. Ikuti pre-tes, dapatkan rekomendasi, dan mulai tingkatkan skillmu hari ini.
+              </p>
+              
+              {/* Tablet Image (Visible MD, Hidden LG) */}
+              <div className="hidden md:flex lg:hidden flex-1 items-center justify-center">
+                <Image
+                  src="/ilustrasi2.png"
+                  alt="Ilustrasi Belajar Online"
+                  width={400}
+                  height={400}
+                  className="w-full max-w-sm object-contain"
+                  priority
+                />
+              </div>
+            </div>
+
             <div className="flex flex-row items-center justify-start gap-3 sm:gap-4 pt-2">
               <Link href="/pre-test" className="group relative inline-flex items-center justify-center px-4 sm:px-8 py-3 sm:py-3.5 text-sm sm:text-base font-bold text-white transition-all duration-200 bg-blue-600 rounded-full hover:bg-blue-700 hover:shadow-lg hover:shadow-blue-500/40 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-600">
                 Coba Pre-tes
@@ -409,7 +424,7 @@ export default function LandingPage() {
         </div>
 
         <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center max-w-3xl mx-auto">
+          <div className="text-left md:text-center max-w-3xl mx-auto">
             <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
@@ -425,14 +440,14 @@ export default function LandingPage() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.5, delay: 0.1 }}
-                className="text-lg text-slate-600 dark:text-slate-400"
+                className="text-lg text-slate-600 dark:text-slate-400 text-left md:text-center"
             >
               Kami menggabungkan teknologi dan pedagogi untuk menciptakan pengalaman belajar yang tidak hanya efektif, tapi juga menyenangkan.
             </motion.p>
           </div>
 
           {/* 3D Carousel Slider */}
-          <div className="relative h-[350px] md:h-[450px] w-full max-w-6xl mx-auto flex items-center mt-12 md:mt-8 mb-20  justify-center perspective-1000">
+          <div className="relative h-[450px] w-full max-w-6xl mx-auto flex items-center mt-12 md:mt-8 mb-20 justify-center perspective-1000">
             {features.map((feature, idx) => {
               const position = (idx - activeFeature + features.length) % features.length;
               
@@ -453,7 +468,7 @@ export default function LandingPage() {
                   key={idx} 
                   animate={animateProps}
                   transition={{ duration: 0.5, ease: "easeInOut" }}
-                  className="absolute w-full max-w-sm md:max-w-md p-8 md:p-12 rounded-[2.5rem] bg-white dark:bg-gray-800 border border-slate-100 dark:border-gray-700 shadow-2xl flex flex-col items-center text-center cursor-pointer overflow-hidden group"
+                  className="absolute w-full max-w-xs sm:max-w-sm md:max-w-md p-8 md:p-12 rounded-[2.5rem] bg-white dark:bg-gray-800 border border-slate-100 dark:border-gray-700 shadow-2xl flex flex-col items-start md:items-center text-left md:text-center cursor-pointer overflow-hidden group min-h-[380px] md:min-h-0"
                   onClick={() => setActiveFeature(idx)}
                   style={{
                     boxShadow: position === 0 ? "0 25px 50px -12px rgba(0, 0, 0, 0.15)" : "none"
@@ -467,12 +482,12 @@ export default function LandingPage() {
                     <path d="M119 0L127 0L127 86L109 86L109 171L77 171L77 257L95 257L95 343L107 343L107 429L123 429L123 514L46 514L46 600L0 600L0 514L0 514L0 429L0 429L0 343L0 343L0 257L0 257L0 171L0 171L0 86L0 86L0 0L0 0Z" className="fill-sky-400 dark:fill-sky-400/10" />
                   </svg>
 
-                  <div className="relative z-10 flex flex-col items-center h-full justify-center w-full">
-                    <div className="w-24 h-24 bg-white dark:bg-gray-700 rounded-3xl shadow-xl shadow-blue-100/50 dark:shadow-none border border-slate-50 dark:border-gray-600 flex items-center justify-center mb-8 transform group-hover:-translate-y-2 transition-transform duration-500">
+                  <div className="relative z-10 flex flex-col items-start md:items-center h-full justify-center w-full">
+                    <div className="w-16 h-16 md:w-24 md:h-24 bg-white dark:bg-gray-700 rounded-3xl shadow-xl shadow-blue-100/50 dark:shadow-none border border-slate-50 dark:border-gray-600 flex items-center justify-center mb-6 md:mb-8 transform group-hover:-translate-y-2 transition-transform duration-500">
                       {feature.icon}
                     </div>
-                    <h3 className="text-2xl md:text-3xl font-bold text-slate-800 dark:text-white mb-4 tracking-tight">{feature.title}</h3>
-                    <p className="text-slate-600 dark:text-slate-300 leading-relaxed text-base md:text-lg px-2">
+                    <h3 className="text-xl md:text-3xl font-bold text-slate-800 dark:text-white mb-2 md:mb-4 tracking-tight">{feature.title}</h3>
+                    <p className="text-slate-600 dark:text-slate-300 leading-relaxed text-sm md:text-lg px-0 md:px-2 text-left md:text-center">
                       {feature.desc}
                     </p>
                   </div>
@@ -511,7 +526,7 @@ export default function LandingPage() {
         </div>
 
         <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center max-w-3xl mx-auto mb-12">
+          <div className="text-left md:text-center max-w-3xl mx-auto mb-12">
             <motion.h2 
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
@@ -526,7 +541,7 @@ export default function LandingPage() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.5, delay: 0.1 }}
-              className="text-slate-800 dark:text-blue-100 text-lg font-medium"
+              className="text-slate-800 dark:text-blue-100 text-lg font-medium text-left md:text-center"
             >
               Dapatkan wawasan berharga dari praktisi industri dan akademisi berpengalaman yang siap membimbing perjalanan karirmu.
             </motion.p>
@@ -568,7 +583,7 @@ export default function LandingPage() {
                       <div className="w-12 h-1 bg-blue-500 mb-4 rounded-full"></div>
                       <p className="text-blue-300 text-xs font-bold uppercase tracking-wider mb-1">{mentor.role}</p>
                       <h3 className="text-2xl font-bold mb-2">{mentor.name}</h3>
-                      <p className="text-sm text-gray-300 opacity-0 group-hover/card:opacity-100 transition-all duration-300 delay-100 h-0 group-hover/card:h-auto overflow-hidden">
+                      <p className="text-sm text-gray-300 opacity-0 group-hover/card:opacity-100 transition-all duration-300 delay-100 h-0 group-hover/card:h-auto overflow-hidden text-left">
                         {mentor.desc}
                       </p>
                     </div>
@@ -601,7 +616,7 @@ export default function LandingPage() {
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             
             {/* CTA Card */}
-            <div className="bg-blue-600 rounded-3xl p-8 md:p-12 text-center text-white relative overflow-hidden shadow-2xl shadow-blue-600/30 h-full flex flex-col justify-center">
+            <div className="bg-blue-600 rounded-3xl p-8 md:p-12 text-left md:text-center text-white relative overflow-hidden shadow-2xl shadow-blue-600/30 h-full flex flex-col justify-center">
                {/* Decorative Circles */}
                <div className="absolute top-0 left-0 w-64 h-64 bg-white opacity-10 rounded-full -translate-x-1/2 -translate-y-1/2 blur-2xl"></div>
                <div className="absolute bottom-0 right-0 w-64 h-64 bg-indigo-900 opacity-20 rounded-full translate-x-1/2 translate-y-1/2 blur-2xl"></div>
@@ -614,10 +629,10 @@ export default function LandingPage() {
                    transition={{ duration: 0.5 }}
                    className="text-3xl md:text-4xl font-bold mb-6"
                  >Siap Memulai Perjalanan Belajarmu?</motion.h2>
-                 <p className="text-blue-100 text-lg mb-8">
+                 <p className="text-blue-100 text-lg mb-8 text-left md:text-center">
                    Jangan buang waktu mempelajari apa yang sudah kamu tahu. Ikuti tes awal kami dan dapatkan kurikulum yang dipersonalisasi khusus untukmu.
                  </p>
-                 <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                 <div className="flex flex-col sm:flex-row gap-4 justify-start md:justify-center">
                    <Link href="/register" className="bg-white text-blue-600 px-8 py-3.5 rounded-full font-bold hover:bg-blue-50 transition shadow-lg">
                      Daftar Gratis Sekarang
                    </Link>
@@ -645,7 +660,7 @@ export default function LandingPage() {
                 ].map((item, idx) => (
                   <div key={idx} className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm border border-slate-200 dark:border-gray-700">
                     <h3 className="font-bold text-lg text-slate-900 dark:text-white mb-2">{item.q}</h3>
-                    <p className="text-slate-600 dark:text-slate-400">{item.a}</p>
+                    <p className="text-slate-600 dark:text-slate-400 text-left">{item.a}</p>
                   </div>
                 ))}
               </div>
@@ -675,7 +690,7 @@ export default function LandingPage() {
                 <img src="/logo.webp" alt="KELAS Icon" className="h-8 w-auto" />
                
               </div>
-              <p className="text-slate-500 dark:text-slate-400 text-sm leading-relaxed mb-6">
+              <p className="text-slate-500 dark:text-slate-400 text-sm leading-relaxed mb-6 text-left">
                 Platform e-learning adaptif yang membantu kamu belajar lebih cepat dan efektif dengan kurikulum yang dipersonalisasi.
               </p>
               <div className="flex gap-4">
