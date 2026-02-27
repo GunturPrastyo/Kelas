@@ -447,7 +447,7 @@ export default function LandingPage() {
           </div>
 
           {/* 3D Carousel Slider */}
-          <div className="relative h-[450px] w-full max-w-6xl mx-auto flex items-center mt-12 md:mt-8 mb-20 justify-center perspective-1000">
+          <div className="relative h-[400px] md:h-[450px] w-full max-w-6xl mx-auto flex items-center mt-12 md:mt-8 mb-20 justify-center perspective-1000">
             {features.map((feature, idx) => {
               const position = (idx - activeFeature + features.length) % features.length;
               
@@ -468,7 +468,7 @@ export default function LandingPage() {
                   key={idx} 
                   animate={animateProps}
                   transition={{ duration: 0.5, ease: "easeInOut" }}
-                  className="absolute w-full max-w-xs sm:max-w-sm md:max-w-md p-8 md:p-12 rounded-[2.5rem] bg-white dark:bg-gray-800 border border-slate-100 dark:border-gray-700 shadow-2xl flex flex-col items-start md:items-center text-left md:text-center cursor-pointer overflow-hidden group min-h-[380px] md:min-h-0"
+                  className="absolute w-full max-w-xs sm:max-w-sm md:max-w-md p-8 md:p-12 rounded-[2.5rem] bg-white dark:bg-gray-800 border border-slate-100 dark:border-gray-700 shadow-2xl flex flex-col items-start md:items-center text-left md:text-center cursor-pointer overflow-hidden group min-h-[340px] md:min-h-0"
                   onClick={() => setActiveFeature(idx)}
                   style={{
                     boxShadow: position === 0 ? "0 25px 50px -12px rgba(0, 0, 0, 0.15)" : "none"
