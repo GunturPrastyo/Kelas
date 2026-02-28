@@ -33,19 +33,40 @@ const mentors = [
     name: "Dr. Budi Santoso",
     role: "Expert Web Development",
     image: "https://api.dicebear.com/7.x/avataaars/svg?seed=Budi", // Placeholder avatar
-    desc: "Berpengalaman 10+ tahun di industri tech global."
+    desc: "Berpengalaman 10+ tahun di industri tech global.",
+    bio: "Dr. Budi adalah praktisi teknologi yang berdedikasi untuk mencetak talenta digital baru. Dengan latar belakang akademis dan industri yang kuat, ia menyederhanakan konsep kompleks menjadi materi yang mudah dipahami.",
+    experience: [
+      "Senior Software Engineer di Google (2015-2020)",
+      "CTO di EdTech Startup Indonesia (2020-Sekarang)",
+      "Kontributor Core React.js Open Source"
+    ],
+    expertise: ["Full Stack Development", "Cloud Architecture", "DevOps"]
   },
   {
     name: "Siti Aminah, M.Kom",
     role: "Data Science Specialist",
     image: "https://api.dicebear.com/7.x/avataaars/svg?seed=Siti",
-    desc: "Dosen dan praktisi AI yang fokus pada pembelajaran adaptif."
+    desc: "Dosen dan praktisi AI yang fokus pada pembelajaran adaptif.",
+    bio: "Siti Aminah percaya bahwa data adalah kunci masa depan. Ia aktif meneliti penerapan Artificial Intelligence dalam personalisasi pendidikan untuk meningkatkan efektivitas belajar siswa.",
+    experience: [
+      "Lead Data Scientist di GoTo (2019-2022)",
+      "Dosen Tetap Ilmu Komputer UI",
+      "Speaker di AI Summit Asia 2023"
+    ],
+    expertise: ["Machine Learning", "Python for Data Science", "Big Data Analytics"]
   },
   {
     name: "Andi Pratama",
     role: "UI/UX Designer Lead",
     image: "https://api.dicebear.com/7.x/avataaars/svg?seed=Andi",
-    desc: "Mendesain pengalaman pengguna untuk aplikasi unicorn."
+    desc: "Mendesain pengalaman pengguna untuk aplikasi unicorn.",
+    bio: "Andi memadukan estetika dan fungsionalitas. Ia telah membimbing ratusan desainer muda untuk memahami bahwa desain bukan hanya tentang visual, tapi tentang pemecahan masalah pengguna.",
+    experience: [
+      "Head of Design di Traveloka (2018-2021)",
+      "UX Researcher Consultant untuk BUMN",
+      "Mentor Google Certified Design Sprint"
+    ],
+    expertise: ["User Research", "Interaction Design", "Design Systems"]
   }
 ];
 
@@ -83,6 +104,7 @@ export default function LandingPage() {
   const [mounted, setMounted] = useState(false);
   const [showScrollTop, setShowScrollTop] = useState(false);
   const mentorScrollRef = useRef<HTMLDivElement>(null);
+  const [selectedMentor, setSelectedMentor] = useState<typeof mentors[0] | null>(null);
 
   useEffect(() => {
     setMounted(true);
@@ -184,6 +206,26 @@ export default function LandingPage() {
       current.scrollBy({ left: scrollAmount, behavior: 'smooth' });
     }
   };
+
+  // Auto scroll mentors
+  useEffect(() => {
+    const scrollContainer = mentorScrollRef.current;
+    if (!scrollContainer) return;
+
+    const interval = setInterval(() => {
+      const cardWidth = scrollContainer.children[0]?.clientWidth || 300;
+      const gap = 24;
+      const maxScrollLeft = scrollContainer.scrollWidth - scrollContainer.clientWidth;
+      
+      if (scrollContainer.scrollLeft >= maxScrollLeft - 10) {
+        scrollContainer.scrollTo({ left: 0, behavior: 'smooth' });
+      } else {
+        scrollContainer.scrollBy({ left: cardWidth + gap, behavior: 'smooth' });
+      }
+    }, 3000);
+
+    return () => clearInterval(interval);
+  }, []);
 
   return (
     <div className="min-h-screen bg-white dark:bg-gray-900 font-sans text-slate-800 dark:text-slate-200 selection:bg-blue-100 dark:selection:bg-blue-900">
@@ -447,7 +489,7 @@ export default function LandingPage() {
           </div>
 
           {/* 3D Carousel Slider */}
-          <div className="relative h-[400px] md:h-[450px] w-full max-w-6xl mx-auto flex items-center mt-12 md:mt-8 mb-20 justify-center perspective-1000">
+          <div className="relative h-[400px] md:h-[450px] w-full max-w-6xl mx-auto flex items-center mt-2 md:mt-8 mb-12 md:mb-20 justify-center perspective-1000">
             {features.map((feature, idx) => {
               const position = (idx - activeFeature + features.length) % features.length;
               
@@ -468,7 +510,7 @@ export default function LandingPage() {
                   key={idx} 
                   animate={animateProps}
                   transition={{ duration: 0.5, ease: "easeInOut" }}
-                  className="absolute w-full max-w-xs sm:max-w-sm md:max-w-md p-8 md:p-12 rounded-[2.5rem] bg-white dark:bg-gray-800 border border-slate-100 dark:border-gray-700 shadow-2xl flex flex-col items-start md:items-center text-left md:text-center cursor-pointer overflow-hidden group min-h-[340px] md:min-h-0"
+                  className="absolute w-full max-w-xs sm:max-w-sm md:max-w-md p-8 md:p-12 rounded-[2.5rem] bg-white dark:bg-gray-800 border border-slate-100 dark:border-gray-700 shadow-xl flex flex-col items-start md:items-center text-left md:text-center cursor-pointer overflow-hidden group min-h-[340px] md:min-h-0"
                   onClick={() => setActiveFeature(idx)}
                   style={{
                     boxShadow: position === 0 ? "0 25px 50px -12px rgba(0, 0, 0, 0.15)" : "none"
@@ -486,8 +528,10 @@ export default function LandingPage() {
                     <div className="w-16 h-16 md:w-24 md:h-24 bg-white dark:bg-gray-700 rounded-3xl shadow-xl shadow-blue-100/50 dark:shadow-none border border-slate-50 dark:border-gray-600 flex items-center justify-center mb-6 md:mb-8 transform group-hover:-translate-y-2 transition-transform duration-500">
                       {feature.icon}
                     </div>
-                    <h3 className="text-xl md:text-3xl font-bold text-slate-800 dark:text-white mb-2 md:mb-4 tracking-tight">{feature.title}</h3>
-                    <p className="text-slate-600 dark:text-slate-300 leading-relaxed text-sm md:text-lg px-0 md:px-2 text-left md:text-center">
+                    <h3 className="text-2xl md:text-3xl font-extrabold text-slate-900 dark:text-white mb-3 md:mb-4 tracking-tight group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors duration-300">
+                      {feature.title}
+                    </h3>
+                    <p className="text-slate-600 dark:text-slate-300 leading-relaxed text-sm md:text-lg px-0 md:px-2 text-left md:text-center font-medium opacity-90 group-hover:opacity-100 transition-opacity duration-300">
                       {feature.desc}
                     </p>
                   </div>
@@ -525,7 +569,7 @@ export default function LandingPage() {
             <div className="absolute bottom-0 left-0 w-72 h-72 bg-blue-500/20 dark:bg-black/20 rounded-full blur-2xl"></div>
         </div>
 
-        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="relative z-10 max-w-7xl mx-auto px-2 sm:px-6 lg:px-8">
           <div className="text-left md:text-center max-w-3xl mx-auto mb-12">
             <motion.h2 
               initial={{ opacity: 0, y: 20 }}
@@ -548,17 +592,15 @@ export default function LandingPage() {
           </div>
 
           <div className="relative group px-4 md:px-10">
-            <button 
-              onClick={() => scrollMentors('left')}
-              className="absolute left-0 top-1/2 -translate-y-1/2 z-20 p-2 md:p-3 rounded-full bg-white/90 dark:bg-gray-800/90 shadow-lg text-slate-700 dark:text-slate-200 hover:scale-110 transition-all opacity-100 md:opacity-0 md:group-hover:opacity-100 disabled:opacity-0"
-              aria-label="Previous Mentor"
-            >
-              <ChevronLeft className="w-5 h-5 md:w-6 md:h-6" />
-            </button>
+
 
             <div 
               ref={mentorScrollRef}
-              className="flex gap-6 overflow-x-auto snap-x snap-mandatory pb-8 [&::-webkit-scrollbar]:hidden"
+              className={`flex gap-6 overflow-x-auto snap-x snap-mandatory pb-8 [&::-webkit-scrollbar]:hidden`}
+              onTouchStart={(e) => {
+                // Logika touch start
+              }}
+              onTouchEnd={(e) => {}}
               style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
             >
               {mentors.map((mentor, idx) => (
@@ -569,6 +611,7 @@ export default function LandingPage() {
                   viewport={{ once: true }}
                   transition={{ duration: 0.5, delay: idx * 0.1 }}
                   className="flex-shrink-0 w-full md:w-[calc(33.333%-1rem)] snap-center group/card relative overflow-hidden rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 bg-white dark:bg-gray-800"
+                  onClick={() => setSelectedMentor(mentor)}
                 >
                   <div className="aspect-[4/5] w-full relative overflow-hidden">
                     <img
@@ -583,7 +626,7 @@ export default function LandingPage() {
                       <div className="w-12 h-1 bg-blue-500 mb-4 rounded-full"></div>
                       <p className="text-blue-300 text-xs font-bold uppercase tracking-wider mb-1">{mentor.role}</p>
                       <h3 className="text-2xl font-bold mb-2">{mentor.name}</h3>
-                      <p className="text-sm text-gray-300 opacity-0 group-hover/card:opacity-100 transition-all duration-300 delay-100 h-0 group-hover/card:h-auto overflow-hidden text-left">
+                      <p className="text-sm text-gray-300 opacity-100 md:opacity-0 md:group-hover/card:opacity-100 transition-all duration-300 delay-100 h-auto md:h-0 md:group-hover/card:h-auto overflow-hidden text-left">
                         {mentor.desc}
                       </p>
                     </div>
@@ -592,13 +635,7 @@ export default function LandingPage() {
               ))}
             </div>
 
-            <button 
-              onClick={() => scrollMentors('right')}
-              className="absolute right-0 top-1/2 -translate-y-1/2 z-20 p-2 md:p-3 rounded-full bg-white/90 dark:bg-gray-800/90 shadow-lg text-slate-700 dark:text-slate-200 hover:scale-110 transition-all opacity-100 md:opacity-0 md:group-hover:opacity-100"
-              aria-label="Next Mentor"
-            >
-              <ChevronRight className="w-5 h-5 md:w-6 md:h-6" />
-            </button>
+
           </div>
         </div>
         
@@ -609,6 +646,72 @@ export default function LandingPage() {
             </svg>
         </div>
       </section>
+
+      {/* Mentor Modal */}
+      {selectedMentor && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm" onClick={() => setSelectedMentor(null)}>
+          <motion.div 
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.9 }}
+            className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl max-w-2xl w-full overflow-hidden relative"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <button onClick={() => setSelectedMentor(null)} className="absolute top-4 right-4 p-2 bg-gray-100 dark:bg-gray-700 rounded-full hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors z-10">
+              <X size={20} />
+            </button>
+            
+            <div className="flex flex-col md:flex-row">
+              <div className="w-full md:w-2/5 h-64 md:h-auto relative">
+                <img src={selectedMentor.image} alt={selectedMentor.name} className="w-full h-full object-cover" />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent md:hidden flex items-end p-6">
+                  <div>
+                    <p className="text-blue-300 text-xs font-bold uppercase tracking-wider mb-1">{selectedMentor.role}</p>
+                    <h3 className="text-2xl font-bold text-white">{selectedMentor.name}</h3>
+                  </div>
+                </div>
+              </div>
+              
+              <div className="w-full md:w-3/5 p-6 md:p-8 overflow-y-auto max-h-[60vh] md:max-h-auto">
+                <div className="hidden md:block mb-6">
+                  <p className="text-blue-600 dark:text-blue-400 text-xs font-bold uppercase tracking-wider mb-1">{selectedMentor.role}</p>
+                  <h3 className="text-3xl font-bold text-slate-900 dark:text-white">{selectedMentor.name}</h3>
+                </div>
+
+                <div className="space-y-6">
+                  <div>
+                    <h4 className="text-sm font-bold text-slate-900 dark:text-white uppercase tracking-wide mb-2 flex items-center gap-2"><Users size={16} /> Tentang Mentor</h4>
+                    <p className="text-slate-600 dark:text-slate-300 text-sm leading-relaxed">{selectedMentor.bio}</p>
+                  </div>
+
+                  <div>
+                    <h4 className="text-sm font-bold text-slate-900 dark:text-white uppercase tracking-wide mb-2 flex items-center gap-2"><Award size={16} /> Pengalaman & Riwayat</h4>
+                    <ul className="space-y-2">
+                      {selectedMentor.experience.map((exp, i) => (
+                        <li key={i} className="flex items-start gap-2 text-sm text-slate-600 dark:text-slate-300">
+                          <div className="w-1.5 h-1.5 rounded-full bg-blue-500 mt-1.5 shrink-0"></div>
+                          <span>{exp}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+
+                  <div>
+                    <h4 className="text-sm font-bold text-slate-900 dark:text-white uppercase tracking-wide mb-2 flex items-center gap-2"><Laptop size={16} /> Keahlian Utama</h4>
+                    <div className="flex flex-wrap gap-2">
+                      {selectedMentor.expertise.map((skill, i) => (
+                        <span key={i} className="px-3 py-1 bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-300 text-xs font-medium rounded-full border border-blue-100 dark:border-blue-800">
+                          {skill}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </motion.div>
+        </div>
+      )}
 
       {/* --- CTA & FAQ SECTION --- */}
       <section id="faq" className="py-24 bg-slate-50 dark:bg-gray-900 relative overflow-hidden">
