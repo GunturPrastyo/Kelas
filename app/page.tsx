@@ -21,7 +21,8 @@ import {
   Instagram,
   Youtube,
   Mail,
-  MapPin
+  MapPin,
+  Quote
 } from 'lucide-react';
 import { useState, useEffect, useRef } from 'react';
 import { useTheme } from 'next-themes';
@@ -67,6 +68,28 @@ const mentors = [
       "Mentor Google Certified Design Sprint"
     ],
     expertise: ["User Research", "Interaction Design", "Design Systems"]
+  }
+];
+
+// Data Dummy Testimoni
+const testimonials = [
+  {
+    name: "Rina Suryani",
+    role: "Siswa SMA Kelas 12",
+    content: "Berkat KELAS, nilai matematika saya meningkat drastis. Penjelasannya sangat mudah dipahami dan tidak membosankan!",
+    avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Rina"
+  },
+  {
+    name: "Dimas Anggara",
+    role: "Mahasiswa Teknik Informatika",
+    content: "Modul coding-nya sangat interaktif. Saya jadi lebih percaya diri mengerjakan proyek kuliah karena materi yang relevan.",
+    avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Dimas"
+  },
+  {
+    name: "Sarah Putri",
+    role: "Freelancer Desain",
+    content: "Sertifikat dari KELAS sangat membantu portofolio saya. Klien jadi lebih percaya dengan skill yang saya miliki.",
+    avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Sarah"
   }
 ];
 
@@ -510,7 +533,7 @@ export default function LandingPage() {
                   key={idx} 
                   animate={animateProps}
                   transition={{ duration: 0.5, ease: "easeInOut" }}
-                  className="absolute w-full max-w-xs sm:max-w-sm md:max-w-md p-8 md:p-12 rounded-[2.5rem] bg-white dark:bg-gray-800 border border-slate-100 dark:border-gray-700 shadow-xl flex flex-col items-start md:items-center text-left md:text-center cursor-pointer overflow-hidden group min-h-[340px] md:min-h-0"
+                  className="absolute w-full max-w-xs sm:max-w-sm md:max-w-md p-8 md:p-12 rounded-2xl bg-white dark:bg-gray-800 border border-slate-100 dark:border-gray-700 shadow-xl flex flex-col items-start md:items-center text-left md:text-center cursor-pointer overflow-hidden group min-h-[340px] md:min-h-0"
                   onClick={() => setActiveFeature(idx)}
                   style={{
                     boxShadow: position === 0 ? "0 25px 50px -12px rgba(0, 0, 0, 0.15)" : "none"
@@ -640,7 +663,7 @@ export default function LandingPage() {
         </div>
         
         {/* Bottom Transition */}
-        <div className="absolute bottom-0 left-0 w-full pointer-events-none">
+        <div className="absolute bottom-0 left-0 w-full pointer-events-none translate-y-[1px]">
              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 120" className="w-full h-auto block">
                 <path fill="currentColor" className="text-white dark:text-gray-900" fillOpacity="1" d="M0,64L48,69.3C96,75,192,85,288,80C384,75,480,53,576,48C672,43,768,53,864,64C960,75,1056,85,1152,80C1248,75,1344,53,1392,42.7L1440,32L1440,120L1392,120C1344,120,1248,120,1152,120C1056,120,960,120,864,120C768,120,672,120,576,120C480,120,384,120,288,120C192,120,96,120,48,120L0,120Z"></path>
             </svg>
@@ -713,9 +736,65 @@ export default function LandingPage() {
         </div>
       )}
 
+      {/* --- TESTIMONIALS SECTION --- */}
+      <section className="py-6 bg-white dark:bg-gray-900 relative overflow-hidden">
+        <div className="z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center max-w-3xl mx-auto mb-12">
+            <motion.h2 
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5 }}
+              className="text-3xl md:text-4xl font-extrabold text-slate-900 dark:text-white mb-4"
+            >
+              Apa Kata Mereka?
+            </motion.h2>
+            <p className="text-lg text-slate-600 dark:text-slate-400">
+              Ribuan siswa telah merasakan dampak positif belajar di KELAS. Giliran kamu berikutnya.
+            </p>
+          </div>
+
+          <div className="relative grid md:grid-cols-3 gap-8">
+            {/* Garis Vertikal Timeline (Mobile Only) */}
+            <div className="absolute left-4 top-0 bottom-0 w-0.5 bg-slate-200 dark:bg-slate-700 md:hidden"></div>
+
+            {testimonials.map((item, idx) => (
+              <motion.div
+                key={idx}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.5, delay: idx * 0.1 }}
+                className="relative md:static"
+              >
+                {/* Dot Marker (Mobile Only) */}
+                <div className="absolute left-4 top-8 -translate-x-1/2 w-4 h-4 rounded-full bg-blue-500 border-4 border-white dark:border-gray-900 md:hidden z-10"></div>
+
+                <div className="ml-10 md:ml-0 bg-slate-50 dark:bg-gray-800 p-8 rounded-2xl relative border border-slate-100 dark:border-gray-700 shadow-sm hover:shadow-md transition-shadow">
+                  <Quote className="absolute top-8 right-8 text-blue-100 dark:text-blue-900/30 w-12 h-12 rotate-180" />
+                  <p className="text-slate-600 dark:text-slate-300 mb-6 relative z-10 italic">"{item.content}"</p>
+                  <div className="flex items-center gap-4">
+                    <img src={item.avatar} alt={item.name} className="w-12 h-12 rounded-full bg-gray-200" />
+                    <div>
+                      <h4 className="font-bold text-slate-900 dark:text-white">{item.name}</h4>
+                      <p className="text-xs text-slate-500 dark:text-slate-400">{item.role}</p>
+                    </div>
+                  </div>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+        <div className="relative w-full pointer-events-none z-0 mt-10">
+          <svg xmlns="http://www.w3.org/2000/svg" id="visual" viewBox="0 400 900 200" className="w-full h-40" preserveAspectRatio="none">
+            <path d="M0 430L21.5 422.2C43 414.3 86 398.7 128.8 402.7C171.7 406.7 214.3 430.3 257.2 444.2C300 458 343 462 385.8 463.3C428.7 464.7 471.3 463.3 514.2 452C557 440.7 600 419.3 642.8 424.5C685.7 429.7 728.3 461.3 771.2 468.5C814 475.7 857 458.3 878.5 449.7L900 441L900 601L878.5 601C857 601 814 601 771.2 601C728.3 601 685.7 601 642.8 601C600 601 557 601 514.2 601C471.3 601 428.7 601 385.8 601C343 601 300 601 257.2 601C214.3 601 171.7 601 128.8 601C86 601 43 601 21.5 601L0 601Z" className="fill-sky-300 dark:fill-sky-700" strokeLinecap="round" strokeLinejoin="miter"/>
+          </svg>
+        </div>
+      </section>
+
       {/* --- CTA & FAQ SECTION --- */}
-      <section id="faq" className="py-24 bg-slate-50 dark:bg-gray-900 relative overflow-hidden">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <section id="faq" className="py-8 sm:py-20 bg-slate-50 dark:bg-gray-900 relative overflow-hidden">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             
             {/* CTA Card */}
