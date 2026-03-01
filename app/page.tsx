@@ -125,6 +125,7 @@ const features = [
 
 export default function LandingPage() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [activeSection, setActiveSection] = useState("");
   const [displayedText1, setDisplayedText1] = useState("");
   const [displayedText2, setDisplayedText2] = useState("");
   const [count, setCount] = useState(0);
@@ -219,6 +220,20 @@ export default function LandingPage() {
   useEffect(() => {
     const handleScroll = () => {
       setShowScrollTop(window.scrollY > 400);
+
+      const sections = ["fitur", "mentor", "faq"];
+      let current = "";
+
+      for (const section of sections) {
+        const element = document.getElementById(section);
+        if (element) {
+          const rect = element.getBoundingClientRect();
+          if (rect.top <= 150 && rect.bottom >= 150) {
+            current = section;
+          }
+        }
+      }
+      setActiveSection(current);
     };
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
@@ -270,10 +285,27 @@ export default function LandingPage() {
             </div>
 
             {/* Desktop Menu */}
-            <div className="hidden md:flex items-center space-x-8">
-              <Link href="#fitur" className="text-sm font-medium hover:text-blue-600 dark:hover:text-blue-400 transition">Fitur</Link>
-              <Link href="#mentor" className="text-sm font-medium hover:text-blue-600 dark:hover:text-blue-400 transition">Mentor</Link>
-              <Link href="#faq" className="text-sm font-medium hover:text-blue-600 dark:hover:text-blue-400 transition">FAQ</Link>
+            <div className="hidden md:flex items-center space-x-2">
+              {['fitur', 'mentor', 'faq'].map((item) => (
+                <Link
+                  key={item}
+                  href={`#${item}`}
+                  className={`relative px-4 py-2 text-sm font-medium transition-colors ${
+                    activeSection === item
+                      ? 'text-blue-600 dark:text-white'
+                      : 'text-slate-600 dark:text-slate-300 hover:text-blue-600 dark:hover:text-white'
+                  }`}
+                >
+                  {item.charAt(0).toUpperCase() + item.slice(1)}
+                  {activeSection === item && (
+                    <motion.span
+                      layoutId="activeSection"
+                      className="absolute bottom-0 left-0 w-full h-1 bg-blue-600 dark:bg-white rounded-full"
+                      transition={{ type: "spring", stiffness: 300, damping: 30 }}
+                    />
+                  )}
+                </Link>
+              ))}
               <div className="flex items-center gap-3 ml-4">
               <button
                 onClick={() => setTheme(resolvedTheme === 'dark' ? 'light' : 'dark')}
@@ -328,21 +360,21 @@ export default function LandingPage() {
             <div className="px-4 py-6 space-y-2">
               <Link 
                 href="#fitur" 
-                className="block px-4 py-3 rounded-xl text-base font-medium text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-gray-800 hover:text-blue-600 dark:hover:text-blue-400 transition-all" 
+                className={`block px-4 py-3 rounded-xl text-base font-medium transition-all ${activeSection === 'fitur' ? 'text-blue-600 dark:text-blue-400 bg-slate-50 dark:bg-gray-800' : 'text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-gray-800 hover:text-blue-600 dark:hover:text-blue-400'}`}
                 onClick={() => setIsMobileMenuOpen(false)}
               >
                 Fitur
               </Link>
               <Link 
                 href="#mentor" 
-                className="block px-4 py-3 rounded-xl text-base font-medium text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-gray-800 hover:text-blue-600 dark:hover:text-blue-400 transition-all" 
+                className={`block px-4 py-3 rounded-xl text-base font-medium transition-all ${activeSection === 'mentor' ? 'text-blue-600 dark:text-blue-400 bg-slate-50 dark:bg-gray-800' : 'text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-gray-800 hover:text-blue-600 dark:hover:text-blue-400'}`}
                 onClick={() => setIsMobileMenuOpen(false)}
               >
                 Mentor
               </Link>
               <Link 
                 href="#faq" 
-                className="block px-4 py-3 rounded-xl text-base font-medium text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-gray-800 hover:text-blue-600 dark:hover:text-blue-400 transition-all" 
+                className={`block px-4 py-3 rounded-xl text-base font-medium transition-all ${activeSection === 'faq' ? 'text-blue-600 dark:text-blue-400 bg-slate-50 dark:bg-gray-800' : 'text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-gray-800 hover:text-blue-600 dark:hover:text-blue-400'}`}
                 onClick={() => setIsMobileMenuOpen(false)}
               >
                 FAQ
