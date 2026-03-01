@@ -593,14 +593,14 @@ export default function LandingPage() {
 
       {/* --- MENTOR SECTION --- */}
       <section id="mentor" className="relative py-24 bg-sky-300 dark:bg-sky-700 overflow-hidden">
-        <div className="relative z-10 max-w-7xl mx-auto px-2 sm:px-6 lg:px-8">
-          <div className="text-left md:text-center max-w-3xl mx-auto mb-12">
+        <div className="relative z-10 max-w-7xl mx-auto px-2 sm:px-6 lg:px-8 ">
+          <div className="text-left md:text-center max-w-3xl mx-auto mb-10 -mt-20">
             <motion.h2 
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.5 }}
-              className="text-3xl md:text-4xl font-extrabold text-slate-900 dark:text-white mb-4"
+              className="text-3xl md:text-4xl font-bold text-slate-800 dark:text-white mb-4"
             >
               Belajar Langsung dari Ahlinya
             </motion.h2>
@@ -609,15 +609,13 @@ export default function LandingPage() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.5, delay: 0.1 }}
-              className="text-slate-800 dark:text-blue-100 text-lg font-medium text-left md:text-center"
+              className="text-slate-700 dark:text-blue-100 text-lg font-medium text-left md:text-center"
             >
               Dapatkan wawasan berharga dari praktisi industri dan akademisi berpengalaman yang siap membimbing perjalanan karirmu.
             </motion.p>
           </div>
 
           <div className="relative group px-4 md:px-10">
-
-
             <div 
               ref={mentorScrollRef}
               className={`flex gap-6 overflow-x-auto snap-x snap-mandatory pb-8 [&::-webkit-scrollbar]:hidden`}
