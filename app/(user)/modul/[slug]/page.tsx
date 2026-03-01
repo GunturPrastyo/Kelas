@@ -101,7 +101,6 @@ export default function ModulDetailPage() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [openTopicId, setOpenTopicId] = useState<string | null>(null);
-    const [activeSubMateriId, setActiveSubMateriId] = useState<string | null>(null);
 
     // --- State for Post-Test ---
     const [activeTest, setActiveTest] = useState<Topik | null>(null);
@@ -307,38 +306,6 @@ export default function ModulDetailPage() {
             window.removeEventListener('hashchange', handleHashChange);
         };
     }, [handleHashChange]);
-
-    // --- Scroll Spy for Table of Contents ---
-    useEffect(() => {
-        const handleScroll = () => {
-            if (!openTopicId || !modul) return;
-
-            const currentTopic = modul.topics.find(t => t._id === openTopicId);
-            if (!currentTopic || !currentTopic.materi || !currentTopic.materi.subMateris) return;
-
-            const ids = currentTopic.materi.subMateris.map(s => s._id);
-            ids.push(`uji-pemahaman-${openTopicId}`);
-
-            let currentId = null;
-            const offset = 150; // Adjust based on header height
-
-            for (const id of ids) {
-                const element = document.getElementById(id);
-                if (element) {
-                    const rect = element.getBoundingClientRect();
-                    if (rect.top <= offset) {
-                        currentId = id;
-                    } else {
-                        break;
-                    }
-                }
-            }
-            setActiveSubMateriId(currentId);
-        };
-
-        window.addEventListener('scroll', handleScroll, { passive: true });
-        return () => window.removeEventListener('scroll', handleScroll);
-    }, [openTopicId, modul]);
 
     // --- Study Time Tracking Logic ---
     const logStudyDuration = useCallback((topicId: string, startTime: number) => {
@@ -1460,12 +1427,12 @@ export default function ModulDetailPage() {
                                                 </h4>
                                                 <ul className="relative">
                                                     {topik.materi.subMateris.map((sub, subIndex, arr) => (
-                                                        <li key={sub._id} className="relative pl-10 pb-5 group">
+                                                        <li key={sub._id} className="relative pl-10 pb-5">
                                                             {/* Garis vertikal */}
-                                                            <div className={`absolute left-[11px] top-4 h-full w-0.5 ${sub._id === activeSubMateriId ? 'bg-blue-500' : 'bg-slate-200 dark:bg-slate-700'} transition-colors duration-300`}></div>
+                                                            <div className="absolute left-[11px] top-4 h-full w-0.5 bg-slate-200 dark:bg-slate-700"></div>
                                                             
                                                             {/* Lingkaran Nomor */}
-                                                            <div className={`absolute left-0 top-0 flex h-6 w-6 items-center justify-center rounded-full text-xs font-bold ring-4 ring-slate-50 dark:ring-gray-900/50 transition-all duration-300 ${sub._id === activeSubMateriId ? 'bg-blue-600 text-white scale-110' : 'bg-blue-500 text-white'}`}>
+                                                            <div className="absolute left-0 top-0 flex h-6 w-6 items-center justify-center rounded-full bg-blue-500 text-white text-xs font-bold ring-4 ring-slate-50 dark:ring-gray-900/50">
                                                                 {subIndex + 1}
                                                             </div> 
 
@@ -1475,17 +1442,16 @@ export default function ModulDetailPage() {
                                                                 onClick={(e) => {
                                                                     e.preventDefault();
                                                                     document.getElementById(sub._id)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                                                                    setActiveSubMateriId(sub._id);
                                                                 }}
-                                                                className={`block text-sm font-medium transition-all duration-200 ${sub._id === activeSubMateriId ? 'text-blue-600 dark:text-blue-400 font-bold translate-x-1' : 'text-slate-700 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400'}`}>
+                                                                className="block text-sm font-medium text-slate-700 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors duration-200">
                                                                 {sub.title.replace(/^\d+[\.\)\-]\s*/, '')}
                                                             </a>
                                                         </li>
                                                     ))}
                                                     {/* Item Uji Pemahaman */}
-                                                    <li className="relative pl-10 pb-0 group">
+                                                    <li className="relative pl-10 pb-0">
                                                         {/* Lingkaran Nomor */}
-                                                        <div className={`absolute left-0 top-0 flex h-6 w-6 items-center justify-center rounded-full text-xs font-bold ring-4 ring-slate-50 dark:ring-gray-900/50 transition-all duration-300 ${`uji-pemahaman-${topik._id}` === activeSubMateriId ? 'bg-blue-600 text-white scale-110' : 'bg-blue-500 text-white'}`}>
+                                                        <div className="absolute left-0 top-0 flex h-6 w-6 items-center justify-center rounded-full bg-blue-500 text-white text-xs font-bold ring-4 ring-slate-50 dark:ring-gray-900/50">
                                                             {topik.materi.subMateris.length + 1}
                                                         </div>
                                                         <a 
@@ -1493,9 +1459,8 @@ export default function ModulDetailPage() {
                                                             onClick={(e) => {
                                                                 e.preventDefault();
                                                                 document.getElementById(`uji-pemahaman-${topik._id}`)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                                                                setActiveSubMateriId(`uji-pemahaman-${topik._id}`);
                                                             }}
-                                                            className={`block text-sm font-medium transition-all duration-200 ${`uji-pemahaman-${topik._id}` === activeSubMateriId ? 'text-blue-600 dark:text-blue-400 font-bold translate-x-1' : 'text-slate-700 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400'}`}
+                                                            className="block text-sm font-medium text-slate-700 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors duration-200"
                                                         >
                                                             Uji Pemahaman
                                                         </a>
