@@ -75,20 +75,26 @@ const mentors = [
 const testimonials = [
   {
     name: "Rina Suryani",
-    role: "Siswa SMA Kelas 12",
-    content: "Berkat KELAS, nilai matematika saya meningkat drastis. Penjelasannya sangat mudah dipahami dan tidak membosankan!",
+    role: "Siswa SMK RPL",
+    content: "Materi JavaScript dasarnya sangat lengkap! Dari variabel sampai DOM manipulation dijelaskan dengan sangat detail. Sangat membantu tugas sekolah saya.",
     avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Rina"
   },
   {
     name: "Dimas Anggara",
     role: "Mahasiswa Teknik Informatika",
-    content: "Modul coding-nya sangat interaktif. Saya jadi lebih percaya diri mengerjakan proyek kuliah karena materi yang relevan.",
+    content: "Akhirnya paham konsep Asynchronous JavaScript dan Promise setelah belajar di sini. Studi kasus real-world nya bikin logika coding jadi lebih jalan.",
     avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Dimas"
   },
   {
+    name: "Budi Santoso",
+    role: "Siswa SMK TKJ",
+    content: "Meskipun jurusan TKJ, belajar Node.js dan REST API di sini sangat mudah dipahami. Sekarang saya bisa buat bot monitoring jaringan sederhana.",
+    avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Budi"
+  },
+  {
     name: "Sarah Putri",
-    role: "Freelancer Desain",
-    content: "Sertifikat dari KELAS sangat membantu portofolio saya. Klien jadi lebih percaya dengan skill yang saya miliki.",
+    role: "Mahasiswa Sistem Informasi",
+    content: "Modul integrasi API-nya juara! Sangat membantu skripsi saya yang membahas tentang pengembangan sistem informasi berbasis web.",
     avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Sarah"
   }
 ];
@@ -402,6 +408,7 @@ export default function LandingPage() {
             >
               Belajar Lebih Efektif dengan <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-500 to-indigo-500">Kurikulum Personal</span>
             </motion.h1>
+            
 
             {/* Mobile Hero Image */}
             <div className="hidden items-center justify-center w-full my-6">
@@ -586,12 +593,6 @@ export default function LandingPage() {
 
       {/* --- MENTOR SECTION --- */}
       <section id="mentor" className="relative py-24 bg-sky-300 dark:bg-sky-700 overflow-hidden">
-        {/* Decorative Background Elements */}
-        <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none">
-            <div className="absolute -top-24 -right-24 w-96 h-96 bg-white/20 rounded-full blur-3xl"></div>
-            <div className="absolute bottom-0 left-0 w-72 h-72 bg-blue-500/20 dark:bg-black/20 rounded-full blur-2xl"></div>
-        </div>
-
         <div className="relative z-10 max-w-7xl mx-auto px-2 sm:px-6 lg:px-8">
           <div className="text-left md:text-center max-w-3xl mx-auto mb-12">
             <motion.h2 
@@ -750,43 +751,90 @@ export default function LandingPage() {
               Apa Kata Mereka?
             </motion.h2>
             <p className="text-lg text-slate-600 dark:text-slate-400">
-              Ribuan siswa telah merasakan dampak positif belajar di KELAS. Giliran kamu berikutnya.
+              Ribuan siswa dari berbagai jurusan telah merasakan dampak positif belajar di KELAS.
             </p>
           </div>
 
-          <div className="relative grid md:grid-cols-3 gap-8">
-            {/* Garis Vertikal Timeline (Mobile Only) */}
-            <div className="absolute left-4 top-0 bottom-0 w-0.5 bg-slate-200 dark:bg-slate-700 md:hidden"></div>
+          {/* Infinite Scroll Container */}
+          <div className="relative w-full overflow-hidden">
+            
+            {/* Desktop View (Horizontal Scroll) */}
+            <div className="hidden md:flex relative w-full overflow-hidden">
+               {/* Gradient Masks */}
+               <div className="absolute left-0 top-0 bottom-0 w-20 bg-gradient-to-r from-white dark:from-gray-900 to-transparent z-20"></div>
+               <div className="absolute right-0 top-0 bottom-0 w-20 bg-gradient-to-l from-white dark:from-gray-900 to-transparent z-20"></div>
+               
+               <motion.div 
+                 className="flex gap-8"
+                 animate={{ x: ["0%", "-50%"] }}
+                 transition={{ 
+                   repeat: Infinity, 
+                   ease: "linear", 
+                   duration: 30 
+                 }}
+                 style={{ width: "max-content" }}
+               >
+                 {[...testimonials, ...testimonials].map((item, idx) => (
+                   <div key={`desktop-${idx}`} className="w-[400px] bg-slate-50 dark:bg-gray-800 p-8 rounded-2xl border border-slate-100 dark:border-gray-700 shadow-sm hover:shadow-md transition-shadow">
+                     <Quote className="text-blue-100 dark:text-blue-900/30 w-10 h-10 mb-4 rotate-180" />
+                     <p className="text-slate-600 dark:text-slate-300 mb-6 italic text-sm leading-relaxed min-h-[80px]">"{item.content}"</p>
+                     <div className="flex items-center gap-4">
+                       <img src={item.avatar} alt={item.name} className="w-12 h-12 rounded-full bg-gray-200" />
+                       <div>
+                         <h4 className="font-bold text-slate-900 dark:text-white">{item.name}</h4>
+                         <p className="text-xs text-slate-500 dark:text-slate-400">{item.role}</p>
+                       </div>
+                     </div>
+                   </div>
+                 ))}
+               </motion.div>
+            </div>
 
-            {testimonials.map((item, idx) => (
-              <motion.div
-                key={idx}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.5, delay: idx * 0.1 }}
-                className="relative md:static"
-              >
-                {/* Dot Marker (Mobile Only) */}
-                <div className="absolute left-4 top-8 -translate-x-1/2 w-4 h-4 rounded-full bg-blue-500 border-4 border-white dark:border-gray-900 md:hidden z-10"></div>
+            {/* Mobile View (Vertical Scroll with Timeline) */}
+            <div className="md:hidden relative h-[500px] overflow-hidden">
+               {/* Gradient Masks */}
+               <div className="absolute top-0 left-0 right-0 h-20 bg-gradient-to-b from-white dark:from-gray-900 to-transparent z-20"></div>
+               <div className="absolute bottom-0 left-0 right-0 h-20 bg-gradient-to-t from-white dark:from-gray-900 to-transparent z-20"></div>
 
-                <div className="ml-10 md:ml-0 bg-slate-50 dark:bg-gray-800 p-8 rounded-2xl relative border border-slate-100 dark:border-gray-700 shadow-sm hover:shadow-md transition-shadow">
-                  <Quote className="absolute top-8 right-8 text-blue-100 dark:text-blue-900/30 w-12 h-12 rotate-180" />
-                  <p className="text-slate-600 dark:text-slate-300 mb-6 relative z-10 italic">"{item.content}"</p>
-                  <div className="flex items-center gap-4">
-                    <img src={item.avatar} alt={item.name} className="w-12 h-12 rounded-full bg-gray-200" />
-                    <div>
-                      <h4 className="font-bold text-slate-900 dark:text-white">{item.name}</h4>
-                      <p className="text-xs text-slate-500 dark:text-slate-400">{item.role}</p>
-                    </div>
-                  </div>
-                </div>
-              </motion.div>
-            ))}
+               <motion.div 
+                 className="flex flex-col"
+                 animate={{ y: ["0%", "-50%"] }}
+                 transition={{ 
+                   repeat: Infinity, 
+                   ease: "linear", 
+                   duration: 30 
+                 }}
+               >
+                 {[...testimonials, ...testimonials].map((item, idx) => (
+                   <div key={`mobile-${idx}`} className="flex gap-4 pb-8 relative px-4">
+                      {/* Timeline Line */}
+                      <div className="absolute left-[35px] top-0 bottom-0 w-0.5 bg-slate-200 dark:bg-slate-700"></div>
+                      
+                      {/* Timeline Dot */}
+                      <div className="relative z-10 shrink-0 w-10 h-10 flex items-start justify-center pt-1">
+                         <div className="w-4 h-4 rounded-full bg-blue-500 border-4 border-white dark:border-gray-900 shadow-sm"></div>
+                      </div>
+                      
+                      {/* Card */}
+                      <div className="flex-1 bg-slate-50 dark:bg-gray-800 p-6 rounded-2xl border border-slate-100 dark:border-gray-700 shadow-sm">
+                         <p className="text-slate-600 dark:text-slate-300 mb-4 italic text-sm">"{item.content}"</p>
+                         <div className="flex items-center gap-3">
+                           <img src={item.avatar} alt={item.name} className="w-10 h-10 rounded-full bg-gray-200" />
+                           <div>
+                             <h4 className="font-bold text-sm text-slate-900 dark:text-white">{item.name}</h4>
+                             <p className="text-[10px] text-slate-500 dark:text-slate-400">{item.role}</p>
+                           </div>
+                         </div>
+                      </div>
+                   </div>
+                 ))}
+               </motion.div>
+            </div>
+
           </div>
         </div>
         <div className="relative w-full pointer-events-none z-0 mt-10">
-          <svg xmlns="http://www.w3.org/2000/svg" id="visual" viewBox="0 400 900 200" className="w-full h-40" preserveAspectRatio="none">
+          <svg xmlns="http://www.w3.org/2000/svg" id="visual" viewBox="0 400 900 200" className="w-full h-24 sm:h-32" preserveAspectRatio="none">
             <path d="M0 430L21.5 422.2C43 414.3 86 398.7 128.8 402.7C171.7 406.7 214.3 430.3 257.2 444.2C300 458 343 462 385.8 463.3C428.7 464.7 471.3 463.3 514.2 452C557 440.7 600 419.3 642.8 424.5C685.7 429.7 728.3 461.3 771.2 468.5C814 475.7 857 458.3 878.5 449.7L900 441L900 601L878.5 601C857 601 814 601 771.2 601C728.3 601 685.7 601 642.8 601C600 601 557 601 514.2 601C471.3 601 428.7 601 385.8 601C343 601 300 601 257.2 601C214.3 601 171.7 601 128.8 601C86 601 43 601 21.5 601L0 601Z" className="fill-sky-300 dark:fill-sky-700" strokeLinecap="round" strokeLinejoin="miter"/>
           </svg>
         </div>
