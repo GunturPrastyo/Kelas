@@ -738,7 +738,7 @@ export default function LandingPage() {
       )}
 
       {/* --- TESTIMONIALS SECTION --- */}
-      <section className="py-6 bg-white dark:bg-gray-900 relative overflow-hidden">
+      <section className="pt-6 pb-0 bg-white dark:bg-gray-900 relative overflow-hidden">
         <div className="z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center max-w-3xl mx-auto mb-12">
             <motion.h2 
@@ -834,7 +834,7 @@ export default function LandingPage() {
           </div>
         </div>
         <div className="relative w-full pointer-events-none z-0 mt-10">
-          <svg xmlns="http://www.w3.org/2000/svg" id="visual" viewBox="0 400 900 200" className="w-full h-24 sm:h-32" preserveAspectRatio="none">
+          <svg xmlns="http://www.w3.org/2000/svg" id="visual" viewBox="0 400 900 200" className="w-full h-24 sm:h-32 block" preserveAspectRatio="none">
             <path d="M0 430L21.5 422.2C43 414.3 86 398.7 128.8 402.7C171.7 406.7 214.3 430.3 257.2 444.2C300 458 343 462 385.8 463.3C428.7 464.7 471.3 463.3 514.2 452C557 440.7 600 419.3 642.8 424.5C685.7 429.7 728.3 461.3 771.2 468.5C814 475.7 857 458.3 878.5 449.7L900 441L900 601L878.5 601C857 601 814 601 771.2 601C728.3 601 685.7 601 642.8 601C600 601 557 601 514.2 601C471.3 601 428.7 601 385.8 601C343 601 300 601 257.2 601C214.3 601 171.7 601 128.8 601C86 601 43 601 21.5 601L0 601Z" className="fill-sky-300 dark:fill-sky-700" strokeLinecap="round" strokeLinejoin="miter"/>
           </svg>
         </div>
