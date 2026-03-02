@@ -489,64 +489,75 @@ export default function ModulPage() {
                                 {modul.status === 'Selesai' ? <CheckCircle2 size={16} /> : modul.status === 'Terkunci' ? <Lock size={14}/> : (personalizedModules.indexOf(modul) + 1)}
                             </div>
                         </div>
-                        <div className={`group relative overflow-hidden bg-white dark:bg-gray-800 rounded-xl shadow-md p-5 flex flex-col transition-all duration-300 ml-12 sm:ml-0 h-full ${modul.isHighlighted ? 'ring-2 ring-blue-500 shadow-blue-500/20' : 'hover:-translate-y-1 hover:shadow-lg'} ${modul.status === 'Terkunci' ? 'opacity-60 bg-gray-50 dark:bg-gray-800/50' : ''}`}>
-                            {/* Decorative Background */}
-                            <div className={`absolute top-0 right-0 w-42 h-32 bg-gradient-to-br ${
-                                modul.progress === 100 ? "from-green-200/80 to-transparent dark:from-green-800/20" : "from-blue-200/80 to-transparent dark:from-blue-800/20"
-                            } rounded-bl-[80px] -mr-8 -mt-8 transition-transform duration-500 group-hover:scale-110`} />
-
-                            <div className="relative z-10 flex items-start justify-between mb-3">
-                                
+                        <div className={`group relative overflow-hidden bg-white dark:bg-gray-800 rounded-xl shadow-md flex flex-col transition-all duration-300 ml-12 sm:ml-0 h-full ${modul.isHighlighted ? 'ring-2 ring-blue-500 shadow-blue-500/20' : 'hover:-translate-y-1 hover:shadow-lg'} ${modul.status === 'Terkunci' ? 'opacity-60 bg-gray-50 dark:bg-gray-800/50' : ''}`}>
+                            {/* Header */}
+                            <div className="relative z-10 p-5 border-b border-gray-200 dark:border-gray-700 flex items-start justify-between">
                                 <div className="flex items-center gap-3">
                                     <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${modul.isHighlighted ? 'bg-blue-100 dark:bg-blue-900/50' : 'bg-gray-100 dark:bg-gray-700'}`}>
                                         <img className="w-6 h-6 object-cover" src={modul.icon.startsWith('http') ? modul.icon : `${process.env.NEXT_PUBLIC_API_URL}/uploads/${modul.icon}`} alt={modul.title} />
                                     </div>
-                                <div>
-                                    
-                                    {/* Nomor urut untuk tampilan desktop/tablet */}
-                                    <span className="hidden sm:block text-xs font-bold text-gray-400 dark:text-gray-500">
-                                        MODUL {personalizedModules.indexOf(modul) + 1}
-                                    </span>
-                                    <h3 className="font-semibold text-base text-gray-800 dark:text-gray-100">
-                                        {modul.title}
-                                    </h3>
-                                    <div className="mt-1.5">
-                                        {getCategoryBadge(modul.category)}
+                                    <div>
+                                        {/* Nomor urut untuk tampilan desktop/tablet */}
+                                        <span className="hidden sm:block text-xs font-bold text-gray-400 dark:text-gray-500">
+                                            MODUL {personalizedModules.indexOf(modul) + 1}
+                                        </span>
+                                        <h3 className="font-semibold text-base text-gray-800 dark:text-gray-100">
+                                            {modul.title}
+                                        </h3>
+                                        <div className="mt-1.5">
+                                            {getCategoryBadge(modul.category)}
+                                        </div>
                                     </div>
-                                </div>
                                 </div>
                                 {getStatusBadge(modul.status, modul.progress)}
                             </div>
-                            <p className="relative z-10 text-sm text-gray-600 dark:text-gray-400 mb-4 line-clamp-2 flex-grow">
-                                {modul.overview}
-                            </p>
-                            {/* Info User & Waktu */}
-                            <div className="relative z-10 flex items-center gap-4 text-xs text-gray-500 dark:text-gray-400 mb-4">
-                                {(modul.userCount !== undefined) && (
-                                    <div className="flex items-center gap-1.5">
-                                        <Users size={14} />
-                                        <span>{modul.userCount} Bergabung</span>
-                                    </div>
-                                )}
-                                {modul.totalDuration !== undefined && (
-                                    <div className="flex items-center gap-1.5"><Clock size={14} /> <span>Estimasi {modul.totalDuration} menit</span></div>
-                                )}
-                            </div>
-                            <div className="relative z-10 mb-4">
-                                
-                                <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-1.5">
-                                    <div className="bg-blue-500 h-1.5 rounded-full" style={{ width: `${modul.progress}%` }} />
+
+                            {/* Body */}
+                            <div className="relative p-5 flex flex-col flex-grow overflow-hidden">
+                                {/* Decorative Background */}
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 600" className={`absolute inset-0 w-full h-full z-0 pointer-events-none transition-transform duration-500 group-hover:scale-105 ${
+                                    modul.progress === 100 ? "text-green-200/80 dark:text-green-800/20" : "text-blue-200/80 dark:text-blue-800/20"
+                                }`} preserveAspectRatio="none">
+                                    <g transform="translate(900, 0)">
+                                        <path d="M0 324.5C-40.8 299.5 -81.5 274.4 -99.9 241.1C-118.2 207.9 -114.2 166.3 -150.6 150.6C-187.1 134.9 -264.1 145 -299.8 124.2C-335.5 103.4 -330 51.7 -324.5 0L0 0Z" fill="currentColor"/>
+                                    </g>
+                                    <g transform="translate(0, 600)">
+                                        <path d="M0 -324.5C24.1 -278.2 48.3 -231.9 92.6 -223.6C136.9 -215.3 201.5 -245 229.5 -229.5C257.5 -213.9 248.9 -152.9 258.7 -107.2C268.4 -61.4 296.5 -30.7 324.5 0L0 0Z" fill="currentColor"/>
+                                    </g>
+                                </svg>
+
+                                <p className="relative z-10 text-sm text-gray-600 dark:text-gray-400 mb-4 line-clamp-2 flex-grow">
+                                    {modul.overview}
+                                </p>
+                                {/* Info User & Waktu */}
+                                <div className="relative z-10 flex items-center gap-4 text-xs text-gray-500 dark:text-gray-400 mb-4">
+                                    {(modul.userCount !== undefined) && (
+                                        <div className="flex items-center gap-1.5">
+                                            <Users size={14} />
+                                            <span>{modul.userCount} Bergabung</span>
+                                        </div>
+                                    )}
+                                    {modul.totalDuration !== undefined && (
+                                        <div className="flex items-center gap-1.5"><Clock size={14} /> <span>Estimasi {modul.totalDuration} menit</span></div>
+                                    )}
                                 </div>
-                                <p className="text-xs text-gray-500 dark:text-gray-400 mt-1.5">{modul.completedTopics || 0} dari {modul.totalTopics || 0} topik selesai</p>
+                                 <div className="relative z-10 mb-4">
+                                    <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-1.5">
+                                        <div className={`h-1.5 rounded-full ${modul.progress === 100 ? 'bg-green-500' : 'bg-blue-500'}`} style={{ width: `${modul.progress}%` }} />
+                                    </div>
+                                    <p className="text-xs text-gray-500 dark:text-gray-400 mt-1.5">{modul.completedTopics || 0} dari {modul.totalTopics || 0} topik selesai</p>
+                                </div>
+                               <Link href={modul.status !== 'Terkunci' ? `/modul/${modul.slug}` : '#'} passHref className={`relative z-10 mt-auto ${modul.status === 'Terkunci' ? 'pointer-events-none' : ''}`}>
+                                    <button
+                                        disabled={modul.status === 'Terkunci'}
+                                       className={`w-full py-2.5 px-4 rounded-lg text-white font-semibold transition disabled:bg-gray-400 disabled:cursor-not-allowed disabled:hover:bg-gray-400 dark:disabled:bg-gray-600 ${
+                                            modul.status === 'Selesai' ? 'bg-green-600 hover:bg-green-700' : 'bg-blue-600 hover:bg-blue-700'
+                                        }`}
+                                    >
+                                        {modul.status === 'Selesai' ? 'Lihat Materi' : modul.status === 'Berjalan' ? 'Lanjutkan' : 'Mulai Belajar'}
+                                    </button>
+                                </Link>
                             </div>
-                            <Link href={modul.status !== 'Terkunci' ? `/modul/${modul.slug}` : '#'} passHref className={`relative z-10 mt-auto ${modul.status === 'Terkunci' ? 'pointer-events-none' : ''}`}>
-                                <button
-                                    disabled={modul.status === 'Terkunci'}
-                                    className="mt-auto w-full py-2.5 px-4 rounded-lg bg-blue-600 text-white font-semibold hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed disabled:hover:bg-gray-400 dark:disabled:bg-gray-600 transition"
-                                >
-                                    {modul.status === 'Berjalan' ? 'Lanjutkan' : 'Mulai Belajar'}
-                                </button>
-                            </Link>
                         </div>
                     </div>
                 ))}
