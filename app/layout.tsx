@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono, Poppins } from "next/font/google";
+import localFont from "next/font/local";
 import "./globals.css";
 import { ThemeProvider } from "./providers";
 import GlobalStreakAlert from "@/components/GlobalStreakAlert";
@@ -22,6 +23,12 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
+const gagalin = localFont({
+  src: "./fonts/Gagalin-Regular.ttf",
+  variable: "--font-gagalin",
+  display: "swap",
+});
+
 export const metadata: Metadata = {
   title: "E-Learning Personalisasi",
   description: "Dashboard E-Learning",
@@ -32,7 +39,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html
       lang="id"
       suppressHydrationWarning
-      className={`${poppins.variable} bg-gray-50 dark:bg-gray-900 scroll-smooth`}
+      className={`${poppins.variable} ${gagalin.variable} bg-gray-50 dark:bg-gray-900 scroll-smooth`}
     >
       <body suppressHydrationWarning className="font-poppins text-gray-900 dark:text-gray-100">
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>

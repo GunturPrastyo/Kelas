@@ -128,6 +128,7 @@ export default function LandingPage() {
   const [activeSection, setActiveSection] = useState("");
   const [displayedText1, setDisplayedText1] = useState("");
   const [displayedText2, setDisplayedText2] = useState("");
+  const [displayedBadgeText, setDisplayedBadgeText] = useState("");
   const [count, setCount] = useState(0);
   const [activeFeature, setActiveFeature] = useState(0);
   const { theme, setTheme, resolvedTheme } = useTheme();
@@ -138,6 +139,20 @@ export default function LandingPage() {
 
   useEffect(() => {
     setMounted(true);
+  }, []);
+
+  useEffect(() => {
+    const text = "Platform Belajar Pintar";
+    let i = 0;
+    const intervalId = setInterval(() => {
+      if (i <= text.length) {
+        setDisplayedBadgeText(text.slice(0, i));
+        i++;
+      } else {
+        clearInterval(intervalId);
+      }
+    }, 100);
+    return () => clearInterval(intervalId);
   }, []);
 
   useEffect(() => {
@@ -430,13 +445,13 @@ export default function LandingPage() {
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
                 <span className="relative inline-flex rounded-full h-2 w-2 bg-blue-500"></span>
               </span>
-              Platform Belajar Pintar
+              {displayedBadgeText}
             </div>
             <motion.h1 
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5 }}
-              className="text-4xl lg:text-6xl font-extrabold tracking-tight text-slate-900 dark:text-white leading-[1.1]"
+              className="text-4xl lg:text-6xl font-medium tracking-tight text-slate-900 dark:text-white leading-[1.1] font-[family-name:var(--font-gagalin)]"
             >
               Belajar Lebih Efektif dengan <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-500 to-indigo-500">Kurikulum Personal</span>
             </motion.h1>
@@ -536,7 +551,7 @@ export default function LandingPage() {
                 transition={{ duration: 0.5 }}
             >
                 <span className="text-blue-600 dark:text-blue-400 font-semibold tracking-wider uppercase text-sm">Keunggulan Kami</span>
-                <h2 className="mt-2 text-3xl md:text-4xl font-extrabold text-slate-900 dark:text-white mb-4">Kenapa Memilih KELAS?</h2>
+                <h2 className="mt-2 text-3xl md:text-4xl  text-slate-900 dark:text-white mb-4 font-[family-name:var(--font-gagalin)]">Kenapa Memilih KELAS?</h2>
             </motion.div>
             
             <motion.p 
@@ -590,7 +605,7 @@ export default function LandingPage() {
                     <div className="w-16 h-16 md:w-24 md:h-24 bg-white dark:bg-gray-700 rounded-3xl shadow-xl shadow-blue-100/50 dark:shadow-none border border-slate-50 dark:border-gray-600 flex items-center justify-center mb-6 md:mb-8 transform group-hover:-translate-y-2 transition-transform duration-500">
                       {feature.icon}
                     </div>
-                    <h3 className="text-2xl md:text-3xl font-extrabold text-slate-900 dark:text-white mb-3 md:mb-4 tracking-tight group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors duration-300">
+                    <h3 className="text-2xl md:text-3xl  text-slate-800 dark:text-gray-50 mb-3 md:mb-4 tracking-tight group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors duration-300 font-[family-name:var(--font-gagalin)]">
                       {feature.title}
                     </h3>
                     <p className="text-slate-600 dark:text-slate-300 leading-relaxed text-sm md:text-lg px-0 md:px-2 text-left md:text-center font-medium opacity-90 group-hover:opacity-100 transition-opacity duration-300">
@@ -632,7 +647,7 @@ export default function LandingPage() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.5 }}
-              className="text-3xl md:text-4xl font-bold text-slate-800 dark:text-white mb-4"
+              className="text-3xl md:text-4xl  text-slate-800 dark:text-white mb-4 font-[family-name:var(--font-gagalin)]"
             >
               Belajar Langsung dari Ahlinya
             </motion.h2>
@@ -776,7 +791,7 @@ export default function LandingPage() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.5 }}
-              className="text-3xl md:text-4xl font-extrabold text-slate-900 dark:text-white mb-4"
+              className="text-3xl md:text-4xl font-medium text-slate-900 dark:text-white mb-4 font-[family-name:var(--font-gagalin)]"
             >
               Apa Kata Mereka?
             </motion.h2>
@@ -811,7 +826,7 @@ export default function LandingPage() {
                      <div className="flex items-center gap-4">
                        <img src={item.avatar} alt={item.name} className="w-12 h-12 rounded-full bg-gray-200" />
                        <div>
-                         <h4 className="font-bold text-slate-900 dark:text-white">{item.name}</h4>
+                        <h4 className="font-bold text-slate-900 dark:text-white">{item.name}</h4>
                          <p className="text-xs text-slate-500 dark:text-slate-400">{item.role}</p>
                        </div>
                      </div>
@@ -851,7 +866,7 @@ export default function LandingPage() {
                          <div className="flex items-center gap-3">
                            <img src={item.avatar} alt={item.name} className="w-10 h-10 rounded-full bg-gray-200" />
                            <div>
-                             <h4 className="font-bold text-sm text-slate-900 dark:text-white">{item.name}</h4>
+                            <h4 className="font-bold text-sm text-slate-900 dark:text-white">{item.name}</h4>
                              <p className="text-[10px] text-slate-500 dark:text-slate-400">{item.role}</p>
                            </div>
                          </div>
@@ -887,7 +902,7 @@ export default function LandingPage() {
                    whileInView={{ opacity: 1, y: 0 }}
                    viewport={{ once: true }}
                    transition={{ duration: 0.5 }}
-                   className="text-3xl md:text-4xl font-bold mb-6"
+                   className="text-3xl md:text-4xl font-medium mb-6 font-[family-name:var(--font-gagalin)]"
                  >Siap Memulai Perjalanan Belajarmu?</motion.h2>
                  <p className="text-blue-100 text-lg mb-8 text-left md:text-center">
                    Jangan buang waktu mempelajari apa yang sudah kamu tahu. Ikuti tes awal kami dan dapatkan kurikulum yang dipersonalisasi khusus untukmu.
@@ -910,7 +925,7 @@ export default function LandingPage() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.5 }}
-                className="text-3xl font-bold text-slate-900 dark:text-white mb-8"
+                className="text-3xl font-medium text-slate-900 dark:text-white mb-8 font-[family-name:var(--font-gagalin)]"
               >Pertanyaan Umum</motion.h2>
               <div className="space-y-4">
                 {[
