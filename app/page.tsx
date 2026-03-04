@@ -328,7 +328,7 @@ export default function LandingPage() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-white dark:bg-gray-900 font-sans text-slate-800 dark:text-slate-200 selection:bg-blue-100 dark:selection:bg-blue-900">
+    <div className="min-h-screen bg-white dark:bg-gray-900 font-sans text-slate-800 dark:text-slate-200 selection:bg-blue-100 dark:selection:bg-blue-900 overflow-x-hidden">
 
       {/* --- NAVBAR --- */}
       <nav className="fixed top-0 w-full z-50 bg-white/80 dark:bg-gray-900/80 backdrop-blur-md border-b border-slate-200 dark:border-gray-800">
@@ -687,7 +687,7 @@ export default function LandingPage() {
       </section>
 
       {/* --- MODULES SECTION --- */}
-      <section id="modul" className="py-24 bg-white dark:bg-gray-900 relative">
+      <section id="modul" className="py-24 bg-white dark:bg-gray-900 relative overflow-hidden">
         <div className="absolute top-0 left-0 w-full pointer-events-none z-0">
           <svg xmlns="http://www.w3.org/2000/svg" id="visual" viewBox="0 0 900 600" className="w-full h-24 sm:h-32 md:h-48 block" preserveAspectRatio="none">
             <path d="M0 168L21.5 165.2C43 162.3 86 156.7 128.8 164.3C171.7 172 214.3 193 257.2 204.5C300 216 343 218 385.8 204.2C428.7 190.3 471.3 160.7 514.2 144.5C557 128.3 600 125.7 642.8 125.5C685.7 125.3 728.3 127.7 771.2 130.8C814 134 857 138 878.5 140L900 142L900 0L878.5 0C857 0 814 0 771.2 0C728.3 0 685.7 0 642.8 0C600 0 557 0 514.2 0C471.3 0 428.7 0 385.8 0C343 0 300 0 257.2 0C214.3 0 171.7 0 128.8 0C86 0 43 0 21.5 0L0 0Z" className="fill-sky-300 dark:fill-sky-700" strokeLinecap="round" strokeLinejoin="miter"/>
