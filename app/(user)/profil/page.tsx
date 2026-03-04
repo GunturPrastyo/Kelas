@@ -5,7 +5,7 @@ import { authFetch } from "@/lib/authFetch";
 import Avatar from "@/components/Avatar"; 
 import Breadcrumb from "@/components/Breadcrumb";
 import { motion } from "framer-motion";
-import { Award, Download, Star, Info, Shield, Zap, Trophy, Hexagon, TrendingUp, TrendingDown, Activity, Swords, Target, Sparkles, BookOpen } from "lucide-react";
+import { Award, Download, Star, Info, Shield, Zap, Trophy, Hexagon, TrendingUp, TrendingDown, Activity, Swords, Target, Sparkles, BookOpen, X, ZoomIn, ZoomOut, Save, RotateCcw, RotateCw, RefreshCw } from "lucide-react";
 import { useAlert } from "@/context/AlertContext";
 import { useSearchParams } from "next/navigation";
 import { Chart, registerables } from "chart.js";
@@ -74,6 +74,178 @@ const getCompetencyFeedback = (score: number) => {
   };
 };
 
+const ImageCropperModal = ({ isOpen, imageSrc, onClose, onSave }: { isOpen: boolean; imageSrc: string | null; onClose: () => void; onSave: (blob: Blob) => void }) => {
+  const [zoom, setZoom] = useState(1);
+  const [rotation, setRotation] = useState(0);
+  const [offset, setOffset] = useState({ x: 0, y: 0 });
+  const [isDragging, setIsDragging] = useState(false);
+  const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
+  const imgRef = useRef<HTMLImageElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (isOpen) {
+      setZoom(1);
+      setRotation(0);
+      setOffset({ x: 0, y: 0 });
+    }
+  }, [isOpen, imageSrc]);
+
+  const handleMouseDown = (e: React.MouseEvent | React.TouchEvent) => {
+    e.preventDefault();
+    setIsDragging(true);
+    const clientX = 'touches' in e ? e.touches[0].clientX : (e as React.MouseEvent).clientX;
+    const clientY = 'touches' in e ? e.touches[0].clientY : (e as React.MouseEvent).clientY;
+    setDragStart({ x: clientX - offset.x, y: clientY - offset.y });
+  };
+
+  const handleMouseMove = (e: React.MouseEvent | React.TouchEvent) => {
+    if (!isDragging) return;
+    e.preventDefault();
+    const clientX = 'touches' in e ? e.touches[0].clientX : (e as React.MouseEvent).clientX;
+    const clientY = 'touches' in e ? e.touches[0].clientY : (e as React.MouseEvent).clientY;
+    setOffset({
+      x: clientX - dragStart.x,
+      y: clientY - dragStart.y
+    });
+  };
+
+  const handleMouseUp = () => {
+    setIsDragging(false);
+  };
+
+  const rotateImage = (deg: number) => {
+    setRotation(prev => prev + deg);
+  };
+
+  const zoomImage = (delta: number) => {
+    setZoom(prev => Math.min(3, Math.max(0.1, prev + delta)));
+  };
+
+  const resetCropper = () => {
+    setZoom(1);
+    setRotation(0);
+    setOffset({ x: 0, y: 0 });
+  };
+
+  const handleSave = () => {
+    if (!imgRef.current || !containerRef.current) return;
+
+    const canvas = document.createElement('canvas');
+    const size = 400; // Output size
+    canvas.width = size;
+    canvas.height = size;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    const img = imgRef.current;
+    const container = containerRef.current;
+    const containerRect = container.getBoundingClientRect();
+    const imgRect = img.getBoundingClientRect();
+    
+    // Mask is 256x256 circle in center of container (h-80 = 320px)
+    const maskSize = 256;
+    const scaleFactor = size / maskSize;
+
+    // Calculate position relative to mask center
+    // Mask center is container center
+    const maskCenterX = containerRect.width / 2;
+    const maskCenterY = containerRect.height / 2;
+
+    // Image center relative to container top-left
+    // imgRect includes zoom and offset
+    const imgCenterX = imgRect.left - containerRect.left + imgRect.width / 2;
+    const imgCenterY = imgRect.top - containerRect.top + imgRect.height / 2;
+
+    // Distance from mask center to image center
+    const diffX = imgCenterX - maskCenterX;
+    const diffY = imgCenterY - maskCenterY;
+
+    // Hitung skala awal (fitScale) karena gambar di-resize agar muat di container (object-fit: contain)
+    const fitScale = Math.min(
+      containerRect.width / img.naturalWidth,
+      containerRect.height / img.naturalHeight
+    );
+
+    ctx.translate(size / 2, size / 2);
+    ctx.translate(diffX * scaleFactor, diffY * scaleFactor);
+    ctx.rotate((rotation * Math.PI) / 180);
+    // Terapkan fitScale agar proporsi gambar di canvas sama dengan yang terlihat di layar
+    ctx.scale(zoom * scaleFactor * fitScale, zoom * scaleFactor * fitScale);
+
+    // Draw image centered at origin (which is now moved and scaled)
+    // We use natural dimensions to ensure quality
+    ctx.drawImage(img, -img.naturalWidth / 2, -img.naturalHeight / 2);
+
+    canvas.toBlob((blob) => {
+      if (blob) onSave(blob);
+    }, 'image/jpeg', 0.9);
+  };
+
+  if (!isOpen || !imageSrc) return null;
+
+  return (
+    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-gray-900/75 backdrop-blur-sm p-4 overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+      <div className="inline-block align-bottom bg-white dark:bg-gray-800 rounded-2xl text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg w-full border border-gray-200 dark:border-gray-700">
+        <div className="p-6">
+            <div className="flex justify-between items-center mb-5">
+                <h3 className="text-lg font-bold text-gray-900 dark:text-white">Edit Foto Profil</h3>
+                <button onClick={onClose} className="text-gray-400 hover:text-gray-500 dark:hover:text-gray-300 transition-colors">
+                    <X size={20} />
+                </button>
+            </div>
+            
+            <div className="mb-6">
+                <div ref={containerRef} className="relative w-full h-80 bg-gray-100 dark:bg-gray-900 rounded-xl overflow-hidden flex items-center justify-center border-2 border-dashed border-gray-300 dark:border-gray-600 cursor-move touch-none select-none"
+                     onMouseDown={handleMouseDown} onMouseMove={handleMouseMove} onMouseUp={handleMouseUp} onMouseLeave={handleMouseUp} onTouchStart={handleMouseDown} onTouchMove={handleMouseMove} onTouchEnd={handleMouseUp}>
+                    
+                    <img 
+                        ref={imgRef} 
+                        src={imageSrc} 
+                        alt="Upload" 
+                        className="max-w-none max-h-none block" 
+                        style={{ 
+                            transform: `translate(calc(-50% + ${offset.x}px), calc(-50% + ${offset.y}px)) rotate(${rotation}deg) scale(${zoom})`, 
+                            position: 'absolute',
+                            top: '50%',
+                            left: '50%',
+                            width: '100%', 
+                            height: '100%', 
+                            objectFit: 'contain' 
+                        }} 
+                        draggable={false} 
+                    />
+                    
+                    <div className="absolute inset-0 pointer-events-none bg-black/50">
+                        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-64 h-64 rounded-full border-2 border-white bg-transparent shadow-[0_0_0_9999px_rgba(0,0,0,0.5)]"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div className="flex justify-center gap-4 mb-6">
+                <button onClick={() => rotateImage(-90)} className="p-2 text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors dark:text-gray-300 dark:hover:bg-gray-700" title="Putar Kiri"><RotateCcw size={20} /></button>
+                <button onClick={() => rotateImage(90)} className="p-2 text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors dark:text-gray-300 dark:hover:bg-gray-700" title="Putar Kanan"><RotateCw size={20} /></button>
+                <div className="w-px h-8 bg-gray-200 dark:bg-gray-700 mx-2"></div>
+                <button onClick={() => zoomImage(0.1)} className="p-2 text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors dark:text-gray-300 dark:hover:bg-gray-700" title="Perbesar"><ZoomIn size={20} /></button>
+                <button onClick={() => zoomImage(-0.1)} className="p-2 text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors dark:text-gray-300 dark:hover:bg-gray-700" title="Perkecil"><ZoomOut size={20} /></button>
+                <div className="w-px h-8 bg-gray-200 dark:bg-gray-700 mx-2"></div>
+                <button onClick={resetCropper} className="p-2 text-red-500 hover:bg-red-50 rounded-lg transition-colors dark:hover:bg-red-900/20" title="Reset"><RefreshCw size={20} /></button>
+            </div>
+
+            <div className="flex gap-3">
+                <button onClick={onClose} className="flex-1 px-4 py-2.5 bg-white border border-gray-300 text-gray-700 rounded-xl hover:bg-gray-50 font-medium transition-colors dark:bg-gray-700 dark:border-gray-600 dark:text-gray-200 dark:hover:bg-gray-600">
+                    Batal
+                </button>
+                <button onClick={handleSave} className="flex-1 px-4 py-2.5 bg-blue-600 text-white rounded-xl hover:bg-blue-700 font-medium shadow-lg shadow-blue-200 dark:shadow-none transition-colors">
+                    Simpan Foto
+                </button>
+            </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 const ProfileContent = () => {
   const { showAlert } = useAlert();
   const searchParams = useSearchParams();
@@ -88,6 +260,8 @@ const ProfileContent = () => {
   const [avatarFile, setAvatarFile] = useState<File | null>(null);
   const [avatarPreview, setAvatarPreview] = useState<string>("/user-placeholder.png");
   const [certificateName, setCertificateName] = useState(""); 
+  const [isCropModalOpen, setIsCropModalOpen] = useState(false);
+  const [tempAvatarImage, setTempAvatarImage] = useState<string | null>(null);
 
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
@@ -416,11 +590,47 @@ const ProfileContent = () => {
     };
   }, [loading, user]);
 
-  const handleAvatarChange = (e: ChangeEvent<HTMLInputElement>) => {
+  const handleAvatarChange = async (e: ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
       const file = e.target.files[0];
-      setAvatarFile(file);
-      setAvatarPreview(URL.createObjectURL(file));
+      const reader = new FileReader();
+      reader.onload = () => {
+        setTempAvatarImage(reader.result as string);
+        setIsCropModalOpen(true);
+      };
+      reader.readAsDataURL(file);
+      e.target.value = ''; // Reset input
+    }
+  };
+
+  const handleSaveAvatarOnly = async (blob: Blob) => {
+    const formData = new FormData();
+    formData.append("name", name);
+    formData.append("email", email);
+    formData.append("avatar", blob, "avatar.jpg");
+
+    try {
+      const res = await authFetch(`${process.env.NEXT_PUBLIC_API_URL}/api/users/profile`, {
+        method: "PUT",
+        body: formData,
+      });
+
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.message || "Gagal memperbarui foto profil");
+
+      localStorage.setItem("user", JSON.stringify(data.user));
+      setUser(data.user);
+      setAvatarPreview("/user-placeholder.png"); // Reset preview to default so Avatar component uses user.avatar
+      window.dispatchEvent(new Event("user-updated"));
+
+      showAlert({ title: "Sukses", message: "Foto profil berhasil diperbarui!", type: "alert" });
+      setIsCropModalOpen(false);
+    } catch (err) {
+      showAlert({
+        title: "Gagal",
+        message: err instanceof Error ? err.message : "Terjadi kesalahan",
+        type: "alert",
+      });
     }
   };
 
@@ -648,25 +858,13 @@ const ProfileContent = () => {
   if (!user) return <div className="p-6 text-center text-gray-500">Silakan login untuk melihat profil.</div>;
 
   return (
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    <>
+      <ImageCropperModal
+        isOpen={isCropModalOpen}
+        imageSrc={tempAvatarImage}
+        onClose={() => setIsCropModalOpen(false)}
+        onSave={handleSaveAvatarOnly}
+      />
     <div className="w-full font-sans p-2 mt-20">
       <Breadcrumb paths={[{ name: "Dashboard", href: "/dashboard" }, { name: "Profil", href: "#" }]} />
       <h1 className="text-3xl font-bold text-gray-800 dark:text-gray-100 mt-6 mb-6">
@@ -890,7 +1088,7 @@ const ProfileContent = () => {
             <form onSubmit={handleProfileUpdate} className="space-y-6">
               <div className="flex flex-col sm:flex-row items-center gap-8">
                 <div className="flex flex-col items-center">
-                  {avatarPreview.startsWith("blob:") ? (
+                  {avatarPreview.startsWith("blob:") && !isCropModalOpen ? (
                     <img
                       src={avatarPreview}
                       alt="Preview Avatar"
@@ -1008,6 +1206,7 @@ const ProfileContent = () => {
         </div>
       </motion.div>
     </div>
+    </>
   );
 };
 

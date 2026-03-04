@@ -22,7 +22,13 @@ import {
   Youtube,
   Mail,
   MapPin,
-  Quote
+  Quote,
+  Code,
+  Database,
+  Layout,
+  Server,
+  Smartphone,
+  Globe
 } from 'lucide-react';
 import { useState, useEffect, useRef } from 'react';
 import { useTheme } from 'next-themes';
@@ -123,6 +129,45 @@ const features = [
   }
 ];
 
+interface Module {
+  _id: string;
+  title: string;
+  overview: string;
+  category: 'mudah' | 'sedang' | 'sulit';
+  icon: string;
+}
+
+const dummyModules: Module[] = [
+  {
+    _id: "dummy-1",
+    title: "Dasar HTML & CSS",
+    overview: "Pelajari struktur dan gaya dasar untuk membangun website yang responsif.",
+    category: "mudah",
+    icon: "code"
+  },
+  {
+    _id: "dummy-2",
+    title: "JavaScript Modern",
+    overview: "Pahami konsep ES6+, manipulasi DOM, dan asynchronous programming.",
+    category: "sedang",
+    icon: "code"
+  },
+  {
+    _id: "dummy-3",
+    title: "React Framework",
+    overview: "Bangun user interface yang interaktif dan reusable dengan React.",
+    category: "sulit",
+    icon: "code"
+  },
+  {
+    _id: "dummy-4",
+    title: "Backend Node.js",
+    overview: "Buat REST API yang aman dan scalable menggunakan Express.js.",
+    category: "sedang",
+    icon: "code"
+  }
+];
+
 export default function LandingPage() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [activeSection, setActiveSection] = useState("");
@@ -136,6 +181,34 @@ export default function LandingPage() {
   const [showScrollTop, setShowScrollTop] = useState(false);
   const mentorScrollRef = useRef<HTMLDivElement>(null);
   const [selectedMentor, setSelectedMentor] = useState<typeof mentors[0] | null>(null);
+  const [modules, setModules] = useState<Module[]>([]);
+  const [loadingModules, setLoadingModules] = useState(true);
+
+  useEffect(() => {
+    const fetchModules = async () => {
+      try {
+        setLoadingModules(true);
+        // Mengasumsikan ada endpoint publik di /api/modul. Endpoint /api/modul/progress memerlukan autentikasi.
+        const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+        if (!apiUrl) throw new Error("API URL not configured");
+
+        const res = await fetch(`${apiUrl}/api/modul`);
+        if (!res.ok) {
+          console.warn("Gagal memuat modul, menggunakan data dummy.");
+          setModules(dummyModules);
+          return;
+        }
+        const data = await res.json();
+        setModules(data);
+      } catch (error) {
+        console.error("Error fetching modules, using dummy data:", error);
+        setModules(dummyModules);
+      } finally {
+        setLoadingModules(false);
+      }
+    };
+    fetchModules();
+  }, []);
 
   useEffect(() => {
     setMounted(true);
@@ -236,7 +309,7 @@ export default function LandingPage() {
     const handleScroll = () => {
       setShowScrollTop(window.scrollY > 400);
 
-      const sections = ["fitur", "mentor", "faq"];
+      const sections = ["fitur", "modul", "mentor", "faq"];
       let current = "";
 
       for (const section of sections) {
@@ -301,7 +374,7 @@ export default function LandingPage() {
 
             {/* Desktop Menu */}
             <div className="hidden md:flex items-center space-x-2">
-              {['fitur', 'mentor', 'faq'].map((item) => (
+              {['fitur', 'modul', 'mentor', 'faq'].map((item) => (
                 <Link
                   key={item}
                   href={`#${item}`}
@@ -379,6 +452,13 @@ export default function LandingPage() {
                 onClick={() => setIsMobileMenuOpen(false)}
               >
                 Fitur
+              </Link>
+              <Link 
+                href="#modul" 
+                className={`block px-4 py-3 rounded-xl text-base font-medium transition-all ${activeSection === 'modul' ? 'text-blue-600 dark:text-blue-400 bg-slate-50 dark:bg-gray-800' : 'text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-gray-800 hover:text-blue-600 dark:hover:text-blue-400'}`}
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
+                Modul
               </Link>
               <Link 
                 href="#mentor" 
@@ -635,6 +715,129 @@ export default function LandingPage() {
             <path d="M0 530L21.5 530.2C43 530.3 86 530.7 128.8 529.8C171.7 529 214.3 527 257.2 519.7C300 512.3 343 499.7 385.8 497.8C428.7 496 471.3 505 514.2 503.2C557 501.3 600 488.7 642.8 487.8C685.7 487 728.3 498 771.2 501C814 504 857 499 878.5 496.5L900 494L900 601L878.5 601C857 601 814 601 771.2 601C728.3 601 685.7 601 642.8 601C600 601 557 601 514.2 601C471.3 601 428.7 601 385.8 601C343 601 300 601 257.2 601C214.3 601 171.7 601 128.8 601C86 601 43 601 21.5 601L0 601Z" className="fill-sky-200 dark:fill-sky-800"/>
             <path d="M0 549L21.5 546.5C43 544 86 539 128.8 534C171.7 529 214.3 524 257.2 529.5C300 535 343 551 385.8 558.3C428.7 565.7 471.3 564.3 514.2 563.8C557 563.3 600 563.7 642.8 554.8C685.7 546 728.3 528 771.2 519.8C814 511.7 857 513.3 878.5 514.2L900 515L900 601L878.5 601C857 601 814 601 771.2 601C728.3 601 685.7 601 642.8 601C600 601 557 601 514.2 601C471.3 601 428.7 601 385.8 601C343 601 300 601 257.2 601C214.3 601 171.7 601 128.8 601C86 601 43 601 21.5 601L0 601Z" className="fill-sky-300 dark:fill-sky-700"/>
           </svg>
+        </div>
+      </section>
+
+      {/* --- MODULES SECTION --- */}
+      <section id="modul" className="py-24 bg-white dark:bg-gray-900 relative">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+          <div className="flex flex-col lg:flex-row items-center gap-12 lg:gap-20">
+            
+            {/* Left Column: Text Content */}
+            <div className="w-full lg:w-1/2 text-left relative z-20">
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.5 }}
+              >
+                <span className="text-blue-600 dark:text-blue-400 font-bold tracking-wider uppercase text-sm mb-2 block">
+                  Modul Pembelajaran
+                </span>
+                <h2 className="text-3xl md:text-5xl text-slate-900 dark:text-white mb-6 font-[family-name:var(--font-gagalin)] leading-tight">
+                  Jelajahi Materi <br/> <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-purple-600">Pilihan Terbaik</span>
+                </h2>
+              </motion.div>
+              
+              <motion.p 
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.5, delay: 0.1 }}
+                className="text-lg text-slate-600 dark:text-slate-400 mb-8 max-w-lg leading-relaxed"
+              >
+                Kurikulum dirancang khusus oleh praktisi industri untuk mempersiapkanmu menghadapi dunia kerja. Pilih jalur yang sesuai dengan minatmu dan mulai belajar sekarang.
+              </motion.p>
+
+              {/* Curved Arrow Decoration */}
+              <div className="hidden lg:block relative h-32 w-full max-w-xs mb-8 ml-10">
+                 <svg className="absolute top-0 left-0 w-full h-full text-slate-300 dark:text-slate-600" viewBox="0 0 200 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    {/* Curved line */}
+                    <path d="M20 20 C 60 100, 140 80, 180 40" stroke="currentColor" strokeWidth="2" strokeDasharray="6 4" strokeLinecap="round" />
+                    {/* Arrow head */}
+                    <path d="M180 40 L 168 45 M 180 40 L 175 58" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                 </svg>
+                 <span className="absolute top-12 left-0 -rotate-6 text-sm font-handwriting text-blue-500 dark:text-blue-400 font-semibold bg-white dark:bg-gray-900 px-2 py-1 rounded shadow-sm border border-blue-100 dark:border-gray-700">
+                    Pilih modulmu di sini!
+                 </span>
+              </div>
+
+              <div className="flex flex-wrap gap-4">
+                 <Link href="/modul" className="inline-flex items-center justify-center px-8 py-4 text-base font-bold text-white bg-blue-600 rounded-full hover:bg-blue-700 shadow-lg shadow-blue-500/30 transition-all transform hover:-translate-y-1">
+                    Lihat Semua Modul <ArrowRight className="ml-2 w-5 h-5" />
+                 </Link>
+              </div>
+            </div>
+
+            {/* Right Column: Scrolling Cards */}
+            <div className="w-full lg:w-1/2 relative">
+               {/* Decoration Background */}
+               <div className="absolute inset-0 bg-gradient-to-br from-blue-100 to-purple-100 dark:from-blue-900/20 dark:to-purple-900/20 rounded-[3rem] -rotate-6 scale-105 z-0 blur-2xl opacity-60"></div>
+               <div className="absolute inset-0 bg-white/30 dark:bg-gray-800/30 rounded-[2.5rem] rotate-3 scale-[1.02] z-0 border border-slate-200/50 dark:border-gray-700/50 backdrop-blur-sm"></div>
+
+               {/* Scrolling Container */}
+               <div 
+                 className="relative z-10 h-[600px] overflow-hidden rounded-3xl p-4"
+                 style={{ maskImage: 'linear-gradient(to bottom, transparent, black 10%, black 90%, transparent)', WebkitMaskImage: 'linear-gradient(to bottom, transparent, black 10%, black 90%, transparent)' }}
+               >
+                  {loadingModules ? (
+                    <div className="flex items-center justify-center h-full">
+                      <p className="text-slate-500 dark:text-slate-400">Memuat modul...</p>
+                    </div>
+                  ) : (
+                    <motion.div 
+                      className="flex flex-col gap-5"
+                      animate={{ y: ["0%", "-50%"] }}
+                      transition={{ 
+                        repeat: Infinity, 
+                        ease: "linear", 
+                        duration: modules.length > 0 ? modules.length * 5 : 40
+                      }}
+                    >
+                       {/* Render modules twice for infinite loop */}
+                       {[...modules, ...modules].map((modul, idx) => (
+                          <div
+                            key={`scroll-card-${modul._id}-${idx}`}
+                            className="bg-white dark:bg-gray-800 rounded-2xl p-6 border border-slate-100 dark:border-gray-700 shadow-sm hover:shadow-lg transition-all group mx-2 relative overflow-hidden"
+                          >
+                            <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-bl from-blue-50 dark:from-blue-900/20 to-transparent rounded-bl-full -mr-4 -mt-4 opacity-50 group-hover:opacity-100 transition-opacity"></div>
+                            
+                            <div className="flex justify-between items-start mb-4 relative z-10">
+                              <div className="p-3 bg-slate-50 dark:bg-gray-700/50 rounded-xl group-hover:scale-110 transition-transform duration-300 shadow-sm">
+                                {modul._id.startsWith('dummy') ? (
+                                  <Code className="w-6 h-6 text-blue-600 dark:text-blue-400" />
+                                ) : (
+                                  <img 
+                                    src={`${process.env.NEXT_PUBLIC_API_URL}/uploads/${modul.icon}`} 
+                                    alt={modul.title}
+                                    className="w-6 h-6 object-contain"
+                                  />
+                                )}
+                              </div>
+                              <span className={`px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wide ${
+                                modul.category === 'mudah' ? 'bg-amber-100 text-amber-800 dark:bg-amber-900/40 dark:text-amber-300' :
+                                modul.category === 'sedang' ? 'bg-blue-100 text-blue-800 dark:bg-blue-900/40 dark:text-blue-300' :
+                                'bg-green-100 text-green-800 dark:bg-green-900/40 dark:text-green-300'
+                              }`}>
+                                {modul.category}
+                              </span>
+                            </div>
+                            
+                            <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-2 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors relative z-10">
+                              {modul.title}
+                            </h3>
+                            
+                            <p className="text-slate-600 dark:text-slate-400 text-sm mb-4 line-clamp-2 relative z-10">
+                              {modul.overview}
+                            </p>
+                          </div>
+                       ))}
+                    </motion.div>
+                  )}
+               </div>
+            </div>
+
+          </div>
         </div>
       </section>
 
