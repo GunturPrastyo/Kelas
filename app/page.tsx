@@ -132,41 +132,11 @@ const features = [
 interface Module {
   _id: string;
   title: string;
+  slug: string;
   overview: string;
-  category: 'mudah' | 'sedang' | 'sulit';
+  category: string;
   icon: string;
 }
-
-const dummyModules: Module[] = [
-  {
-    _id: "dummy-1",
-    title: "Dasar HTML & CSS",
-    overview: "Pelajari struktur dan gaya dasar untuk membangun website yang responsif.",
-    category: "mudah",
-    icon: "code"
-  },
-  {
-    _id: "dummy-2",
-    title: "JavaScript Modern",
-    overview: "Pahami konsep ES6+, manipulasi DOM, dan asynchronous programming.",
-    category: "sedang",
-    icon: "code"
-  },
-  {
-    _id: "dummy-3",
-    title: "React Framework",
-    overview: "Bangun user interface yang interaktif dan reusable dengan React.",
-    category: "sulit",
-    icon: "code"
-  },
-  {
-    _id: "dummy-4",
-    title: "Backend Node.js",
-    overview: "Buat REST API yang aman dan scalable menggunakan Express.js.",
-    category: "sedang",
-    icon: "code"
-  }
-];
 
 export default function LandingPage() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -194,15 +164,13 @@ export default function LandingPage() {
 
         const res = await fetch(`${apiUrl}/api/modul`);
         if (!res.ok) {
-          console.warn("Gagal memuat modul, menggunakan data dummy.");
-          setModules(dummyModules);
+          console.warn("Gagal memuat modul.");
           return;
         }
         const data = await res.json();
         setModules(data);
       } catch (error) {
-        console.error("Error fetching modules, using dummy data:", error);
-        setModules(dummyModules);
+        console.error("Error fetching modules:", error);
       } finally {
         setLoadingModules(false);
       }
@@ -720,6 +688,11 @@ export default function LandingPage() {
 
       {/* --- MODULES SECTION --- */}
       <section id="modul" className="py-24 bg-white dark:bg-gray-900 relative">
+        <div className="absolute top-0 left-0 w-full pointer-events-none z-0">
+          <svg xmlns="http://www.w3.org/2000/svg" id="visual" viewBox="0 0 900 600" className="w-full h-24 sm:h-32 md:h-48 block" preserveAspectRatio="none">
+            <path d="M0 168L21.5 165.2C43 162.3 86 156.7 128.8 164.3C171.7 172 214.3 193 257.2 204.5C300 216 343 218 385.8 204.2C428.7 190.3 471.3 160.7 514.2 144.5C557 128.3 600 125.7 642.8 125.5C685.7 125.3 728.3 127.7 771.2 130.8C814 134 857 138 878.5 140L900 142L900 0L878.5 0C857 0 814 0 771.2 0C728.3 0 685.7 0 642.8 0C600 0 557 0 514.2 0C471.3 0 428.7 0 385.8 0C343 0 300 0 257.2 0C214.3 0 171.7 0 128.8 0C86 0 43 0 21.5 0L0 0Z" className="fill-sky-300 dark:fill-sky-700" strokeLinecap="round" strokeLinejoin="miter"/>
+          </svg>
+        </div>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <div className="flex flex-col lg:flex-row items-center gap-12 lg:gap-20">
             
@@ -744,7 +717,7 @@ export default function LandingPage() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.5, delay: 0.1 }}
-                className="text-lg text-slate-600 dark:text-slate-400 mb-8 max-w-lg leading-relaxed"
+                className="text-lg text-slate-600 dark:text-slate-400 max-w-lg leading-relaxed"
               >
                 Kurikulum dirancang khusus oleh praktisi industri untuk mempersiapkanmu menghadapi dunia kerja. Pilih jalur yang sesuai dengan minatmu dan mulai belajar sekarang.
               </motion.p>
@@ -762,18 +735,13 @@ export default function LandingPage() {
                  </span>
               </div>
 
-              <div className="flex flex-wrap gap-4">
-                 <Link href="/modul" className="inline-flex items-center justify-center px-8 py-4 text-base font-bold text-white bg-blue-600 rounded-full hover:bg-blue-700 shadow-lg shadow-blue-500/30 transition-all transform hover:-translate-y-1">
-                    Lihat Semua Modul <ArrowRight className="ml-2 w-5 h-5" />
-                 </Link>
-              </div>
             </div>
 
             {/* Right Column: Scrolling Cards */}
             <div className="w-full lg:w-1/2 relative">
                {/* Decoration Background */}
                <div className="absolute inset-0 bg-gradient-to-br from-blue-100 to-purple-100 dark:from-blue-900/20 dark:to-purple-900/20 rounded-[3rem] -rotate-6 scale-105 z-0 blur-2xl opacity-60"></div>
-               <div className="absolute inset-0 bg-white/30 dark:bg-gray-800/30 rounded-[2.5rem] rotate-3 scale-[1.02] z-0 border border-slate-200/50 dark:border-gray-700/50 backdrop-blur-sm"></div>
+               <div className="absolute inset-0 bg-white/30 dark:bg-gray-800/30 rounded-[2.5rem] rotate-3 scale-[1.02] z-0 border border-slate-300/50 dark:border-gray-700/50 backdrop-blur-sm"></div>
 
                {/* Scrolling Container */}
                <div 
@@ -804,19 +772,15 @@ export default function LandingPage() {
                             
                             <div className="flex justify-between items-start mb-4 relative z-10">
                               <div className="p-3 bg-slate-50 dark:bg-gray-700/50 rounded-xl group-hover:scale-110 transition-transform duration-300 shadow-sm">
-                                {modul._id.startsWith('dummy') ? (
-                                  <Code className="w-6 h-6 text-blue-600 dark:text-blue-400" />
-                                ) : (
-                                  <img 
-                                    src={`${process.env.NEXT_PUBLIC_API_URL}/uploads/${modul.icon}`} 
-                                    alt={modul.title}
-                                    className="w-6 h-6 object-contain"
-                                  />
-                                )}
+                                <img 
+                                  src={modul.icon?.startsWith('http') ? modul.icon : `${process.env.NEXT_PUBLIC_API_URL}/uploads/${modul.icon}`} 
+                                  alt={modul.title}
+                                  className="w-6 h-6 object-contain"
+                                />
                               </div>
                               <span className={`px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wide ${
-                                modul.category === 'mudah' ? 'bg-amber-100 text-amber-800 dark:bg-amber-900/40 dark:text-amber-300' :
-                                modul.category === 'sedang' ? 'bg-blue-100 text-blue-800 dark:bg-blue-900/40 dark:text-blue-300' :
+                                modul.category.toLowerCase() === 'mudah' ? 'bg-amber-100 text-amber-800 dark:bg-amber-900/40 dark:text-amber-300' :
+                                modul.category.toLowerCase() === 'sedang' ? 'bg-blue-100 text-blue-800 dark:bg-blue-900/40 dark:text-blue-300' :
                                 'bg-green-100 text-green-800 dark:bg-green-900/40 dark:text-green-300'
                               }`}>
                                 {modul.category}
@@ -835,9 +799,20 @@ export default function LandingPage() {
                     </motion.div>
                   )}
                </div>
+
+               <div className="absolute bottom-0 left-0 w-full h-40 bg-gradient-to-t from-white via-white/90 to-transparent dark:from-gray-900 dark:via-gray-900/90 z-20 flex items-end justify-center pb-8 rounded-b-[2.5rem]">
+                  <Link href="/login" className="text-base font-bold text-blue-600 dark:text-blue-400 hover:underline transition-all">
+                    Lihat Semua Modul 
+                  </Link>
+               </div>
             </div>
 
           </div>
+        </div>
+        <div className="absolute bottom-0 left-0 w-full pointer-events-none z-0 translate-y-[1px]">
+          <svg xmlns="http://www.w3.org/2000/svg" id="visual" viewBox="0 0 900 600" className="w-full h-24 sm:h-32 md:h-48 block" preserveAspectRatio="none">
+            <path d="M0 484L21.5 478.2C43 472.3 86 460.7 128.8 443.7C171.7 426.7 214.3 404.3 257.2 414.7C300 425 343 468 385.8 483.5C428.7 499 471.3 487 514.2 470.7C557 454.3 600 433.7 642.8 419.8C685.7 406 728.3 399 771.2 394.3C814 389.7 857 387.3 878.5 386.2L900 385L900 601L878.5 601C857 601 814 601 771.2 601C728.3 601 685.7 601 642.8 601C600 601 557 601 514.2 601C471.3 601 428.7 601 385.8 601C343 601 300 601 257.2 601C214.3 601 171.7 601 128.8 601C86 601 43 601 21.5 601L0 601Z" className="fill-sky-300 dark:fill-sky-700" strokeLinecap="round" strokeLinejoin="miter"/>
+          </svg>
         </div>
       </section>
 
