@@ -536,13 +536,9 @@ export default function LandingPage() {
             </div>
 
             <div className="flex flex-row items-center justify-start gap-3 sm:gap-4 pt-2">
-              <Link href="/pre-test" className="group relative inline-flex items-center justify-center px-4 sm:px-8 py-3 sm:py-3.5 text-sm sm:text-base font-bold text-white transition-all duration-200 bg-blue-600 rounded-full hover:bg-blue-700 hover:shadow-lg hover:shadow-blue-500/40 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-600">
-                Coba Pre-tes
+              <Link href="/register" className="group relative inline-flex items-center justify-center px-4 sm:px-8 py-3 sm:py-3.5 text-sm sm:text-base font-bold text-white transition-all duration-200 bg-blue-600 rounded-full hover:bg-blue-700 hover:shadow-lg hover:shadow-blue-500/40 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-600">
+                Daftar Sekarang
                 <ChevronRight className="ml-1 sm:ml-2 w-4 h-4 sm:w-5 sm:h-5 group-hover:translate-x-1 transition-transform" />
-              </Link>
-              <Link href="/modul" className="inline-flex items-center justify-center px-4 sm:px-8 py-3 sm:py-3.5 text-sm sm:text-base font-bold text-slate-700 dark:text-slate-200 bg-white dark:bg-gray-800 border border-slate-200 dark:border-gray-700 rounded-full hover:bg-slate-50 dark:hover:bg-gray-700 transition-all">
-                <Play className="mr-1 sm:mr-2 w-3 h-3 sm:w-4 sm:h-4 fill-current" />
-                Lihat Demo
               </Link>
             </div>
             <div className="flex items-center justify-start gap-4 text-sm text-slate-900 dark:text-slate-300">
@@ -1088,9 +1084,6 @@ export default function LandingPage() {
                  <div className="flex flex-col sm:flex-row gap-4 justify-start md:justify-center">
                    <Link href="/register" className="bg-white text-blue-600 px-8 py-3.5 rounded-full font-bold hover:bg-blue-50 transition shadow-lg">
                      Daftar Gratis Sekarang
-                   </Link>
-                   <Link href="/pre-test" className="bg-transparent border border-white text-white px-8 py-3.5 rounded-full font-bold hover:bg-white/10 transition">
-                     Coba Pre-Test Dulu
                    </Link>
                  </div>
                </div>
