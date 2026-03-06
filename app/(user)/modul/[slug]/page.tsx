@@ -9,7 +9,7 @@ import { authFetch } from '@/lib/authFetch';
 import { useAlert } from '@/context/AlertContext';
 
 import TopicContent from '@/components/TopicContent';
-import { Home, CheckCircle2, Lock, Rocket, Award, AlertTriangle, Star, Lightbulb, Target, Clock3, Activity, Eye, Menu, X, Play, LayoutGrid } from 'lucide-react';
+import { Home, CheckCircle2, Lock, Rocket, Award, AlertTriangle, Star, Lightbulb, Target, Clock3, Activity, Eye, Menu, X, Play, LayoutGrid, BookOpen, Code, Video, Headphones } from 'lucide-react';
 import { motion } from "framer-motion";
 import CodePlayground from '@/components/CodePlayground';
 import { driver } from "driver.js";
@@ -1416,61 +1416,122 @@ export default function ModulDetailPage() {
                                 </div>
                                 {/* Accordion Content */}
                                 <div className={`transition-all duration-500 ease-in-out overflow-hidden ${isOpen && !isLocked ? 'max-h-[2000px]' : 'max-h-0'}`}>
-                                    <div className={fontStyle} style={{ fontSize }}>
-                                    {/* Daftar Isi Sub Topik */}
-                                    {isOpen && !isLocked && topik.materi && topik.materi.subMateris.length > 0 && (
-                                        <div className="pt-2 pb-2 px-2 sm:px-10">
-                                            <div className="bg-slate-50 dark:bg-gray-900/50 border border-slate-300 dark:border-gray-700/50 rounded-xl p-5 shadow-sm">
-                                                <h4 className="text-lg font-bold text-gray-800 dark:text-gray-100 mb-5 flex items-center gap-2">
-                                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-blue-500"><line x1="8" y1="6" x2="21" y2="6"></line><line x1="8" y1="12" x2="21" y2="12"></line><line x1="8" y1="18" x2="21" y2="18"></line><line x1="3" y1="6" x2="3.01" y2="6"></line><line x1="3" y1="12" x2="3.01" y2="12"></line><line x1="3" y1="18" x2="3.01" y2="18"></line></svg>
-                                                    Daftar Isi Materi
-                                                </h4>
-                                                <ul className="relative">
-                                                    {topik.materi.subMateris.map((sub, subIndex, arr) => (
-                                                        <li key={sub._id} className="relative pl-10 pb-5">
-                                                            {/* Garis vertikal */}
-                                                            <div className="absolute left-[11px] top-4 h-full w-0.5 bg-slate-200 dark:bg-slate-700"></div>
-                                                            
-                                                            {/* Lingkaran Nomor */}
-                                                            <div className="absolute left-0 top-0 flex h-6 w-6 items-center justify-center rounded-full bg-blue-500 text-white text-xs font-bold ring-4 ring-slate-50 dark:ring-gray-900/50">
-                                                                {subIndex + 1}
-                                                            </div> 
-
-                                                            {/* Judul Sub Topik */}
-                                                            <a 
-                                                                href={`#${sub._id}`} 
-                                                                onClick={(e) => {
-                                                                    e.preventDefault();
-                                                                    document.getElementById(sub._id)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                                                                }}
-                                                                className="block text-sm font-medium text-slate-700 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors duration-200">
-                                                                {sub.title.replace(/^\d+[\.\)\-]\s*/, '')}
-                                                            </a>
-                                                        </li>
-                                                    ))}
-                                                    {/* Item Uji Pemahaman */}
-                                                    <li className="relative pl-10 pb-0">
-                                                        {/* Lingkaran Nomor */}
-                                                        <div className="absolute left-0 top-0 flex h-6 w-6 items-center justify-center rounded-full bg-blue-500 text-white text-xs font-bold ring-4 ring-slate-50 dark:ring-gray-900/50">
-                                                            {topik.materi.subMateris.length + 1}
-                                                        </div>
-                                                        <a 
-                                                            href={`#uji-pemahaman-${topik._id}`}
-                                                            onClick={(e) => {
-                                                                e.preventDefault();
-                                                                document.getElementById(`uji-pemahaman-${topik._id}`)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                                                            }}
-                                                            className="block text-sm font-medium text-slate-700 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors duration-200"
-                                                        >
-                                                            Uji Pemahaman
-                                                        </a>
-                                                    </li>
-                                                </ul>
+                                    <div className={`p-4 sm:p-6 border-t border-gray-100 dark:border-gray-700 ${fontStyle}`} style={{ fontSize }}>
+                                        
+                                        {/* VARK Navigation Bar */}
+                                        <div className="flex flex-wrap gap-2 sm:gap-3 mb-6 p-3 bg-slate-50 dark:bg-gray-900/50 rounded-xl border border-slate-100 dark:border-gray-700">
+                                            <div className="w-full flex items-center gap-2 mb-1">
+                                                <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Mode Belajar (VARK)</span>
+                                                <div className="h-px flex-1 bg-slate-200 dark:bg-gray-700"></div>
                                             </div>
-                                        </div>
-                                    )}
+                                            
+                                            {/* Visual & Aural */}
+                                            {topik.materi?.youtube && (
+                                                <button 
+                                                    onClick={() => document.getElementById(`video-${topik._id}`)?.scrollIntoView({ behavior: 'smooth', block: 'center' })}
+                                                    className="flex items-center gap-2 px-3 py-2 bg-white dark:bg-gray-800 border border-slate-200 dark:border-gray-600 rounded-lg text-xs sm:text-sm font-medium text-slate-700 dark:text-slate-200 hover:border-red-400 hover:text-red-500 transition-all shadow-sm"
+                                                >
+                                                    <Video size={14} className="text-red-500" />
+                                                    <span>Video (Visual & Audio)</span>
+                                                </button>
+                                            )}
 
-                                        <TopicContent topik={topik} onStartTest={startTest} onViewScore={viewScore} hasAttempted={topik.isCompleted || topik.hasAttempted} />
+                                            {/* Read/Write */}
+                                            <button 
+                                                onClick={() => document.getElementById(`materi-${topik._id}`)?.scrollIntoView({ behavior: 'smooth', block: 'start' })}
+                                                className="flex items-center gap-2 px-3 py-2 bg-white dark:bg-gray-800 border border-slate-200 dark:border-gray-600 rounded-lg text-xs sm:text-sm font-medium text-slate-700 dark:text-slate-200 hover:border-blue-400 hover:text-blue-500 transition-all shadow-sm"
+                                            >
+                                                <BookOpen size={14} className="text-blue-500" />
+                                                <span>Bacaan (Read/Write)</span>
+                                            </button>
+
+                                            {/* Kinesthetic */}
+                                            <button 
+                                                onClick={() => {
+                                                    setIsPlaygroundOpen(true);
+                                                    setAutoRunPlayground(false);
+                                                }}
+                                                className="flex items-center gap-2 px-3 py-2 bg-white dark:bg-gray-800 border border-slate-200 dark:border-gray-600 rounded-lg text-xs sm:text-sm font-medium text-slate-700 dark:text-slate-200 hover:border-indigo-400 hover:text-indigo-500 transition-all shadow-sm"
+                                            >
+                                                <Code size={14} className="text-indigo-500" />
+                                                <span>Praktek (Kinesthetic)</span>
+                                            </button>
+                                        </div>
+
+                                        {/* Video Section */}
+                                        {topik.materi?.youtube && (
+                                            <div id={`video-${topik._id}`} className="mb-8 scroll-mt-24">
+                                                <div className="aspect-video rounded-xl overflow-hidden shadow-lg border border-slate-200 dark:border-gray-700 bg-black">
+                                                    <iframe 
+                                                        src={topik.materi.youtube.replace("watch?v=", "embed/")} 
+                                                        title={topik.title}
+                                                        className="w-full h-full"
+                                                        allowFullScreen
+                                                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                                    />
+                                                </div>
+                                                <p className="text-xs text-center text-slate-500 mt-2 flex items-center justify-center gap-1">
+                                                    <Headphones size={12} /> Tonton video untuk pemahaman Visual & Audio yang lebih baik.
+                                                </p>
+                                            </div>
+                                        )}
+
+                                        <div id={`materi-${topik._id}`} className="scroll-mt-24">
+                                            {/* Daftar Isi Sub Topik */}
+                                            {isOpen && !isLocked && topik.materi && topik.materi.subMateris.length > 0 && (
+                                                <div className="mb-8">
+                                                    <div className="bg-slate-50 dark:bg-gray-900/50 border border-slate-300 dark:border-gray-700/50 rounded-xl p-5 shadow-sm">
+                                                        <h4 className="text-lg font-bold text-gray-800 dark:text-gray-100 mb-5 flex items-center gap-2">
+                                                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-blue-500"><line x1="8" y1="6" x2="21" y2="6"></line><line x1="8" y1="12" x2="21" y2="12"></line><line x1="8" y1="18" x2="21" y2="18"></line><line x1="3" y1="6" x2="3.01" y2="6"></line><line x1="3" y1="12" x2="3.01" y2="12"></line><line x1="3" y1="18" x2="3.01" y2="18"></line></svg>
+                                                            Daftar Isi Materi
+                                                        </h4>
+                                                        <ul className="relative">
+                                                            {topik.materi.subMateris.map((sub, subIndex, arr) => (
+                                                                <li key={sub._id} className="relative pl-10 pb-5">
+                                                                    {/* Garis vertikal */}
+                                                                    <div className="absolute left-[11px] top-4 h-full w-0.5 bg-slate-200 dark:bg-slate-700"></div>
+                                                                    
+                                                                    {/* Lingkaran Nomor */}
+                                                                    <div className="absolute left-0 top-0 flex h-6 w-6 items-center justify-center rounded-full bg-blue-500 text-white text-xs font-bold ring-4 ring-slate-50 dark:ring-gray-900/50">
+                                                                        {subIndex + 1}
+                                                                    </div> 
+
+                                                                    {/* Judul Sub Topik */}
+                                                                    <a 
+                                                                        href={`#${sub._id}`} 
+                                                                        onClick={(e) => {
+                                                                            e.preventDefault();
+                                                                            document.getElementById(sub._id)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                                                                        }}
+                                                                        className="block text-sm font-medium text-slate-700 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors duration-200">
+                                                                        {sub.title.replace(/^\d+[\.\)\-]\s*/, '')}
+                                                                    </a>
+                                                                </li>
+                                                            ))}
+                                                            {/* Item Uji Pemahaman */}
+                                                            <li className="relative pl-10 pb-0">
+                                                                {/* Lingkaran Nomor */}
+                                                                <div className="absolute left-0 top-0 flex h-6 w-6 items-center justify-center rounded-full bg-blue-500 text-white text-xs font-bold ring-4 ring-slate-50 dark:ring-gray-900/50">
+                                                                    {topik.materi.subMateris.length + 1}
+                                                                </div>
+                                                                <a 
+                                                                    href={`#uji-pemahaman-${topik._id}`}
+                                                                    onClick={(e) => {
+                                                                        e.preventDefault();
+                                                                        document.getElementById(`uji-pemahaman-${topik._id}`)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                                                                    }}
+                                                                    className="block text-sm font-medium text-slate-700 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors duration-200"
+                                                                >
+                                                                    Uji Pemahaman
+                                                                </a>
+                                                            </li>
+                                                        </ul>
+                                                    </div>
+                                                </div>
+                                            )}
+
+                                            <TopicContent topik={topik} onStartTest={startTest} onViewScore={viewScore} hasAttempted={topik.isCompleted || topik.hasAttempted} />
+                                        </div>
                                     </div>
                                 </div>
                             </div>

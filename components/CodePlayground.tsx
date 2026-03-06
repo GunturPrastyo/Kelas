@@ -2,7 +2,7 @@
 
 import React, { useState, useCallback, useEffect } from 'react';
 import Editor from '@monaco-editor/react';
-import { Play, Trash2, X, Terminal, FileCode, Eye } from 'lucide-react';
+import { Play, Trash2, X, Terminal, FileCode, Eye, Code } from 'lucide-react';
 
 interface CodePlaygroundProps {
     isOpen: boolean;
@@ -64,6 +64,7 @@ console.log(\`Luas persegi panjang (\${p} x \${l}) = \`, hitungLuas(p, l));
     const [htmlOutput, setHtmlOutput] = useState<{level: 'log' | 'error' | 'warn', message: string}[]>([]);
     const [jsOutput, setJsOutput] = useState<{level: 'log' | 'error' | 'warn', message: string}[]>([]);
     const [iframeSrc, setIframeSrc] = useState("");
+    const [activeTab, setActiveTab] = useState<'code' | 'preview' | 'console'>('code');
 
     // Efek untuk memuat kode awal saat modal dibuka
     useEffect(() => {
@@ -84,6 +85,7 @@ console.log(\`Luas persegi panjang (\${p} x \${l}) = \`, hitungLuas(p, l));
                 // Gunakan timeout kecil untuk memastikan state modal/iframe siap sebelum eksekusi
                 setTimeout(() => {
                     runCode(initialCode, detectedMode);
+                    setActiveTab(detectedMode === 'html' ? 'preview' : 'console');
                 }, 300);
             }
         }
@@ -156,6 +158,7 @@ console.log(\`Luas persegi panjang (\${p} x \${l}) = \`, hitungLuas(p, l));
                 finalHtml = consoleInterceptor + finalHtml;
             }
             setIframeSrc(finalHtml);
+            setActiveTab('preview');
         } else {
             // Mode JS: Jalankan langsung di runtime JS (tanpa iframe)
             setJsOutput([]); // Reset JS console
@@ -178,6 +181,7 @@ console.log(\`Luas persegi panjang (\${p} x \${l}) = \`, hitungLuas(p, l));
             }
             
             setJsOutput(logs);
+            setActiveTab('console');
         }
     }, [mode, htmlCode, jsCode]);
 
@@ -185,7 +189,7 @@ console.log(\`Luas persegi panjang (\${p} x \${l}) = \`, hitungLuas(p, l));
 
     return (
         <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-in fade-in duration-200">
-            <div className="bg-white dark:bg-gray-900 w-full max-w-5xl h-[85vh] rounded-xl shadow-2xl flex flex-col overflow-hidden border border-gray-200 dark:border-gray-700">
+            <div className="bg-white dark:bg-gray-900 w-full max-w-5xl h-[90vh] rounded-xl shadow-2xl flex flex-col overflow-hidden border border-gray-200 dark:border-gray-700">
                 {/* Header */}
                 <div className="flex flex-row justify-between items-center p-3 border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 gap-3">
                     <div className="flex items-center gap-2">
@@ -223,10 +227,34 @@ console.log(\`Luas persegi panjang (\${p} x \${l}) = \`, hitungLuas(p, l));
                     </div>
                 </div>
 
+                {/* Tabs */}
+                <div className="flex items-center bg-gray-100 dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 px-2 gap-1 shrink-0">
+                    <button
+                        onClick={() => setActiveTab('code')}
+                        className={`flex items-center gap-2 px-4 py-2 text-sm font-medium border-b-2 transition-colors ${activeTab === 'code' ? 'border-blue-500 text-blue-600 dark:text-blue-400 bg-white dark:bg-gray-900' : 'border-transparent text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700'}`}
+                    >
+                        <Code size={14} /> Code
+                    </button>
+                    {mode === 'html' && (
+                        <button
+                            onClick={() => setActiveTab('preview')}
+                            className={`flex items-center gap-2 px-4 py-2 text-sm font-medium border-b-2 transition-colors ${activeTab === 'preview' ? 'border-orange-500 text-orange-600 dark:text-orange-400 bg-white dark:bg-gray-900' : 'border-transparent text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700'}`}
+                        >
+                            <Eye size={14} /> Preview
+                        </button>
+                    )}
+                    <button
+                        onClick={() => setActiveTab('console')}
+                        className={`flex items-center gap-2 px-4 py-2 text-sm font-medium border-b-2 transition-colors ${activeTab === 'console' ? 'border-yellow-500 text-yellow-600 dark:text-yellow-400 bg-white dark:bg-gray-900' : 'border-transparent text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700'}`}
+                    >
+                        <Terminal size={14} /> Console
+                    </button>
+                </div>
+
                 {/* Body */}
-                <div className="flex-1 flex flex-col md:flex-row min-h-0">
+                <div className="flex-1 relative overflow-hidden bg-white dark:bg-gray-900">
                     {/* Editor Area */}
-                    <div className="flex-1 border-b md:border-b-0 md:border-r border-gray-200 dark:border-gray-700 min-h-[50%] md:min-h-full relative group">
+                    <div className={`absolute inset-0 ${activeTab === 'code' ? 'z-10' : 'z-0 invisible'}`}>
                         <Editor
                             height="100%"
                             language={mode === 'html' ? 'html' : 'javascript'}
@@ -244,15 +272,10 @@ console.log(\`Luas persegi panjang (\${p} x \${l}) = \`, hitungLuas(p, l));
                         />
                     </div>
 
-                    {/* Output & Console Area */}
-                    <div className="flex-1 md:w-[45%] flex flex-col min-h-[40%] md:min-h-full border-l border-gray-700 bg-white">
-                        
-                        {/* Preview Section (Top) - Only visible in HTML mode */}
-                        <div className={`flex-1 relative border-b border-gray-200 flex flex-col ${mode === 'html' ? '' : 'hidden'}`}>
-                                <div className="px-3 py-1.5 bg-gray-50 border-b border-gray-200 flex justify-between items-center">
-                                    <span className="text-xs font-mono uppercase tracking-wider text-gray-500 flex items-center gap-1"><Eye size={12}/> Preview</span>
-                                </div>
-                                <div className="flex-1 w-full h-full bg-white relative">
+                    {/* Preview Section (Only visible in HTML mode) */}
+                    {mode === 'html' && (
+                        <div className={`absolute inset-0 bg-white ${activeTab === 'preview' ? 'z-10' : 'z-0 invisible'}`}>
+                                <div className="w-full h-full relative">
                                     {iframeSrc ? (
                                         <iframe srcDoc={iframeSrc} className="w-full h-full border-none" title="Preview" sandbox="allow-scripts allow-same-origin allow-modals" />
                                     ) : (
@@ -263,10 +286,11 @@ console.log(\`Luas persegi panjang (\${p} x \${l}) = \`, hitungLuas(p, l));
                                     )}
                                 </div>
                         </div>
+                    )}
 
-                        {/* Console Section (Bottom) */}
-                        <div className={`${mode === 'js' ? 'flex-1 h-full' : 'h-1/3 border-t border-gray-700'} flex flex-col bg-[#1e1e1e] text-gray-100`}>
-                            <div className="px-3 py-1.5 bg-[#252526] border-b border-[#333] flex justify-between items-center">
+                    {/* Console Section */}
+                    <div className={`absolute inset-0 flex flex-col bg-[#1e1e1e] text-gray-100 ${activeTab === 'console' ? 'z-10' : 'z-0 invisible'}`}>
+                            <div className="px-3 py-1.5 bg-[#252526] border-b border-[#333] flex justify-between items-center shrink-0">
                                 <span className="text-xs font-mono uppercase tracking-wider text-gray-400 flex items-center gap-1"><Terminal size={12}/> {mode === 'js' ? 'Terminal' : 'Console'}</span>
                                 <button 
                                     onClick={() => mode === 'html' ? setHtmlOutput([]) : setJsOutput([])} 
@@ -290,7 +314,6 @@ console.log(\`Luas persegi panjang (\${p} x \${l}) = \`, hitungLuas(p, l));
                                 )}
                             </div>
                         </div>
-                    </div>
                 </div>
             </div>
         </div>
