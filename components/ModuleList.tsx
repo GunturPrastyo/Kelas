@@ -142,7 +142,7 @@ export default function ModuleList({ title, allModules, filter }: ModuleListProp
               rounded-2xl overflow-hidden 
               bg-slate-50 dark:bg-gray-800
               border border-slate-200 dark:border-gray-700
-              border-l-8 ${effectiveStatus === 'Terkunci' ? 'border-l-gray-300 dark:border-l-gray-600' : 'border-l-blue-400'}
+              border-b-4 border-r-4 border-gray-300 dark:border-gray-600
               shadow-sm hover:shadow-xl hover:-translate-y-1
               transition-all duration-300 snap-start
               ${effectiveStatus === "Terkunci" ? "grayscale opacity-70 cursor-not-allowed" : ""}
