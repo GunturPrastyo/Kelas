@@ -117,7 +117,7 @@ export default function TopicContent({ topik, onStartTest, onViewScore, hasAttem
                         <div
                         key={sub._id || index}
                         id={sub._id} // ID unik untuk target scroll
-                        className="max-w-full w-full scroll-mt-24 bg-white dark:bg-gray-800 p-5 rounded-xl border border-slate-300 dark:border-gray-700/60 shadow-sm border-l-7 border-l-blue-400"
+                        className="max-w-full w-full scroll-mt-24 bg-white dark:bg-gray-800 p-6 rounded-2xl border-t border-l border-gray-400 dark:border-gray-700 border-b-6 border-r-2  shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1"
                         >
                             <h4 className={`font-bold ${proseSizeClass} !mb-2 text-gray-800 dark:text-gray-100`}>{sub.title}</h4>
                             <div className={`prose pre max-w-none ${proseSizeClass} [&_p]:mb-3`} dangerouslySetInnerHTML={{ __html: sub.content }} />
@@ -129,7 +129,7 @@ export default function TopicContent({ topik, onStartTest, onViewScore, hasAttem
             </div>
 
             <div id={`uji-pemahaman-${topik._id}`} className="mt-5 scroll-mt-24">
-                <div className="border border-slate-300 dark:border-gray-700 relative overflow-hidden bg-gradient-to-br from-slate-50 to-slate-100 dark:from-gray-900 dark:to-gray-800 rounded-2xl p-5 sm:p-6 flex flex-col gap-5 shadow-sm transition-all duration-300 hover:shadow-lg hover:-translate-y-1">
+                <div className="border border-t border-l border-b-6 border-r-2 border-gray-400  dark:border-gray-700 relative overflow-hidden bg-gradient-to-br from-slate-50 to-slate-100 dark:from-gray-900 dark:to-gray-800 rounded-2xl p-5 sm:p-6 flex flex-col gap-5 shadow-sm transition-all duration-300 hover:shadow-lg hover:-translate-y-1">
 
                     {/* Decorative Bubbles */}
                     {/* <div className="absolute -top-12 -right-12 w-40 h-40 bg-blue-300 dark:bg-blue-400/5 rounded-full blur-3xl pointer-events-none"></div>
