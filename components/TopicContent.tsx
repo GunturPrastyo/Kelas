@@ -62,8 +62,23 @@ export default function TopicContent({ topik, onStartTest, onViewScore, hasAttem
 
     useEffect(() => {
         const loadSettings = () => {
-            const storedFontSize = localStorage.getItem('materiFontSize');
-            const storedFontStyle = localStorage.getItem('materiFontStyle');
+            // Coba ambil dari data user yang tersimpan (yang disinkronkan dari DB)
+            const userRaw = localStorage.getItem('user');
+            let userPrefs = { fontSize: null, fontStyle: null };
+            
+            if (userRaw) {
+                try {
+                    const user = JSON.parse(userRaw);
+                    userPrefs.fontSize = user.fontSize;
+                    userPrefs.fontStyle = user.fontStyle;
+                } catch (e) {
+                    console.error("Error parsing user prefs", e);
+                }
+            }
+
+            // Prioritaskan data dari user profile, fallback ke localStorage legacy
+            const storedFontSize = userPrefs.fontSize || localStorage.getItem('materiFontSize');
+            const storedFontStyle = userPrefs.fontStyle || localStorage.getItem('materiFontStyle');
 
             if (storedFontStyle) {
                 setFontClass(storedFontStyle);
