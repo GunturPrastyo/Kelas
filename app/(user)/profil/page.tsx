@@ -35,6 +35,8 @@ interface User {
   avatar?: string; 
   hasPassword?: boolean; 
   learningLevel?: string;
+  fontSize?: string;
+  fontStyle?: string;
 }
 
 interface CompetencyFeature {
@@ -291,10 +293,20 @@ const ProfileContent = () => {
       // Logika avatar sekarang ditangani oleh komponen Avatar dan state avatarPreview
 
       // Load settings
-      const storedFontSize = localStorage.getItem('materiFontSize');
-      if (storedFontSize) setFontSize(storedFontSize);
-      const storedFontStyle = localStorage.getItem('materiFontStyle');
-      if (storedFontStyle) setFontStyle(storedFontStyle);
+      // Prioritaskan pengaturan dari database (userData), fallback ke localStorage
+      if (userData.fontSize) {
+        setFontSize(userData.fontSize);
+      } else {
+        const storedFontSize = localStorage.getItem('materiFontSize');
+        if (storedFontSize) setFontSize(storedFontSize);
+      }
+
+      if (userData.fontStyle) {
+        setFontStyle(userData.fontStyle);
+      } else {
+        const storedFontStyle = localStorage.getItem('materiFontStyle');
+        if (storedFontStyle) setFontStyle(storedFontStyle);
+      }
     }
     setLoading(false);
 
@@ -706,33 +718,49 @@ const ProfileContent = () => {
     }
   };
 
-  const handleSettingsSave = (e: FormEvent) => {
+  const handleSettingsSave = async (e: FormEvent) => {
     e.preventDefault();
-    localStorage.setItem('materiFontSize', fontSize);
-    localStorage.setItem('materiFontStyle', fontStyle);
 
-    // Dispatch event for immediate update if needed elsewhere
-    window.dispatchEvent(new Event('settings-updated'));
+    // Gunakan FormData untuk konsistensi dengan endpoint update profil
+    const formData = new FormData();
+    formData.append("name", name); // Kirim nama agar tidak hilang/berubah
+    formData.append("email", email);
+    formData.append("fontSize", fontSize);
+    formData.append("fontStyle", fontStyle);
 
-    // Trigger storage event manually for components listening to storage changes in the same tab
-    window.dispatchEvent(new StorageEvent("storage", {
-      key: "materiFontSize",
-      newValue: fontSize,
-      storageArea: localStorage,
-      url: window.location.href,
-    }));
-    window.dispatchEvent(new StorageEvent("storage", {
-      key: "materiFontStyle",
-      newValue: fontStyle,
-      storageArea: localStorage,
-      url: window.location.href,
-    }));
+    try {
+      const res = await authFetch(`${process.env.NEXT_PUBLIC_API_URL}/api/users/profile`, {
+        method: "PUT",
+        body: formData,
+      });
 
-    showAlert({
-      title: "Sukses",
-      message: "Pengaturan berhasil disimpan!",
-      type: "alert",
-    });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.message || "Gagal menyimpan pengaturan");
+
+      // Update user di localStorage dengan data terbaru dari server
+      localStorage.setItem("user", JSON.stringify(data.user));
+      setUser(data.user);
+
+      // Update juga key legacy di localStorage agar komponen lain yang membacanya langsung terupdate
+      localStorage.setItem('materiFontSize', fontSize);
+      localStorage.setItem('materiFontStyle', fontStyle);
+
+      // Dispatch events untuk update real-time di komponen lain
+      window.dispatchEvent(new Event('settings-updated'));
+      window.dispatchEvent(new Event('user-updated'));
+
+      showAlert({
+        title: "Sukses",
+        message: "Pengaturan berhasil disimpan dan disinkronkan!",
+        type: "alert",
+      });
+    } catch (err) {
+      showAlert({
+        title: "Gagal",
+        message: err instanceof Error ? err.message : "Terjadi kesalahan saat menyimpan pengaturan",
+        type: "alert",
+      });
+    }
   };
 
   const handleEditCertificateName = () => {

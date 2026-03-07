@@ -39,7 +39,7 @@ export default function GlobalStreakAlert() {
     useEffect(() => {
         const checkStreak = async () => {
             // Jangan jalankan di halaman login/register
-            if (!user || user.role !== 'user' || pathname === '/login' || pathname === '/register') return;
+            if (!user || user.role !== 'user' || pathname === '/login' || pathname === '/register' || pathname === '/' || pathname === '/reset-password' || pathname === '/verif-email' || pathname === '/forgot-password') return;
 
             try {
                 const [analyticsRes, statusRes] = await Promise.all([
