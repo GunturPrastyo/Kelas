@@ -601,7 +601,7 @@ export default function AnalitikBelajarPage() {
     const initTour = async () => {
       if (!loading) {
         try {
-          const res = await authFetch(`${process.env.NEXT_PUBLIC_API_URL}/api/results/user-status`);
+          const res = await authFetch(`${process.env.NEXT_PUBLIC_API_URL}/api/users/status`);
           if (res.ok) {
             const data = await res.json();
             if (!data.hasSeenAnalyticsTour) {
@@ -665,7 +665,7 @@ export default function AnalitikBelajarPage() {
             if (isDestroying) return;
 
             if (!driverObj.hasNextStep()) {
-              authFetch(`${process.env.NEXT_PUBLIC_API_URL}/api/results/user-status`, {
+              authFetch(`${process.env.NEXT_PUBLIC_API_URL}/api/users/status`, {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ key: 'hasSeenAnalyticsTour', value: true })
@@ -683,7 +683,7 @@ export default function AnalitikBelajarPage() {
                   cancelText: 'Lanjut Tur',
                   onConfirm: () => {
                     isDestroying = true;
-                    authFetch(`${process.env.NEXT_PUBLIC_API_URL}/api/results/user-status`, {
+                    authFetch(`${process.env.NEXT_PUBLIC_API_URL}/api/users/status`, {
                         method: 'PUT',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({ key: 'hasSeenAnalyticsTour', value: true })

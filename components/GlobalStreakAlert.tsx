@@ -41,10 +41,13 @@ export default function GlobalStreakAlert() {
             // Jangan jalankan di halaman login/register
             if (!user || user.role !== 'user' || pathname === '/login' || pathname === '/register' || pathname === '/' || pathname === '/reset-password' || pathname === '/verif-email' || pathname === '/forgot-password') return;
 
+            const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+            if (!apiUrl) return;
+
             try {
                 const [analyticsRes, statusRes] = await Promise.all([
-                    authFetch(`${process.env.NEXT_PUBLIC_API_URL}/api/results/analytics`),
-                    authFetch(`${process.env.NEXT_PUBLIC_API_URL}/api/results/user-status`)
+                    authFetch(`${apiUrl}/api/results/analytics`),
+                    authFetch(`${apiUrl}/api/results/user-status`)
                 ]);
 
                 if (analyticsRes.ok && statusRes.ok) {
