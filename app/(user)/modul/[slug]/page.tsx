@@ -9,11 +9,12 @@ import { authFetch } from '@/lib/authFetch';
 import { useAlert } from '@/context/AlertContext';
 
 import TopicContent from '@/components/TopicContent';
-import { Home, CheckCircle2, Lock, Rocket, Award, AlertTriangle, Star, Lightbulb, Target, Clock3, Activity, Eye, Menu, X, Play, LayoutGrid, BookOpen, Code, Video, Headphones } from 'lucide-react';
+import { Home, CheckCircle2, Lock, Rocket, Award, AlertTriangle, Star, Lightbulb, Target, Clock3, Activity, Eye, Menu, X, Play, LayoutGrid, BookOpen, Code, Video, Headphones, ArrowRight, RotateCcw } from 'lucide-react';
 import { motion } from "framer-motion";
 import CodePlayground from '@/components/CodePlayground';
 import { driver } from "driver.js";
 import "driver.js/dist/driver.css";
+import Editor from "@monaco-editor/react";
 
 
 interface User {
@@ -91,6 +92,171 @@ const shuffleArray = <T,>(array: T[]): T[] => {
     return newArray;
 };
 
+// --- Component: Practice Section (Kinesthetic) ---
+const PracticeSection = ({ topicId }: { topicId: string }) => {
+    const questions = [
+        {
+            id: 1,
+            type: 'html',
+            title: 'Latihan 1: Memperbaiki Struktur HTML',
+            description: 'Terdapat elemen <h1> yang kehilangan tag penutupnya. Perbaiki kode agar teks "Hello World" tampil dengan benar sebagai judul.',
+            initialCode: '<div>\n  <h1>Hello World\n  <p>Selamat datang di belajar koding!</p>\n</div>',
+            hint: 'Setiap tag pembuka seperti <h1> harus memiliki tag penutup </h1>.',
+            check: (code: string) => /<\/h1>/.test(code) && /<h1>/.test(code)
+        },
+        {
+            id: 2,
+            type: 'javascript',
+            title: 'Latihan 2: Variabel dan Output',
+            description: 'Buatlah variabel bernama "nama" yang berisi nama kamu (string), lalu tampilkan menggunakan console.log().',
+            initialCode: '// Tulis kodemu di bawah ini\n\n',
+            hint: 'Gunakan keyword let atau const. Contoh: let nama = "Budi"; console.log(nama);',
+            check: (code: string) => /(let|const|var)\s+nama\s*=/.test(code) && /console\.log\(.*nama.*\)/.test(code)
+        }
+    ];
+
+    const [currentIndex, setCurrentIndex] = useState(0);
+    const [code, setCode] = useState(questions[0].initialCode);
+    const [output, setOutput] = useState<string[]>([]);
+    const [isCorrect, setIsCorrect] = useState(false);
+    const [showHint, setShowHint] = useState(false);
+    const [iframeSrc, setIframeSrc] = useState('');
+
+    const currentQ = questions[currentIndex];
+
+    useEffect(() => {
+        setCode(currentQ.initialCode);
+        setOutput([]);
+        setIsCorrect(false);
+        setShowHint(false);
+        setIframeSrc('');
+    }, [currentIndex]);
+
+    const handleRun = () => {
+        setIsCorrect(false);
+        if (currentQ.type === 'javascript') {
+            const logs: string[] = [];
+            const mockConsole = {
+                log: (...args: any[]) => logs.push(args.map(a => String(a)).join(' ')),
+                error: (...args: any[]) => logs.push('Error: ' + args.join(' '))
+            };
+            try {
+                new Function('console', code)(mockConsole);
+                setOutput(logs);
+                if (currentQ.check(code)) {
+                    setIsCorrect(true);
+                    logs.push("✅ Jawaban Benar!");
+                } else {
+                    logs.push("❌ Jawaban belum tepat. Coba lagi!");
+                }
+                setOutput([...logs]);
+            } catch (e: any) {
+                setOutput([e.toString()]);
+            }
+        } else {
+            setIframeSrc(code);
+            if (currentQ.check(code)) {
+                setIsCorrect(true);
+            }
+        }
+    };
+
+    return (
+        <div className="flex flex-col gap-4 h-full min-h-[500px]">
+            <div className="bg-white dark:bg-gray-800 p-4 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm">
+                <div className="flex justify-between items-start mb-2">
+                    <h3 className="font-bold text-lg text-gray-800 dark:text-white">{currentQ.title}</h3>
+                    <span className={`text-xs px-2 py-1 rounded font-medium ${currentQ.type === 'html' ? 'bg-orange-100 text-orange-700' : 'bg-yellow-100 text-yellow-700'}`}>
+                        {currentQ.type.toUpperCase()}
+                    </span>
+                </div>
+                <p className="text-sm text-gray-600 dark:text-gray-300 mb-4">{currentQ.description}</p>
+                
+                <button 
+                    onClick={() => setShowHint(!showHint)}
+                    className="text-xs flex items-center gap-1 text-blue-600 hover:text-blue-700 font-medium"
+                >
+                    <Lightbulb size={14} /> {showHint ? "Sembunyikan Tips" : "Lihat Tips"}
+                </button>
+                
+                {showHint && (
+                    <div className="mt-2 p-3 bg-blue-50 dark:bg-blue-900/20 text-blue-800 dark:text-blue-200 text-xs rounded-lg border border-blue-100 dark:border-blue-800/50 flex gap-2">
+                        <span className="shrink-0">💡</span>
+                        <span>{currentQ.hint}</span>
+                    </div>
+                )}
+            </div>
+
+            <div className="flex-1 flex flex-col lg:flex-row gap-4 min-h-0">
+                <div className="flex-1 flex flex-col border border-gray-300 dark:border-gray-700 rounded-xl overflow-hidden shadow-sm">
+                    <div className="bg-gray-100 dark:bg-gray-800 px-4 py-2 text-xs font-mono border-b border-gray-300 dark:border-gray-700 flex justify-between items-center">
+                        <span className="text-gray-600 dark:text-gray-400">Code Editor</span>
+                        <button 
+                            onClick={() => setCode(currentQ.initialCode)}
+                            className="flex items-center gap-1 text-gray-500 hover:text-gray-700 dark:hover:text-gray-300"
+                            title="Reset Kode"
+                        >
+                            <RotateCcw size={12} /> Reset
+                        </button>
+                    </div>
+                    <div className="flex-1 relative min-h-[300px]">
+                        <Editor 
+                            height="100%" 
+                            defaultLanguage={currentQ.type} 
+                            language={currentQ.type}
+                            value={code} 
+                            onChange={(val) => setCode(val || "")}
+                            theme="vs-dark"
+                            options={{ minimap: { enabled: false }, fontSize: 14, scrollBeyondLastLine: false }}
+                        />
+                    </div>
+                </div>
+
+                <div className="flex-1 flex flex-col border border-gray-300 dark:border-gray-700 rounded-xl overflow-hidden shadow-sm bg-white dark:bg-gray-900">
+                    <div className="bg-gray-100 dark:bg-gray-800 px-4 py-2 text-xs font-mono border-b border-gray-300 dark:border-gray-700 flex justify-between items-center">
+                        <span className="text-gray-600 dark:text-gray-400">{currentQ.type === 'html' ? 'Preview' : 'Console'}</span>
+                        <button onClick={handleRun} className="flex items-center gap-1.5 bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded-md text-xs font-bold transition-colors">
+                            <Play size={12} /> Jalankan
+                        </button>
+                    </div>
+                    <div className="flex-1 p-4 overflow-auto bg-white dark:bg-[#1e1e1e] text-gray-800 dark:text-gray-200 font-mono text-sm min-h-[300px]">
+                        {currentQ.type === 'html' ? (
+                            <iframe srcDoc={iframeSrc} className="w-full h-full border-none" title="Preview" />
+                        ) : (
+                            output.length > 0 ? (
+                                output.map((line, i) => <div key={i} className="mb-1 border-b border-gray-700/20 pb-1 last:border-0">{line}</div>)
+                            ) : (
+                                <span className="text-gray-400 italic">Klik "Jalankan" untuk melihat hasil...</span>
+                            )
+                        )}
+                    </div>
+                </div>
+            </div>
+
+            <div className="flex justify-end pt-2">
+                {isCorrect ? (
+                    currentIndex < questions.length - 1 ? (
+                        <button 
+                            onClick={() => setCurrentIndex(prev => prev + 1)}
+                            className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-xl font-bold transition-all shadow-lg hover:shadow-blue-500/30 animate-bounce"
+                        >
+                            Lanjut Soal Berikutnya <ArrowRight size={18} />
+                        </button>
+                    ) : (
+                        <div className="flex items-center gap-2 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 px-5 py-2.5 rounded-xl font-bold border border-green-200 dark:border-green-800">
+                            <CheckCircle2 size={20} /> Selamat! Semua soal praktik selesai.
+                        </div>
+                    )
+                ) : (
+                    <button disabled className="bg-gray-200 dark:bg-gray-700 text-gray-400 dark:text-gray-500 px-5 py-2.5 rounded-xl font-bold cursor-not-allowed border border-gray-300 dark:border-gray-600">
+                        Jawab dengan benar untuk lanjut
+                    </button>
+                )}
+            </div>
+        </div>
+    );
+};
+
 export default function ModulDetailPage() {
     const params = useParams();
     const slug = Array.isArray(params.slug) ? params.slug[0] : params.slug;
@@ -101,6 +267,7 @@ export default function ModulDetailPage() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [openTopicId, setOpenTopicId] = useState<string | null>(null);
+    const [activeTopicTab, setActiveTopicTab] = useState<'materi' | 'video' | 'praktik'>('materi');
 
     // --- State for Post-Test ---
     const [activeTest, setActiveTest] = useState<Topik | null>(null);
@@ -480,6 +647,7 @@ export default function ModulDetailPage() {
             // Buka topik baru dan mulai timer
             tracker[topicId] = now;
             setOpenTopicId(topicId);
+            setActiveTopicTab('materi'); // Reset tab to materi when opening new topic
         }
     };
 
@@ -1418,49 +1586,39 @@ export default function ModulDetailPage() {
                                 <div className={`transition-all duration-500 ease-in-out overflow-hidden ${isOpen && !isLocked ? 'max-h-[2000px]' : 'max-h-0'}`}>
                                     <div className={`p-4 sm:p-6 border-t border-gray-100 dark:border-gray-700 ${fontStyle}`} style={{ fontSize }}>
                                         
-                                        {/* VARK Navigation Bar */}
-                                        <div className="flex flex-wrap gap-2 sm:gap-3 mb-6 p-3 bg-slate-50 dark:bg-gray-900/50 rounded-xl border border-slate-100 dark:border-gray-700">
-                                            <div className="w-full flex items-center gap-2 mb-1">
-                                                <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Mode Belajar (VARK)</span>
-                                                <div className="h-px flex-1 bg-slate-200 dark:bg-gray-700"></div>
-                                            </div>
-                                            
-                                            {/* Visual & Aural */}
+                                        {/* Tab Navigation as Labels */}
+                                        <div className="flex flex-wrap gap-3 mb-6">
                                             {topik.materi?.youtube && (
                                                 <button 
-                                                    onClick={() => document.getElementById(`video-${topik._id}`)?.scrollIntoView({ behavior: 'smooth', block: 'center' })}
-                                                    className="flex items-center gap-2 px-3 py-2 bg-white dark:bg-gray-800 border border-slate-200 dark:border-gray-600 rounded-lg text-xs sm:text-sm font-medium text-slate-700 dark:text-slate-200 hover:border-red-400 hover:text-red-500 transition-all shadow-sm"
+                                                    onClick={() => setActiveTopicTab('video')}
+                                                    className={`flex items-center gap-2 px-4 py-2 text-sm rounded-lg transition-colors ${activeTopicTab === 'video' ? 'bg-red-100 dark:bg-red-900/50 text-red-700 dark:text-red-300 font-semibold' : 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700 font-medium'}`}
                                                 >
-                                                    <Video size={14} className="text-red-500" />
-                                                    <span>Video (Visual & Audio)</span>
+                                                    <Video size={16} />
+                                                    Video
                                                 </button>
                                             )}
 
-                                            {/* Read/Write */}
                                             <button 
-                                                onClick={() => document.getElementById(`materi-${topik._id}`)?.scrollIntoView({ behavior: 'smooth', block: 'start' })}
-                                                className="flex items-center gap-2 px-3 py-2 bg-white dark:bg-gray-800 border border-slate-200 dark:border-gray-600 rounded-lg text-xs sm:text-sm font-medium text-slate-700 dark:text-slate-200 hover:border-blue-400 hover:text-blue-500 transition-all shadow-sm"
+                                                onClick={() => setActiveTopicTab('materi')}
+                                                className={`flex items-center gap-2 px-4 py-2 text-sm rounded-lg transition-colors ${activeTopicTab === 'materi' ? 'bg-blue-100 dark:bg-blue-900/50 text-blue-700 dark:text-blue-300 font-semibold' : 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700 font-medium'}`}
                                             >
-                                                <BookOpen size={14} className="text-blue-500" />
-                                                <span>Bacaan (Read/Write)</span>
+                                                <BookOpen size={16} />
+                                                Materi
                                             </button>
 
-                                            {/* Kinesthetic */}
                                             <button 
-                                                onClick={() => {
-                                                    setIsPlaygroundOpen(true);
-                                                    setAutoRunPlayground(false);
-                                                }}
-                                                className="flex items-center gap-2 px-3 py-2 bg-white dark:bg-gray-800 border border-slate-200 dark:border-gray-600 rounded-lg text-xs sm:text-sm font-medium text-slate-700 dark:text-slate-200 hover:border-indigo-400 hover:text-indigo-500 transition-all shadow-sm"
+                                                onClick={() => setActiveTopicTab('praktik')}
+                                                className={`flex items-center gap-2 px-4 py-2 text-sm rounded-lg transition-colors ${activeTopicTab === 'praktik' ? 'bg-indigo-100 dark:bg-indigo-900/50 text-indigo-700 dark:text-indigo-300 font-semibold' : 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700 font-medium'}`}
                                             >
-                                                <Code size={14} className="text-indigo-500" />
-                                                <span>Praktek (Kinesthetic)</span>
+                                                <Code size={16} />
+                                                Praktik
                                             </button>
                                         </div>
 
-                                        {/* Video Section */}
-                                        {topik.materi?.youtube && (
-                                            <div id={`video-${topik._id}`} className="mb-8 scroll-mt-24">
+                                        {/* Content Area */}
+                                        <div className="min-h-[300px]">
+                                            {activeTopicTab === 'video' && topik.materi?.youtube && (
+                                                <div className="mb-8 animate-in fade-in duration-300">
                                                 <div className="aspect-video rounded-xl overflow-hidden shadow-lg border border-slate-200 dark:border-gray-700 bg-black">
                                                     <iframe 
                                                         src={topik.materi.youtube.replace("watch?v=", "embed/")} 
@@ -1469,14 +1627,12 @@ export default function ModulDetailPage() {
                                                         allowFullScreen
                                                         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                                                     />
-                                                </div>
-                                                <p className="text-xs text-center text-slate-500 mt-2 flex items-center justify-center gap-1">
-                                                    <Headphones size={12} /> Tonton video untuk pemahaman Visual & Audio yang lebih baik.
-                                                </p>
                                             </div>
-                                        )}
+                                                </div>
+                                            )}
 
-                                        <div id={`materi-${topik._id}`} className="scroll-mt-24">
+                                            {activeTopicTab === 'materi' && (
+                                                <div className="animate-in fade-in duration-300">
                                             {/* Daftar Isi Sub Topik */}
                                             {isOpen && !isLocked && topik.materi && topik.materi.subMateris.length > 0 && (
                                                 <div className="mb-8">
@@ -1531,6 +1687,14 @@ export default function ModulDetailPage() {
                                             )}
 
                                             <TopicContent topik={topik} onStartTest={startTest} onViewScore={viewScore} hasAttempted={topik.isCompleted || topik.hasAttempted} />
+                                        </div>
+                                            )}
+
+                                            {activeTopicTab === 'praktik' && (
+                                                <div className="animate-in fade-in duration-300">
+                                                    <PracticeSection topicId={topik._id} />
+                                                </div>
+                                            )}
                                         </div>
                                     </div>
                                 </div>
