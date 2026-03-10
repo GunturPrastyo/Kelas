@@ -9,7 +9,7 @@ import { authFetch } from '@/lib/authFetch';
 import { useAlert } from '@/context/AlertContext';
 
 import TopicContent from '@/components/TopicContent';
-import { Home, CheckCircle2, Lock, Rocket, Award, AlertTriangle, Star, Lightbulb, Target, Clock3, Activity, Eye, Menu, X, Play, LayoutGrid, BookOpen, Code, Video, Headphones, ArrowRight, RotateCcw } from 'lucide-react';
+import { Home, Terminal, CheckCircle2, Lock, Rocket, Award, AlertTriangle, Star, Lightbulb, Target, Clock3, Activity, Eye, Menu, X, Play, LayoutGrid, BookOpen, Code, Video, Headphones, ArrowRight, RotateCcw } from 'lucide-react';
 import { motion } from "framer-motion";
 import CodePlayground from '@/components/CodePlayground';
 import { driver } from "driver.js";
@@ -121,6 +121,7 @@ const PracticeSection = ({ topicId }: { topicId: string }) => {
     const [isCorrect, setIsCorrect] = useState(false);
     const [showHint, setShowHint] = useState(false);
     const [iframeSrc, setIframeSrc] = useState('');
+    const [activePracticeTab, setActivePracticeTab] = useState('code');
 
     const currentQ = questions[currentIndex];
 
@@ -130,6 +131,7 @@ const PracticeSection = ({ topicId }: { topicId: string }) => {
         setIsCorrect(false);
         setShowHint(false);
         setIframeSrc('');
+        setActivePracticeTab('code');
     }, [currentIndex]);
 
     const handleRun = () => {
@@ -159,6 +161,7 @@ const PracticeSection = ({ topicId }: { topicId: string }) => {
                 setIsCorrect(true);
             }
         }
+        setActivePracticeTab('preview');
     };
 
     return (
@@ -170,11 +173,11 @@ const PracticeSection = ({ topicId }: { topicId: string }) => {
                         {currentQ.type.toUpperCase()}
                     </span>
                 </div>
-                <p className="text-sm text-gray-600 dark:text-gray-300 mb-4">{currentQ.description}</p>
+                <p className="text-sm text-gray-600 dark:text-gray-300">{currentQ.description}</p>
                 
                 <button 
                     onClick={() => setShowHint(!showHint)}
-                    className="text-xs flex items-center gap-1 text-blue-600 hover:text-blue-700 font-medium"
+                    className="text-xs flex items-center gap-1 text-blue-600 hover:text-blue-700 font-medium mt-3"
                 >
                     <Lightbulb size={14} /> {showHint ? "Sembunyikan Tips" : "Lihat Tips"}
                 </button>
@@ -187,19 +190,26 @@ const PracticeSection = ({ topicId }: { topicId: string }) => {
                 )}
             </div>
 
-            <div className="flex-1 flex flex-col lg:flex-row gap-4 min-h-0">
-                <div className="flex-1 flex flex-col border border-gray-300 dark:border-gray-700 rounded-xl overflow-hidden shadow-sm">
-                    <div className="bg-gray-100 dark:bg-gray-800 px-4 py-2 text-xs font-mono border-b border-gray-300 dark:border-gray-700 flex justify-between items-center">
-                        <span className="text-gray-600 dark:text-gray-400">Code Editor</span>
-                        <button 
-                            onClick={() => setCode(currentQ.initialCode)}
-                            className="flex items-center gap-1 text-gray-500 hover:text-gray-700 dark:hover:text-gray-300"
-                            title="Reset Kode"
-                        >
-                            <RotateCcw size={12} /> Reset
-                        </button>
-                    </div>
-                    <div className="flex-1 relative min-h-[300px]">
+            <div className="flex-1 flex flex-col border border-gray-300 dark:border-gray-700 rounded-xl overflow-hidden shadow-sm">
+                {/* Tab Headers */}
+                <div className="flex border-b border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 items-center">
+                    <button onClick={() => setActivePracticeTab('code')} className={`flex items-center gap-2 px-4 py-2 text-sm font-medium ${activePracticeTab === 'code' ? 'bg-white dark:bg-gray-900 border-b-2 border-blue-500 text-gray-800 dark:text-white' : 'text-gray-500 hover:bg-gray-200 dark:hover:bg-gray-700'}`}>
+                        <Code size={14} /> Code
+                    </button>
+                    <button onClick={() => setActivePracticeTab('preview')} className={`flex items-center gap-2 px-4 py-2 text-sm font-medium ${activePracticeTab === 'preview' ? 'bg-white dark:bg-gray-900 border-b-2 border-blue-500 text-gray-800 dark:text-white' : 'text-gray-500 hover:bg-gray-200 dark:hover:bg-gray-700'}`}>
+                        {currentQ.type === 'html' ? <Eye size={14} /> : <Terminal size={14} />}
+                        {currentQ.type === 'html' ? 'Preview' : 'Console'}
+                    </button>
+                    <div className="flex-1"></div> {/* Spacer */}
+                    <button onClick={handleRun} className="flex items-center gap-1.5 bg-green-600 hover:bg-green-700 text-white px-3 py-1.5 my-1 mr-2 rounded-md text-xs font-bold transition-colors shadow-sm">
+                        <Play size={12} /> Jalankan
+                    </button>
+                </div>
+
+                {/* Tab Content */}
+                <div className="flex-1 relative min-h-[400px] bg-gray-800">
+                    {/* Code Editor */}
+                    <div className={`absolute inset-0 ${activePracticeTab === 'code' ? '' : 'hidden'}`}>
                         <Editor 
                             height="100%" 
                             defaultLanguage={currentQ.type} 
@@ -207,27 +217,21 @@ const PracticeSection = ({ topicId }: { topicId: string }) => {
                             value={code} 
                             onChange={(val) => setCode(val || "")}
                             theme="vs-dark"
-                            options={{ minimap: { enabled: false }, fontSize: 14, scrollBeyondLastLine: false }}
+                            options={{ minimap: { enabled: false }, fontSize: 14, scrollBeyondLastLine: false, automaticLayout: true }}
                         />
                     </div>
-                </div>
-
-                <div className="flex-1 flex flex-col border border-gray-300 dark:border-gray-700 rounded-xl overflow-hidden shadow-sm bg-white dark:bg-gray-900">
-                    <div className="bg-gray-100 dark:bg-gray-800 px-4 py-2 text-xs font-mono border-b border-gray-300 dark:border-gray-700 flex justify-between items-center">
-                        <span className="text-gray-600 dark:text-gray-400">{currentQ.type === 'html' ? 'Preview' : 'Console'}</span>
-                        <button onClick={handleRun} className="flex items-center gap-1.5 bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded-md text-xs font-bold transition-colors">
-                            <Play size={12} /> Jalankan
-                        </button>
-                    </div>
-                    <div className="flex-1 p-4 overflow-auto bg-white dark:bg-[#1e1e1e] text-gray-800 dark:text-gray-200 font-mono text-sm min-h-[300px]">
+                    {/* Preview/Console */}
+                    <div className={`absolute inset-0 p-4 overflow-auto ${activePracticeTab === 'preview' ? '' : 'hidden'} ${currentQ.type === 'html' ? 'bg-white' : 'bg-[#1e1e1e]'}`}>
                         {currentQ.type === 'html' ? (
-                            <iframe srcDoc={iframeSrc} className="w-full h-full border-none" title="Preview" />
+                            <iframe srcDoc={iframeSrc} className="w-full h-full border-none bg-white" title="Preview" />
                         ) : (
-                            output.length > 0 ? (
-                                output.map((line, i) => <div key={i} className="mb-1 border-b border-gray-700/20 pb-1 last:border-0">{line}</div>)
-                            ) : (
-                                <span className="text-gray-400 italic">Klik "Jalankan" untuk melihat hasil...</span>
-                            )
+                            <div className="font-mono text-sm text-gray-200">
+                                {output.length > 0 ? (
+                                    output.map((line, i) => <div key={i} className="mb-1 border-b border-gray-700/20 pb-1 last:border-0">{line}</div>)
+                                ) : (
+                                    <span className="text-gray-400 italic">Klik "Jalankan" untuk melihat hasil...</span>
+                                )}
+                            </div>
                         )}
                     </div>
                 </div>
@@ -248,8 +252,8 @@ const PracticeSection = ({ topicId }: { topicId: string }) => {
                         </div>
                     )
                 ) : (
-                    <button disabled className="bg-gray-200 dark:bg-gray-700 text-gray-400 dark:text-gray-500 px-5 py-2.5 rounded-xl font-bold cursor-not-allowed border border-gray-300 dark:border-gray-600">
-                        Jawab dengan benar untuk lanjut
+                    <button disabled className="bg-gray-200 text-md dark:bg-gray-700 text-gray-400 dark:text-gray-500 px-5 py-2.5 rounded-xl font-bold cursor-not-allowed border border-gray-300 dark:border-gray-600">
+                        Selanjutnya
                     </button>
                 )}
             </div>
@@ -1586,6 +1590,10 @@ export default function ModulDetailPage() {
                                 <div className={`transition-all duration-500 ease-in-out overflow-hidden ${isOpen && !isLocked ? 'max-h-[2000px]' : 'max-h-0'}`}>
                                     <div className={`p-4 sm:p-6 border-t border-gray-100 dark:border-gray-700 ${fontStyle}`} style={{ fontSize }}>
                                         
+                                        {/* Label Mode Belajar */}
+                                        <div className="mb-3">
+                                            <h4 className="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider">Mode Belajar</h4>
+                                        </div>
                                         {/* Tab Navigation as Labels */}
                                         <div className="flex flex-wrap gap-3 mb-6">
                                             {topik.materi?.youtube && (
