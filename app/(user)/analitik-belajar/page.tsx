@@ -739,10 +739,10 @@ export default function AnalitikBelajarPage() {
         </h2>
         <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-5" >
           {/* Card 1 */}
-          <div className="relative overflow-hidden bg-gradient-to-br from-blue-50 to-blue-100 dark:from-gray-800 dark:to-gray-900 text-gray-800 dark:text-gray-100 rounded-2xl p-4 shadow-md hover:scale-[1.02] transition-transform dark:shadow-lg dark:shadow-gray-800/40 border border-slate-200 dark:border-slate-700 border-l-[6px] border-l-blue-400">
+          <div className="relative overflow-hidden bg-gradient-to-br from-blue-50 to-blue-100 dark:from-gray-800 dark:to-gray-900 text-gray-800 dark:text-gray-100 rounded-2xl p-4 shadow-md hover:scale-[1.02] transition-transform dark:shadow-lg dark:shadow-gray-800/40 border border-slate-200 dark:border-slate-800 border-b-[6px] border-l-2 border-b-slate-200 border-l-slate-200 dark:border-b-slate-700 dark:border-l-slate-700">
             <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-br from-blue-200/60 to-transparent dark:from-blue-900/20 rounded-bl-[60px] -mr-4 -mt-4" />
             <div className="relative z-10 flex flex-col gap-2 items-center sm:items-start text-center sm:text-left">
-              <p className="text-base text-gray-800 dark:text-gray-400">Modul Selesai</p>
+              <p className="text-base font-bold text-gray-800 dark:text-gray-400">Modul Selesai</p>
               <div className="flex flex-col items-center sm:flex-row sm:items-center gap-2 sm:gap-3">
                 <div className="flex-shrink-0">
                   <img src="/modules2.webp" alt="Modul Icon" width={48} height={48} className="w-14 h-14 rounded-lg bg-blue-100 dark:bg-gray-700 p-1" />
@@ -756,7 +756,7 @@ export default function AnalitikBelajarPage() {
               {loading || !summary ? (
                 <div className="h-4 w-full bg-blue-100/50 dark:bg-gray-700/50 rounded-md animate-pulse"></div>
               ) : (
-                <p className="text-sm sm:text-base text-gray-500 dark:text-gray-400">
+                <p className="text-sm sm:text-md text-gray-500 dark:text-gray-400">
                   Kamu telah menyelesaikan {summary.totalModules > 0 ? Math.round((summary.completedModules / summary.totalModules) * 100) : 0}%
                 </p>
               )}
@@ -764,10 +764,10 @@ export default function AnalitikBelajarPage() {
           </div>
 
           {/* Card 2 */}
-          <div className="relative overflow-hidden bg-gradient-to-br from-green-50 to-green-100 dark:from-gray-800 dark:to-gray-900 text-gray-800 dark:text-gray-100 rounded-2xl p-4 shadow-md hover:scale-[1.02] transition-transform dark:shadow-lg dark:shadow-gray-800/40 border border-slate-200 dark:border-slate-700 border-l-[6px] border-l-green-400">
+          <div className="relative overflow-hidden bg-gradient-to-br from-green-50 to-green-100 dark:from-gray-800 dark:to-gray-900 text-gray-800 dark:text-gray-100 rounded-2xl p-4 shadow-md hover:scale-[1.02] transition-transform dark:shadow-lg dark:shadow-gray-800/40 border border-slate-200 dark:border-slate-800 border-b-[6px] border-l-2 border-b-slate-200 border-l-slate-200 dark:border-b-slate-700 dark:border-l-slate-700">
             <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-br from-green-200/60 to-transparent dark:from-green-900/20 rounded-bl-[60px] -mr-4 -mt-4" />
             <div className="relative z-10 flex flex-col gap-2 items-center sm:items-start text-center sm:text-left">
-              <p className="text-base text-gray-800 dark:text-gray-400">Rata-rata Nilai</p>
+              <p className="text-base font-bold text-gray-800 dark:text-gray-400">Rata-rata Nilai</p>
               <div className="flex flex-col items-center sm:flex-row sm:items-center gap-2 sm:gap-3">
                 <div className="flex-shrink-0">
                   <img src="/star.webp" alt="Score Icon" width={48} height={48} className="w-14 h-14 rounded-lg bg-green-100 dark:bg-gray-700 p-1" />
@@ -781,16 +781,16 @@ export default function AnalitikBelajarPage() {
               {loading || !summary ? (
                 <div className="h-4 w-full bg-green-100/50 dark:bg-gray-700/50 rounded-md animate-pulse"></div>
               ) : (
-                <p className="text-sm sm:text-base text-gray-500 dark:text-gray-400">Dari semua tes setiap topik</p>
+                <p className="text-sm sm:text-md text-gray-500 dark:text-gray-400">Dari semua tes setiap topik</p>
               )}
             </div>
           </div>
 
           {/* Card 3 */}
-          <div className="relative overflow-hidden bg-gradient-to-br from-purple-50 to-purple-100 dark:from-gray-800 dark:to-gray-900 text-gray-800 dark:text-gray-100 rounded-2xl p-4 shadow-md hover:scale-[1.02] transition-transform dark:shadow-lg dark:shadow-gray-800/40 border border-slate-200 dark:border-slate-700 border-l-[6px] border-l-purple-400">
+          <div className="relative overflow-hidden bg-gradient-to-br from-purple-50 to-purple-100 dark:from-gray-800 dark:to-gray-900 text-gray-800 dark:text-gray-100 rounded-2xl p-4 shadow-md hover:scale-[1.02] transition-transform dark:shadow-lg dark:shadow-gray-800/40 border border-slate-200 dark:border-slate-800 border-b-[6px] border-l-2 border-b-slate-200 border-l-slate-200 dark:border-b-slate-700 dark:border-l-slate-700">
             <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-br from-purple-200/60 to-transparent dark:from-purple-900/20 rounded-bl-[60px] -mr-4 -mt-4" />
             <div className="relative z-10 flex flex-col gap-2 items-center sm:items-start text-center sm:text-left">
-              <p className="text-base text-gray-800 dark:text-gray-400">Total Waktu Belajar</p>
+              <p className="text-base font-bold text-gray-800 dark:text-gray-400">Total Waktu Belajar</p>
               <div className="flex flex-col items-center sm:flex-row sm:items-center gap-2 sm:gap-3">
                 <div className="flex-shrink-0">
                   <img src="/study.webp" alt="Time Icon" width={48} height={48} className="w-16 h-16 rounded-lg bg-purple-100 dark:bg-gray-700 p-1" />
@@ -815,10 +815,10 @@ export default function AnalitikBelajarPage() {
           </div>
 
           {/* Card 4 */}
-          <div className="relative overflow-hidden bg-gradient-to-br from-orange-50 to-orange-100 dark:from-gray-800 dark:to-gray-900 text-gray-800 dark:text-gray-100 rounded-2xl p-4 shadow-md hover:scale-[1.02] transition-transform dark:shadow-lg dark:shadow-gray-800/40 border border-slate-200 dark:border-slate-700 border-l-[6px] border-l-orange-400">
+          <div className="relative overflow-hidden bg-gradient-to-br from-orange-50 to-orange-100 dark:from-gray-800 dark:to-gray-900 text-gray-800 dark:text-gray-100 rounded-2xl p-4 shadow-md hover:scale-[1.02] transition-transform dark:shadow-lg dark:shadow-gray-800/40 border border-slate-200 dark:border-slate-800 border-b-[6px] border-l-2 border-b-slate-200 border-l-slate-200 dark:border-b-slate-700 dark:border-l-slate-700">
             <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-br from-orange-200/60 to-transparent dark:from-orange-900/20 rounded-bl-[60px] -mr-4 -mt-4" />
             <div className="relative z-10 flex flex-col gap-2 items-center sm:items-start text-center sm:text-left">
-              <p className="text-base text-gray-800 dark:text-gray-400">Streak Harian</p>
+              <p className="text-base font-bold text-gray-800 dark:text-gray-400">Streak Harian</p>
               <div className="flex flex-col items-center sm:flex-row sm:items-center gap-2 sm:gap-3">
                 <div className="flex-shrink-0">
                   <img src="/streak.webp" alt="Streak Icon" width={48} height={48} className="w-14 h-14 rounded-lg bg-orange-100 dark:bg-gray-700 p-1" />
@@ -832,7 +832,7 @@ export default function AnalitikBelajarPage() {
               {loading || !summary ? (
                 <div className="h-4 w-full bg-orange-100/50 dark:bg-gray-700/50 rounded-md animate-pulse"></div>
               ) : (
-                <p className="text-sm sm:text-base text-gray-500 dark:text-gray-400">Hari berturut-turut aktif</p>
+                <p className="text-sm sm:text-md text-gray-500 dark:text-gray-400">Hari berturut-turut aktif</p>
               )}
             </div>
           </div>
@@ -840,7 +840,7 @@ export default function AnalitikBelajarPage() {
       </section>
 
       {/* TOPIK YANG PERLU DIPERKUAT */}
-      <section id="weak-topics-section" className="relative overflow-hidden custom-pattern-bg p-6 rounded-2xl shadow-md border-l-6 border-yellow-400 dark:border-l-gray-600">
+      <section id="weak-topics-section" className="relative overflow-hidden custom-pattern-bg p-6 rounded-2xl shadow-md border border-slate-200 dark:border-slate-800 border-b-[6px] border-l-2 border-b-slate-200 border-l-slate-200 dark:border-b-slate-700 dark:border-l-slate-700">
         {/* Dekorasi Latar Belakang: Watermark Icon */}
         <div className="absolute -top-12 -right-12 opacity-[0.04] pointer-events-none select-none">
           <AlertTriangle className="w-64 h-64 text-yellow-600 dark:text-yellow-400 transform rotate-12" />
@@ -1022,7 +1022,7 @@ export default function AnalitikBelajarPage() {
 
       {/* GRAFIK */}
       <section className="grid lg:grid-cols-2 gap-8">
-        <div id="weekly-activity-chart" className="relative overflow-hidden bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-md border-l-6 border-blue-400 dark:border-l-gray-600">
+        <div id="weekly-activity-chart" className="relative overflow-hidden bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-md border border-slate-200 dark:border-slate-800 border-b-[6px] border-l-2 border-b-slate-200 border-l-slate-200 dark:border-b-slate-700 dark:border-l-slate-700">
           {/* Dekorasi Latar Belakang: Watermark Icon */}
           <div className="absolute -top-6 -right-6 opacity-[0.04] pointer-events-none select-none">
             <Activity className="w-64 h-64 text-blue-600 dark:text-blue-400 transform -rotate-12" />
@@ -1053,7 +1053,7 @@ export default function AnalitikBelajarPage() {
         </div>
 
         {/* PERBANDINGAN DENGAN KELAS */}
-        <div id="comparison-chart" className="relative overflow-hidden bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-md border-l-6 border-indigo-400 dark:border-l-gray-600">
+        <div id="comparison-chart" className="relative overflow-hidden bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-md border border-slate-200 dark:border-slate-800 border-b-[6px] border-l-2 border-b-slate-200 border-l-slate-200 dark:border-b-slate-700 dark:border-l-slate-700">
           {/* Dekorasi Latar Belakang: Watermark Icon */}
           <div className="absolute -top-6 -right-6 opacity-[0.04] pointer-events-none select-none">
             <Users className="w-64 h-64 text-indigo-600 dark:text-indigo-400 transform rotate-12" />
@@ -1111,7 +1111,7 @@ export default function AnalitikBelajarPage() {
 
       {/* PETA KOMPETENSI */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-      <section id="competency-map" className="lg:col-span-2 bg-gradient-to-br from-violet-50 to-indigo-100 dark:from-gray-800 dark:to-slate-800 p-6 rounded-2xl shadow-md h-full flex flex-col">
+      <section id="competency-map" className="lg:col-span-2 bg-gradient-to-br from-violet-50 to-indigo-100 dark:from-gray-800 dark:to-slate-800 p-6 rounded-2xl shadow-md h-full flex flex-col border border-slate-200 dark:border-slate-800 border-b-[6px] border-l-2 border-b-slate-200 border-l-slate-200 dark:border-b-slate-700 dark:border-l-slate-700">
         <div className="flex-grow">
         <h3 className="text-sm sm:text-base font-semibold text-gray-700 dark:text-gray-200 mb-1 flex items-center gap-2">
           <Target className="w-5 h-5 text-indigo-500" />
@@ -1259,7 +1259,7 @@ export default function AnalitikBelajarPage() {
       </section>
       
         {/* LEADERBOARD */}
-        <div id="leaderboard-streak" className="bg-white dark:bg-gray-800 rounded-2xl shadow-md border border-slate-200 dark:border-slate-700 flex flex-col overflow-hidden h-full">
+        <div id="leaderboard-streak" className="bg-white dark:bg-gray-800 rounded-2xl shadow-md border border-slate-200 dark:border-slate-800 border-b-[6px] border-l-2 border-b-slate-200 border-l-slate-200 dark:border-b-slate-700 dark:border-l-slate-700 flex flex-col overflow-hidden h-full">
           {/* Header with Top 3 Badges */}
           <div className="p-4 bg-gradient-to-b from-blue-50 to-white dark:from-gray-700 dark:to-gray-800 border-b border-slate-100 dark:border-slate-700">
             <div className="flex items-center gap-2 mb-1">
@@ -1422,7 +1422,7 @@ export default function AnalitikBelajarPage() {
       </div>
 
       {/* REKOMENDASI */}
-      <section id="learning-recommendations" className="relative overflow-hidden bg-gradient-to-br from-blue-50 via-blue-100 to-gray-100 dark:from-gray-800 dark:via-gray-800 dark:to-gray-900 text-gray-800 dark:text-gray-100 p-6 rounded-2xl shadow-md border-r-8 border-purple-400 dark:border-r-gray-600">
+      <section id="learning-recommendations" className="relative overflow-hidden bg-gradient-to-br from-blue-50 via-blue-100 to-gray-100 dark:from-gray-800 dark:via-gray-800 dark:to-gray-900 text-gray-800 dark:text-gray-100 p-6 rounded-2xl shadow-md border border-slate-200 dark:border-slate-800 border-b-[6px] border-l-2 border-b-slate-200 border-l-slate-200 dark:border-b-slate-700 dark:border-l-slate-700">
         {/* Dekorasi Latar Belakang: Watermark Icon */}
         <div className="absolute -top-6 -right-6 opacity-[0.04] pointer-events-none select-none">
           <Sparkles className="w-64 h-64 text-purple-600 dark:text-purple-400 transform rotate-12" />
