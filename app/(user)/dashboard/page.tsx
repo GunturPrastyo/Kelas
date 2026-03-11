@@ -626,7 +626,7 @@ export default function DashboardPage() {
                       <p className="text-2xl font-bold text-blue-700 dark:text-blue-400">
                         {animatedCompletedModules ?? 0} <span className="text-xl text-gray-500 dark:text-gray-400">/ {modules.length}</span>
                       </p>
-                      <p className="text-sm text-gray-600 dark:text-gray-300">Modul Selesai</p>
+                      <p className="text-sm  text-gray-600 dark:text-gray-300">Modul Selesai</p>
                     </div>
                   </div>
                   {/* Rata-rata Skor */}
