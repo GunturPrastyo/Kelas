@@ -400,7 +400,7 @@ export default function DashboardPage() {
         {/* Progres Belajar */}
         <div
           ref={progressCardRef}
-          className="bg-gradient-to-br from-blue-100 to-blue-200 dark:from-gray-900 dark:to-gray-800 p-4 sm:p-5 rounded-xl shadow flex items-center justify-between overflow-hidden border border-slate-200 dark:border-slate-800"
+          className="bg-gradient-to-br from-blue-100 to-blue-200 dark:from-gray-900 dark:to-gray-800 p-4 sm:p-5 rounded-xl shadow flex items-center justify-between overflow-hidden border border-slate-200 dark:border-slate-800 border-b-[6px] border-l-2 border-b-slate-200 border-l-slate-200 dark:border-b-slate-700 dark:border-l-slate-700"
         >
           {/* Konten Teks */}
           <div className="flex flex-col justify-center flex-1 min-w-0">
@@ -442,7 +442,7 @@ export default function DashboardPage() {
         {/* Jam Belajar */}
         <div
           ref={studyTimeCardRef}
-          className="bg-gradient-to-br from-blue-100 to-blue-200 dark:from-gray-900 dark:to-gray-800 p-4 sm:p-5 rounded-xl shadow flex items-center justify-between overflow-hidden border border-slate-200 dark:border-slate-800"
+          className="bg-gradient-to-br from-blue-100 to-blue-200 dark:from-gray-900 dark:to-gray-800 p-4 sm:p-5 rounded-xl shadow flex items-center justify-between overflow-hidden border border-slate-200 dark:border-slate-800 border-b-[6px] border-l-2 border-b-slate-200 border-l-slate-200 dark:border-b-slate-700 dark:border-l-slate-700"
         >
           
           <div className="flex flex-col justify-center flex-1 min-w-0">
@@ -470,7 +470,7 @@ export default function DashboardPage() {
         </div>
 
         {/* Rekomendasi */}
-        <div id="recommendation-card" className="relative bg-gradient-to-br border border-slate-200 dark:border-slate-800 border-r-[5px] border-r-blue-500 dark:border-r-gray-600 from-blue-100 to-blue-200 dark:from-gray-900 dark:to-gray-800 p-4 sm:p-5 rounded-xl shadow flex items-center justify-between md:col-span-2 lg:col-span-1 overflow-hidden ">
+        <div id="recommendation-card" className="relative bg-gradient-to-br from-blue-100 to-blue-200 dark:from-gray-900 dark:to-gray-800 p-4 sm:p-5 rounded-xl shadow flex items-center justify-between md:col-span-2 lg:col-span-1 overflow-hidden border border-slate-200 dark:border-slate-800 border-b-[6px] border-l-2 border-b-slate-200 border-l-slate-200 dark:border-b-slate-700 dark:border-l-slate-700">
           {/* Decorative Bubbles */}
           {/* <div className="absolute buttom-0 right-0 w-32 h-32 bg-gradient-to-br from-green-400/80 to-transparent dark:from-green-800/20 rounded-tl-[100px] -ml-64 -mb-32 transition-transform duration-500 group-hover:scale-110" /> */}
           <div className="absolute -top-12 -right-12 w-32 h-32 bg-blue-200 dark:bg-gray-900/20 rounded-full blur-2xl pointer-events-none"></div>
@@ -554,7 +554,7 @@ export default function DashboardPage() {
       <section className="grid grid-cols-1 lg:grid-cols-2 gap-6">
 
         {/* Pre-Test */}
-        <div id="pre-test-card" className="bg-gradient-to-br from-blue-100 to-blue-200 dark:from-gray-900 dark:to-gray-800 p-4 sm:p-5 rounded-xl shadow flex items-center justify-between gap-4 border border-slate-200 dark:border-slate-800">
+        <div id="pre-test-card" className="bg-gradient-to-br from-blue-100 to-blue-200 dark:from-gray-900 dark:to-gray-800 p-4 sm:p-5 rounded-xl shadow flex items-center justify-between gap-4 border border-slate-200 dark:border-slate-800 border-b-[6px] border-l-2 border-b-slate-200 border-l-slate-200 dark:border-b-slate-700 dark:border-l-slate-700">
           {/* Kiri: teks dan tombol */}
           <div className="flex-1">
             <div className="flex items-center gap-3 mb-2">
@@ -604,7 +604,7 @@ export default function DashboardPage() {
           return (
             <div
               ref={analyticsCardRef}
-              className="max-w-full bg-gradient-to-br from-blue-100 to-blue-200 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 p-6 rounded-xl shadow border border-slate-200 dark:border-slate-800"
+              className="max-w-full bg-gradient-to-br from-blue-100 to-blue-200 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 p-6 rounded-xl shadow border border-slate-200 dark:border-slate-800 border-b-[6px] border-l-2 border-b-slate-200 border-l-slate-200 dark:border-b-slate-700 dark:border-l-slate-700"
             >
               <div className="flex items-center gap-3 mb-6">
                 <div className="bg-blue-600 rounded-lg w-10 h-10 flex items-center justify-center">

@@ -112,10 +112,10 @@ export default function ModuleList({ title, allModules, filter }: ModuleListProp
   if (modules.length === 0) return null;
 
   return (
-    <section className="bg-gradient-to-br from-indigo-200 via-blue-200 to-sky-300 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 pl-7 pr-4 pt-7 p-3   rounded-2xl shadow-xl border border-white/20 dark:border-gray-800 backdrop-blur-xl transition-all">
+    <section className="bg-gradient-to-br from-indigo-200 via-blue-200 to-sky-300 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 pl-7 pr-4 pt-7 p-3   rounded-2xl shadow-xl border border-slate-200 dark:border-slate-800 border-b-[6px] border-l-2 border-b-slate-200 border-l-slate-200 dark:border-b-slate-700 dark:border-l-slate-700 backdrop-blur-xl transition-all">
       {/* Header */}
       <div className="flex justify-between items-center mb-6">
-        <h2 className="text-xl font-semibold text-gray-800 dark:text-gray-100 flex items-center gap-2">
+        <h2 className="text-xl font-bold text-gray-800 dark:text-gray-100 flex items-center gap-2">
           <Route className="w-6 h-6 text-indigo-700 dark:text-indigo-300" />
           {title}
         </h2>
