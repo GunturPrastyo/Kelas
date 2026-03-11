@@ -1490,7 +1490,7 @@ export default function ModulDetailPage() {
 
     // --- RENDER MAIN PAGE ---
     return (
-        <div className="max-w-full mx-auto px-1.5 sm:px-5 pb-5 pt-0 mt-20">
+        <div className="max-w-full mx-auto sm:px-5 pb-5 pt-0 mt-20">
             {/* 
               Menambahkan style global untuk menangani overflow pada code block di dalam .prose.
               Ini memastikan hanya code block yang bisa di-scroll horizontal, bukan seluruh kontainer soal.
@@ -1504,15 +1504,11 @@ export default function ModulDetailPage() {
             {/* Breadcrumb */}
             <nav className="flex mb-6" aria-label="Breadcrumb">
                 <ol className="inline-flex items-center space-x-1 md:space-x-2 rtl:space-x-reverse text-slate-700 dark:text-slate-300">
-                    <li className="inline-flex items-center">
-                        <Link href="/dashboard" className="inline-flex items-center text-sm font-medium hover:text-blue-600 dark:hover:text-blue-400">
-                            <Home className="w-4 h-4 me-2.5" />
-                            Dashboard
-                        </Link>
-                    </li>
+                
                     <li>
                         <div className="flex items-center">
-                            <svg className="rtl:rotate-180 w-3 h-3 text-slate-400 mx-1" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 6 10"><path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="m1 9 4-4-4-4" /></svg>
+                        
+                            <Home className="w-4 h-4 me-2.5" />
                             <Link href="/modul" className="ms-1 text-sm font-medium hover:text-blue-600 md:ms-2 dark:hover:text-blue-400">Modul</Link>
                         </div>
                     </li>
@@ -1624,7 +1620,7 @@ export default function ModulDetailPage() {
                                         </div>
 
                                         {/* Content Area */}
-                                        <div className="min-h-[300px]">
+                                        <div className="min-h-[300px] -mx-4 sm:mx-0">
                                             {activeTopicTab === 'video' && topik.materi?.youtube && (
                                                 <div className="mb-8 animate-in fade-in duration-300">
                                                 <div className="aspect-video rounded-xl overflow-hidden shadow-lg border border-slate-200 dark:border-gray-700 bg-black">
