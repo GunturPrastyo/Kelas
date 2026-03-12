@@ -4,8 +4,8 @@ import React, { useState, useEffect, ChangeEvent, FormEvent, useMemo, Suspense, 
 import { authFetch } from "@/lib/authFetch";
 import Avatar from "@/components/Avatar"; 
 import Breadcrumb from "@/components/Breadcrumb";
-import { motion } from "framer-motion";
-import { Award, Download, Star, Info, Shield, Zap, Trophy, Hexagon, TrendingUp, TrendingDown, Activity, Swords, Target, Sparkles, BookOpen, X, ZoomIn, ZoomOut, Save, RotateCcw, RotateCw, RefreshCw } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import { Award, Download, Star, Info, Shield, Zap, Trophy, Hexagon, TrendingUp, TrendingDown, Activity, Swords, Target, Sparkles, BookOpen, X, ZoomIn, ZoomOut, Save, RotateCcw, RotateCw, RefreshCw, User as UserIcon, Mail, Lock, Type, ALargeSmall } from "lucide-react";
 import { useAlert } from "@/context/AlertContext";
 import { useSearchParams } from "next/navigation";
 import { Chart, registerables } from "chart.js";
@@ -102,14 +102,34 @@ const ImageCropperModal = ({ isOpen, imageSrc, onClose, onSave }: { isOpen: bool
   };
 
   const handleMouseMove = (e: React.MouseEvent | React.TouchEvent) => {
-    if (!isDragging) return;
+    if (!isDragging || !imgRef.current || !containerRef.current) return;
     e.preventDefault();
+
+    const img = imgRef.current;
+    const container = containerRef.current;
+
+    // Calculate the 'contain' scale factor
+    const fitScale = Math.min(container.clientWidth / img.naturalWidth, container.clientHeight / img.naturalHeight);
+    const renderedWidth = img.naturalWidth * fitScale * zoom;
+    const renderedHeight = img.naturalHeight * fitScale * zoom;
+
+    const maskSize = 256;
+
+    // Max travel distance from center
+    const maxX = Math.max(0, (renderedWidth - maskSize) / 2);
+    const maxY = Math.max(0, (renderedHeight - maskSize) / 2);
+
     const clientX = 'touches' in e ? e.touches[0].clientX : (e as React.MouseEvent).clientX;
     const clientY = 'touches' in e ? e.touches[0].clientY : (e as React.MouseEvent).clientY;
-    setOffset({
-      x: clientX - dragStart.x,
-      y: clientY - dragStart.y
-    });
+
+    let newX = clientX - dragStart.x;
+    let newY = clientY - dragStart.y;
+
+    // Clamp the values
+    newX = Math.max(-maxX, Math.min(maxX, newX));
+    newY = Math.max(-maxY, Math.min(maxY, newY));
+
+    setOffset({ x: newX, y: newY });
   };
 
   const handleMouseUp = () => {
@@ -913,7 +933,7 @@ const ProfileContent = () => {
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.15 }}
-        className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-3xl shadow-xl overflow-hidden mb-8 relative"
+        className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl shadow-md overflow-hidden mb-8 relative"
       >
         {/* Background Decoration */}
         <div className="absolute top-0 left-0 w-full h-32 bg-gradient-to-r from-blue-600 to-indigo-600 dark:from-blue-900 dark:to-indigo-900 opacity-90"></div>
@@ -1133,11 +1153,17 @@ const ProfileContent = () => {
                 </div>
                 <div className="flex-1 w-full">
                   <div className="mb-4">
-                    <label className="block text-sm text-gray-600 dark:text-gray-300 mb-1">Nama Lengkap</label>
+                    <label className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-300 mb-1">
+                      <UserIcon size={16} />
+                      <span>Nama Lengkap</span>
+                    </label>
                     <input type="text" value={name} onChange={(e) => setName(e.target.value)} className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-lg bg-gray-50 dark:bg-gray-700 focus:ring-2 focus:ring-blue-500 outline-none" required />
                   </div>
                   <div>
-                    <label className="block text-sm text-gray-600 dark:text-gray-300 mb-1">Email</label>
+                    <label className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-300 mb-1">
+                      <Mail size={16} />
+                      <span>Email</span>
+                    </label>
                     <input type="email" value={email} className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-lg bg-gray-200 dark:bg-gray-800 text-gray-500 dark:text-gray-400 cursor-not-allowed outline-none" disabled />
                   </div>
                 </div>
@@ -1155,15 +1181,24 @@ const ProfileContent = () => {
             <form onSubmit={handlePasswordChange} className="space-y-6">
               <div className="grid gap-5 sm:grid-cols-2">
                 <div className="sm:col-span-2">
-                  <label className="block text-sm text-gray-600 dark:text-gray-300 mb-1">Password Saat Ini</label>
+                  <label className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-300 mb-1">
+                    <Lock size={16} />
+                    <span>Password Saat Ini</span>
+                  </label>
                   <input type="password" value={currentPassword} onChange={(e) => setCurrentPassword(e.target.value)} className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-lg bg-gray-50 dark:bg-gray-700 focus:ring-2 focus:ring-blue-500 outline-none" required />
                 </div>
                 <div>
-                  <label className="block text-sm text-gray-600 dark:text-gray-300 mb-1">Password Baru</label>
+                  <label className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-300 mb-1">
+                    <Lock size={16} />
+                    <span>Password Baru</span>
+                  </label>
                   <input type="password" value={newPassword} onChange={(e) => setNewPassword(e.target.value)} className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-lg bg-gray-50 dark:bg-gray-700 focus:ring-2 focus:ring-blue-500 outline-none" required />
                 </div>
                 <div>
-                  <label className="block text-sm text-gray-600 dark:text-gray-300 mb-1">Konfirmasi Password Baru</label>
+                  <label className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-300 mb-1">
+                    <Lock size={16} />
+                    <span>Konfirmasi Password Baru</span>
+                  </label>
                   <input type="password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-lg bg-gray-50 dark:bg-gray-700 focus:ring-2 focus:ring-blue-500 outline-none" required />
                 </div>
               </div>
@@ -1180,7 +1215,10 @@ const ProfileContent = () => {
             <form onSubmit={handleSettingsSave} className="space-y-6">
               <div className="grid gap-6 sm:grid-cols-2">
                 <div>
-                  <label className="block text-sm text-gray-600 dark:text-gray-300 mb-2">Jenis Font Materi</label>
+                  <label className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-300 mb-2">
+                    <Type size={16} />
+                    <span>Jenis Font Materi</span>
+                  </label>
                   <select
                     value={fontStyle}
                     onChange={(e) => setFontStyle(e.target.value)}
@@ -1194,7 +1232,10 @@ const ProfileContent = () => {
                   </select>
                 </div>
                 <div>
-                  <label className="block text-sm text-gray-600 dark:text-gray-300 mb-2">Ukuran Font Materi</label>
+                  <label className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-300 mb-2">
+                    <ALargeSmall size={16} />
+                    <span>Ukuran Font Materi</span>
+                  </label>
                   <select
                     value={fontSize}
                     onChange={(e) => setFontSize(e.target.value)}
