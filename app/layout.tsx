@@ -34,11 +34,15 @@ export const metadata: Metadata = {
   description: 'Platform e-learning inovatif untuk siswa SMK Ibu Kartini Semarang. Akses materi, tugas, dan ujian secara online.',
   keywords: ['e-learning SMK', 'SMK Ibu Kartini', 'belajar online', 'KELAS apps'],
   authors: [{ name: 'Guntur Prastyo' }],
+  verification: {
+    google: 'googlef6e3ac674118baa3', // Masukkan kode hash-nya saja
+  },
   openGraph: {
     title: 'KELAS - Platform Belajar Digital SMK',
     description: 'Tingkatkan kualitas belajar dengan sistem manajemen pembelajaran yang terintegrasi.',
     url: 'https://kelas-smk.vercel.app',
     siteName: 'KELAS',
+
     images: [
       {
         url: '/logo.webp',
@@ -61,6 +65,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       suppressHydrationWarning
       className={`${poppins.variable} ${gagalin.variable} bg-gray-50 dark:bg-gray-900 scroll-smooth`}
     >
+      <meta name="google-site-verification" content="i3sIpK3sPJIHrVjLACUSNad55gREVzaXYOpwZZZmNAc" />
       <body suppressHydrationWarning className="font-poppins text-gray-900 dark:text-gray-100">
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
           <GlobalStreakAlert />
