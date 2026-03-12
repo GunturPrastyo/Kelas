@@ -15,6 +15,9 @@ export default function robots(): MetadataRoute.Robots {
         '/analitik-belajar/',
         '/dashboard/',
         '/profil/',
+        '/login/',
+        '/register/',
+        
       ],
     },
     sitemap: `${baseUrl}/sitemap.xml`,
