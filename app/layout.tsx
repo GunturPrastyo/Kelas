@@ -30,9 +30,29 @@ const gagalin = localFont({
 });
 
 export const metadata: Metadata = {
-  title: "E-Learning Personalisasi",
-  description: "Dashboard E-Learning",
+  title: 'KELAS - Kartini E-learning Apps',
+  description: 'Platform e-learning inovatif untuk siswa SMK Ibu Kartini Semarang. Akses materi, tugas, dan ujian secara online.',
+  keywords: ['e-learning SMK', 'SMK Ibu Kartini', 'belajar online', 'KELAS apps'],
+  authors: [{ name: 'Guntur Prastyo' }],
+  openGraph: {
+    title: 'KELAS - Platform Belajar Digital SMK',
+    description: 'Tingkatkan kualitas belajar dengan sistem manajemen pembelajaran yang terintegrasi.',
+    url: 'https://kelas-smk.vercel.app',
+    siteName: 'KELAS',
+    images: [
+      {
+        url: '/logo.webp',
+        alt: 'KELAS Logo',
+        width: 1200,
+        height: 630,
+      },
+    ],
+    locale: 'id_ID',
+    type: 'website',
+  },
 };
+
+
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
