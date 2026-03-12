@@ -65,7 +65,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       suppressHydrationWarning
       className={`${poppins.variable} ${gagalin.variable} bg-gray-50 dark:bg-gray-900 scroll-smooth`}
     >
-      <meta name="google-site-verification" content="i3sIpK3sPJIHrVjLACUSNad55gREVzaXYOpwZZZmNAc" />
+     
       <body suppressHydrationWarning className="font-poppins text-gray-900 dark:text-gray-100">
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
           <GlobalStreakAlert />
