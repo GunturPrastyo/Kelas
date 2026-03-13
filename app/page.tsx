@@ -1064,7 +1064,7 @@ export default function LandingPage() {
           <div className="grid lg:grid-cols-2 gap-12 items-center">
 
             {/* CTA Card */}
-            <div className="bg-blue-600 rounded-3xl p-8 md:p-12 text-left md:text-center text-white relative overflow-hidden shadow-2xl shadow-blue-600/30 h-full flex flex-col justify-center">
+            <div className="bg-blue-600 rounded-2xl p-8 md:p-12 text-left md:text-center text-white relative overflow-hidden shadow-2xl shadow-blue-600/30 h-full flex flex-col justify-center">
               {/* Decorative Circles */}
               <div className="absolute top-0 left-0 w-64 h-64 bg-white opacity-10 rounded-full -translate-x-1/2 -translate-y-1/2 blur-2xl"></div>
               <div className="absolute bottom-0 right-0 w-64 h-64 bg-indigo-900 opacity-20 rounded-full translate-x-1/2 translate-y-1/2 blur-2xl"></div>
@@ -1125,11 +1125,19 @@ export default function LandingPage() {
         <ArrowUp className="w-6 h-6" />
       </button>
 
+      <div className="relative w-full pointer-events-none z-0 -mb-1">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 200" className="w-full h-16 sm:h-24 block" preserveAspectRatio="none">
+          <path
+            d="M0 111L22.8 122.5C45.7 134 91.3 157 137 166.2C182.7 175.3 228.3 170.7 274 154.5C319.7 138.3 365.3 110.7 411.2 95.5C457 80.3 503 77.7 548.8 87.2C594.7 96.7 640.3 118.3 686 120C731.7 121.7 777.3 103.3 823 98.2C868.7 93 914.3 101 937.2 105L960 109L960 0L937.2 0C914.3 0 868.7 0 823 0C777.3 0 731.7 0 686 0C640.3 0 594.7 0 548.8 0C503 0 457 0 411.2 0C365.3 0 319.7 0 274 0C228.3 0 182.7 0 137 0C91.3 0 45.7 0 22.8 0L0 0Z"
+            className="fill-sky-300 dark:fill-sky-700" strokeLinecap="round" strokeLinejoin="miter" />
+        </svg>
+      </div>
+
       
 
 
       {/* --- FOOTER --- */}
-      <footer className="bg-white dark:bg-gray-900 border-t border-slate-200 dark:border-gray-800 pt-12 pb-6">
+      <footer className="bg-white dark:bg-gray-900 border-t border-slate-200 border-t-white dark:border-gray-800 dark:border-t-gray-900 pt-4 pb-6">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-12 mb-12">
             <div>
@@ -1143,23 +1151,23 @@ export default function LandingPage() {
             </div>
 
             <div className="flex flex-col items-start w-full">
-              <div className="group relative bg-gradient-to-br from-blue-100 to-indigo-100 dark:from-gray-800 dark:to-gray-800 p-5 rounded-lg border border-blue-100 dark:border-gray-700 shadow-sm w-full sm:max-w-md overflow-hidden">
+              <div className="group relative bg-gradient-to-br from-sky-100 to-sky-300 dark:from-sky-600/20 dark:to-sky-800/20 p-5 rounded-lg border border-blue-100 dark:border-gray-700 shadow-sm w-full sm:max-w-md overflow-hidden">
                 <div className="relative z-10">
                   <h4 className="font-bold text-slate-900 dark:text-white mb-2 flex items-center gap-2">
                     <Smartphone className="text-blue-600 dark:text-blue-400 w-5 h-5" />
                     Mobile App
                   </h4>
-                  <p className="text-sm text-slate-600 dark:text-slate-400 mb-4 leading-relaxed max-w-[200px] sm:max-w-[260px]">
+                  <p className="text-sm text-slate-600 dark:text-slate-400 mb-4 leading-relaxed max-w-[350px] sm:max-w-[280px]">
                     Belajar jadi lebih mudah dalam genggaman. Segera hadir untuk Android & iOS!
                   </p>
-                  <div className="flex flex-col gap-3 w-full sm:w-auto">
+                  <div className="flex flex-row gap-3 w-full sm:w-auto">
                     <button className="flex items-center gap-3 bg-slate-900 dark:bg-white text-white dark:text-slate-900 px-4 py-2 rounded-xl hover:opacity-90 transition-opacity w-full sm:w-auto justify-start shadow-lg shadow-slate-900/20 dark:shadow-none cursor-default border border-transparent dark:border-slate-200">
                       <svg className="w-6 h-6 fill-current flex-shrink-0" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                         <path d="M3.609 1.814L13.792 12 3.61 22.186c-.185-.182-.29-.413-.309-.65V2.47c.01-.24.115-.47.309-.656zM15.3 13.51l3.484-3.485L5.753.896c.365.176.67.45.875.79l8.672 11.824zm1.425 1.425L7.996 23.64c-.37.33-.8.47-1.22.42l9.95-10.556zM4.777 22.825l10.55-10.55-10.55-10.55v21.1z" />
                       </svg>
                       <div className="text-left">
                         <div className="text-[9px] uppercase font-medium leading-none opacity-80">Segera di</div>
-                        <div className="text-sm font-bold leading-none -mt-0.5">Google Play</div>
+                        <div className="text-sm font-bold leading-none">Google Play</div>
                       </div>
                     </button>
                     <button className="flex items-center gap-3 bg-slate-900 dark:bg-white text-white dark:text-slate-900 px-4 py-2 rounded-xl hover:opacity-90 transition-opacity w-full sm:w-auto justify-start shadow-lg shadow-slate-900/20 dark:shadow-none cursor-default border border-transparent dark:border-slate-200">
@@ -1168,7 +1176,7 @@ export default function LandingPage() {
                       </svg>
                       <div className="text-left">
                         <div className="text-[9px] uppercase font-medium leading-none opacity-80">Segera di</div>
-                        <div className="text-sm font-bold leading-none -mt-0.5">App Store</div>
+                        <div className="text-sm font-bold leading-none">App Store</div>
                       </div>
                     </button>
                   </div>
