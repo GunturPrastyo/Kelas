@@ -35,12 +35,12 @@ export const metadata: Metadata = {
   keywords: ['e-learning SMK', 'SMK Ibu Kartini', 'belajar online', 'KELAS apps'],
   authors: [{ name: 'Guntur Prastyo' }],
   verification: {
-    google: 'googlef6e3ac674118baa3', // Masukkan kode hash-nya saja
+    google: 'googlef6e3ac674118baa3', 
   },
   openGraph: {
     title: 'KELAS - Platform Belajar Digital SMK',
     description: 'Tingkatkan kualitas belajar dengan sistem manajemen pembelajaran yang terintegrasi.',
-    url: 'https://kelas-smk.vercel.app',
+    url: 'https://kelas-edu.vercel.app',
     siteName: 'KELAS',
 
     images: [
@@ -79,7 +79,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               "@type": "WebSite",
               "name": "KELAS",
               "alternateName": ["Kartini E-learning Apps", "KELAS SMK"],
-              "url": "https://kelas-smk.vercel.app",
+              "url": "https://kelas-edu.vercel.app",
             }),
           }}
         />
@@ -90,8 +90,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               "@context": "https://schema.org",
               "@type": "Organization",
               "name": "KELAS",
-              "url": "https://kelas-smk.vercel.app",
-              "logo": "https://kelas-smk.vercel.app/logo.webp",
+              "url": "https://kelas-edu.vercel.app",
+              "logo": "https://kelas-edu.vercel.app/logo.webp",
               "sameAs": [
                 "https://instagram.com/kartinielearning",
                 "https://youtube.com/@kartinielearning"

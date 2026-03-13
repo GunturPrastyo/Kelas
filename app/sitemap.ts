@@ -2,7 +2,7 @@ import { MetadataRoute } from 'next';
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // Ganti dengan URL produksi Anda jika berbeda
-  const baseUrl = 'https://kelas-smk.vercel.app';
+  const baseUrl = 'https://kelas-edu.vercel.app';
 
   // 1. Halaman statis (Hanya halaman publik yang bisa diakses tanpa login)
   const staticRoutes: MetadataRoute.Sitemap = [
