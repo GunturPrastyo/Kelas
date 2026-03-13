@@ -7,6 +7,7 @@ import {
   Play,
   Star,
   Menu,
+  Home,
   X,
   ChevronFirst,
   ChevronRight,
@@ -316,7 +317,7 @@ export default function LandingPage() {
       const cardWidth = scrollContainer.children[0]?.clientWidth || 300;
       const gap = 24;
       const maxScrollLeft = scrollContainer.scrollWidth - scrollContainer.clientWidth;
-      
+
       if (scrollContainer.scrollLeft >= maxScrollLeft - 10) {
         scrollContainer.scrollTo({ left: 0, behavior: 'smooth' });
       } else {
@@ -346,11 +347,10 @@ export default function LandingPage() {
                 <Link
                   key={item}
                   href={`#${item}`}
-                  className={`relative px-4 py-2 text-sm font-medium transition-colors ${
-                    activeSection === item
-                      ? 'text-blue-600 dark:text-white'
-                      : 'text-slate-600 dark:text-slate-300 hover:text-blue-600 dark:hover:text-white'
-                  }`}
+                  className={`relative px-4 py-2 text-sm font-medium transition-colors ${activeSection === item
+                    ? 'text-blue-600 dark:text-white'
+                    : 'text-slate-600 dark:text-slate-300 hover:text-blue-600 dark:hover:text-white'
+                    }`}
                 >
                   {item.charAt(0).toUpperCase() + item.slice(1)}
                   {activeSection === item && (
@@ -363,17 +363,17 @@ export default function LandingPage() {
                 </Link>
               ))}
               <div className="flex items-center gap-3 ml-4">
-              <button
-                onClick={() => setTheme(resolvedTheme === 'dark' ? 'light' : 'dark')}
-                className="p-2 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors text-slate-600 dark:text-slate-300"
-                aria-label="Toggle Theme"
-              >
-                {mounted && resolvedTheme === 'dark' ? (
-                  <Moon size={20} />
-                ) : (
-                  <Sun size={20} />
-                )}
-              </button>
+                <button
+                  onClick={() => setTheme(resolvedTheme === 'dark' ? 'light' : 'dark')}
+                  className="p-2 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors text-slate-600 dark:text-slate-300"
+                  aria-label="Toggle Theme"
+                >
+                  {mounted && resolvedTheme === 'dark' ? (
+                    <Moon size={20} />
+                  ) : (
+                    <Sun size={20} />
+                  )}
+                </button>
                 <Link href="/login" className="text-sm font-semibold text-slate-600 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400">
                   Masuk
                 </Link>
@@ -396,8 +396,8 @@ export default function LandingPage() {
                   <Sun size={20} />
                 )}
               </button>
-              <button 
-                onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)} 
+              <button
+                onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
                 className="p-2 rounded-md text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
               >
                 {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
@@ -408,50 +408,50 @@ export default function LandingPage() {
 
         {/* Mobile Menu Dropdown */}
         {isMobileMenuOpen && (
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
             className="md:hidden absolute top-16 left-0 w-full bg-white/95 dark:bg-gray-900/95 backdrop-blur-xl border-b border-slate-200 dark:border-gray-800 shadow-2xl"
           >
             <div className="px-4 py-6 space-y-2">
-              <Link 
-                href="#fitur" 
+              <Link
+                href="#fitur"
                 className={`block px-4 py-3 rounded-xl text-base font-medium transition-all ${activeSection === 'fitur' ? 'text-blue-600 dark:text-blue-400 bg-slate-50 dark:bg-gray-800' : 'text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-gray-800 hover:text-blue-600 dark:hover:text-blue-400'}`}
                 onClick={() => setIsMobileMenuOpen(false)}
               >
                 Fitur
               </Link>
-              <Link 
-                href="#modul" 
+              <Link
+                href="#modul"
                 className={`block px-4 py-3 rounded-xl text-base font-medium transition-all ${activeSection === 'modul' ? 'text-blue-600 dark:text-blue-400 bg-slate-50 dark:bg-gray-800' : 'text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-gray-800 hover:text-blue-600 dark:hover:text-blue-400'}`}
                 onClick={() => setIsMobileMenuOpen(false)}
               >
                 Modul
               </Link>
-              <Link 
-                href="#mentor" 
+              <Link
+                href="#mentor"
                 className={`block px-4 py-3 rounded-xl text-base font-medium transition-all ${activeSection === 'mentor' ? 'text-blue-600 dark:text-blue-400 bg-slate-50 dark:bg-gray-800' : 'text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-gray-800 hover:text-blue-600 dark:hover:text-blue-400'}`}
                 onClick={() => setIsMobileMenuOpen(false)}
               >
                 Mentor
               </Link>
-              <Link 
-                href="#faq" 
+              <Link
+                href="#faq"
                 className={`block px-4 py-3 rounded-xl text-base font-medium transition-all ${activeSection === 'faq' ? 'text-blue-600 dark:text-blue-400 bg-slate-50 dark:bg-gray-800' : 'text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-gray-800 hover:text-blue-600 dark:hover:text-blue-400'}`}
                 onClick={() => setIsMobileMenuOpen(false)}
               >
                 FAQ
               </Link>
-              
+
               <div className="pt-4 mt-2 border-t border-slate-100 dark:border-gray-800 flex">
-                <Link 
-                  href="/login" 
+                <Link
+                  href="/login"
                   className="flex-1 flex items-center justify-center px-4 py-3 rounded-l-xl text-sm font-bold text-slate-700 dark:text-slate-200 bg-slate-100 dark:bg-gray-800 hover:bg-slate-200 dark:hover:bg-gray-700 transition-all"
                 >
                   Masuk
                 </Link>
-                <Link 
-                  href="/register" 
+                <Link
+                  href="/register"
                   className="flex-1 flex items-center justify-center px-4 py-3 rounded-r-xl text-sm font-bold text-white bg-blue-600 hover:bg-blue-700 shadow-lg shadow-blue-500/30 transition-all"
                 >
                   Daftar
@@ -495,7 +495,7 @@ export default function LandingPage() {
               </span>
               {displayedBadgeText}
             </div>
-            <motion.h1 
+            <motion.h1
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5 }}
@@ -503,7 +503,7 @@ export default function LandingPage() {
             >
               Belajar Lebih Efektif dengan <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-500 to-indigo-500">Kurikulum Personal</span>
             </motion.h1>
-            
+
 
             {/* Mobile Hero Image */}
             <div className="hidden items-center justify-center w-full my-6">
@@ -521,7 +521,7 @@ export default function LandingPage() {
               <p className="text-lg text-slate-600 dark:text-slate-400 max-w-2xl text-left flex-1">
                 KELAS membantu kamu menemukan jalur belajar yang tepat sesuai kemampuanmu. Ikuti pre-tes, dapatkan rekomendasi, dan mulai tingkatkan skillmu hari ini.
               </p>
-              
+
               {/* Tablet Image (Visible MD, Hidden LG) */}
               <div className="hidden md:flex lg:hidden flex-1 items-center justify-center">
                 <Image
@@ -569,41 +569,41 @@ export default function LandingPage() {
 
       {/* --- FEATURES SECTION --- */}
       <section id="fitur" className="relative py-24 bg-slate-50 dark:bg-gray-900 overflow-hidden">
-        
+
         {/* Top Wave Decoration */}
         <div className="absolute top-0 left-0 w-full pointer-events-none z-0">
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 120" className="w-full h-12 md:h-20" preserveAspectRatio="none">
-            <path d="M0 69L37.5 69.5C75 70 150 71 225 80.8C300 90.7 375 109.3 450 109.2C525 109 600 90 675 85.7C750 81.3 825 91.7 862.5 96.8L900 102L900 0L862.5 0C825 0 750 0 675 0C600 0 525 0 450 0C375 0 300 0 225 0C150 0 75 0 37.5 0L0 0Z" className="fill-sky-500 dark:fill-sky-600" strokeLinecap="round" strokeLinejoin="miter"/>
+            <path d="M0 69L37.5 69.5C75 70 150 71 225 80.8C300 90.7 375 109.3 450 109.2C525 109 600 90 675 85.7C750 81.3 825 91.7 862.5 96.8L900 102L900 0L862.5 0C825 0 750 0 675 0C600 0 525 0 450 0C375 0 300 0 225 0C150 0 75 0 37.5 0L0 0Z" className="fill-sky-500 dark:fill-sky-600" strokeLinecap="round" strokeLinejoin="miter" />
           </svg>
         </div>
 
         {/* Decorative Background */}
         <div className="absolute inset-0 pointer-events-none">
-            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-7xl h-full">
-                <div className="absolute top-20 left-10 w-72 h-72 bg-blue-200/20 dark:bg-blue-900/10 rounded-full blur-3xl mix-blend-multiply dark:mix-blend-screen"></div>
-                <div className="absolute top-40 right-10 w-72 h-72 bg-purple-200/20 dark:bg-purple-900/10 rounded-full blur-3xl mix-blend-multiply dark:mix-blend-screen"></div>
-                <div className="absolute -bottom-8 left-1/2 w-72 h-72 bg-indigo-200/20 dark:bg-indigo-900/10 rounded-full blur-3xl mix-blend-multiply dark:mix-blend-screen"></div>
-            </div>
+          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-7xl h-full">
+            <div className="absolute top-20 left-10 w-72 h-72 bg-blue-200/20 dark:bg-blue-900/10 rounded-full blur-3xl mix-blend-multiply dark:mix-blend-screen"></div>
+            <div className="absolute top-40 right-10 w-72 h-72 bg-purple-200/20 dark:bg-purple-900/10 rounded-full blur-3xl mix-blend-multiply dark:mix-blend-screen"></div>
+            <div className="absolute -bottom-8 left-1/2 w-72 h-72 bg-indigo-200/20 dark:bg-indigo-900/10 rounded-full blur-3xl mix-blend-multiply dark:mix-blend-screen"></div>
+          </div>
         </div>
 
         <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-left md:text-center max-w-3xl mx-auto">
             <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.5 }}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5 }}
             >
-                <span className="text-blue-600 dark:text-blue-400 font-semibold tracking-wider uppercase text-sm">Keunggulan Kami</span>
-                <h2 className="mt-2 text-3xl md:text-4xl  text-slate-900 dark:text-white mb-4 font-[family-name:var(--font-gagalin)]">Kenapa Memilih KELAS?</h2>
+              <span className="text-blue-600 dark:text-blue-400 font-semibold tracking-wider uppercase text-sm">Keunggulan Kami</span>
+              <h2 className="mt-2 text-3xl md:text-4xl  text-slate-900 dark:text-white mb-4 font-[family-name:var(--font-gagalin)]">Kenapa Memilih KELAS?</h2>
             </motion.div>
-            
-            <motion.p 
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.5, delay: 0.1 }}
-                className="text-lg text-slate-600 dark:text-slate-400 text-left md:text-center"
+
+            <motion.p
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5, delay: 0.1 }}
+              className="text-lg text-slate-600 dark:text-slate-400 text-left md:text-center"
             >
               Kami menggabungkan teknologi dan pedagogi untuk menciptakan pengalaman belajar yang tidak hanya efektif, tapi juga menyenangkan.
             </motion.p>
@@ -613,7 +613,7 @@ export default function LandingPage() {
           <div className="relative h-[400px] md:h-[450px] w-full max-w-6xl mx-auto flex items-center mt-2 md:mt-8 mb-12 md:mb-20 justify-center perspective-1000">
             {features.map((feature, idx) => {
               const position = (idx - activeFeature + features.length) % features.length;
-              
+
               // Tentukan properti animasi berdasarkan posisi
               let animateProps = {};
               if (position === 0) { // Active (Tengah)
@@ -627,8 +627,8 @@ export default function LandingPage() {
               }
 
               return (
-                <motion.div 
-                  key={idx} 
+                <motion.div
+                  key={idx}
                   animate={animateProps}
                   transition={{ duration: 0.5, ease: "easeInOut" }}
                   className="absolute w-full max-w-xs sm:max-w-sm md:max-w-md p-8 md:p-12 rounded-2xl bg-white dark:bg-gray-800 border border-slate-100 dark:border-gray-700 shadow-xl flex flex-col items-start md:items-center text-left md:text-center cursor-pointer overflow-hidden group min-h-[340px] md:min-h-0"
@@ -670,14 +670,14 @@ export default function LandingPage() {
           </div>
         </div>
 
-   
+
 
         {/* Bottom Wave Decoration */}
         <div className="absolute bottom-0 left-0 w-full pointer-events-none z-0 ">
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 400 900 200" className="w-full h-40 md:h-60" preserveAspectRatio="none">
-            <path d="M0 431L21.5 439.3C43 447.7 86 464.3 128.8 470.2C171.7 476 214.3 471 257.2 470.3C300 469.7 343 473.3 385.8 466.2C428.7 459 471.3 441 514.2 442.3C557 443.7 600 464.3 642.8 475.8C685.7 487.3 728.3 489.7 771.2 482.2C814 474.7 857 457.3 878.5 448.7L900 440L900 601L878.5 601C857 601 814 601 771.2 601C728.3 601 685.7 601 642.8 601C600 601 557 601 514.2 601C471.3 601 428.7 601 385.8 601C343 601 300 601 257.2 601C214.3 601 171.7 601 128.8 601C86 601 43 601 21.5 601L0 601Z" className="fill-sky-100 dark:fill-sky-900"/>
-            <path d="M0 530L21.5 530.2C43 530.3 86 530.7 128.8 529.8C171.7 529 214.3 527 257.2 519.7C300 512.3 343 499.7 385.8 497.8C428.7 496 471.3 505 514.2 503.2C557 501.3 600 488.7 642.8 487.8C685.7 487 728.3 498 771.2 501C814 504 857 499 878.5 496.5L900 494L900 601L878.5 601C857 601 814 601 771.2 601C728.3 601 685.7 601 642.8 601C600 601 557 601 514.2 601C471.3 601 428.7 601 385.8 601C343 601 300 601 257.2 601C214.3 601 171.7 601 128.8 601C86 601 43 601 21.5 601L0 601Z" className="fill-sky-200 dark:fill-sky-800"/>
-            <path d="M0 549L21.5 546.5C43 544 86 539 128.8 534C171.7 529 214.3 524 257.2 529.5C300 535 343 551 385.8 558.3C428.7 565.7 471.3 564.3 514.2 563.8C557 563.3 600 563.7 642.8 554.8C685.7 546 728.3 528 771.2 519.8C814 511.7 857 513.3 878.5 514.2L900 515L900 601L878.5 601C857 601 814 601 771.2 601C728.3 601 685.7 601 642.8 601C600 601 557 601 514.2 601C471.3 601 428.7 601 385.8 601C343 601 300 601 257.2 601C214.3 601 171.7 601 128.8 601C86 601 43 601 21.5 601L0 601Z" className="fill-sky-300 dark:fill-sky-700"/>
+            <path d="M0 431L21.5 439.3C43 447.7 86 464.3 128.8 470.2C171.7 476 214.3 471 257.2 470.3C300 469.7 343 473.3 385.8 466.2C428.7 459 471.3 441 514.2 442.3C557 443.7 600 464.3 642.8 475.8C685.7 487.3 728.3 489.7 771.2 482.2C814 474.7 857 457.3 878.5 448.7L900 440L900 601L878.5 601C857 601 814 601 771.2 601C728.3 601 685.7 601 642.8 601C600 601 557 601 514.2 601C471.3 601 428.7 601 385.8 601C343 601 300 601 257.2 601C214.3 601 171.7 601 128.8 601C86 601 43 601 21.5 601L0 601Z" className="fill-sky-100 dark:fill-sky-900" />
+            <path d="M0 530L21.5 530.2C43 530.3 86 530.7 128.8 529.8C171.7 529 214.3 527 257.2 519.7C300 512.3 343 499.7 385.8 497.8C428.7 496 471.3 505 514.2 503.2C557 501.3 600 488.7 642.8 487.8C685.7 487 728.3 498 771.2 501C814 504 857 499 878.5 496.5L900 494L900 601L878.5 601C857 601 814 601 771.2 601C728.3 601 685.7 601 642.8 601C600 601 557 601 514.2 601C471.3 601 428.7 601 385.8 601C343 601 300 601 257.2 601C214.3 601 171.7 601 128.8 601C86 601 43 601 21.5 601L0 601Z" className="fill-sky-200 dark:fill-sky-800" />
+            <path d="M0 549L21.5 546.5C43 544 86 539 128.8 534C171.7 529 214.3 524 257.2 529.5C300 535 343 551 385.8 558.3C428.7 565.7 471.3 564.3 514.2 563.8C557 563.3 600 563.7 642.8 554.8C685.7 546 728.3 528 771.2 519.8C814 511.7 857 513.3 878.5 514.2L900 515L900 601L878.5 601C857 601 814 601 771.2 601C728.3 601 685.7 601 642.8 601C600 601 557 601 514.2 601C471.3 601 428.7 601 385.8 601C343 601 300 601 257.2 601C214.3 601 171.7 601 128.8 601C86 601 43 601 21.5 601L0 601Z" className="fill-sky-300 dark:fill-sky-700" />
           </svg>
         </div>
       </section>
@@ -686,12 +686,12 @@ export default function LandingPage() {
       <section id="modul" className="py-24 bg-white dark:bg-gray-900 relative overflow-hidden">
         <div className="absolute top-0 left-0 w-full pointer-events-none z-0">
           <svg xmlns="http://www.w3.org/2000/svg" id="visual" viewBox="0 0 900 600" className="w-full h-24 sm:h-32 md:h-48 block" preserveAspectRatio="none">
-            <path d="M0 168L21.5 165.2C43 162.3 86 156.7 128.8 164.3C171.7 172 214.3 193 257.2 204.5C300 216 343 218 385.8 204.2C428.7 190.3 471.3 160.7 514.2 144.5C557 128.3 600 125.7 642.8 125.5C685.7 125.3 728.3 127.7 771.2 130.8C814 134 857 138 878.5 140L900 142L900 0L878.5 0C857 0 814 0 771.2 0C728.3 0 685.7 0 642.8 0C600 0 557 0 514.2 0C471.3 0 428.7 0 385.8 0C343 0 300 0 257.2 0C214.3 0 171.7 0 128.8 0C86 0 43 0 21.5 0L0 0Z" className="fill-sky-300 dark:fill-sky-700" strokeLinecap="round" strokeLinejoin="miter"/>
+            <path d="M0 168L21.5 165.2C43 162.3 86 156.7 128.8 164.3C171.7 172 214.3 193 257.2 204.5C300 216 343 218 385.8 204.2C428.7 190.3 471.3 160.7 514.2 144.5C557 128.3 600 125.7 642.8 125.5C685.7 125.3 728.3 127.7 771.2 130.8C814 134 857 138 878.5 140L900 142L900 0L878.5 0C857 0 814 0 771.2 0C728.3 0 685.7 0 642.8 0C600 0 557 0 514.2 0C471.3 0 428.7 0 385.8 0C343 0 300 0 257.2 0C214.3 0 171.7 0 128.8 0C86 0 43 0 21.5 0L0 0Z" className="fill-sky-300 dark:fill-sky-700" strokeLinecap="round" strokeLinejoin="miter" />
           </svg>
         </div>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <div className="flex flex-col lg:flex-row items-center gap-12 lg:gap-20">
-            
+
             {/* Left Column: Text Content */}
             <div className="w-full lg:w-1/2 text-left relative z-20">
               <motion.div
@@ -704,11 +704,11 @@ export default function LandingPage() {
                   Modul Pembelajaran
                 </span>
                 <h2 className="text-3xl md:text-5xl text-slate-900 dark:text-white mb-6 font-[family-name:var(--font-gagalin)] leading-tight">
-                  Jelajahi Materi <br/> <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-purple-600">Pilihan Terbaik</span>
+                  Jelajahi Materi <br /> <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-purple-600">Pilihan Terbaik</span>
                 </h2>
               </motion.div>
-              
-              <motion.p 
+
+              <motion.p
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
@@ -720,94 +720,93 @@ export default function LandingPage() {
 
               {/* Curved Arrow Decoration */}
               <div className="hidden lg:block relative h-32 w-full max-w-xs mb-8 ml-10">
-                 <svg className="absolute top-0 left-0 w-full h-full text-slate-300 dark:text-slate-600" viewBox="0 0 200 120" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    {/* Curved line */}
-                    <path d="M20 20 C 60 100, 140 80, 180 40" stroke="currentColor" strokeWidth="2" strokeDasharray="6 4" strokeLinecap="round" />
-                    {/* Arrow head */}
-                    <path d="M180 40 L 168 45 M 180 40 L 175 58" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                 </svg>
-                 <span className="absolute top-12 left-0 -rotate-6 text-sm font-handwriting text-blue-500 dark:text-blue-400 font-semibold bg-white dark:bg-gray-900 px-2 py-1 rounded shadow-sm border border-blue-100 dark:border-gray-700">
-                    Pilih modulmu di sini!
-                 </span>
+                <svg className="absolute top-0 left-0 w-full h-full text-slate-300 dark:text-slate-600" viewBox="0 0 200 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  {/* Curved line */}
+                  <path d="M20 20 C 60 100, 140 80, 180 40" stroke="currentColor" strokeWidth="2" strokeDasharray="6 4" strokeLinecap="round" />
+                  {/* Arrow head */}
+                  <path d="M180 40 L 168 45 M 180 40 L 175 58" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
+                <span className="absolute top-12 left-0 -rotate-6 text-sm font-handwriting text-blue-500 dark:text-blue-400 font-semibold bg-white dark:bg-gray-900 px-2 py-1 rounded shadow-sm border border-blue-100 dark:border-gray-700">
+                  Pilih modulmu di sini!
+                </span>
               </div>
 
             </div>
 
             {/* Right Column: Scrolling Cards */}
             <div className="w-full lg:w-1/2 relative">
-               {/* Decoration Background */}
-               <div className="absolute inset-0 bg-gradient-to-br from-blue-100 to-purple-100 dark:from-blue-900/20 dark:to-purple-900/20 rounded-[3rem] -rotate-6 scale-105 z-0 blur-2xl opacity-60"></div>
-               <div className="absolute inset-0 bg-white/30 dark:bg-gray-800/30 rounded-[2.5rem] rotate-3 scale-[1.02] z-0 border border-slate-300/50 dark:border-gray-700/50 backdrop-blur-sm"></div>
+              {/* Decoration Background */}
+              <div className="absolute inset-0 bg-gradient-to-br from-blue-100 to-purple-100 dark:from-blue-900/20 dark:to-purple-900/20 rounded-[3rem] -rotate-6 scale-105 z-0 blur-2xl opacity-60"></div>
+              <div className="absolute inset-0 bg-white/30 dark:bg-gray-800/30 rounded-[2.5rem] rotate-3 scale-[1.02] z-0 border border-slate-300/50 dark:border-gray-700/50 backdrop-blur-sm"></div>
 
-               {/* Scrolling Container */}
-               <div 
-                 className="relative z-10 h-[600px] overflow-hidden rounded-3xl p-4"
-                 style={{ maskImage: 'linear-gradient(to bottom, transparent, black 10%, black 90%, transparent)', WebkitMaskImage: 'linear-gradient(to bottom, transparent, black 10%, black 90%, transparent)' }}
-               >
-                  {loadingModules ? (
-                    <div className="flex items-center justify-center h-full">
-                      <p className="text-slate-500 dark:text-slate-400">Memuat modul...</p>
-                    </div>
-                  ) : (
-                    <motion.div 
-                      className="flex flex-col gap-5"
-                      animate={{ y: ["0%", "-50%"] }}
-                      transition={{ 
-                        repeat: Infinity, 
-                        ease: "linear", 
-                        duration: modules.length > 0 ? modules.length * 5 : 40
-                      }}
-                    >
-                       {/* Render modules twice for infinite loop */}
-                       {[...modules, ...modules].map((modul, idx) => (
-                          <div
-                            key={`scroll-card-${modul._id}-${idx}`}
-                            className="bg-white dark:bg-gray-800 rounded-2xl p-6 border border-slate-100 dark:border-gray-700 shadow-sm hover:shadow-lg transition-all group mx-2 relative overflow-hidden"
-                          >
-                            <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-bl from-blue-50 dark:from-blue-900/20 to-transparent rounded-bl-full -mr-4 -mt-4 opacity-50 group-hover:opacity-100 transition-opacity"></div>
-                            
-                            <div className="flex justify-between items-start mb-4 relative z-10">
-                              <div className="p-3 bg-slate-50 dark:bg-gray-700/50 rounded-xl group-hover:scale-110 transition-transform duration-300 shadow-sm">
-                                <img 
-                                  src={modul.icon?.startsWith('http') ? modul.icon : `${process.env.NEXT_PUBLIC_API_URL}/uploads/${modul.icon}`} 
-                                  alt={modul.title}
-                                  className="w-6 h-6 object-contain"
-                                />
-                              </div>
-                              <span className={`px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wide ${
-                                modul.category.toLowerCase() === 'mudah' ? 'bg-amber-100 text-amber-800 dark:bg-amber-900/40 dark:text-amber-300' :
-                                modul.category.toLowerCase() === 'sedang' ? 'bg-blue-100 text-blue-800 dark:bg-blue-900/40 dark:text-blue-300' :
-                                'bg-green-100 text-green-800 dark:bg-green-900/40 dark:text-green-300'
-                              }`}>
-                                {modul.category}
-                              </span>
-                            </div>
-                            
-                            <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-2 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors relative z-10">
-                              {modul.title}
-                            </h3>
-                            
-                            <p className="text-slate-600 dark:text-slate-400 text-sm mb-4 line-clamp-2 relative z-10">
-                              {modul.overview}
-                            </p>
+              {/* Scrolling Container */}
+              <div
+                className="relative z-10 h-[600px] overflow-hidden rounded-3xl p-4"
+                style={{ maskImage: 'linear-gradient(to bottom, transparent, black 10%, black 90%, transparent)', WebkitMaskImage: 'linear-gradient(to bottom, transparent, black 10%, black 90%, transparent)' }}
+              >
+                {loadingModules ? (
+                  <div className="flex items-center justify-center h-full">
+                    <p className="text-slate-500 dark:text-slate-400">Memuat modul...</p>
+                  </div>
+                ) : (
+                  <motion.div
+                    className="flex flex-col gap-5"
+                    animate={{ y: ["0%", "-50%"] }}
+                    transition={{
+                      repeat: Infinity,
+                      ease: "linear",
+                      duration: modules.length > 0 ? modules.length * 5 : 40
+                    }}
+                  >
+                    {/* Render modules twice for infinite loop */}
+                    {[...modules, ...modules].map((modul, idx) => (
+                      <div
+                        key={`scroll-card-${modul._id}-${idx}`}
+                        className="bg-white dark:bg-gray-800 rounded-2xl p-6 border border-slate-100 dark:border-gray-700 shadow-sm hover:shadow-lg transition-all group mx-2 relative overflow-hidden"
+                      >
+                        <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-bl from-blue-50 dark:from-blue-900/20 to-transparent rounded-bl-full -mr-4 -mt-4 opacity-50 group-hover:opacity-100 transition-opacity"></div>
+
+                        <div className="flex justify-between items-start mb-4 relative z-10">
+                          <div className="p-3 bg-slate-50 dark:bg-gray-700/50 rounded-xl group-hover:scale-110 transition-transform duration-300 shadow-sm">
+                            <img
+                              src={modul.icon?.startsWith('http') ? modul.icon : `${process.env.NEXT_PUBLIC_API_URL}/uploads/${modul.icon}`}
+                              alt={modul.title}
+                              className="w-6 h-6 object-contain"
+                            />
                           </div>
-                       ))}
-                    </motion.div>
-                  )}
-               </div>
+                          <span className={`px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wide ${modul.category.toLowerCase() === 'mudah' ? 'bg-amber-100 text-amber-800 dark:bg-amber-900/40 dark:text-amber-300' :
+                            modul.category.toLowerCase() === 'sedang' ? 'bg-blue-100 text-blue-800 dark:bg-blue-900/40 dark:text-blue-300' :
+                              'bg-green-100 text-green-800 dark:bg-green-900/40 dark:text-green-300'
+                            }`}>
+                            {modul.category}
+                          </span>
+                        </div>
 
-               <div className="absolute bottom-0 left-0 w-full h-40 bg-gradient-to-t from-white via-white/90 to-transparent dark:from-gray-900 dark:via-gray-900/90 z-20 flex items-end justify-center pb-8 rounded-b-[2.5rem]">
-                  <Link href="/login" className="text-base font-bold text-blue-600 dark:text-blue-400 hover:underline transition-all">
-                    Lihat Semua Modul 
-                  </Link>
-               </div>
+                        <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-2 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors relative z-10">
+                          {modul.title}
+                        </h3>
+
+                        <p className="text-slate-600 dark:text-slate-400 text-sm mb-4 line-clamp-2 relative z-10">
+                          {modul.overview}
+                        </p>
+                      </div>
+                    ))}
+                  </motion.div>
+                )}
+              </div>
+
+              <div className="absolute bottom-0 left-0 w-full h-40 bg-gradient-to-t from-white via-white/90 to-transparent dark:from-gray-900 dark:via-gray-900/90 z-20 flex items-end justify-center pb-8 rounded-b-[2.5rem]">
+                <Link href="/login" className="text-base font-bold text-blue-600 dark:text-blue-400 hover:underline transition-all">
+                  Lihat Semua Modul
+                </Link>
+              </div>
             </div>
 
           </div>
         </div>
         <div className="absolute bottom-0 left-0 w-full pointer-events-none z-0 translate-y-[1px]">
           <svg xmlns="http://www.w3.org/2000/svg" id="visual" viewBox="0 0 900 600" className="w-full h-24 sm:h-32 md:h-48 block" preserveAspectRatio="none">
-            <path d="M0 484L21.5 478.2C43 472.3 86 460.7 128.8 443.7C171.7 426.7 214.3 404.3 257.2 414.7C300 425 343 468 385.8 483.5C428.7 499 471.3 487 514.2 470.7C557 454.3 600 433.7 642.8 419.8C685.7 406 728.3 399 771.2 394.3C814 389.7 857 387.3 878.5 386.2L900 385L900 601L878.5 601C857 601 814 601 771.2 601C728.3 601 685.7 601 642.8 601C600 601 557 601 514.2 601C471.3 601 428.7 601 385.8 601C343 601 300 601 257.2 601C214.3 601 171.7 601 128.8 601C86 601 43 601 21.5 601L0 601Z" className="fill-sky-300 dark:fill-sky-700" strokeLinecap="round" strokeLinejoin="miter"/>
+            <path d="M0 484L21.5 478.2C43 472.3 86 460.7 128.8 443.7C171.7 426.7 214.3 404.3 257.2 414.7C300 425 343 468 385.8 483.5C428.7 499 471.3 487 514.2 470.7C557 454.3 600 433.7 642.8 419.8C685.7 406 728.3 399 771.2 394.3C814 389.7 857 387.3 878.5 386.2L900 385L900 601L878.5 601C857 601 814 601 771.2 601C728.3 601 685.7 601 642.8 601C600 601 557 601 514.2 601C471.3 601 428.7 601 385.8 601C343 601 300 601 257.2 601C214.3 601 171.7 601 128.8 601C86 601 43 601 21.5 601L0 601Z" className="fill-sky-300 dark:fill-sky-700" strokeLinecap="round" strokeLinejoin="miter" />
           </svg>
         </div>
       </section>
@@ -816,7 +815,7 @@ export default function LandingPage() {
       <section id="mentor" className="relative py-24 bg-sky-300 dark:bg-sky-700 overflow-hidden">
         <div className="relative z-10 max-w-7xl mx-auto px-2 sm:px-6 lg:px-8 ">
           <div className="text-left md:text-center max-w-3xl mx-auto mb-10 -mt-20">
-            <motion.h2 
+            <motion.h2
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
@@ -825,7 +824,7 @@ export default function LandingPage() {
             >
               Belajar Langsung dari Ahlinya
             </motion.h2>
-            <motion.p 
+            <motion.p
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
@@ -837,18 +836,18 @@ export default function LandingPage() {
           </div>
 
           <div className="relative group px-4 md:px-10">
-            <div 
+            <div
               ref={mentorScrollRef}
               className={`flex gap-6 overflow-x-auto snap-x snap-mandatory pb-8 [&::-webkit-scrollbar]:hidden`}
               onTouchStart={(e) => {
                 // Logika touch start
               }}
-              onTouchEnd={(e) => {}}
+              onTouchEnd={(e) => { }}
               style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
             >
               {mentors.map((mentor, idx) => (
-                <motion.div 
-                  key={idx} 
+                <motion.div
+                  key={idx}
                   initial={{ opacity: 0, y: 30 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
@@ -881,19 +880,19 @@ export default function LandingPage() {
 
           </div>
         </div>
-        
+
         {/* Bottom Transition */}
         <div className="absolute bottom-0 left-0 w-full pointer-events-none translate-y-[1px]">
-             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 120" className="w-full h-auto block">
-                <path fill="currentColor" className="text-white dark:text-gray-900" fillOpacity="1" d="M0,64L48,69.3C96,75,192,85,288,80C384,75,480,53,576,48C672,43,768,53,864,64C960,75,1056,85,1152,80C1248,75,1344,53,1392,42.7L1440,32L1440,120L1392,120C1344,120,1248,120,1152,120C1056,120,960,120,864,120C768,120,672,120,576,120C480,120,384,120,288,120C192,120,96,120,48,120L0,120Z"></path>
-            </svg>
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 120" className="w-full h-auto block">
+            <path fill="currentColor" className="text-white dark:text-gray-900" fillOpacity="1" d="M0,64L48,69.3C96,75,192,85,288,80C384,75,480,53,576,48C672,43,768,53,864,64C960,75,1056,85,1152,80C1248,75,1344,53,1392,42.7L1440,32L1440,120L1392,120C1344,120,1248,120,1152,120C1056,120,960,120,864,120C768,120,672,120,576,120C480,120,384,120,288,120C192,120,96,120,48,120L0,120Z"></path>
+          </svg>
         </div>
       </section>
 
       {/* Mentor Modal */}
       {selectedMentor && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm" onClick={() => setSelectedMentor(null)}>
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.9 }}
@@ -903,7 +902,7 @@ export default function LandingPage() {
             <button onClick={() => setSelectedMentor(null)} className="absolute top-4 right-4 p-2 bg-gray-100 dark:bg-gray-700 rounded-full hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors z-10">
               <X size={20} />
             </button>
-            
+
             <div className="flex flex-col md:flex-row">
               <div className="w-full md:w-2/5 h-64 md:h-auto relative">
                 <img src={selectedMentor.image} alt={selectedMentor.name} className="w-full h-full object-cover" />
@@ -914,7 +913,7 @@ export default function LandingPage() {
                   </div>
                 </div>
               </div>
-              
+
               <div className="w-full md:w-3/5 p-6 md:p-8 overflow-y-auto max-h-[60vh] md:max-h-auto">
                 <div className="hidden md:block mb-6">
                   <p className="text-blue-600 dark:text-blue-400 text-xs font-bold uppercase tracking-wider mb-1">{selectedMentor.role}</p>
@@ -960,7 +959,7 @@ export default function LandingPage() {
       <section className="pt-6 pb-0 bg-white dark:bg-gray-900 relative overflow-hidden">
         <div className="z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center max-w-3xl mx-auto mb-12">
-            <motion.h2 
+            <motion.h2
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
@@ -976,85 +975,85 @@ export default function LandingPage() {
 
           {/* Infinite Scroll Container */}
           <div className="relative w-full overflow-hidden">
-            
+
             {/* Desktop View (Horizontal Scroll) */}
             <div className="hidden md:flex relative w-full overflow-hidden">
-               {/* Gradient Masks */}
-               <div className="absolute left-0 top-0 bottom-0 w-20 bg-gradient-to-r from-white dark:from-gray-900 to-transparent z-20"></div>
-               <div className="absolute right-0 top-0 bottom-0 w-20 bg-gradient-to-l from-white dark:from-gray-900 to-transparent z-20"></div>
-               
-               <motion.div 
-                 className="flex gap-8"
-                 animate={{ x: ["0%", "-50%"] }}
-                 transition={{ 
-                   repeat: Infinity, 
-                   ease: "linear", 
-                   duration: 30 
-                 }}
-                 style={{ width: "max-content" }}
-               >
-                 {[...testimonials, ...testimonials].map((item, idx) => (
-                   <div key={`desktop-${idx}`} className="w-[400px] bg-slate-50 dark:bg-gray-800 p-8 rounded-2xl border border-slate-100 dark:border-gray-700 shadow-sm hover:shadow-md transition-shadow">
-                     <Quote className="text-blue-100 dark:text-blue-900/30 w-10 h-10 mb-4 rotate-180" />
-                     <p className="text-slate-600 dark:text-slate-300 mb-6 italic text-sm leading-relaxed min-h-[80px]">"{item.content}"</p>
-                     <div className="flex items-center gap-4">
-                       <img src={item.avatar} alt={item.name} className="w-12 h-12 rounded-full bg-gray-200" />
-                       <div>
+              {/* Gradient Masks */}
+              <div className="absolute left-0 top-0 bottom-0 w-20 bg-gradient-to-r from-white dark:from-gray-900 to-transparent z-20"></div>
+              <div className="absolute right-0 top-0 bottom-0 w-20 bg-gradient-to-l from-white dark:from-gray-900 to-transparent z-20"></div>
+
+              <motion.div
+                className="flex gap-8"
+                animate={{ x: ["0%", "-50%"] }}
+                transition={{
+                  repeat: Infinity,
+                  ease: "linear",
+                  duration: 30
+                }}
+                style={{ width: "max-content" }}
+              >
+                {[...testimonials, ...testimonials].map((item, idx) => (
+                  <div key={`desktop-${idx}`} className="w-[400px] bg-slate-50 dark:bg-gray-800 p-8 rounded-2xl border border-slate-100 dark:border-gray-700 shadow-sm hover:shadow-md transition-shadow">
+                    <Quote className="text-blue-100 dark:text-blue-900/30 w-10 h-10 mb-4 rotate-180" />
+                    <p className="text-slate-600 dark:text-slate-300 mb-6 italic text-sm leading-relaxed min-h-[80px]">"{item.content}"</p>
+                    <div className="flex items-center gap-4">
+                      <img src={item.avatar} alt={item.name} className="w-12 h-12 rounded-full bg-gray-200" />
+                      <div>
                         <h4 className="font-bold text-slate-900 dark:text-white">{item.name}</h4>
-                         <p className="text-xs text-slate-500 dark:text-slate-400">{item.role}</p>
-                       </div>
-                     </div>
-                   </div>
-                 ))}
-               </motion.div>
+                        <p className="text-xs text-slate-500 dark:text-slate-400">{item.role}</p>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </motion.div>
             </div>
 
             {/* Mobile View (Vertical Scroll with Timeline) */}
             <div className="md:hidden relative h-[500px] overflow-hidden">
-               {/* Gradient Masks */}
-               <div className="absolute top-0 left-0 right-0 h-20 bg-gradient-to-b from-white dark:from-gray-900 to-transparent z-20"></div>
-               <div className="absolute bottom-0 left-0 right-0 h-20 bg-gradient-to-t from-white dark:from-gray-900 to-transparent z-20"></div>
+              {/* Gradient Masks */}
+              <div className="absolute top-0 left-0 right-0 h-20 bg-gradient-to-b from-white dark:from-gray-900 to-transparent z-20"></div>
+              <div className="absolute bottom-0 left-0 right-0 h-20 bg-gradient-to-t from-white dark:from-gray-900 to-transparent z-20"></div>
 
-               <motion.div 
-                 className="flex flex-col"
-                 animate={{ y: ["0%", "-50%"] }}
-                 transition={{ 
-                   repeat: Infinity, 
-                   ease: "linear", 
-                   duration: 30 
-                 }}
-               >
-                 {[...testimonials, ...testimonials].map((item, idx) => (
-                   <div key={`mobile-${idx}`} className="flex gap-4 pb-8 relative px-4">
-                      {/* Timeline Line */}
-                      <div className="absolute left-[35px] top-0 bottom-0 w-0.5 bg-slate-200 dark:bg-slate-700"></div>
-                      
-                      {/* Timeline Dot */}
-                      <div className="relative z-10 shrink-0 w-10 h-10 flex items-start justify-center pt-1">
-                         <div className="w-4 h-4 rounded-full bg-blue-500 border-4 border-white dark:border-gray-900 shadow-sm"></div>
+              <motion.div
+                className="flex flex-col"
+                animate={{ y: ["0%", "-50%"] }}
+                transition={{
+                  repeat: Infinity,
+                  ease: "linear",
+                  duration: 30
+                }}
+              >
+                {[...testimonials, ...testimonials].map((item, idx) => (
+                  <div key={`mobile-${idx}`} className="flex gap-4 pb-8 relative px-4">
+                    {/* Timeline Line */}
+                    <div className="absolute left-[35px] top-0 bottom-0 w-0.5 bg-slate-200 dark:bg-slate-700"></div>
+
+                    {/* Timeline Dot */}
+                    <div className="relative z-10 shrink-0 w-10 h-10 flex items-start justify-center pt-1">
+                      <div className="w-4 h-4 rounded-full bg-blue-500 border-4 border-white dark:border-gray-900 shadow-sm"></div>
+                    </div>
+
+                    {/* Card */}
+                    <div className="flex-1 bg-slate-50 dark:bg-gray-800 p-6 rounded-2xl border border-slate-100 dark:border-gray-700 shadow-sm">
+                      <p className="text-slate-600 dark:text-slate-300 mb-4 italic text-sm">"{item.content}"</p>
+                      <div className="flex items-center gap-3">
+                        <img src={item.avatar} alt={item.name} className="w-10 h-10 rounded-full bg-gray-200" />
+                        <div>
+                          <h4 className="font-bold text-sm text-slate-900 dark:text-white">{item.name}</h4>
+                          <p className="text-[10px] text-slate-500 dark:text-slate-400">{item.role}</p>
+                        </div>
                       </div>
-                      
-                      {/* Card */}
-                      <div className="flex-1 bg-slate-50 dark:bg-gray-800 p-6 rounded-2xl border border-slate-100 dark:border-gray-700 shadow-sm">
-                         <p className="text-slate-600 dark:text-slate-300 mb-4 italic text-sm">"{item.content}"</p>
-                         <div className="flex items-center gap-3">
-                           <img src={item.avatar} alt={item.name} className="w-10 h-10 rounded-full bg-gray-200" />
-                           <div>
-                            <h4 className="font-bold text-sm text-slate-900 dark:text-white">{item.name}</h4>
-                             <p className="text-[10px] text-slate-500 dark:text-slate-400">{item.role}</p>
-                           </div>
-                         </div>
-                      </div>
-                   </div>
-                 ))}
-               </motion.div>
+                    </div>
+                  </div>
+                ))}
+              </motion.div>
             </div>
 
           </div>
         </div>
         <div className="relative w-full pointer-events-none z-0 mt-10">
           <svg xmlns="http://www.w3.org/2000/svg" id="visual" viewBox="0 400 900 200" className="w-full h-24 sm:h-32 block" preserveAspectRatio="none">
-            <path d="M0 430L21.5 422.2C43 414.3 86 398.7 128.8 402.7C171.7 406.7 214.3 430.3 257.2 444.2C300 458 343 462 385.8 463.3C428.7 464.7 471.3 463.3 514.2 452C557 440.7 600 419.3 642.8 424.5C685.7 429.7 728.3 461.3 771.2 468.5C814 475.7 857 458.3 878.5 449.7L900 441L900 601L878.5 601C857 601 814 601 771.2 601C728.3 601 685.7 601 642.8 601C600 601 557 601 514.2 601C471.3 601 428.7 601 385.8 601C343 601 300 601 257.2 601C214.3 601 171.7 601 128.8 601C86 601 43 601 21.5 601L0 601Z" className="fill-sky-300 dark:fill-sky-700" strokeLinecap="round" strokeLinejoin="miter"/>
+            <path d="M0 430L21.5 422.2C43 414.3 86 398.7 128.8 402.7C171.7 406.7 214.3 430.3 257.2 444.2C300 458 343 462 385.8 463.3C428.7 464.7 471.3 463.3 514.2 452C557 440.7 600 419.3 642.8 424.5C685.7 429.7 728.3 461.3 771.2 468.5C814 475.7 857 458.3 878.5 449.7L900 441L900 601L878.5 601C857 601 814 601 771.2 601C728.3 601 685.7 601 642.8 601C600 601 557 601 514.2 601C471.3 601 428.7 601 385.8 601C343 601 300 601 257.2 601C214.3 601 171.7 601 128.8 601C86 601 43 601 21.5 601L0 601Z" className="fill-sky-300 dark:fill-sky-700" strokeLinecap="round" strokeLinejoin="miter" />
           </svg>
         </div>
       </section>
@@ -1063,35 +1062,35 @@ export default function LandingPage() {
       <section id="faq" className="py-8 sm:py-20 bg-slate-50 dark:bg-gray-900 relative overflow-hidden">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
-            
+
             {/* CTA Card */}
             <div className="bg-blue-600 rounded-3xl p-8 md:p-12 text-left md:text-center text-white relative overflow-hidden shadow-2xl shadow-blue-600/30 h-full flex flex-col justify-center">
-               {/* Decorative Circles */}
-               <div className="absolute top-0 left-0 w-64 h-64 bg-white opacity-10 rounded-full -translate-x-1/2 -translate-y-1/2 blur-2xl"></div>
-               <div className="absolute bottom-0 right-0 w-64 h-64 bg-indigo-900 opacity-20 rounded-full translate-x-1/2 translate-y-1/2 blur-2xl"></div>
+              {/* Decorative Circles */}
+              <div className="absolute top-0 left-0 w-64 h-64 bg-white opacity-10 rounded-full -translate-x-1/2 -translate-y-1/2 blur-2xl"></div>
+              <div className="absolute bottom-0 right-0 w-64 h-64 bg-indigo-900 opacity-20 rounded-full translate-x-1/2 translate-y-1/2 blur-2xl"></div>
 
-               <div className="relative z-10">
-                 <motion.h2 
-                   initial={{ opacity: 0, y: 20 }}
-                   whileInView={{ opacity: 1, y: 0 }}
-                   viewport={{ once: true }}
-                   transition={{ duration: 0.5 }}
-                   className="text-3xl md:text-4xl font-medium mb-6 font-[family-name:var(--font-gagalin)]"
-                 >Siap Memulai Perjalanan Belajarmu?</motion.h2>
-                 <p className="text-blue-100 text-lg mb-8 text-left md:text-center">
-                   Jangan buang waktu mempelajari apa yang sudah kamu tahu. Ikuti tes awal kami dan dapatkan kurikulum yang dipersonalisasi khusus untukmu.
-                 </p>
-                 <div className="flex flex-col sm:flex-row gap-4 justify-start md:justify-center">
-                   <Link href="/register" className="bg-white text-blue-600 px-8 py-3.5 rounded-full font-bold hover:bg-blue-50 transition shadow-lg">
-                     Daftar Gratis Sekarang
-                   </Link>
-                 </div>
-               </div>
+              <div className="relative z-10">
+                <motion.h2
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.5 }}
+                  className="text-3xl md:text-4xl font-medium mb-6 font-[family-name:var(--font-gagalin)]"
+                >Siap Memulai Perjalanan Belajarmu?</motion.h2>
+                <p className="text-blue-100 text-lg mb-8 text-left md:text-center">
+                  Jangan buang waktu mempelajari apa yang sudah kamu tahu. Ikuti tes awal kami dan dapatkan kurikulum yang dipersonalisasi khusus untukmu.
+                </p>
+                <div className="flex flex-col sm:flex-row gap-4 justify-start md:justify-center">
+                  <Link href="/register" className="bg-white text-blue-600 px-8 py-3.5 rounded-full font-bold hover:bg-blue-50 transition shadow-lg">
+                    Daftar Gratis Sekarang
+                  </Link>
+                </div>
+              </div>
             </div>
 
             {/* FAQ List */}
             <div className="w-full">
-              <motion.h2 
+              <motion.h2
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
@@ -1119,13 +1118,15 @@ export default function LandingPage() {
       {/* Scroll To Top Button */}
       <button
         onClick={scrollToTop}
-        className={`fixed bottom-8 right-8 p-3 rounded-full bg-blue-600 text-white shadow-lg transition-all duration-300 z-50 hover:bg-blue-700 hover:scale-110 ${
-          showScrollTop ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10 pointer-events-none'
-        }`}
+        className={`fixed bottom-8 right-8 p-3 rounded-full bg-blue-600 text-white shadow-lg transition-all duration-300 z-50 hover:bg-blue-700 hover:scale-110 ${showScrollTop ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10 pointer-events-none'
+          }`}
         aria-label="Scroll to top"
       >
         <ArrowUp className="w-6 h-6" />
       </button>
+
+      
+
 
       {/* --- FOOTER --- */}
       <footer className="bg-white dark:bg-gray-900 border-t border-slate-200 dark:border-gray-800 pt-16 pb-8">
@@ -1134,7 +1135,7 @@ export default function LandingPage() {
             <div className="col-span-2 md:col-span-1">
               <div className="flex items-center gap-2 mb-4">
                 <img src="/logo.webp" alt="KELAS Icon" className="h-8 w-auto" />
-               
+
               </div>
               <p className="text-slate-500 dark:text-slate-400 text-sm leading-relaxed mb-6 text-left">
                 Platform e-learning adaptif yang membantu kamu belajar lebih cepat dan efektif dengan kurikulum yang dipersonalisasi.

@@ -54,6 +54,10 @@ export const metadata: Metadata = {
     locale: 'id_ID',
     type: 'website',
   },
+  icons: {
+    icon: '/logo.webp',
+    apple: '/logo.webp',
+  },
 };
 
 
@@ -65,8 +69,36 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       suppressHydrationWarning
       className={`${poppins.variable} ${gagalin.variable} bg-gray-50 dark:bg-gray-900 scroll-smooth`}
     >
-     
+
       <body suppressHydrationWarning className="font-poppins text-gray-900 dark:text-gray-100">
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "WebSite",
+              "name": "KELAS",
+              "alternateName": ["Kartini E-learning Apps", "KELAS SMK"],
+              "url": "https://kelas-smk.vercel.app",
+            }),
+          }}
+        />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "Organization",
+              "name": "KELAS",
+              "url": "https://kelas-smk.vercel.app",
+              "logo": "https://kelas-smk.vercel.app/logo.webp",
+              "sameAs": [
+                "https://instagram.com/kartinielearning",
+                "https://youtube.com/@kartinielearning"
+              ]
+            }),
+          }}
+        />
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
           <GlobalStreakAlert />
           {children}
