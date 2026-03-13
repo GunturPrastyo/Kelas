@@ -1129,46 +1129,76 @@ export default function LandingPage() {
 
 
       {/* --- FOOTER --- */}
-      <footer className="bg-white dark:bg-gray-900 border-t border-slate-200 dark:border-gray-800 pt-16 pb-8">
+      <footer className="bg-white dark:bg-gray-900 border-t border-slate-200 dark:border-gray-800 pt-12 pb-6">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 md:gap-12 mb-12">
-            <div className="col-span-2 md:col-span-1">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-12 mb-12">
+            <div>
               <div className="flex items-center gap-2 mb-4">
                 <img src="/logo.webp" alt="KELAS Icon" className="h-8 w-auto" />
 
               </div>
-              <p className="text-slate-500 dark:text-slate-400 text-sm leading-relaxed mb-6 text-left">
+              <p className="text-slate-500 dark:text-slate-400 text-sm leading-relaxed text-left">
                 Platform e-learning adaptif yang membantu kamu belajar lebih cepat dan efektif dengan kurikulum yang dipersonalisasi.
               </p>
-              <div className="flex gap-4">
-                <Link href="https://instagram.com/kartinielearning" target="_blank" className="text-slate-400 hover:text-pink-600 transition-colors">
-                  <Instagram size={20} />
-                </Link>
-                <Link href="https://youtube.com/@kartinielearning" target="_blank" className="text-slate-400 hover:text-red-600 transition-colors">
-                  <Youtube size={20} />
-                </Link>
+            </div>
+
+            <div className="flex flex-col items-start w-full">
+              <div className="group relative bg-gradient-to-br from-blue-100 to-indigo-100 dark:from-gray-800 dark:to-gray-800 p-5 rounded-lg border border-blue-100 dark:border-gray-700 shadow-sm w-full sm:max-w-md overflow-hidden">
+                <div className="relative z-10">
+                  <h4 className="font-bold text-slate-900 dark:text-white mb-2 flex items-center gap-2">
+                    <Smartphone className="text-blue-600 dark:text-blue-400 w-5 h-5" />
+                    Mobile App
+                  </h4>
+                  <p className="text-sm text-slate-600 dark:text-slate-400 mb-4 leading-relaxed max-w-[200px] sm:max-w-[260px]">
+                    Belajar jadi lebih mudah dalam genggaman. Segera hadir untuk Android!
+                  </p>
+                  <button className="flex items-center gap-2 bg-slate-900 dark:bg-white text-white dark:text-slate-900 px-4 py-2.5 rounded-lg hover:opacity-90 transition-opacity w-full sm:w-auto justify-center shadow-lg shadow-slate-900/20 dark:shadow-none cursor-default">
+                    <svg className="w-6 h-6 fill-current" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M3.609 1.814L13.792 12 3.61 22.186c-.185-.182-.29-.413-.309-.65V2.47c.01-.24.115-.47.309-.656zM15.3 13.51l3.484-3.485L5.753.896c.365.176.67.45.875.79l8.672 11.824zm1.425 1.425L7.996 23.64c-.37.33-.8.47-1.22.42l9.95-10.556zM4.777 22.825l10.55-10.55-10.55-10.55v21.1z" />
+                    </svg>
+                    <div className="text-left">
+                      <div className="text-[9px] uppercase font-medium leading-none opacity-80">Segera di</div>
+                      <div className="text-sm font-bold leading-none mt-0.5">Google Play</div>
+                    </div>
+                  </button>
+                </div>
+
+                {/* Mockup Phone Positioned Absolute */}
+                <div className="absolute bottom-[-20px] right-[-20px] sm:right-[-10px] transform rotate-[-10deg] group-hover:rotate-0 group-hover:translate-y-[-5px] transition-all duration-500 ease-out opacity-40 sm:opacity-100">
+                  <div className="relative border-slate-800 dark:border-slate-700 bg-slate-800 border-[6px] rounded-[1.5rem] h-[180px] w-[100px] shadow-xl overflow-hidden">
+                    <div className="absolute top-0 left-1/2 transform -translate-x-1/2 w-1/3 h-[4px] bg-slate-800 rounded-b-md z-20"></div>
+                    {/* Screen Content */}
+                    <div className="w-full h-full bg-white dark:bg-slate-900 p-2 flex flex-col gap-2">
+                      {/* Header Skeleton */}
+                      <div className="flex justify-between items-center mt-1">
+                        <div className="w-5 h-5 bg-blue-500 rounded-full opacity-80"></div>
+                        <div className="w-3 h-3 bg-slate-200 dark:bg-slate-700 rounded-full"></div>
+                      </div>
+                      {/* Card Skeleton */}
+                      <div className="w-full h-12 bg-blue-50 dark:bg-blue-900/30 rounded-lg border border-blue-100 dark:border-blue-800/50 flex items-center p-2 gap-2">
+                        <div className="w-8 h-8 bg-blue-200 dark:bg-blue-800 rounded-md"></div>
+                        <div className="flex-1 space-y-1">
+                          <div className="w-full h-1.5 bg-blue-200 dark:bg-blue-800 rounded"></div>
+                          <div className="w-1/2 h-1.5 bg-blue-100 dark:bg-blue-900 rounded"></div>
+                        </div>
+                      </div>
+                      {/* Small Grid */}
+                      <div className="grid grid-cols-2 gap-2">
+                        <div className="h-10 bg-slate-100 dark:bg-slate-800 rounded-lg"></div>
+                        <div className="h-10 bg-slate-100 dark:bg-slate-800 rounded-lg"></div>
+                      </div>
+                      {/* List */}
+                      <div className="space-y-1 mt-1">
+                        <div className="w-full h-6 bg-slate-50 dark:bg-slate-800/50 rounded border border-slate-100 dark:border-slate-800"></div>
+                        <div className="w-full h-6 bg-slate-50 dark:bg-slate-800/50 rounded border border-slate-100 dark:border-slate-800"></div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
 
             <div>
-              <h4 className="font-bold text-slate-900 dark:text-white mb-4">Produk</h4>
-              <ul className="space-y-2 text-sm text-slate-500 dark:text-slate-400">
-                <li><Link href="#" className="hover:text-blue-600">Semua Modul</Link></li>
-                <li><Link href="#" className="hover:text-blue-600">Pre-Test</Link></li>
-                <li><Link href="#" className="hover:text-blue-600">Bootcamp</Link></li>
-              </ul>
-            </div>
-
-            <div>
-              <h4 className="font-bold text-slate-900 dark:text-white mb-4">Perusahaan</h4>
-              <ul className="space-y-2 text-sm text-slate-500 dark:text-slate-400">
-                <li><Link href="#" className="hover:text-blue-600">Tentang Kami</Link></li>
-                <li><Link href="#" className="hover:text-blue-600">Karir</Link></li>
-                <li><Link href="#" className="hover:text-blue-600">Blog</Link></li>
-              </ul>
-            </div>
-
-            <div className="col-span-2 md:col-span-1">
               <h4 className="font-bold text-slate-900 dark:text-white mb-4">Hubungi Kami</h4>
               <ul className="space-y-3 text-sm text-slate-500 dark:text-slate-400">
                 <li className="flex items-start gap-3">
@@ -1178,6 +1208,14 @@ export default function LandingPage() {
                 <li className="flex items-start gap-3">
                   <MapPin size={18} className="text-blue-600 mt-0.5 shrink-0" />
                   <span>Semarang, Jawa Tengah, Indonesia</span>
+                </li>
+                <li className="flex items-start gap-3 pt-2">
+                  <Link href="https://instagram.com/kartinielearning" target="_blank" className="text-slate-400 hover:text-pink-600 transition-colors">
+                    <Instagram size={20} />
+                  </Link>
+                  <Link href="https://youtube.com/@kartinielearning" target="_blank" className="text-slate-400 hover:text-red-600 transition-colors">
+                    <Youtube size={20} />
+                  </Link>
                 </li>
               </ul>
             </div>
