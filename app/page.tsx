@@ -1150,17 +1150,28 @@ export default function LandingPage() {
                     Mobile App
                   </h4>
                   <p className="text-sm text-slate-600 dark:text-slate-400 mb-4 leading-relaxed max-w-[200px] sm:max-w-[260px]">
-                    Belajar jadi lebih mudah dalam genggaman. Segera hadir untuk Android!
+                    Belajar jadi lebih mudah dalam genggaman. Segera hadir untuk Android & iOS!
                   </p>
-                  <button className="flex items-center gap-2 bg-slate-900 dark:bg-white text-white dark:text-slate-900 px-4 py-2.5 rounded-lg hover:opacity-90 transition-opacity w-full sm:w-auto justify-center shadow-lg shadow-slate-900/20 dark:shadow-none cursor-default">
-                    <svg className="w-6 h-6 fill-current" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                      <path d="M3.609 1.814L13.792 12 3.61 22.186c-.185-.182-.29-.413-.309-.65V2.47c.01-.24.115-.47.309-.656zM15.3 13.51l3.484-3.485L5.753.896c.365.176.67.45.875.79l8.672 11.824zm1.425 1.425L7.996 23.64c-.37.33-.8.47-1.22.42l9.95-10.556zM4.777 22.825l10.55-10.55-10.55-10.55v21.1z" />
-                    </svg>
-                    <div className="text-left">
-                      <div className="text-[9px] uppercase font-medium leading-none opacity-80">Segera di</div>
-                      <div className="text-sm font-bold leading-none mt-0.5">Google Play</div>
-                    </div>
-                  </button>
+                  <div className="flex flex-col gap-3 w-full sm:w-auto">
+                    <button className="flex items-center gap-3 bg-slate-900 dark:bg-white text-white dark:text-slate-900 px-4 py-2 rounded-xl hover:opacity-90 transition-opacity w-full sm:w-auto justify-start shadow-lg shadow-slate-900/20 dark:shadow-none cursor-default border border-transparent dark:border-slate-200">
+                      <svg className="w-6 h-6 fill-current flex-shrink-0" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M3.609 1.814L13.792 12 3.61 22.186c-.185-.182-.29-.413-.309-.65V2.47c.01-.24.115-.47.309-.656zM15.3 13.51l3.484-3.485L5.753.896c.365.176.67.45.875.79l8.672 11.824zm1.425 1.425L7.996 23.64c-.37.33-.8.47-1.22.42l9.95-10.556zM4.777 22.825l10.55-10.55-10.55-10.55v21.1z" />
+                      </svg>
+                      <div className="text-left">
+                        <div className="text-[9px] uppercase font-medium leading-none opacity-80">Segera di</div>
+                        <div className="text-sm font-bold leading-none -mt-0.5">Google Play</div>
+                      </div>
+                    </button>
+                    <button className="flex items-center gap-3 bg-slate-900 dark:bg-white text-white dark:text-slate-900 px-4 py-2 rounded-xl hover:opacity-90 transition-opacity w-full sm:w-auto justify-start shadow-lg shadow-slate-900/20 dark:shadow-none cursor-default border border-transparent dark:border-slate-200">
+                      <svg className="w-6 h-6 fill-current flex-shrink-0" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.48 2.43-2.45 4.13-2.48 1.28-.03 2.5.87 3.29.87.94 0 2.25-1.09 3.93-.99 1.42.09 2.48.51 3.28 1.68-2.65 1.69-2.2 6.04 1.1 7.07-1.09 2.18-2.36 3.72-2.73 4.21zM13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.53-2.95 1.46-.15-1.17.32-2.35 1.05-3.15z" />
+                      </svg>
+                      <div className="text-left">
+                        <div className="text-[9px] uppercase font-medium leading-none opacity-80">Segera di</div>
+                        <div className="text-sm font-bold leading-none -mt-0.5">App Store</div>
+                      </div>
+                    </button>
+                  </div>
                 </div>
 
                 {/* Mockup Phone Positioned Absolute */}
