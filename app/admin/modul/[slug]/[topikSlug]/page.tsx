@@ -8,12 +8,22 @@ import { useState, use, useEffect, useCallback } from "react";
 import toast, { Toaster } from "react-hot-toast";
 import { authFetch } from "@/lib/authFetch";
 import { Modal } from "flowbite-react";
-import { PlusCircle, Save } from "lucide-react";
+import { PlusCircle, Save, X } from "lucide-react";
 import SubMateriItem from "@/components/SubMateriItem";
 
 const TiptapEditor = dynamic(() => import("@/components/TiptapEditor"), {
   ssr: false,
 });
+
+interface Practice {
+  _id?: string;
+  type: 'html' | 'javascript';
+  title: string;
+  description: string;
+  initialCode: string;
+  hint: string;
+  expectedOutputRegex: string[];
+}
 
 interface SubMateri {
   _id?: string; 
@@ -52,6 +62,7 @@ export default function MateriEditorPage({ params }: MateriEditorPageProps) {
   const [youtubeInput, setYoutubeInput] = useState("");
   const [youtubeEmbedUrl, setYoutubeEmbedUrl] = useState<string | null>(null);
   const [youtubeError, setYoutubeError] = useState<string | null>(null);
+  const [practices, setPractices] = useState<Practice[]>([]);
   const [loading, setLoading] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [topikId, setTopikId] = useState<string | null>(null); // State untuk menyimpan ID topik
@@ -75,6 +86,7 @@ export default function MateriEditorPage({ params }: MateriEditorPageProps) {
           setYoutubeInput(data.youtube || "");
           setYoutubeEmbedUrl(data.youtube ? getEmbedUrl(data.youtube) : null);
           setTopikId(data.topikId);
+          setPractices(data.practices || []);
         }
       } catch (err) {
         console.error("❌ Error saat memuat materi:", err);
@@ -124,6 +136,42 @@ export default function MateriEditorPage({ params }: MateriEditorPageProps) {
     });
   }, [subMateris]);
 
+  // --- Handler untuk Praktik (Coding) ---
+  const handleAddPractice = () => {
+    setPractices([...practices, { 
+      type: 'javascript', 
+      title: "", 
+      description: "", 
+      initialCode: "", 
+      hint: "", 
+      expectedOutputRegex: [] 
+    }]);
+  };
+
+  const handleRemovePractice = (index: number) => {
+    const newPractices = [...practices];
+    newPractices.splice(index, 1);
+    setPractices(newPractices);
+  };
+
+  const handlePracticeChange = (index: number, field: keyof Practice, value: any) => {
+    const newPractices = [...practices];
+    newPractices[index] = { ...newPractices[index], [field]: value };
+    setPractices(newPractices);
+  };
+
+  const handleAddRegex = (practiceIndex: number) => {
+    const newPractices = [...practices];
+    newPractices[practiceIndex].expectedOutputRegex.push("");
+    setPractices(newPractices);
+  };
+
+  const handleRemoveRegex = (practiceIndex: number, regexIndex: number) => {
+    const newPractices = [...practices];
+    newPractices[practiceIndex].expectedOutputRegex.splice(regexIndex, 1);
+    setPractices(newPractices);
+  };
+
   const handleSave = async () => {
     setLoading(true);
     setYoutubeError(null); // Clear previous errors
@@ -145,6 +193,7 @@ export default function MateriEditorPage({ params }: MateriEditorPageProps) {
           topikId: topikId, // Kirim topikId untuk identifikasi di backend
           subMateris,
           youtube: youtubeInput, // Simpan URL asli yang diinput pengguna
+          practices, // Simpan daftar praktik
         }),
       });
 
@@ -244,6 +293,81 @@ export default function MateriEditorPage({ params }: MateriEditorPageProps) {
           className="w-full flex items-center justify-center gap-2 py-3 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition"
         >
           <PlusCircle size={18} /> Tambah Bagian Materi
+        </button>
+      </div>
+
+      {/* Editor Praktik (Live Code) */}
+      <hr className="my-10 border-gray-200 dark:border-gray-700" />
+      
+      <div className="mb-6 flex justify-between items-center">
+        <div>
+            <h2 className="text-xl font-bold text-gray-900 dark:text-white">Editor Praktik (Coding)</h2>
+            <p className="text-sm text-gray-500 dark:text-gray-400">Tambahkan soal latihan interaktif untuk materi ini.</p>
+        </div>
+      </div>
+
+      <div className="space-y-6">
+        {practices.map((practice, pIndex) => (
+          <div key={practice._id || pIndex} className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+            <div className="flex justify-between items-center mb-4">
+               <h3 className="font-bold text-lg text-gray-800 dark:text-white">Soal Praktik #{pIndex + 1}</h3>
+               <button onClick={() => handleRemovePractice(pIndex)} className="text-red-500 hover:text-red-700 text-sm font-medium">Hapus Soal</button>
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                <div>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Judul Latihan</label>
+                    <input type="text" value={practice.title} onChange={(e) => handlePracticeChange(pIndex, 'title', e.target.value)} className="w-full p-2 border rounded-lg bg-gray-50 dark:bg-gray-700 dark:border-gray-600 text-sm" placeholder="Contoh: Latihan 1: Variabel" />
+                </div>
+                <div>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Tipe Bahasa</label>
+                    <select value={practice.type} onChange={(e) => handlePracticeChange(pIndex, 'type', e.target.value)} className="w-full p-2 border rounded-lg bg-gray-50 dark:bg-gray-700 dark:border-gray-600 text-sm">
+                        <option value="html">HTML</option>
+                        <option value="javascript">JavaScript</option>
+                    </select>
+                </div>
+            </div>
+
+            <div className="mb-4">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Deskripsi Soal</label>
+                <textarea value={practice.description} onChange={(e) => handlePracticeChange(pIndex, 'description', e.target.value)} rows={2} className="w-full p-2 border rounded-lg bg-gray-50 dark:bg-gray-700 dark:border-gray-600 text-sm" placeholder="Jelaskan apa yang harus dilakukan siswa..."></textarea>
+            </div>
+
+            <div className="mb-4">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Initial Code (Kode Awal)</label>
+                <textarea value={practice.initialCode} onChange={(e) => handlePracticeChange(pIndex, 'initialCode', e.target.value)} rows={4} className="w-full p-3 font-mono text-sm border rounded-lg bg-gray-900 text-gray-100 border-gray-700" placeholder="// Tulis kode awal di sini..."></textarea>
+            </div>
+
+            <div className="mb-4">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Hint (Petunjuk)</label>
+                <input type="text" value={practice.hint} onChange={(e) => handlePracticeChange(pIndex, 'hint', e.target.value)} className="w-full p-2 border rounded-lg bg-gray-50 dark:bg-gray-700 dark:border-gray-600 text-sm" placeholder="Berikan petunjuk jika siswa kesulitan..." />
+            </div>
+
+            <div className="mb-4">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Validasi Regex (Expected Output)</label>
+                <p className="text-xs text-gray-500 dark:text-gray-400 mb-3">Tambahkan pola regex. Siswa dianggap benar jika kodenya mengandung SEMUA pola di bawah ini.</p>
+                {practice.expectedOutputRegex.map((regex, rIndex) => (
+                    <div key={rIndex} className="flex items-center gap-2 mb-2">
+                        <input type="text" value={regex} onChange={(e) => {
+                            const newPractices = [...practices];
+                            newPractices[pIndex].expectedOutputRegex[rIndex] = e.target.value;
+                            setPractices(newPractices);
+                        }} className="flex-1 p-2 font-mono text-sm border rounded-lg bg-gray-50 dark:bg-gray-700 dark:border-gray-600" placeholder="Contoh: console\.log\(.*nama.*\)" />
+                        <button onClick={() => handleRemoveRegex(pIndex, rIndex)} className="p-2 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/30 rounded-lg"><X size={18}/></button>
+                    </div>
+                ))}
+                <button onClick={() => handleAddRegex(pIndex)} className="text-sm text-blue-600 dark:text-blue-400 hover:text-blue-700 font-medium flex items-center gap-1 mt-1">+ Tambah Aturan Regex</button>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <div className="mt-6 mb-8">
+        <button
+          onClick={handleAddPractice}
+          className="w-full flex items-center justify-center gap-2 py-3 border-2 border-dashed border-blue-300 dark:border-blue-600/50 bg-blue-50 dark:bg-blue-900/10 rounded-lg text-blue-600 dark:text-blue-400 hover:bg-blue-100 dark:hover:bg-blue-900/20 transition"
+        >
+          <PlusCircle size={18} /> Tambah Soal Praktik Baru
         </button>
       </div>
 
