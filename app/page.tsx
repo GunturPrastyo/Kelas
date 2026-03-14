@@ -610,7 +610,17 @@ export default function LandingPage() {
           </div>
 
           {/* 3D Carousel Slider */}
-          <div className="relative h-[400px] md:h-[450px] w-full max-w-6xl mx-auto flex items-center mt-2 md:mt-8 mb-12 md:mb-20 justify-center perspective-1000">
+          <motion.div 
+            className="relative h-[400px] md:h-[450px] w-full max-w-6xl mx-auto flex items-center mt-2 md:mt-8 mb-12 md:mb-20 justify-center perspective-1000 touch-pan-y"
+            onPanEnd={(e, info) => {
+              const swipeDistance = info.offset.x;
+              if (swipeDistance < -50) {
+                handleNextFeature();
+              } else if (swipeDistance > 50) {
+                handlePrevFeature();
+              }
+            }}
+          >
             {features.map((feature, idx) => {
               const position = (idx - activeFeature + features.length) % features.length;
 
@@ -661,13 +671,13 @@ export default function LandingPage() {
             })}
 
             {/* Navigation Buttons */}
-            <button onClick={handlePrevFeature} className="absolute left-4 md:left-10 z-40 p-3 rounded-full bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm shadow-lg hover:bg-white dark:hover:bg-gray-700 transition-all text-slate-700 dark:text-slate-200">
+            <button onClick={handlePrevFeature} className="hidden md:block absolute left-4 md:left-10 z-40 p-3 rounded-full bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm shadow-lg hover:bg-white dark:hover:bg-gray-700 transition-all text-slate-700 dark:text-slate-200">
               <ChevronLeft className="w-6 h-6" />
             </button>
-            <button onClick={handleNextFeature} className="absolute right-4 md:right-10 z-40 p-3 rounded-full bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm shadow-lg hover:bg-white dark:hover:bg-gray-700 transition-all text-slate-700 dark:text-slate-200">
+            <button onClick={handleNextFeature} className="hidden md:block absolute right-4 md:right-10 z-40 p-3 rounded-full bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm shadow-lg hover:bg-white dark:hover:bg-gray-700 transition-all text-slate-700 dark:text-slate-200">
               <ChevronRight className="w-6 h-6" />
             </button>
-          </div>
+          </motion.div>
         </div>
 
 
@@ -839,10 +849,6 @@ export default function LandingPage() {
             <div
               ref={mentorScrollRef}
               className={`flex gap-6 overflow-x-auto snap-x snap-mandatory pb-8 [&::-webkit-scrollbar]:hidden`}
-              onTouchStart={(e) => {
-                // Logika touch start
-              }}
-              onTouchEnd={(e) => { }}
               style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
             >
               {mentors.map((mentor, idx) => (
