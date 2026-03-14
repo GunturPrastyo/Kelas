@@ -39,6 +39,16 @@ interface Materi {
     youtube?: string;
 }
 
+interface Practice {
+    _id: string;
+    type: 'html' | 'javascript';
+    title: string;
+    description: string;
+    initialCode: string;
+    hint: string;
+    expectedOutputRegex: string[]; // Array of regex strings to validate
+}
+
 interface Topik {
     _id: string;
     title: string;
@@ -47,6 +57,7 @@ interface Topik {
     questions: Question[];
     isCompleted: boolean;
     hasAttempted: boolean;
+    practices?: Practice[];
 }
 
 interface Modul {
@@ -93,49 +104,44 @@ const shuffleArray = <T,>(array: T[]): T[] => {
 };
 
 // --- Component: Practice Section (Kinesthetic) ---
-const PracticeSection = ({ topicId }: { topicId: string }) => {
-    const questions = [
-        {
-            id: 1,
-            type: 'html',
-            title: 'Latihan 1: Memperbaiki Struktur HTML',
-            description: 'Terdapat elemen <h1> yang kehilangan tag penutupnya. Perbaiki kode agar teks "Hello World" tampil dengan benar sebagai judul.',
-            initialCode: '<div>\n  <h1>Hello World\n  <p>Selamat datang di belajar koding!</p>\n</div>',
-            hint: 'Setiap tag pembuka seperti <h1> harus memiliki tag penutup </h1>.',
-            check: (code: string) => /<\/h1>/.test(code) && /<h1>/.test(code)
-        },
-        {
-            id: 2,
-            type: 'javascript',
-            title: 'Latihan 2: Variabel dan Output',
-            description: 'Buatlah variabel bernama "nama" yang berisi nama kamu (string), lalu tampilkan menggunakan console.log().',
-            initialCode: '// Tulis kodemu di bawah ini\n\n',
-            hint: 'Gunakan keyword let atau const. Contoh: let nama = "Budi"; console.log(nama);',
-            check: (code: string) => /(let|const|var)\s+nama\s*=/.test(code) && /console\.log\(.*nama.*\)/.test(code)
-        }
-    ];
-
+const PracticeSection = ({ topicId, practices = [] }: { topicId: string, practices?: Practice[] }) => {
     const [currentIndex, setCurrentIndex] = useState(0);
-    const [code, setCode] = useState(questions[0].initialCode);
+    const currentQ = practices && practices.length > 0 ? practices[currentIndex] : null;
+    const [code, setCode] = useState(currentQ ? currentQ.initialCode : '');
     const [output, setOutput] = useState<string[]>([]);
     const [isCorrect, setIsCorrect] = useState(false);
     const [showHint, setShowHint] = useState(false);
     const [iframeSrc, setIframeSrc] = useState('');
     const [activePracticeTab, setActivePracticeTab] = useState('code');
 
-    const currentQ = questions[currentIndex];
-
     useEffect(() => {
-        setCode(currentQ.initialCode);
-        setOutput([]);
-        setIsCorrect(false);
-        setShowHint(false);
-        setIframeSrc('');
-        setActivePracticeTab('code');
-    }, [currentIndex]);
+        if (currentQ) {
+            setCode(currentQ.initialCode);
+            setOutput([]);
+            setIsCorrect(false);
+            setShowHint(false);
+            setIframeSrc('');
+            setActivePracticeTab('code');
+        }
+    }, [currentIndex, currentQ]);
 
     const handleRun = () => {
+        if (!currentQ) return;
         setIsCorrect(false);
+        
+        const validateCode = (codeToCheck: string) => {
+            if (!currentQ.expectedOutputRegex || currentQ.expectedOutputRegex.length === 0) return true;
+            // Evaluasi regex secara dinamis: semua pattern harus match agar jawaban dianggap benar
+            return currentQ.expectedOutputRegex.every(pattern => {
+                try {
+                    return new RegExp(pattern).test(codeToCheck);
+                } catch (e) {
+                    console.error("Invalid regex pattern", pattern);
+                    return false;
+                }
+            });
+        };
+
         if (currentQ.type === 'javascript') {
             const logs: string[] = [];
             const mockConsole = {
@@ -145,7 +151,7 @@ const PracticeSection = ({ topicId }: { topicId: string }) => {
             try {
                 new Function('console', code)(mockConsole);
                 setOutput(logs);
-                if (currentQ.check(code)) {
+                if (validateCode(code)) {
                     setIsCorrect(true);
                     logs.push("✅ Jawaban Benar!");
                 } else {
@@ -157,12 +163,20 @@ const PracticeSection = ({ topicId }: { topicId: string }) => {
             }
         } else {
             setIframeSrc(code);
-            if (currentQ.check(code)) {
+            if (validateCode(code)) {
                 setIsCorrect(true);
             }
         }
         setActivePracticeTab('preview');
     };
+
+    if (!practices || practices.length === 0) {
+        return (
+            <div className="flex justify-center items-center h-full min-h-[300px] text-gray-500 dark:text-gray-400 bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700">
+                <p>Belum ada materi praktik untuk topik ini.</p>
+            </div>
+        );
+    }
 
     return (
         <div className="flex flex-col gap-4 h-full min-h-[500px]">
@@ -239,7 +253,7 @@ const PracticeSection = ({ topicId }: { topicId: string }) => {
 
             <div className="flex justify-end pt-2">
                 {isCorrect ? (
-                    currentIndex < questions.length - 1 ? (
+                    currentIndex < practices.length - 1 ? (
                         <button 
                             onClick={() => setCurrentIndex(prev => prev + 1)}
                             className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-xl font-bold transition-all shadow-lg hover:shadow-blue-500/30 animate-bounce"
@@ -1696,7 +1710,7 @@ export default function ModulDetailPage() {
 
                                             {activeTopicTab === 'praktik' && (
                                                 <div className="animate-in fade-in duration-300">
-                                                    <PracticeSection topicId={topik._id} />
+                                                <PracticeSection topicId={topik._id} practices={topik.practices} />
                                                 </div>
                                             )}
                                         </div>
