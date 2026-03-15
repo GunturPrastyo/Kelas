@@ -260,9 +260,9 @@ const PracticeSection = ({ topicId, practices: initialPractices }: { topicId: st
                 </div>
 
                 {/* Tab Content */}
-                <div className="flex-1 relative min-h-[400px] bg-gray-800">
+                <div className="flex-1 relative min-h-[400px] bg-[#1e1e1e]">
                     {/* Code Editor */}
-                    <div className={`absolute inset-0 ${activePracticeTab === 'code' ? '' : 'hidden'}`}>
+                    <div className={`absolute inset-0 pt-4 ${activePracticeTab === 'code' ? '' : 'hidden'}`}>
                         <Editor 
                             height="100%" 
                             defaultLanguage={currentQ.type} 
@@ -274,9 +274,9 @@ const PracticeSection = ({ topicId, practices: initialPractices }: { topicId: st
                         />
                     </div>
                     {/* Preview/Console */}
-                    <div className={`absolute inset-0 p-4 overflow-auto ${activePracticeTab === 'preview' ? '' : 'hidden'} ${currentQ.type === 'html' ? 'bg-white' : 'bg-[#1e1e1e]'}`}>
+                    <div className={`absolute inset-0 p-4 sm:p-6 overflow-auto ${activePracticeTab === 'preview' ? '' : 'hidden'} ${currentQ.type === 'html' ? 'bg-white' : 'bg-[#1e1e1e]'}`}>
                         {currentQ.type === 'html' ? (
-                            <iframe srcDoc={iframeSrc} className="w-full h-full border-none bg-white" title="Preview" />
+                            <iframe srcDoc={iframeSrc} className="w-full h-full border-none bg-white rounded-md" title="Preview" />
                         ) : (
                             <div className="font-mono text-sm text-gray-200">
                                 {output.length > 0 ? (
