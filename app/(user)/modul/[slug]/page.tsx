@@ -104,15 +104,46 @@ const shuffleArray = <T,>(array: T[]): T[] => {
 };
 
 // --- Component: Practice Section (Kinesthetic) ---
-const PracticeSection = ({ topicId, practices = [] }: { topicId: string, practices?: Practice[] }) => {
+const PracticeSection = ({ topicId, practices: initialPractices }: { topicId: string, practices?: Practice[] }) => {
+    const [practices, setPractices] = useState<Practice[]>(initialPractices || []);
+    const [loading, setLoading] = useState(!initialPractices || initialPractices.length === 0);
     const [currentIndex, setCurrentIndex] = useState(0);
     const currentQ = practices && practices.length > 0 ? practices[currentIndex] : null;
-    const [code, setCode] = useState(currentQ ? currentQ.initialCode : '');
+    const [code, setCode] = useState('');
     const [output, setOutput] = useState<string[]>([]);
     const [isCorrect, setIsCorrect] = useState(false);
     const [showHint, setShowHint] = useState(false);
     const [iframeSrc, setIframeSrc] = useState('');
     const [activePracticeTab, setActivePracticeTab] = useState('code');
+
+    // Menggunakan JSON.stringify untuk mencegah infinite loop akibat perubahan referensi memori props
+    const practicesDependency = JSON.stringify(initialPractices || []);
+
+    useEffect(() => {
+        const fetchPractices = async () => {
+            if (initialPractices && initialPractices.length > 0) {
+                setPractices(initialPractices);
+                setLoading(false);
+                return;
+            }
+
+            try {
+                setLoading(true);
+                const res = await authFetch(`${process.env.NEXT_PUBLIC_API_URL}/api/praktik/topik/${topicId}`);
+                if (res.ok) {
+                    const data = await res.json();
+                    setPractices(data);
+                }
+            } catch (error) {
+                console.error("Gagal memuat materi praktik:", error);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchPractices();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [topicId, practicesDependency]);
 
     useEffect(() => {
         if (currentQ) {
@@ -169,6 +200,14 @@ const PracticeSection = ({ topicId, practices = [] }: { topicId: string, practic
         }
         setActivePracticeTab('preview');
     };
+
+    if (loading) {
+        return (
+            <div className="flex justify-center items-center h-full min-h-[300px] text-gray-500 dark:text-gray-400 bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700">
+                <p className="animate-pulse">Memuat materi praktik...</p>
+            </div>
+        );
+    }
 
     if (!practices || practices.length === 0) {
         return (
