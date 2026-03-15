@@ -105,6 +105,7 @@ const shuffleArray = <T,>(array: T[]): T[] => {
 
 // --- Component: Practice Section (Kinesthetic) ---
 const PracticeSection = ({ topicId, practices: initialPractices }: { topicId: string, practices?: Practice[] }) => {
+    const { showAlert } = useAlert();
     const [practices, setPractices] = useState<Practice[]>(initialPractices || []);
     const [loading, setLoading] = useState(!initialPractices || initialPractices.length === 0);
     const [currentIndex, setCurrentIndex] = useState(0);
@@ -173,6 +174,8 @@ const PracticeSection = ({ topicId, practices: initialPractices }: { topicId: st
             });
         };
 
+        let isAnswerCorrect = false;
+
         if (currentQ.type === 'javascript') {
             const logs: string[] = [];
             const mockConsole = {
@@ -181,9 +184,8 @@ const PracticeSection = ({ topicId, practices: initialPractices }: { topicId: st
             };
             try {
                 new Function('console', code)(mockConsole);
-                setOutput(logs);
                 if (validateCode(code)) {
-                    setIsCorrect(true);
+                    isAnswerCorrect = true;
                     logs.push("✅ Jawaban Benar!");
                 } else {
                     logs.push("❌ Jawaban belum tepat. Coba lagi!");
@@ -195,10 +197,29 @@ const PracticeSection = ({ topicId, practices: initialPractices }: { topicId: st
         } else {
             setIframeSrc(code);
             if (validateCode(code)) {
-                setIsCorrect(true);
+                isAnswerCorrect = true;
             }
         }
+        
+        setIsCorrect(isAnswerCorrect);
         setActivePracticeTab('preview');
+
+        if (isAnswerCorrect) {
+            if (currentIndex < practices.length - 1) {
+                showAlert({
+                    title: 'Kerja Bagus! 🎉',
+                    message: 'Jawabanmu benar. Mari lanjut ke praktik berikutnya.',
+                    confirmText: 'Lanjutkan',
+                    onConfirm: () => setCurrentIndex(prev => prev + 1),
+                });
+            } else {
+                showAlert({
+                    title: 'Luar Biasa! 🌟',
+                    message: 'Kamu telah menyelesaikan semua soal praktik di topik ini.',
+                    confirmText: 'Tutup',
+                });
+            }
+        }
     };
 
     if (loading) {
