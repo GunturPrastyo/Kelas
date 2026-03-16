@@ -8,7 +8,7 @@ import { useState, use, useEffect, useCallback } from "react";
 import toast, { Toaster } from "react-hot-toast";
 import { authFetch } from "@/lib/authFetch";
 import { Modal } from "flowbite-react";
-import { PlusCircle, Save, X } from "lucide-react";
+import { PlusCircle, Save, X, BookOpen, Code } from "lucide-react";
 import SubMateriItem from "@/components/SubMateriItem";
 
 const TiptapEditor = dynamic(() => import("@/components/TiptapEditor"), {
@@ -66,6 +66,7 @@ export default function MateriEditorPage({ params }: MateriEditorPageProps) {
   const [loading, setLoading] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [topikId, setTopikId] = useState<string | null>(null); // State untuk menyimpan ID topik
+  const [activeTab, setActiveTab] = useState<'materi' | 'praktik'>('materi');
 
   useEffect(() => {
     const fetchMateri = async () => {
@@ -240,150 +241,178 @@ export default function MateriEditorPage({ params }: MateriEditorPageProps) {
         </button>
       </div>
 
-      <div className="bg-white dark:bg-gray-800 rounded-xl shadow-md border p-6 mb-6">
-
-      {/* Input YouTube */}
-      <div className="mb-5 flex items-center space-x-2">
-        <label htmlFor="youtube" className="block text-sm font-medium text-gray-900 dark:text-white">
-          Embed Video YouTube (opsional)
-        </label>
+      {/* Tabs */}
+      <div className="flex border-b border-gray-200 dark:border-gray-700 mb-6">
         <button
-          type="button"
-          onClick={() => setShowModal(true)}
-          className="text-xs px-2 py-0.5 rounded-full bg-blue-100 text-blue-800 hover:bg-blue-200 dark:bg-blue-900 dark:text-blue-300"
+          onClick={() => setActiveTab('materi')}
+          className={`flex items-center gap-2 px-4 py-3 font-medium text-sm transition-colors border-b-2 ${
+            activeTab === 'materi'
+              ? 'border-blue-600 text-blue-600 dark:text-blue-400 bg-blue-50/50 dark:bg-blue-900/10'
+              : 'border-transparent text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800/50'
+          }`}
         >
-          ?
+          <BookOpen size={18} /> Mode Bacaan
+        </button>
+        <button
+          onClick={() => setActiveTab('praktik')}
+          className={`flex items-center gap-2 px-4 py-3 font-medium text-sm transition-colors border-b-2 ${
+            activeTab === 'praktik'
+              ? 'border-blue-600 text-blue-600 dark:text-blue-400 bg-blue-50/50 dark:bg-blue-900/10'
+              : 'border-transparent text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800/50'
+          }`}
+        >
+          <Code size={18} /> Mode Praktik
         </button>
       </div>
 
-      <input
-        type="text"
-        id="youtube"
-        placeholder="https://www.youtube.com/embed/VIDEO_ID"
-        value={youtubeInput} // Menggunakan youtubeInput yang sudah dideklarasikan
-        onChange={(e) => setYoutubeInput(e.target.value)} // Menggunakan setYoutubeInput
-        className={`block w-full text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 dark:text-gray-400 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 focus:ring-2 focus:outline-none p-2 mb-2 ${youtubeError ? 'border-red-500 focus:ring-red-500' : 'focus:ring-blue-500'}`}
-      />
-      {youtubeError && (
-        <p className="text-red-500 text-xs mt-1 mb-2">{youtubeError}</p>
-      )}
-      <p className="text-sm text-gray-500 dark:text-gray-300 mb-5">
-        Masukkan URL video YouTube (bukan link embed). Kami akan mengkonversinya secara otomatis.
-      </p>
-      </div>
-
-      {/* Sub-Materi Editor */}
-      <div className="space-y-6">
-        {subMateris.map((sub, index) => (
-          <SubMateriItem
-            key={sub._id || index} // Gunakan ID jika ada, atau index sebagai fallback
-            index={index}
-            subMateri={sub}
-            onMove={moveSubMateri}
-            onChange={handleSubMateriChange}
-            onRemove={handleRemoveSubMateri}
-          />
-        ))}
-      </div>
-
-      {/* Tombol Tambah Sub Materi */}
-      <div className="mt-6">
-        <button
-          onClick={handleAddSubMateri}
-          className="w-full flex items-center justify-center gap-2 py-3 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition"
-        >
-          <PlusCircle size={18} /> Tambah Bagian Materi
-        </button>
-      </div>
-
-      {/* Editor Praktik (Live Code) */}
-      <hr className="my-10 border-gray-200 dark:border-gray-700" />
+      {activeTab === 'materi' && (
+        <div className="animate-in fade-in duration-300">
+          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-md p-6 mb-6">
+            {/* Input YouTube */}
+            <div className="mb-5 flex items-center space-x-2">
+              <label htmlFor="youtube" className="block text-sm font-medium text-gray-900 dark:text-white">
+                Embed Video YouTube (opsional)
+              </label>
+              <button
+                type="button"
+                onClick={() => setShowModal(true)}
+                className="text-xs px-2 py-0.5 rounded-full bg-blue-100 text-blue-800 hover:bg-blue-200 dark:bg-blue-900 dark:text-blue-300"
+              >
+                ?
+              </button>
+            </div>
       
-      <div className="mb-6 flex justify-between items-center">
-        <div>
-            <h2 className="text-xl font-bold text-gray-900 dark:text-white">Editor Praktik (Coding)</h2>
-            <p className="text-sm text-gray-500 dark:text-gray-400">Tambahkan soal latihan interaktif untuk materi ini.</p>
+            <input
+              type="text"
+              id="youtube"
+              placeholder="https://www.youtube.com/embed/VIDEO_ID"
+              value={youtubeInput} // Menggunakan youtubeInput yang sudah dideklarasikan
+              onChange={(e) => setYoutubeInput(e.target.value)} // Menggunakan setYoutubeInput
+              className={`block w-full text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 dark:text-gray-400 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 focus:ring-2 focus:outline-none p-2 mb-2 ${youtubeError ? 'border-red-500 focus:ring-red-500' : 'focus:ring-blue-500'}`}
+            />
+            {youtubeError && (
+              <p className="text-red-500 text-xs mt-1 mb-2">{youtubeError}</p>
+            )}
+            <p className="text-sm text-gray-500 dark:text-gray-300 mb-5">
+              Masukkan URL video YouTube (bukan link embed). Kami akan mengkonversinya secara otomatis.
+            </p>
+          </div>
+      
+          {/* Sub-Materi Editor */}
+          <div className="space-y-6">
+            {subMateris.map((sub, index) => (
+              <SubMateriItem
+                key={sub._id || index} // Gunakan ID jika ada, atau index sebagai fallback
+                index={index}
+                subMateri={sub}
+                onMove={moveSubMateri}
+                onChange={handleSubMateriChange}
+                onRemove={handleRemoveSubMateri}
+              />
+            ))}
+          </div>
+      
+          {/* Tombol Tambah Sub Materi */}
+          <div className="mt-6">
+            <button
+              onClick={handleAddSubMateri}
+              className="w-full flex items-center justify-center gap-2 py-3 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition"
+            >
+              <PlusCircle size={18} /> Tambah Bagian Materi
+            </button>
+          </div>
+
+          {/* Preview Video */}
+          {youtubeEmbedUrl && ( // Use youtubeEmbedUrl for preview
+            <div className="mt-6">
+              <h2 className="text-lg font-semibold mb-2 text-gray-900 dark:text-white">
+                Preview Video
+              </h2>
+              <div className="aspect-video">
+                <iframe 
+                  src={youtubeEmbedUrl}
+                  title="Video YouTube"
+                  allowFullScreen
+                  className="w-full h-full rounded-lg"
+                />
+              </div>
+            </div>
+          )}
         </div>
-      </div>
+      )}
 
-      <div className="space-y-6">
-        {practices.map((practice, pIndex) => (
-          <div key={practice._id || pIndex} className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
-            <div className="flex justify-between items-center mb-4">
-               <h3 className="font-bold text-lg text-gray-800 dark:text-white">Soal Praktik #{pIndex + 1}</h3>
-               <button onClick={() => handleRemovePractice(pIndex)} className="text-red-500 hover:text-red-700 text-sm font-medium">Hapus Soal</button>
-            </div>
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                <div>
-                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Judul Latihan</label>
-                    <input type="text" value={practice.title} onChange={(e) => handlePracticeChange(pIndex, 'title', e.target.value)} className="w-full p-2 border rounded-lg bg-gray-50 dark:bg-gray-700 dark:border-gray-600 text-sm" placeholder="Contoh: Latihan 1: Variabel" />
-                </div>
-                <div>
-                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Tipe Bahasa</label>
-                    <select value={practice.type} onChange={(e) => handlePracticeChange(pIndex, 'type', e.target.value)} className="w-full p-2 border rounded-lg bg-gray-50 dark:bg-gray-700 dark:border-gray-600 text-sm">
-                        <option value="html">HTML</option>
-                        <option value="javascript">JavaScript</option>
-                    </select>
-                </div>
-            </div>
-
-            <div className="mb-4">
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Deskripsi Soal</label>
-                <textarea value={practice.description} onChange={(e) => handlePracticeChange(pIndex, 'description', e.target.value)} rows={2} className="w-full p-2 border rounded-lg bg-gray-50 dark:bg-gray-700 dark:border-gray-600 text-sm" placeholder="Jelaskan apa yang harus dilakukan siswa..."></textarea>
-            </div>
-
-            <div className="mb-4">
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Initial Code (Kode Awal)</label>
-                <textarea value={practice.initialCode} onChange={(e) => handlePracticeChange(pIndex, 'initialCode', e.target.value)} rows={4} className="w-full p-3 font-mono text-sm border rounded-lg bg-gray-900 text-gray-100 border-gray-700" placeholder="// Tulis kode awal di sini..."></textarea>
-            </div>
-
-            <div className="mb-4">
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Hint (Petunjuk)</label>
-                <input type="text" value={practice.hint} onChange={(e) => handlePracticeChange(pIndex, 'hint', e.target.value)} className="w-full p-2 border rounded-lg bg-gray-50 dark:bg-gray-700 dark:border-gray-600 text-sm" placeholder="Berikan petunjuk jika siswa kesulitan..." />
-            </div>
-
-            <div className="mb-4">
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Validasi Regex (Expected Output)</label>
-                <p className="text-xs text-gray-500 dark:text-gray-400 mb-3">Tambahkan pola regex. Siswa dianggap benar jika kodenya mengandung SEMUA pola di bawah ini.</p>
-                {practice.expectedOutputRegex.map((regex, rIndex) => (
-                    <div key={rIndex} className="flex items-center gap-2 mb-2">
-                        <input type="text" value={regex} onChange={(e) => {
-                            const newPractices = [...practices];
-                            newPractices[pIndex].expectedOutputRegex[rIndex] = e.target.value;
-                            setPractices(newPractices);
-                        }} className="flex-1 p-2 font-mono text-sm border rounded-lg bg-gray-50 dark:bg-gray-700 dark:border-gray-600" placeholder="Contoh: console\.log\(.*nama.*\)" />
-                        <button onClick={() => handleRemoveRegex(pIndex, rIndex)} className="p-2 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/30 rounded-lg"><X size={18}/></button>
-                    </div>
-                ))}
-                <button onClick={() => handleAddRegex(pIndex)} className="text-sm text-blue-600 dark:text-blue-400 hover:text-blue-700 font-medium flex items-center gap-1 mt-1">+ Tambah Aturan Regex</button>
+      {activeTab === 'praktik' && (
+        <div className="animate-in fade-in duration-300">
+          <div className="mb-6 flex justify-between items-center">
+            <div>
+                <h2 className="text-xl font-bold text-gray-900 dark:text-white">Editor Praktik (Coding)</h2>
+                <p className="text-sm text-gray-500 dark:text-gray-400">Tambahkan soal latihan interaktif untuk materi ini.</p>
             </div>
           </div>
-        ))}
-      </div>
-
-      <div className="mt-6 mb-8">
-        <button
-          onClick={handleAddPractice}
-          className="w-full flex items-center justify-center gap-2 py-3 border-2 border-dashed border-blue-300 dark:border-blue-600/50 bg-blue-50 dark:bg-blue-900/10 rounded-lg text-blue-600 dark:text-blue-400 hover:bg-blue-100 dark:hover:bg-blue-900/20 transition"
-        >
-          <PlusCircle size={18} /> Tambah Soal Praktik Baru
-        </button>
-      </div>
-
-      {/* Preview Video */}
-      {youtubeEmbedUrl && ( // Use youtubeEmbedUrl for preview
-        <div className="mt-6">
-          <h2 className="text-lg font-semibold mb-2 text-gray-900 dark:text-white">
-            Preview Video
-          </h2>
-          <div className="aspect-video">
-            <iframe 
-              src={youtubeEmbedUrl}
-              title="Video YouTube"
-              allowFullScreen
-              className="w-full h-full rounded-lg"
-            />
+    
+          <div className="space-y-6">
+            {practices.map((practice, pIndex) => (
+              <div key={practice._id || pIndex} className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+                <div className="flex justify-between items-center mb-4">
+                   <h3 className="font-bold text-lg text-gray-800 dark:text-white">Soal Praktik #{pIndex + 1}</h3>
+                   <button onClick={() => handleRemovePractice(pIndex)} className="text-red-500 hover:text-red-700 text-sm font-medium">Hapus Soal</button>
+                </div>
+                
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Judul Latihan</label>
+                        <input type="text" value={practice.title} onChange={(e) => handlePracticeChange(pIndex, 'title', e.target.value)} className="w-full p-2 border rounded-lg bg-gray-50 dark:bg-gray-700 dark:border-gray-600 text-sm" placeholder="Contoh: Latihan 1: Variabel" />
+                    </div>
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Tipe Bahasa</label>
+                        <select value={practice.type} onChange={(e) => handlePracticeChange(pIndex, 'type', e.target.value)} className="w-full p-2 border rounded-lg bg-gray-50 dark:bg-gray-700 dark:border-gray-600 text-sm">
+                            <option value="html">HTML</option>
+                            <option value="javascript">JavaScript</option>
+                        </select>
+                    </div>
+                </div>
+    
+                <div className="mb-4">
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Deskripsi Soal</label>
+                    <textarea value={practice.description} onChange={(e) => handlePracticeChange(pIndex, 'description', e.target.value)} rows={2} className="w-full p-2 border rounded-lg bg-gray-50 dark:bg-gray-700 dark:border-gray-600 text-sm" placeholder="Jelaskan apa yang harus dilakukan siswa..."></textarea>
+                </div>
+    
+                <div className="mb-4">
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Initial Code (Kode Awal)</label>
+                    <textarea value={practice.initialCode} onChange={(e) => handlePracticeChange(pIndex, 'initialCode', e.target.value)} rows={4} className="w-full p-3 font-mono text-sm border rounded-lg bg-gray-900 text-gray-100 border-gray-700" placeholder="// Tulis kode awal di sini..."></textarea>
+                </div>
+    
+                <div className="mb-4">
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Hint (Petunjuk)</label>
+                    <input type="text" value={practice.hint} onChange={(e) => handlePracticeChange(pIndex, 'hint', e.target.value)} className="w-full p-2 border rounded-lg bg-gray-50 dark:bg-gray-700 dark:border-gray-600 text-sm" placeholder="Berikan petunjuk jika siswa kesulitan..." />
+                </div>
+    
+                <div className="mb-4">
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Validasi Regex (Expected Output)</label>
+                    <p className="text-xs text-gray-500 dark:text-gray-400 mb-3">Tambahkan pola regex. Siswa dianggap benar jika kodenya mengandung SEMUA pola di bawah ini.</p>
+                    {practice.expectedOutputRegex.map((regex, rIndex) => (
+                        <div key={rIndex} className="flex items-center gap-2 mb-2">
+                            <input type="text" value={regex} onChange={(e) => {
+                                const newPractices = [...practices];
+                                newPractices[pIndex].expectedOutputRegex[rIndex] = e.target.value;
+                                setPractices(newPractices);
+                            }} className="flex-1 p-2 font-mono text-sm border rounded-lg bg-gray-50 dark:bg-gray-700 dark:border-gray-600" placeholder="Contoh: console\.log\(.*nama.*\)" />
+                            <button onClick={() => handleRemoveRegex(pIndex, rIndex)} className="p-2 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/30 rounded-lg"><X size={18}/></button>
+                        </div>
+                    ))}
+                    <button onClick={() => handleAddRegex(pIndex)} className="text-sm text-blue-600 dark:text-blue-400 hover:text-blue-700 font-medium flex items-center gap-1 mt-1">+ Tambah Aturan Regex</button>
+                </div>
+              </div>
+            ))}
+          </div>
+    
+          <div className="mt-6 mb-8">
+            <button
+              onClick={handleAddPractice}
+              className="w-full flex items-center justify-center gap-2 py-3 border-2 border-dashed border-blue-300 dark:border-blue-600/50 bg-blue-50 dark:bg-blue-900/10 rounded-lg text-blue-600 dark:text-blue-400 hover:bg-blue-100 dark:hover:bg-blue-900/20 transition"
+            >
+              <PlusCircle size={18} /> Tambah Soal Praktik Baru
+            </button>
           </div>
         </div>
       )}
