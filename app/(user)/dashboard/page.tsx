@@ -518,7 +518,7 @@ export default function DashboardPage() {
                   <>
                    
                     <p className="text-xs text-gray-600 dark:text-gray-400 mt-1">
-                      Kerjakan Tes Aea dulu untuk membuka materi yang pas buat kamu, atau mulai dari modul dasar.
+                      Kerjakan Tes Awal dulu untuk membuka materi yang pas buat kamu, atau mulai dari modul dasar.
                     </p>
                   </>
                 ) : overallProgress === 100 ? (
