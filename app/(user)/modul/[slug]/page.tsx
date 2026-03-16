@@ -161,16 +161,17 @@ const PracticeSection = ({ topicId, practices: initialPractices }: { topicId: st
         if (!currentQ) return;
         setIsCorrect(false);
         
-        const validateCode = (codeToCheck: string) => {
+        const validateCode = (codeToCheck: string, outputLogs: string[]) => {
             if (!currentQ.expectedOutputRegex || currentQ.expectedOutputRegex.length === 0) return true;
-            // Evaluasi regex secara dinamis: semua pattern harus match agar jawaban dianggap benar
-            return currentQ.expectedOutputRegex.every(pattern => {
-                try {
-                    return new RegExp(pattern).test(codeToCheck);
-                } catch (e) {
-                    console.error("Invalid regex pattern", pattern);
-                    return false;
-                }
+            
+            // Hapus spasi berlebih dan abaikan huruf besar/kecil untuk toleransi penulisan
+            const normalizedCode = codeToCheck.replace(/\s+/g, '').toLowerCase();
+            const joinedLogs = outputLogs.join(' ').replace(/\s+/g, '').toLowerCase();
+
+            return currentQ.expectedOutputRegex.every(keyword => {
+                const normalizedKeyword = keyword.replace(/\s+/g, '').toLowerCase();
+                // Cek apakah kata kunci ada di dalam kode ATAU di dalam output console (untuk JS)
+                return normalizedCode.includes(normalizedKeyword) || joinedLogs.includes(normalizedKeyword);
             });
         };
 
@@ -184,7 +185,7 @@ const PracticeSection = ({ topicId, practices: initialPractices }: { topicId: st
             };
             try {
                 new Function('console', code)(mockConsole);
-                if (validateCode(code)) {
+                if (validateCode(code, logs)) {
                     isAnswerCorrect = true;
                     logs.push("✅ Jawaban Benar!");
                 } else {
@@ -196,7 +197,7 @@ const PracticeSection = ({ topicId, practices: initialPractices }: { topicId: st
             }
         } else {
             setIframeSrc(code);
-            if (validateCode(code)) {
+            if (validateCode(code, [])) {
                 isAnswerCorrect = true;
             }
         }
@@ -247,7 +248,7 @@ const PracticeSection = ({ topicId, practices: initialPractices }: { topicId: st
                         {currentQ.type.toUpperCase()}
                     </span>
                 </div>
-                <p className="text-sm text-gray-600 dark:text-gray-300">{currentQ.description}</p>
+                <div className="text-sm text-gray-600 dark:text-gray-300 prose prose-sm dark:prose-invert max-w-none" dangerouslySetInnerHTML={{ __html: currentQ.description }} />
                 
                 <button 
                     onClick={() => setShowHint(!showHint)}
@@ -259,7 +260,7 @@ const PracticeSection = ({ topicId, practices: initialPractices }: { topicId: st
                 {showHint && (
                     <div className="mt-2 p-3 bg-blue-50 dark:bg-blue-900/20 text-blue-800 dark:text-blue-200 text-xs rounded-lg border border-blue-100 dark:border-blue-800/50 flex gap-2">
                         <span className="shrink-0">💡</span>
-                        <span>{currentQ.hint}</span>
+                        <div className="prose prose-sm max-w-none prose-p:m-0 text-blue-800 dark:text-blue-200" dangerouslySetInnerHTML={{ __html: currentQ.hint }} />
                     </div>
                 )}
             </div>

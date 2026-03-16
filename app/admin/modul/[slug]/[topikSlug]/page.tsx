@@ -396,19 +396,19 @@ export default function MateriEditorPage({ params }: MateriEditorPageProps) {
                 </div>
     
                 <div className="mb-4">
-                    <label className="block text-sm font-medium text-gray-500 dark:text-gray-400 mb-2">Validasi Regex (Expected Output)</label>
-                    <p className="text-xs text-gray-500 dark:text-gray-400 mb-3">Tambahkan pola regex. Siswa dianggap benar jika kodenya mengandung SEMUA pola di bawah ini.</p>
+                    <label className="block text-sm font-medium text-gray-500 dark:text-gray-400 mb-2">Kata Kunci Kode / Output Console (Expected Output)</label>
+                    <p className="text-xs text-gray-500 dark:text-gray-400 mb-3">Tambahkan potongan kode atau teks output console. Siswa dianggap benar jika kodenya atau output console-nya mengandung SEMUA teks di bawah ini (Spasi akan diabaikan).</p>
                     {practice.expectedOutputRegex.map((regex, rIndex) => (
                         <div key={rIndex} className="flex items-center gap-2 mb-2">
                             <input type="text" value={regex} onChange={(e) => {
                                 const newPractices = [...practices];
                                 newPractices[pIndex].expectedOutputRegex[rIndex] = e.target.value;
                                 setPractices(newPractices);
-                            }} className="flex-1 p-2 font-mono text-sm border rounded-lg bg-gray-50 dark:bg-gray-700 dark:border-gray-600" placeholder="Contoh: console\.log\(.*nama.*\)" />
+                            }} className="flex-1 p-2 font-mono text-sm border rounded-lg bg-gray-50 dark:bg-gray-700 dark:border-gray-600" placeholder="Contoh: console.log(nama) atau Halo Dunia" />
                             <button onClick={() => handleRemoveRegex(pIndex, rIndex)} className="p-2 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/30 rounded-lg"><X size={18}/></button>
                         </div>
                     ))}
-                    <button onClick={() => handleAddRegex(pIndex)} className="text-sm text-blue-600 dark:text-blue-400 hover:text-blue-700 font-medium flex items-center gap-1 mt-1">+ Tambah Aturan Regex</button>
+                    <button onClick={() => handleAddRegex(pIndex)} className="text-sm text-blue-600 dark:text-blue-400 hover:text-blue-700 font-medium flex items-center gap-1 mt-1">+ Tambah Kata Kunci</button>
                 </div>
               </div>
             ))}
