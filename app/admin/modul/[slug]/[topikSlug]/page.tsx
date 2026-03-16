@@ -360,11 +360,11 @@ export default function MateriEditorPage({ params }: MateriEditorPageProps) {
                 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Judul Latihan</label>
+                        <label className="block text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">Judul Latihan</label>
                         <input type="text" value={practice.title} onChange={(e) => handlePracticeChange(pIndex, 'title', e.target.value)} className="w-full p-2 border rounded-lg bg-gray-50 dark:bg-gray-700 dark:border-gray-600 text-sm" placeholder="Contoh: Latihan 1: Variabel" />
                     </div>
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Tipe Bahasa</label>
+                        <label className="block text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">Tipe Bahasa</label>
                         <select value={practice.type} onChange={(e) => handlePracticeChange(pIndex, 'type', e.target.value)} className="w-full p-2 border rounded-lg bg-gray-50 dark:bg-gray-700 dark:border-gray-600 text-sm">
                             <option value="html">HTML</option>
                             <option value="javascript">JavaScript</option>
@@ -373,22 +373,30 @@ export default function MateriEditorPage({ params }: MateriEditorPageProps) {
                 </div>
     
                 <div className="mb-4">
-                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Deskripsi Soal</label>
-                    <textarea value={practice.description} onChange={(e) => handlePracticeChange(pIndex, 'description', e.target.value)} rows={2} className="w-full p-2 border rounded-lg bg-gray-50 dark:bg-gray-700 dark:border-gray-600 text-sm" placeholder="Jelaskan apa yang harus dilakukan siswa..."></textarea>
+                    <label className="block text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">Deskripsi Soal</label>
+                    <TiptapEditor 
+                      content={practice.description} 
+                      onChange={(val) => handlePracticeChange(pIndex, 'description', val)} 
+                      placeholder="Jelaskan apa yang harus dilakukan siswa..." 
+                    />
                 </div>
     
                 <div className="mb-4">
-                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Initial Code (Kode Awal)</label>
+                    <label className="block text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">Initial Code (Kode Awal)</label>
                     <textarea value={practice.initialCode} onChange={(e) => handlePracticeChange(pIndex, 'initialCode', e.target.value)} rows={4} className="w-full p-3 font-mono text-sm border rounded-lg bg-gray-900 text-gray-100 border-gray-700" placeholder="// Tulis kode awal di sini..."></textarea>
                 </div>
     
                 <div className="mb-4">
-                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Hint (Petunjuk)</label>
-                    <input type="text" value={practice.hint} onChange={(e) => handlePracticeChange(pIndex, 'hint', e.target.value)} className="w-full p-2 border rounded-lg bg-gray-50 dark:bg-gray-700 dark:border-gray-600 text-sm" placeholder="Berikan petunjuk jika siswa kesulitan..." />
+                    <label className="block text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">Hint (Petunjuk)</label>
+                    <TiptapEditor 
+                      content={practice.hint} 
+                      onChange={(val) => handlePracticeChange(pIndex, 'hint', val)} 
+                      placeholder="Berikan petunjuk jika siswa kesulitan..." 
+                    />
                 </div>
     
                 <div className="mb-4">
-                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Validasi Regex (Expected Output)</label>
+                    <label className="block text-sm font-medium text-gray-500 dark:text-gray-400 mb-2">Validasi Regex (Expected Output)</label>
                     <p className="text-xs text-gray-500 dark:text-gray-400 mb-3">Tambahkan pola regex. Siswa dianggap benar jika kodenya mengandung SEMUA pola di bawah ini.</p>
                     {practice.expectedOutputRegex.map((regex, rIndex) => (
                         <div key={rIndex} className="flex items-center gap-2 mb-2">

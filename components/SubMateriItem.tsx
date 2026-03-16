@@ -85,7 +85,7 @@ const SubMateriItem: React.FC<SubMateriItemProps> = ({
   preview(drop(ref));
 
   return (
-    <div ref={ref} style={{ opacity }} className="bg-white dark:bg-gray-800 rounded-xl shadow-md border p-5 relative">
+    <div ref={ref} style={{ opacity }} className="bg-white dark:bg-gray-800 rounded-xl shadow-md relative p-0 sm:p-5">
       <div ref={dragRef} className="absolute top-5 left-2 cursor-move text-gray-400 hover:text-gray-600 dark:hover:text-gray-200" title="Geser untuk mengurutkan">
         <GripVertical size={20} />
       </div>
@@ -97,13 +97,13 @@ const SubMateriItem: React.FC<SubMateriItemProps> = ({
         <Trash2 size={18} />
       </button>
 
-      <div className="pl-8">
+      <div>
         <input
           type="text"
           placeholder="Judul Bagian Materi"
           value={subMateri.title}
           onChange={(e) => onChange(index, "title", e.target.value)}
-          className="w-full text-lg font-bold bg-transparent border-none focus:ring-0 p-0 mb-3 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500"
+          className="w-full text-lg font-bold bg-transparent border-none focus:ring-0 p-0 mb-3 mt-5 ml-10 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500"
         />
         <TiptapEditor
           content={subMateri.content}
