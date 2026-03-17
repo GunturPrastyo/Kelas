@@ -47,6 +47,7 @@ interface Practice {
     initialCode: string;
     hint: string;
     expectedOutputRegex: string[]; // Array of regex strings to validate
+    isCompleted?: boolean;
 }
 
 interface Topik {
@@ -104,7 +105,7 @@ const shuffleArray = <T,>(array: T[]): T[] => {
 };
 
 // --- Component: Practice Section (Kinesthetic) ---
-const PracticeSection = ({ topicId, practices: initialPractices }: { topicId: string, practices?: Practice[] }) => {
+const PracticeSection = ({ topicId, practices: initialPractices, onSuccess }: { topicId: string, practices?: Practice[], onSuccess?: () => void }) => {
     const { showAlert } = useAlert();
     const [practices, setPractices] = useState<Practice[]>(initialPractices || []);
     const [loading, setLoading] = useState(!initialPractices || initialPractices.length === 0);
@@ -117,23 +118,23 @@ const PracticeSection = ({ topicId, practices: initialPractices }: { topicId: st
     const [iframeSrc, setIframeSrc] = useState('');
     const [activePracticeTab, setActivePracticeTab] = useState('code');
 
-    // Menggunakan JSON.stringify untuk mencegah infinite loop akibat perubahan referensi memori props
-    const practicesDependency = JSON.stringify(initialPractices || []);
-
     useEffect(() => {
         const fetchPractices = async () => {
-            if (initialPractices && initialPractices.length > 0) {
-                setPractices(initialPractices);
-                setLoading(false);
-                return;
-            }
-
             try {
                 setLoading(true);
                 const res = await authFetch(`${process.env.NEXT_PUBLIC_API_URL}/api/praktik/topik/${topicId}`);
                 if (res.ok) {
                     const data = await res.json();
                     setPractices(data);
+
+                    // Lewati soal yang sudah diselesaikan dan langsung ke yang belum
+                    const firstUncompletedIndex = data.findIndex((p: Practice) => !p.isCompleted);
+                    if (firstUncompletedIndex !== -1) {
+                        setCurrentIndex(firstUncompletedIndex);
+                    } else if (data.length > 0) {
+                        // Semua sudah selesai, set ke nomor terakhir
+                        setCurrentIndex(data.length - 1);
+                    }
                 }
             } catch (error) {
                 console.error("Gagal memuat materi praktik:", error);
@@ -144,7 +145,7 @@ const PracticeSection = ({ topicId, practices: initialPractices }: { topicId: st
 
         fetchPractices();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [topicId, practicesDependency]);
+    }, [topicId]);
 
     useEffect(() => {
         if (currentQ) {
@@ -188,7 +189,14 @@ const PracticeSection = ({ topicId, practices: initialPractices }: { topicId: st
                     setOutput(data.output || []);
                 }
 
+                if (data.isCorrect && onSuccess) {
+                    onSuccess(); // Memicu pembaruan data modul untuk membuka topik selanjutnya
+                }
+
                 if (data.isCorrect) {
+                    // Update state agar tombol lanjutkan otomatis aktif
+                    setPractices(prev => prev.map((p, i) => i === currentIndex ? { ...p, isCompleted: true } : p));
+
                     if (currentIndex < practices.length - 1) {
                         showAlert({
                             title: 'Kerja Bagus! 🎉',
@@ -237,7 +245,12 @@ const PracticeSection = ({ topicId, practices: initialPractices }: { topicId: st
         <div className="flex flex-col gap-4 h-full min-h-[500px]">
             <div className="bg-white dark:bg-gray-800 p-4 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm">
                 <div className="flex justify-between items-start mb-2">
-                    <h3 className="font-bold text-lg text-gray-800 dark:text-white">{currentQ.title}</h3>
+                    <h3 className="font-bold text-lg text-gray-800 dark:text-white flex items-center gap-2">
+                        {currentQ.title}
+                        {currentQ.isCompleted && (
+                            <span title="Selesai" className="flex items-center"><CheckCircle2 className="text-green-500" size={18} /></span>
+                        )}
+                    </h3>
                     <span className={`text-xs px-2 py-1 rounded font-medium ${currentQ.type === 'html' ? 'bg-orange-100 text-orange-700' : 'bg-yellow-100 text-yellow-700'}`}>
                         {currentQ.type.toUpperCase()}
                     </span>
@@ -306,12 +319,20 @@ const PracticeSection = ({ topicId, practices: initialPractices }: { topicId: st
                 </div>
             </div>
 
-            <div className="flex justify-end pt-2">
-                {isCorrect ? (
+            <div className="flex justify-between items-center pt-2">
+                <button
+                    onClick={() => { setIsCorrect(false); setCurrentIndex(prev => Math.max(0, prev - 1)); }}
+                    disabled={currentIndex === 0}
+                    className="px-4 py-2 text-sm font-semibold text-gray-600 dark:text-gray-400 bg-gray-100 dark:bg-gray-800 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                    Sebelumnya
+                </button>
+
+                {isCorrect || currentQ?.isCompleted ? (
                     currentIndex < practices.length - 1 ? (
                         <button 
-                            onClick={() => setCurrentIndex(prev => prev + 1)}
-                            className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-xl font-bold transition-all shadow-lg hover:shadow-blue-500/30 animate-bounce"
+                            onClick={() => { setIsCorrect(false); setCurrentIndex(prev => prev + 1); }}
+                            className={`flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-xl font-bold transition-all shadow-lg hover:shadow-blue-500/30 ${isCorrect ? 'animate-bounce' : ''}`}
                         >
                             Lanjut Soal Berikutnya <ArrowRight size={18} />
                         </button>
@@ -1765,7 +1786,7 @@ export default function ModulDetailPage() {
 
                                             {activeTopicTab === 'praktik' && (
                                                 <div className="animate-in fade-in duration-300">
-                                                <PracticeSection topicId={topik._id} practices={topik.practices} />
+                                                <PracticeSection topicId={topik._id} practices={topik.practices} onSuccess={() => fetchModulData()} />
                                                 </div>
                                             )}
                                         </div>
