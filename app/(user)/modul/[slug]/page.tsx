@@ -157,69 +157,63 @@ const PracticeSection = ({ topicId, practices: initialPractices }: { topicId: st
         }
     }, [currentIndex, currentQ]);
 
-    const handleRun = () => {
+    const handleRun = async () => {
         if (!currentQ) return;
         setIsCorrect(false);
-        
-        const validateCode = (codeToCheck: string, outputLogs: string[]) => {
-            if (!currentQ.expectedOutputRegex || currentQ.expectedOutputRegex.length === 0) return true;
-            
-            // Hapus spasi berlebih dan abaikan huruf besar/kecil untuk toleransi penulisan
-            const normalizedCode = codeToCheck.replace(/\s+/g, '').toLowerCase();
-            const joinedLogs = outputLogs.join(' ').replace(/\s+/g, '').toLowerCase();
-
-            return currentQ.expectedOutputRegex.every(keyword => {
-                const normalizedKeyword = keyword.replace(/\s+/g, '').toLowerCase();
-                // Cek apakah kata kunci ada di dalam kode ATAU di dalam output console (untuk JS)
-                return normalizedCode.includes(normalizedKeyword) || joinedLogs.includes(normalizedKeyword);
-            });
-        };
-
-        let isAnswerCorrect = false;
-
-        if (currentQ.type === 'javascript') {
-            const logs: string[] = [];
-            const mockConsole = {
-                log: (...args: any[]) => logs.push(args.map(a => String(a)).join(' ')),
-                error: (...args: any[]) => logs.push('Error: ' + args.join(' '))
-            };
-            try {
-                new Function('console', code)(mockConsole);
-                if (validateCode(code, logs)) {
-                    isAnswerCorrect = true;
-                    logs.push("✅ Jawaban Benar!");
-                } else {
-                    logs.push("❌ Jawaban belum tepat. Coba lagi!");
-                }
-                setOutput([...logs]);
-            } catch (e: any) {
-                setOutput([e.toString()]);
-            }
-        } else {
-            setIframeSrc(code);
-            if (validateCode(code, [])) {
-                isAnswerCorrect = true;
-            }
-        }
-        
-        setIsCorrect(isAnswerCorrect);
         setActivePracticeTab('preview');
+        
+        if (currentQ.type === 'html') {
+            setIframeSrc(code);
+        } else {
+            setOutput(['Menjalankan kode di server...']);
+        }
 
-        if (isAnswerCorrect) {
-            if (currentIndex < practices.length - 1) {
-                showAlert({
-                    title: 'Kerja Bagus! 🎉',
-                    message: 'Jawabanmu benar. Mari lanjut ke praktik berikutnya.',
-                    confirmText: 'Lanjutkan',
-                    onConfirm: () => setCurrentIndex(prev => prev + 1),
-                });
+        try {
+            const res = await authFetch(`${process.env.NEXT_PUBLIC_API_URL}/api/praktik/run`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    practiceId: currentQ._id,
+                    code: code,
+                    type: currentQ.type
+                })
+            });
+
+            const data = await res.json();
+
+            if (res.ok) {
+                setIsCorrect(data.isCorrect);
+                
+                if (currentQ.type === 'javascript') {
+                    setOutput(data.output || []);
+                }
+
+                if (data.isCorrect) {
+                    if (currentIndex < practices.length - 1) {
+                        showAlert({
+                            title: 'Kerja Bagus! 🎉',
+                            message: 'Jawabanmu benar. Mari lanjut ke praktik berikutnya.',
+                            confirmText: 'Lanjutkan',
+                            onConfirm: () => setCurrentIndex(prev => prev + 1),
+                        });
+                    } else {
+                        showAlert({
+                            title: 'Luar Biasa! 🌟',
+                            message: 'Kamu telah menyelesaikan semua soal praktik di topik ini.',
+                            confirmText: 'Tutup',
+                        });
+                    }
+                }
             } else {
-                showAlert({
-                    title: 'Luar Biasa! 🌟',
-                    message: 'Kamu telah menyelesaikan semua soal praktik di topik ini.',
-                    confirmText: 'Tutup',
-                });
+                if (currentQ.type === 'javascript') {
+                    setOutput([data.message || 'Gagal memvalidasi kode.']);
+                }
             }
+        } catch (error: any) {
+            if (currentQ.type === 'javascript') {
+                setOutput([error.toString()]);
+            }
+            console.error("Gagal menjalankan praktik:", error);
         }
     };
 
