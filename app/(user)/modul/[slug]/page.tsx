@@ -12,6 +12,7 @@ import TopicContent from '@/components/TopicContent';
 import { Home, Terminal, CheckCircle2, Lock, Rocket, Award, AlertTriangle, Star, Lightbulb, Target, Clock3, Activity, Eye, Menu, X, Play, LayoutGrid, BookOpen, Code, Video, Headphones, ArrowRight, RotateCcw, Bot } from 'lucide-react';
 import { motion } from "framer-motion";
 import CodePlayground from '@/components/CodePlayground';
+import ChatbotModal from '@/components/ChatbotModal';
 import { driver } from "driver.js";
 import "driver.js/dist/driver.css";
 import Editor from "@monaco-editor/react";
@@ -378,6 +379,7 @@ export default function ModulDetailPage() {
     const [playgroundCode, setPlaygroundCode] = useState('');
     const [autoRunPlayground, setAutoRunPlayground] = useState(false);
     const [showMobileNav, setShowMobileNav] = useState(false);
+    const [isChatbotOpen, setIsChatbotOpen] = useState(false);
     
     const [fontSize, setFontSize] = useState<string>('16px');
     const [fontStyle, setFontStyle] = useState<string>('font-poppins');
@@ -1856,11 +1858,7 @@ export default function ModulDetailPage() {
                 <button
                     id="chatbot-gemini-btn"
                     onClick={() => {
-                        showAlert({
-                            title: "Tanya Kak Gem",
-                            message: "Fitur AI Chatbot (Kak Gem) akan segera hadir untuk menemanimu belajar!",
-                        });
-                        // TODO: Panggil fungsi untuk membuka modal chatbot AI di sini
+                        setIsChatbotOpen(true);
                     }}
                     className="flex flex-col items-center justify-center p-2 hover:scale-105 transition-all duration-300 group bg-transparent border-none shadow-none cursor-pointer outline-none"
                     title="Tanya Kak Gem"
@@ -1926,6 +1924,11 @@ export default function ModulDetailPage() {
                 onClose={() => setIsPlaygroundOpen(false)} 
                 initialCode={playgroundCode} 
                 autoRun={autoRunPlayground}
+            />
+            <ChatbotModal 
+                isOpen={isChatbotOpen} 
+                onClose={() => setIsChatbotOpen(false)}
+                contextData={modul ? `Modul: ${modul.title}. Deskripsi: ${modul.overview}` : "Materi pembelajaran umum."}
             />
         </div>
     );
