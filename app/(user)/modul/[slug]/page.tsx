@@ -1864,15 +1864,22 @@ export default function ModulDetailPage() {
                     title="Tanya Kak Gem"
                 >
                     <div className="relative w-12 h-12 flex items-center justify-center">
+                        {/* Decorative Wave/Circle Background */}
                         <div className="absolute inset-0 bg-purple-100 dark:bg-purple-500/20 rounded-full group-hover:scale-110 transition-transform duration-500"></div>
                         <div className="absolute inset-0 bg-purple-200 dark:bg-purple-500/10 rounded-full animate-ping opacity-20"></div>
                         
-                        <div className="relative transition-transform duration-300 group-hover:rotate-12 text-purple-600 dark:text-purple-400">
-                            <Bot size={28} />
+                        <div className="relative w-12 h-12 transition-transform duration-300 group-hover:rotate-12">
+                            <img 
+                                src="/robot.png" 
+                                alt="Kak Gem" 
+                                width={64} 
+                                height={64} 
+                                className="object-contain"
+                            />
                         </div>
                     </div>
                     
-                    <span className="bg-purple-100 dark:bg-purple-500/20 px-2 py-0.5 mt-1 rounded-2xl font-bold text-[10px] leading-tight text-slate-600 dark:text-slate-200 text-center">
+                    <span className="bg-purple-100 dark:bg-purple-500/20 px-2 py-0.5 rounded-2xl font-bold text-[10px] leading-tight text-slate-600 dark:text-slate-200 text-center">
                         Kak Gem
                     </span>
 
