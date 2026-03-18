@@ -9,7 +9,7 @@ import { authFetch } from '@/lib/authFetch';
 import { useAlert } from '@/context/AlertContext';
 
 import TopicContent from '@/components/TopicContent';
-import { Home, Terminal, CheckCircle2, Lock, Rocket, Award, AlertTriangle, Star, Lightbulb, Target, Clock3, Activity, Eye, Menu, X, Play, LayoutGrid, BookOpen, Code, Video, Headphones, ArrowRight, RotateCcw } from 'lucide-react';
+import { Home, Terminal, CheckCircle2, Lock, Rocket, Award, AlertTriangle, Star, Lightbulb, Target, Clock3, Activity, Eye, Menu, X, Play, LayoutGrid, BookOpen, Code, Video, Headphones, ArrowRight, RotateCcw, Bot } from 'lucide-react';
 import { motion } from "framer-motion";
 import CodePlayground from '@/components/CodePlayground';
 import { driver } from "driver.js";
@@ -1850,41 +1850,76 @@ export default function ModulDetailPage() {
                 );
             })()}
 
-            {/* Floating Action Button for Code Playground */}
-            <button
-                id="code-playground-btn"
-                onClick={() => {
-                    setIsPlaygroundOpen(true);
-                    setAutoRunPlayground(false);
-                }}
-                className=" fixed bottom-6 right-6 z-50 flex flex-col items-center justify-center   bg-white/90 dark:bg-slate-800/90 backdrop-blur-sm border border-indigo-100 dark:border-indigo-500/30 rounded-4xl shadow-2xl shadow-indigo-500/20 dark:shadow-indigo-900/40 hover:scale-105 hover:border-indigo-300 dark:hover:border-indigo-400 transition-all duration-300 group"
-                title="Buka Code Playground"
-            >
-                <div className="relative w-12 h-12 flex items-center justify-center">
-                    {/* Decorative Wave/Circle Background */}
-                    <div className="absolute inset-0 bg-indigo-100 dark:bg-indigo-500/20 rounded-full group-hover:scale-110 transition-transform duration-500"></div>
-                    <div className="absolute inset-0 bg-indigo-200 dark:bg-indigo-500/10 rounded-full animate-ping opacity-20"></div>
-                    
-                    <div className="relative w-12 h-12 transition-transform duration-300 group-hover:rotate-12">
-                        <img 
-                            src="/coding.webp" 
-                            alt="Live Code" 
-                            width={64} 
-                            height={64} 
-                            className="object-contain"
-                        />
+            {/* Floating Action Buttons */}
+            <div className="fixed bottom-6 right-6 z-50 flex flex-col items-center gap-4">
+                {/* Floating Action Button for Chatbot Gemini */}
+                <button
+                    id="chatbot-gemini-btn"
+                    onClick={() => {
+                        showAlert({
+                            title: "Tanya Kak Gem",
+                            message: "Fitur AI Chatbot (Kak Gem) akan segera hadir untuk menemanimu belajar!",
+                        });
+                        // TODO: Panggil fungsi untuk membuka modal chatbot AI di sini
+                    }}
+                    className="flex flex-col items-center justify-center p-2 hover:scale-105 transition-all duration-300 group bg-transparent border-none shadow-none cursor-pointer outline-none"
+                    title="Tanya Kak Gem"
+                >
+                    <div className="relative w-12 h-12 flex items-center justify-center">
+                        <div className="absolute inset-0 bg-purple-100 dark:bg-purple-500/20 rounded-full group-hover:scale-110 transition-transform duration-500"></div>
+                        <div className="absolute inset-0 bg-purple-200 dark:bg-purple-500/10 rounded-full animate-ping opacity-20"></div>
+                        
+                        <div className="relative transition-transform duration-300 group-hover:rotate-12 text-purple-600 dark:text-purple-400">
+                            <Bot size={28} />
+                        </div>
                     </div>
-                </div>
-                
-                <span className="bg-indigo-100 dark:bg-indigo-500/20 rounded-2xl font-bold text-xs leading-tight text-slate-600 dark:text-slate-200 text-center">
-                    Live Code
-                </span>
+                    
+                    <span className="bg-purple-100 dark:bg-purple-500/20 px-2 py-0.5 mt-1 rounded-2xl font-bold text-[10px] leading-tight text-slate-600 dark:text-slate-200 text-center">
+                        Kak Gem
+                    </span>
 
-                <div className="hidden md:block absolute right-full mr-4 px-4 py-2 bg-slate-900 dark:bg-white text-white dark:text-slate-900 text-sm font-bold rounded-xl opacity-0 group-hover:opacity-100 translate-x-4 group-hover:translate-x-0 transition-all duration-300 whitespace-nowrap shadow-xl pointer-events-none">
-                    Coba Coding Yuk! 🚀
-                    <div className="absolute top-1/2 -right-1 -translate-y-1/2 border-4 border-transparent border-l-slate-900 dark:border-l-white"></div>
-                </div>
-            </button>
+                    <div className="hidden md:block absolute right-full mr-4 px-4 py-2 bg-slate-900 dark:bg-white text-white dark:text-slate-900 text-sm font-bold rounded-xl opacity-0 group-hover:opacity-100 translate-x-4 group-hover:translate-x-0 transition-all duration-300 whitespace-nowrap shadow-xl pointer-events-none">
+                        Tanya Kak Gem (AI) ✨
+                        <div className="absolute top-1/2 -right-1 -translate-y-1/2 border-4 border-transparent border-l-slate-900 dark:border-l-white"></div>
+                    </div>
+                </button>
+
+                {/* Floating Action Button for Code Playground */}
+                <button
+                    id="code-playground-btn"
+                    onClick={() => {
+                        setIsPlaygroundOpen(true);
+                        setAutoRunPlayground(false);
+                    }}
+                    className="flex flex-col items-center justify-center p-2 hover:scale-105 transition-all duration-300 group bg-transparent border-none shadow-none cursor-pointer outline-none"
+                    title="Buka Code Playground"
+                >
+                    <div className="relative w-12 h-12 flex items-center justify-center">
+                        {/* Decorative Wave/Circle Background */}
+                        <div className="absolute inset-0 bg-indigo-100 dark:bg-indigo-500/20 rounded-full group-hover:scale-110 transition-transform duration-500"></div>
+                        <div className="absolute inset-0 bg-indigo-200 dark:bg-indigo-500/10 rounded-full animate-ping opacity-20"></div>
+                        
+                        <div className="relative w-12 h-12 transition-transform duration-300 group-hover:rotate-12">
+                            <img 
+                                src="/coding.webp" 
+                                alt="Live Code" 
+                                width={64} 
+                                height={64} 
+                                className="object-contain"
+                            />
+                        </div>
+                    </div>
+                    
+                    <span className="bg-indigo-100 dark:bg-indigo-500/20 px-2 py-0.5 rounded-2xl font-bold text-[10px] leading-tight text-slate-600 dark:text-slate-200 text-center">
+                        Live Code
+                    </span>
+
+                    <div className="hidden md:block absolute right-full mr-4 px-4 py-2 bg-slate-900 dark:bg-white text-white dark:text-slate-900 text-sm font-bold rounded-xl opacity-0 group-hover:opacity-100 translate-x-4 group-hover:translate-x-0 transition-all duration-300 whitespace-nowrap shadow-xl pointer-events-none">
+                        Coba Coding Yuk! 🚀
+                        <div className="absolute top-1/2 -right-1 -translate-y-1/2 border-4 border-transparent border-l-slate-900 dark:border-l-white"></div>
+                    </div>
+                </button>
+            </div>
 
             <CodePlayground 
                 isOpen={isPlaygroundOpen} 
