@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect } from 'react';
-import { X, Send, Bot, Loader2, User } from 'lucide-react';
+import { X, Send, Loader2, User } from 'lucide-react';
 import { authFetch } from '@/lib/authFetch';
 
 interface Message {
@@ -80,14 +80,14 @@ export default function ChatbotModal({ isOpen, onClose, contextData = "Materi pe
             <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-2xl w-full max-w-md flex flex-col h-[85vh] max-h-[700px] border border-slate-200 dark:border-slate-700 overflow-hidden" onClick={(e) => e.stopPropagation()}>
                 
                 {/* Header */}
-                <div className="flex items-center justify-between p-4 bg-gradient-to-r from-purple-600 to-indigo-600 text-white shrink-0">
+                <div className="flex items-center justify-between p-4 bg-gradient-to-r from-sky-500 to-blue-600 text-white shrink-0">
                     <div className="flex items-center gap-3">
                         <div className="bg-white/20 p-2 rounded-xl backdrop-blur-md">
-                            <Bot size={24} className="text-white" />
+                            <img src="/robot.png" alt="Kak Gem" className="w-6 h-6 object-contain drop-shadow-md" />
                         </div>
                         <div>
                             <h2 className="font-bold text-lg leading-tight">Tanya Kak Gem</h2>
-                            <p className="text-[11px] text-purple-100 font-medium">Asisten AI Cerdasmu ✨</p>
+                            <p className="text-[11px] text-sky-100 font-medium">Asisten AI Cerdasmu ✨</p>
                         </div>
                     </div>
                     <button onClick={onClose} className="p-2 hover:bg-white/20 rounded-full transition-colors">
@@ -100,8 +100,8 @@ export default function ChatbotModal({ isOpen, onClose, contextData = "Materi pe
                     {messages.map((msg, idx) => (
                         <div key={idx} className={`flex gap-3 ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
                             {msg.role === 'bot' && (
-                                <div className="w-8 h-8 rounded-full bg-purple-100 dark:bg-purple-900/50 text-purple-600 dark:text-purple-400 flex items-center justify-center flex-shrink-0 mt-auto">
-                                    <Bot size={16} />
+                                <div className="w-8 h-8 rounded-full bg-sky-100 dark:bg-sky-900/50 text-sky-600 dark:text-sky-400 flex items-center justify-center flex-shrink-0 mt-auto overflow-hidden p-1">
+                                    <img src="/robot.png" alt="Kak Gem" className="w-full h-full object-contain" />
                                 </div>
                             )}
                             <div className={`max-w-[85%] rounded-2xl p-3.5 text-[14px] leading-relaxed shadow-sm ${
@@ -115,11 +115,11 @@ export default function ChatbotModal({ isOpen, onClose, contextData = "Materi pe
                     ))}
                     {isLoading && (
                         <div className="flex gap-3 justify-start animate-in fade-in duration-300">
-                            <div className="w-8 h-8 rounded-full bg-purple-100 dark:bg-purple-900/50 text-purple-600 dark:text-purple-400 flex items-center justify-center flex-shrink-0 mt-auto">
-                                <Bot size={16} />
+                            <div className="w-8 h-8 rounded-full bg-sky-100 dark:bg-sky-900/50 text-sky-600 dark:text-sky-400 flex items-center justify-center flex-shrink-0 mt-auto overflow-hidden p-1">
+                                <img src="/robot.png" alt="Kak Gem" className="w-full h-full object-contain" />
                             </div>
                             <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl rounded-bl-none p-4 flex items-center gap-3 shadow-sm">
-                                <Loader2 size={16} className="animate-spin text-purple-600 dark:text-purple-400" />
+                                <Loader2 size={16} className="animate-spin text-sky-600 dark:text-sky-400" />
                                 <span className="text-xs font-medium text-slate-500 dark:text-slate-400">Kak Gem sedang mengetik...</span>
                             </div>
                         </div>
@@ -135,13 +135,13 @@ export default function ChatbotModal({ isOpen, onClose, contextData = "Materi pe
                             onChange={(e) => setInput(e.target.value)}
                             onKeyDown={handleKeyDown}
                             placeholder="Tanya sesuatu ke Kak Gem..."
-                            className="flex-1 resize-none min-h-[48px] max-h-32 p-3 bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 text-sm text-slate-700 dark:text-slate-200 custom-scrollbar"
+                            className="flex-1 resize-none min-h-[48px] max-h-32 p-3 bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-sky-500 text-sm text-slate-700 dark:text-slate-200 custom-scrollbar"
                             rows={1}
                         />
                         <button 
                             onClick={handleSendMessage}
                             disabled={!input.trim() || isLoading}
-                            className="bg-purple-600 hover:bg-purple-700 disabled:bg-slate-300 dark:disabled:bg-slate-700 text-white p-3 rounded-xl transition-all flex items-center justify-center h-[48px] w-[48px] flex-shrink-0 shadow-sm hover:shadow-md"
+                            className="bg-sky-600 hover:bg-sky-700 disabled:bg-slate-300 dark:disabled:bg-slate-700 text-white p-3 rounded-xl transition-all flex items-center justify-center h-[48px] w-[48px] flex-shrink-0 shadow-sm hover:shadow-md"
                         >
                             <Send size={18} className={input.trim() && !isLoading ? 'translate-x-0.5 -translate-y-0.5 transition-transform' : ''} />
                         </button>
