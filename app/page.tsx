@@ -29,7 +29,9 @@ import {
   Layout,
   Server,
   Smartphone,
-  Globe
+  Globe,
+  BarChart2,
+  Bot
 } from 'lucide-react';
 import { useState, useEffect, useRef } from 'react';
 import { useTheme } from 'next-themes';
@@ -109,24 +111,34 @@ const testimonials = [
 // Data Dummy Fitur
 const features = [
   {
-    icon: <Compass className="w-10 h-10 md:w-14 md:h-14 text-blue-600 dark:text-blue-400" strokeWidth={1.5} />,
+    icon: <Compass className="w-8 h-8 md:w-10 md:h-10 text-blue-600 dark:text-blue-400" strokeWidth={1.5} />,
     title: "Jalur Belajar Personal",
-    desc: "Sistem kami menyesuaikan materi berdasarkan hasil Pre-Test kamu. Tidak perlu belajar hal yang sudah kamu kuasai."
+    desc: "Sistem cerdas kami menyesuaikan tingkat kesulitan materi berdasarkan hasil Tes Awal. Belajar mulai dari Dasar, Menengah, atau Lanjut sesuai kemampuanmu."
   },
   {
-    icon: <Laptop className="w-10 h-10 md:w-14 md:h-14 text-purple-600 dark:text-purple-400" strokeWidth={1.5} />,
-    title: "Modul Interaktif",
-    desc: "Materi disajikan dengan video, kuis, dan coding playground yang membuat belajar tidak membosankan."
+    icon: <Layout className="w-8 h-8 md:w-10 md:h-10 text-purple-600 dark:text-purple-400" strokeWidth={1.5} />,
+    title: "Mode Belajar Fleksibel",
+    desc: "Pilih gaya belajarmu sendiri. Tersedia materi dalam bentuk teks interaktif, video pembelajaran, hingga sesi praktik langsung untuk pengalaman yang optimal."
   },
   {
-    icon: <Award className="w-10 h-10 md:w-14 md:h-14 text-yellow-500 dark:text-yellow-400" strokeWidth={1.5} />,
+    icon: <BarChart2 className="w-8 h-8 md:w-10 md:h-10 text-emerald-500 dark:text-emerald-400" strokeWidth={1.5} />,
+    title: "Analisis Pembelajaran",
+    desc: "Pantau perkembanganmu secara terperinci. Dapatkan laporan akurasi, kecepatan, fokus, serta rekomendasi untuk topik yang masih menjadi kelemahanmu."
+  },
+  {
+    icon: <Code className="w-8 h-8 md:w-10 md:h-10 text-indigo-500 dark:text-indigo-400" strokeWidth={1.5} />,
+    title: "Live Code Playground",
+    desc: "Terapkan teori langsung ke praktik. Tulis, jalankan, dan lihat hasil kode HTML maupun JavaScript secara real-time di dalam browser tanpa aplikasi tambahan."
+  },
+  {
+    icon: <Bot className="w-8 h-8 md:w-10 md:h-10 text-sky-500 dark:text-sky-400" strokeWidth={1.5} />,
+    title: "Tutor AI 'Kak Gem'",
+    desc: "Buntu saat belajar? Tanyakan saja pada Kak Gem, asisten AI cerdas yang siap membantumu memahami materi dan memecahkan masalah koding kapan saja."
+  },
+  {
+    icon: <Award className="w-8 h-8 md:w-10 md:h-10 text-amber-500 dark:text-amber-400" strokeWidth={1.5} />,
     title: "Gamifikasi & Sertifikat",
-    desc: "Dapatkan lencana setiap menyelesaikan tantangan dan sertifikat resmi untuk menunjang karirmu."
-  },
-  {
-    icon: <Users className="w-10 h-10 md:w-14 md:h-14 text-green-600 dark:text-green-400" strokeWidth={1.5} />,
-    title: "Komunitas Belajar",
-    desc: "Bergabung dengan komunitas pelajar lainnya untuk berdiskusi dan berbagi pengetahuan."
+    desc: "Jaga motivasi belajar dengan sistem streak harian, raih skor terbaik di setiap post-test, dan dapatkan sertifikat resmi setelah menyelesaikan modul."
   }
 ];
 
@@ -611,7 +623,7 @@ export default function LandingPage() {
 
           {/* 3D Carousel Slider */}
           <motion.div 
-            className="relative h-[400px] md:h-[450px] w-full max-w-6xl mx-auto flex items-center mt-2 md:mt-8 mb-12 md:mb-20 justify-center perspective-1000 touch-pan-y"
+            className="relative h-[450px] md:h-[500px] w-full max-w-6xl mx-auto flex items-center mt-2 md:mt-8 mb-12 md:mb-20 justify-center perspective-1000 touch-pan-y"
             onPanEnd={(e, info) => {
               const swipeDistance = info.offset.x;
               if (swipeDistance < -50) {
@@ -641,7 +653,7 @@ export default function LandingPage() {
                   key={idx}
                   animate={animateProps}
                   transition={{ duration: 0.5, ease: "easeInOut" }}
-                  className="absolute w-full max-w-xs sm:max-w-sm md:max-w-md p-8 md:p-12 rounded-2xl bg-white dark:bg-gray-800 border border-slate-100 dark:border-gray-700 shadow-xl flex flex-col items-start md:items-center text-left md:text-center cursor-pointer overflow-hidden group min-h-[340px] md:min-h-0"
+                  className="absolute w-full max-w-xs sm:max-w-sm md:max-w-md p-8 md:p-10 rounded-[2rem] bg-white/90 dark:bg-gray-800/90 backdrop-blur-xl border border-white/50 dark:border-gray-700 shadow-xl flex flex-col items-start text-left cursor-pointer overflow-hidden group min-h-[360px] md:min-h-[400px]"
                   onClick={() => setActiveFeature(idx)}
                   style={{
                     boxShadow: position === 0 ? "0 25px 50px -12px rgba(0, 0, 0, 0.15)" : "none"
@@ -655,16 +667,29 @@ export default function LandingPage() {
                     <path d="M119 0L127 0L127 86L109 86L109 171L77 171L77 257L95 257L95 343L107 343L107 429L123 429L123 514L46 514L46 600L0 600L0 514L0 514L0 429L0 429L0 343L0 343L0 257L0 257L0 171L0 171L0 86L0 86L0 0L0 0Z" className="fill-sky-400 dark:fill-sky-400/10" />
                   </svg>
 
-                  <div className="relative z-10 flex flex-col items-start md:items-center h-full justify-center w-full">
-                    <div className="w-16 h-16 md:w-24 md:h-24 bg-white dark:bg-gray-700 rounded-3xl shadow-xl shadow-blue-100/50 dark:shadow-none border border-slate-50 dark:border-gray-600 flex items-center justify-center mb-6 md:mb-8 transform group-hover:-translate-y-2 transition-transform duration-500">
-                      {feature.icon}
+                  <div className="relative z-10 flex flex-col h-full w-full">
+                    <div className="flex items-start justify-between mb-6">
+                      <div className="w-16 h-16 md:w-20 md:h-20 bg-gradient-to-br from-white to-slate-50 dark:from-gray-700 dark:to-gray-800 rounded-2xl shadow-lg border border-slate-100 dark:border-gray-600 flex items-center justify-center transform group-hover:-translate-y-2 transition-transform duration-500">
+                        {feature.icon}
+                      </div>
+                      <div className="text-6xl font-black text-slate-100 dark:text-gray-700/30 font-[family-name:var(--font-gagalin)] select-none">
+                        0{idx + 1}
+                      </div>
                     </div>
-                    <h3 className="text-2xl md:text-3xl  text-slate-800 dark:text-gray-50 mb-3 md:mb-4 tracking-tight group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors duration-300 font-[family-name:var(--font-gagalin)]">
+                    
+                    <h3 className="text-2xl md:text-3xl font-bold text-slate-800 dark:text-gray-100 mb-3 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors duration-300 font-[family-name:var(--font-gagalin)] tracking-wide">
                       {feature.title}
                     </h3>
-                    <p className="text-slate-600 dark:text-slate-300 leading-relaxed text-sm md:text-lg px-0 md:px-2 text-left md:text-center font-medium opacity-90 group-hover:opacity-100 transition-opacity duration-300">
+                    
+                    <p className="text-slate-600 dark:text-slate-300 leading-relaxed text-sm md:text-base text-left font-medium opacity-90 group-hover:opacity-100 transition-opacity duration-300">
                       {feature.desc}
                     </p>
+
+                    <div className="mt-auto pt-6 opacity-0 group-hover:opacity-100 transition-opacity duration-300 transform translate-y-2 group-hover:translate-y-0">
+                      <div className="inline-flex items-center text-sm font-bold text-blue-600 dark:text-blue-400">
+                        Pelajari Lebih Lanjut <ArrowRight className="ml-2 w-4 h-4" />
+                      </div>
+                    </div>
                   </div>
                 </motion.div>
               );
