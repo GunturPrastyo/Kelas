@@ -32,17 +32,22 @@ const PreBlock = ({ children }: any) => {
     const langClass = match ? `language-${match[1]}` : 'language-text';
 
     const [isCopied, setIsCopied] = useState(false);
-    const codeRef = useRef<HTMLElement>(null);
     
-    useEffect(() => {
-        if (codeRef.current) {
-            delete codeRef.current.dataset.highlighted;
-            hljs.highlightElement(codeRef.current);
+    const rawCode = Array.isArray(codeChildren) ? codeChildren.join('') : String(codeChildren || '');
+
+    let highlightedCode = '';
+    try {
+        if (language && language !== 'text' && hljs.getLanguage(language)) {
+            highlightedCode = hljs.highlight(rawCode, { language, ignoreIllegals: true }).value;
+        } else {
+            highlightedCode = hljs.highlightAuto(rawCode).value;
         }
-    }, [codeChildren, langClass]);
+    } catch (error) {
+        highlightedCode = rawCode.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+    }
 
     const handleCopy = () => {
-        navigator.clipboard.writeText(String(codeChildren).replace(/\n$/, ''));
+        navigator.clipboard.writeText(rawCode.replace(/\n$/, ''));
         setIsCopied(true);
         setTimeout(() => setIsCopied(false), 2000);
     };
@@ -60,9 +65,7 @@ const PreBlock = ({ children }: any) => {
             </div>
             <div className="p-4 overflow-x-auto text-[13px] font-mono leading-relaxed text-slate-200">
                 <pre className="!bg-transparent !p-0 !m-0">
-                    <code ref={codeRef} className={langClass}>
-                        {codeChildren}
-                    </code>
+                    <code className={`hljs ${langClass}`} dangerouslySetInnerHTML={{ __html: highlightedCode }} />
                 </pre>
             </div>
         </div>
