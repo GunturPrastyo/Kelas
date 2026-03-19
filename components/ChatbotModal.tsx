@@ -164,13 +164,14 @@ export default function ChatbotModal({ isOpen, onClose, contextData = "Materi pe
                                 {msg.role === 'user' ? (
                                     <div className="whitespace-pre-wrap font-sans">{msg.content}</div>
                                 ) : (
-                                    <ReactMarkdown 
-                                        className="prose dark:prose-invert max-w-none prose-p:leading-relaxed prose-sm"
-                                        components={{ 
-                                            pre: ({ children }: any) => <>{children}</>,
-                                            code: CodeBlock 
-                                        }}
-                                    >{msg.content}</ReactMarkdown>
+                                    <div className="prose dark:prose-invert max-w-none prose-p:leading-relaxed prose-sm">
+                                        <ReactMarkdown 
+                                            components={{ 
+                                                pre: ({ children }: any) => <>{children}</>,
+                                                code: CodeBlock 
+                                            }}
+                                        >{msg.content}</ReactMarkdown>
+                                    </div>
                                 )}
                             </div>
                         </div>
