@@ -1,8 +1,11 @@
 "use client";
 
 import { useState, useRef, useEffect } from 'react';
-import { X, Send, Loader2, User } from 'lucide-react';
+import { X, Send, Loader2, User, Copy, Check } from 'lucide-react';
 import { authFetch } from '@/lib/authFetch';
+import ReactMarkdown from 'react-markdown';
+import hljs from 'highlight.js';
+import 'highlight.js/styles/github-dark.css';
 
 interface Message {
     role: 'user' | 'bot';
@@ -14,6 +17,55 @@ interface ChatbotModalProps {
     onClose: () => void;
     contextData?: string;
 }
+
+const CodeBlock = ({ node, inline, className, children, ...props }: any) => {
+    const match = /language-(\w+)/.exec(className || '');
+    const [isCopied, setIsCopied] = useState(false);
+    const codeRef = useRef<HTMLElement>(null);
+    
+    useEffect(() => {
+        if (codeRef.current && !inline) {
+            delete codeRef.current.dataset.highlighted;
+            hljs.highlightElement(codeRef.current);
+        }
+    }, [children, inline, className]);
+
+    const handleCopy = () => {
+        navigator.clipboard.writeText(String(children).replace(/\n$/, ''));
+        setIsCopied(true);
+        setTimeout(() => setIsCopied(false), 2000);
+    };
+
+    if (!inline) {
+        const language = match ? match[1] : 'text';
+        return (
+            <div className="not-prose relative rounded-lg overflow-hidden bg-slate-900 dark:bg-[#0d1117] my-3 shadow-sm border border-slate-700">
+                <div className="flex items-center justify-between px-4 py-2 bg-slate-800 dark:bg-[#161b22] border-b border-slate-700">
+                    <span className="text-xs font-mono text-slate-300 dark:text-slate-400 lowercase">{language}</span>
+                    <button
+                        onClick={handleCopy}
+                        className="text-slate-400 hover:text-white transition-colors flex items-center gap-1.5 text-xs"
+                    >
+                        {isCopied ? <><Check size={14} className="text-green-400" /> Copied!</> : <><Copy size={14} /> Copy</>}
+                    </button>
+                </div>
+                <div className="p-4 overflow-x-auto text-[13px] font-mono leading-relaxed text-slate-200">
+                    <pre className="!bg-transparent !p-0 !m-0">
+                        <code ref={codeRef} className={className || 'language-text'} {...props}>
+                            {children}
+                        </code>
+                    </pre>
+                </div>
+            </div>
+        );
+    }
+    
+    return (
+        <code className="bg-blue-50 dark:bg-slate-800 px-1.5 py-0.5 rounded text-[13px] text-blue-600 dark:text-blue-400 font-mono" {...props}>
+            {children}
+        </code>
+    );
+};
 
 export default function ChatbotModal({ isOpen, onClose, contextData = "Materi pembelajaran umum." }: ChatbotModalProps) {
     const [messages, setMessages] = useState<Message[]>([
@@ -109,7 +161,17 @@ export default function ChatbotModal({ isOpen, onClose, contextData = "Materi pe
                                     ? 'bg-blue-600 text-white rounded-br-none' 
                                     : 'bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700 rounded-bl-none'
                             }`}>
-                                <div className="whitespace-pre-wrap font-sans">{msg.content}</div>
+                                {msg.role === 'user' ? (
+                                    <div className="whitespace-pre-wrap font-sans">{msg.content}</div>
+                                ) : (
+                                    <ReactMarkdown 
+                                        className="prose dark:prose-invert max-w-none prose-p:leading-relaxed prose-sm"
+                                        components={{ 
+                                            pre: ({ children }: any) => <>{children}</>,
+                                            code: CodeBlock 
+                                        }}
+                                    >{msg.content}</ReactMarkdown>
+                                )}
                             </div>
                         </div>
                     ))}
