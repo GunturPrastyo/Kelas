@@ -639,25 +639,22 @@ export default function LandingPage() {
               // Tentukan properti animasi berdasarkan posisi
               let animateProps = {};
               if (position === 0) { // Active (Tengah)
-                animateProps = { x: 0, scale: 1, zIndex: 30, opacity: 1, filter: "blur(0px)" };
+                animateProps = { x: 0, scale: 1, zIndex: 30, opacity: 1, boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.15)" };
               } else if (position === 1) { // Kanan
-                animateProps = { x: 320, scale: 0.85, zIndex: 20, opacity: 0.7, filter: "blur(1px)" };
+                animateProps = { x: 300, scale: 0.85, zIndex: 20, opacity: 0.5, boxShadow: "0 0px 0px rgba(0,0,0,0)" };
               } else if (position === features.length - 1) { // Kiri
-                animateProps = { x: -320, scale: 0.85, zIndex: 20, opacity: 0.7, filter: "blur(1px)" };
+                animateProps = { x: -300, scale: 0.85, zIndex: 20, opacity: 0.5, boxShadow: "0 0px 0px rgba(0,0,0,0)" };
               } else { // Belakang (Hidden/Faint)
-                animateProps = { x: 0, scale: 0.6, zIndex: 10, opacity: 0, filter: "blur(4px)" };
+                animateProps = { x: 0, scale: 0.6, zIndex: 10, opacity: 0, boxShadow: "0 0px 0px rgba(0,0,0,0)" };
               }
 
               return (
                 <motion.div
                   key={idx}
                   animate={animateProps}
-                  transition={{ duration: 0.5, ease: "easeInOut" }}
-                  className="absolute w-full max-w-xs sm:max-w-sm md:max-w-md p-8 md:p-10 rounded-[2rem] bg-white/90 dark:bg-gray-800/90 backdrop-blur-xl border border-white/50 dark:border-gray-700 shadow-xl flex flex-col items-start text-left cursor-pointer overflow-hidden group min-h-[360px] md:min-h-[400px]"
+                  transition={{ type: "spring", stiffness: 200, damping: 25 }}
+                  className="absolute w-full max-w-xs sm:max-w-sm md:max-w-md p-8 md:p-10 rounded-[2rem] bg-white dark:bg-gray-800 border border-slate-100 dark:border-gray-700 flex flex-col items-start text-left cursor-pointer overflow-hidden group min-h-[360px] md:min-h-[400px]"
                   onClick={() => setActiveFeature(idx)}
-                  style={{
-                    boxShadow: position === 0 ? "0 25px 50px -12px rgba(0, 0, 0, 0.15)" : "none"
-                  }}
                 >
                   {/* Decorative SVG - Softer Colors */}
                   <svg xmlns="http://www.w3.org/2000/svg" id="visual" viewBox="0 0 900 600" className="absolute left-0 top-0 w-full h-full opacity-100 dark:opacity-10 pointer-events-none transition-transform duration-700 group-hover:scale-110" version="1.1" preserveAspectRatio="none">
