@@ -934,19 +934,19 @@ export default function ModulDetailPage() {
 
                 // 1. Terapkan Syntax Highlighting
                 const codeElement = preElement.querySelector('code');
+                if (!codeElement) return;
+
                 let isRunnable = false;
-                if (codeElement) {
-                    hljs.highlightElement(codeElement as HTMLElement);
-                    // 1. Cek atribut eksplisit dari editor (data-runnable) pada tag <pre>
-                    const runnableAttr = preElement.getAttribute('data-runnable');
-                    if (runnableAttr !== null) {
-                        isRunnable = runnableAttr === 'true';
-                    } else {
-                        // 2. Fallback: Deteksi bahasa (untuk konten lama yang belum diedit)
-                        const classes = codeElement.className.toLowerCase();
-                        isRunnable = classes.includes('language-javascript') || classes.includes('language-js') ||
-                            classes.includes('language-html') || classes.includes('language-xml');
-                    }
+                hljs.highlightElement(codeElement as HTMLElement);
+                // 1. Cek atribut eksplisit dari editor (data-runnable) pada tag <pre>
+                const runnableAttr = preElement.getAttribute('data-runnable');
+                if (runnableAttr !== null) {
+                    isRunnable = runnableAttr === 'true';
+                } else {
+                    // 2. Fallback: Deteksi bahasa (untuk konten lama yang belum diedit)
+                    const classes = codeElement.className.toLowerCase();
+                    isRunnable = classes.includes('language-javascript') || classes.includes('language-js') ||
+                        classes.includes('language-html') || classes.includes('language-xml');
                 }
 
                 let runButton: HTMLButtonElement | null = null;
@@ -1018,7 +1018,7 @@ export default function ModulDetailPage() {
             observers.forEach(observer => observer.disconnect());
             // Tidak perlu disconnect observer lagi
         };
-    }, [activeTest, openTopicId, isPlaygroundOpen, testIdx]);
+    }, [activeTest, openTopicId, isPlaygroundOpen, testIdx, activeTopicTab]);
 
     // --- Tour Guide Effect ---
     useEffect(() => {
