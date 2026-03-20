@@ -424,14 +424,13 @@ export default function ModulPage() {
             {/* Tampilkan skeleton UI saat loading */}
             {loading && (
                 <div className="flex flex-col justify-center items-center py-20 min-h-[50vh]">
-                    <div className="w-48 h-48 sm:w-64 sm:h-64">
+                    <div className="w-64 h-64 sm:w-80 sm:h-80">
                         <DotLottieReact
                             src="/loading.lottie"
                             loop
                             autoplay
                         />
                     </div>
-                    <p className="mt-4 text-gray-600 dark:text-gray-400 font-medium animate-pulse">Memuat daftar modul...</p>
                 </div>
             )}
 
