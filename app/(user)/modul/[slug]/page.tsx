@@ -1143,14 +1143,13 @@ export default function ModulDetailPage() {
     if (loading) {
         return (
             <div className="flex flex-col justify-center items-center min-h-screen">
-                <div className="w-48 h-48 sm:w-64 sm:h-64">
+                <div className="w-64 h-64 sm:w-80 sm:h-80">
                     <DotLottieReact
                         src="/loading.lottie"
                         loop
                         autoplay
                     />
                 </div>
-                <p className="mt-4 text-gray-600 dark:text-gray-400 font-medium animate-pulse">Memuat data modul...</p>
             </div>
         );
     }
