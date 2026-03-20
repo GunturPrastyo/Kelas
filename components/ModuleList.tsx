@@ -24,6 +24,7 @@ interface ModuleListProps {
   title: string;
   allModules: Module[];
   filter: (module: Module) => boolean;
+  loading?: boolean;
 }
 
 const getStatusBadge = (status: Module["status"], progress: number | undefined, completedTopics?: number, totalTopics?: number) => {
@@ -73,7 +74,7 @@ const getCategoryBadge = (category: string) => {
   }
 };
 
-export default function ModuleList({ title, allModules, filter }: ModuleListProps) {
+export default function ModuleList({ title, allModules, filter, loading = false }: ModuleListProps) {
   const scrollRef = useRef<HTMLDivElement>(null);
   const modules = useMemo(
     () =>
@@ -109,7 +110,7 @@ export default function ModuleList({ title, allModules, filter }: ModuleListProp
     window.addEventListener("mouseup", handleMouseUpOrLeave);
   };
 
-  if (modules.length === 0) return null;
+  if (!loading && modules.length === 0) return null;
 
   return (
     <section className="bg-gradient-to-br from-indigo-200 via-blue-200 to-sky-300 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 pl-7 pr-4 pt-7 p-3   rounded-2xl shadow-xl border border-slate-200 dark:border-slate-800 border-b-[6px] border-l-2 border-b-slate-200 border-l-slate-200 dark:border-b-slate-700 dark:border-l-slate-700 backdrop-blur-xl transition-all">
@@ -127,7 +128,35 @@ export default function ModuleList({ title, allModules, filter }: ModuleListProp
         onMouseDown={handleMouseDown}
         className="grid grid-flow-col auto-cols-[260px] sm:auto-cols-[300px] gap-6 overflow-x-auto scroll-smooth pb-8 scrollbar-hidden snap-x snap-mandatory cursor-grab active:cursor-grabbing select-none px-1"
       >
-        {modules.map((modul) => {
+        {loading ? (
+          [1, 2, 3, 4].map((i) => (
+            <div
+              key={i}
+              className="group relative flex flex-col justify-between w-full h-[240px] rounded-2xl overflow-hidden bg-slate-50 dark:bg-gray-800 border border-slate-200 dark:border-gray-700 border-b-4 border-r-4 border-gray-300 dark:border-gray-600 shadow-sm animate-pulse snap-start"
+            >
+              <div className="relative p-5 flex flex-col h-full z-10">
+                <div className="flex justify-between items-start mb-3">
+                  <div className="w-12 h-12 rounded-xl bg-gray-200 dark:bg-gray-700"></div>
+                  <div className="w-16 h-6 rounded-full bg-gray-200 dark:bg-gray-700"></div>
+                </div>
+                <div className="h-5 w-3/4 bg-gray-200 dark:bg-gray-700 rounded mb-2"></div>
+                <div className="h-5 w-1/2 bg-gray-200 dark:bg-gray-700 rounded mb-2"></div>
+                <div className="flex items-center gap-4 mt-auto mb-3">
+                  <div className="h-3 w-16 bg-gray-200 dark:bg-gray-700 rounded"></div>
+                  <div className="h-3 w-20 bg-gray-200 dark:bg-gray-700 rounded"></div>
+                </div>
+                <div className="mt-auto pt-3 border-t border-slate-200 dark:border-gray-700/50">
+                  <div className="flex justify-between items-center mb-2">
+                    <div className="h-3 w-16 bg-gray-200 dark:bg-gray-700 rounded"></div>
+                    <div className="h-5 w-20 bg-gray-200 dark:bg-gray-700 rounded-full"></div>
+                  </div>
+                  <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-1.5"></div>
+                </div>
+              </div>
+            </div>
+          ))
+        ) : (
+          modules.map((modul) => {
           const isLocked = modul.isLocked ?? (modul.status === 'Terkunci');
           const effectiveStatus = isLocked ? 'Terkunci' : modul.status;
 
@@ -207,7 +236,8 @@ export default function ModuleList({ title, allModules, filter }: ModuleListProp
             </div>
             </Link>
           );
-        })}
+        })
+        )}
       </div>
 
       {/* Hidden Scrollbar */}
