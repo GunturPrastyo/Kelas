@@ -16,6 +16,7 @@ import ChatbotModal from '@/components/ChatbotModal';
 import { driver } from "driver.js";
 import "driver.js/dist/driver.css";
 import Editor from "@monaco-editor/react";
+import { DotLottieReact } from '@lottiefiles/dotlottie-react';
 
 
 interface User {
@@ -1140,7 +1141,18 @@ export default function ModulDetailPage() {
 
     // --- Render Logic ---
     if (loading) {
-        return <div className="flex justify-center items-center min-h-screen"><p>Memuat data modul...</p></div>;
+        return (
+            <div className="flex flex-col justify-center items-center min-h-screen">
+                <div className="w-48 h-48 sm:w-64 sm:h-64">
+                    <DotLottieReact
+                        src="/loading.lottie"
+                        loop
+                        autoplay
+                    />
+                </div>
+                <p className="mt-4 text-gray-600 dark:text-gray-400 font-medium animate-pulse">Memuat data modul...</p>
+            </div>
+        );
     }
 
     if (error) {

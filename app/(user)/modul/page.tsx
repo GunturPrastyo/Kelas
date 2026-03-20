@@ -9,6 +9,7 @@ import { authFetch } from '@/lib/authFetch';
 import ModuleCardSkeleton from '@/components/ModuleCardSkeleton'; 
 import { driver } from "driver.js";
 import "driver.js/dist/driver.css";
+import { DotLottieReact } from '@lottiefiles/dotlottie-react';
 import { useAlert } from "@/context/AlertContext";
 
 interface User {
@@ -422,10 +423,15 @@ export default function ModulPage() {
             </nav>
             {/* Tampilkan skeleton UI saat loading */}
             {loading && (
-                <div className="relative grid gap-6 sm:grid-cols-2 lg:grid-cols-3 grid-auto-rows-fr mt-6">
-                    <div className="absolute left-6 top-0 bottom-0 w-0.5 bg-gray-200 dark:bg-gray-700 md:hidden"></div>
-                    <ModuleCardSkeleton />
-                    
+                <div className="flex flex-col justify-center items-center py-20 min-h-[50vh]">
+                    <div className="w-48 h-48 sm:w-64 sm:h-64">
+                        <DotLottieReact
+                            src="/loading.lottie"
+                            loop
+                            autoplay
+                        />
+                    </div>
+                    <p className="mt-4 text-gray-600 dark:text-gray-400 font-medium animate-pulse">Memuat daftar modul...</p>
                 </div>
             )}
 
