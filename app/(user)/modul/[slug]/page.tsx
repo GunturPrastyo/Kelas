@@ -16,7 +16,6 @@ import ChatbotModal from '@/components/ChatbotModal';
 import { driver } from "driver.js";
 import "driver.js/dist/driver.css";
 import Editor from "@monaco-editor/react";
-import { DotLottieReact } from '@lottiefiles/dotlottie-react';
 
 
 interface User {
@@ -1142,13 +1141,54 @@ export default function ModulDetailPage() {
     // --- Render Logic ---
     if (loading) {
         return (
-            <div className="flex flex-col justify-center items-center min-h-screen">
-                <div className="w-64 h-64 sm:w-80 sm:h-80">
-                    <DotLottieReact
-                        src="/loading.lottie"
-                        loop
-                        autoplay
-                    />
+            <div className="max-w-full mx-auto sm:px-5 pb-5 pt-0 mt-20 animate-pulse">
+                {/* Skeleton Breadcrumb */}
+                <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-48 mb-6 mt-6"></div>
+
+                {/* Skeleton Header Modul */}
+                <div className="bg-gray-100 dark:bg-gray-800 rounded-xl p-6 mb-6 flex flex-col md:flex-row md:items-start gap-4 border border-gray-200 dark:border-gray-700">
+                    <div className="hidden md:block h-20 w-20 rounded-lg bg-gray-200 dark:bg-gray-700 flex-shrink-0"></div>
+                    <div className="flex-1 w-full">
+                        <div className="h-3 bg-gray-200 dark:bg-gray-700 rounded w-24 mb-3"></div>
+                        <div className="h-8 bg-gray-200 dark:bg-gray-700 rounded w-3/4 mb-4"></div>
+                        <div className="md:hidden h-20 w-20 rounded-lg bg-gray-200 dark:bg-gray-700 mx-auto mb-4"></div>
+                        <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-full mb-2"></div>
+                        <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-5/6 mb-4"></div>
+                        <div className="h-2.5 bg-gray-200 dark:bg-gray-700 rounded-full w-full mb-3"></div>
+                        <div className="h-3 bg-gray-200 dark:bg-gray-700 rounded w-1/3"></div>
+                        <div className="h-10 bg-gray-200 dark:bg-gray-700 rounded-3xl w-32 mt-6"></div>
+                    </div>
+                </div>
+
+                {/* Skeleton Daftar Topik */}
+                <div className="h-6 bg-gray-200 dark:bg-gray-700 rounded w-40 mb-4"></div>
+                <div className="space-y-4">
+                    {[1, 2, 3].map(i => (
+                        <div key={i} className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-5 flex justify-between items-center border border-gray-100 dark:border-gray-700">
+                            <div className="flex items-center gap-4">
+                                <div className="w-10 h-10 rounded-full bg-gray-200 dark:bg-gray-700 flex-shrink-0"></div>
+                                <div className="space-y-2">
+                                    <div className="h-5 bg-gray-200 dark:bg-gray-700 rounded w-48 sm:w-64"></div>
+                                    <div className="h-3 bg-gray-200 dark:bg-gray-700 rounded w-24"></div>
+                                </div>
+                            </div>
+                            <div className="w-5 h-5 rounded bg-gray-200 dark:bg-gray-700"></div>
+                        </div>
+                    ))}
+                </div>
+
+                {/* Skeleton Post-Test Modul */}
+                <div className="bg-white dark:bg-gray-800 p-4 rounded-2xl shadow-sm mt-5 border border-gray-200 dark:border-gray-700">
+                    <div className="grid grid-cols-2 md:flex md:flex-row items-center md:items-start gap-4">
+                        <div className="flex-1 sm:p-10 text-left w-full order-last md:order-first col-span-1 space-y-4">
+                            <div className="h-6 sm:h-8 bg-gray-200 dark:bg-gray-700 rounded w-3/4 mb-2"></div>
+                            <div className="h-4 sm:h-5 bg-gray-200 dark:bg-gray-700 rounded w-full mb-4"></div>
+                            <div className="h-10 sm:h-12 bg-gray-200 dark:bg-gray-700 rounded-xl w-32"></div>
+                        </div>
+                        <div className="flex w-full md:w-1/3 justify-center items-center order-first md:order-last col-span-1">
+                            <div className="w-24 h-24 sm:w-32 sm:h-32 md:w-40 md:h-40 bg-gray-200 dark:bg-gray-700 rounded-lg"></div>
+                        </div>
+                    </div>
                 </div>
             </div>
         );
