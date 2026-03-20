@@ -9,7 +9,6 @@ import { authFetch } from '@/lib/authFetch';
 import ModuleCardSkeleton from '@/components/ModuleCardSkeleton'; 
 import { driver } from "driver.js";
 import "driver.js/dist/driver.css";
-import { DotLottieReact } from '@lottiefiles/dotlottie-react';
 import { useAlert } from "@/context/AlertContext";
 
 interface User {
@@ -423,13 +422,66 @@ export default function ModulPage() {
             </nav>
             {/* Tampilkan skeleton UI saat loading */}
             {loading && (
-                <div className="flex flex-col justify-center items-center py-20 min-h-[50vh]">
-                    <div className="w-64 h-64 sm:w-80 sm:h-80">
-                        <DotLottieReact
-                            src="/loading.lottie"
-                            loop
-                            autoplay
-                        />
+                <div className="animate-pulse w-full mb-10">
+                    {/* Skeleton Recommendation Card */}
+                    <div className="bg-gray-100 dark:bg-gray-800 p-5 rounded-xl shadow-sm flex items-center gap-6 mb-6 h-[120px]">
+                        <div className="w-20 h-20 rounded-full bg-gray-200 dark:bg-gray-700 flex-shrink-0"></div>
+                        <div className="flex-1 space-y-3">
+                            <div className="h-6 bg-gray-200 dark:bg-gray-700 rounded w-1/3"></div>
+                            <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-2/3"></div>
+                        </div>
+                    </div>
+
+                    {/* Skeleton Category Filters */}
+                    <div className="flex items-center gap-2 flex-wrap mb-6">
+                        <div className="h-8 w-20 bg-gray-200 dark:bg-gray-800 rounded-full"></div>
+                        <div className="h-8 w-24 bg-gray-200 dark:bg-gray-800 rounded-full"></div>
+                        <div className="h-8 w-28 bg-gray-200 dark:bg-gray-800 rounded-full"></div>
+                        <div className="h-8 w-20 bg-gray-200 dark:bg-gray-800 rounded-full"></div>
+                    </div>
+
+                    {/* Skeleton Module Grid */}
+                    <div className="relative grid gap-6 sm:grid-cols-2 lg:grid-cols-3 grid-auto-rows-fr">
+                        {/* Garis vertikal untuk tampilan mobile */}
+                        <div className="absolute left-6 top-0 bottom-0 w-0.5 bg-gray-200 dark:bg-gray-700 md:hidden"></div>
+
+                        {[1, 2, 3, 4, 5, 6].map((i) => (
+                            <div key={i} className="relative sm:static">
+                                {/* Nomor urut skeleton (mobile) */}
+                                <div className="absolute top-5 left-0 z-10 w-12 h-12 flex items-center justify-center md:hidden">
+                                    <div className="w-8 h-8 rounded-full bg-gray-300 dark:bg-gray-600 border-2 border-white dark:border-gray-800"></div>
+                                </div>
+                                <div className="group relative overflow-hidden bg-white dark:bg-gray-800 rounded-xl shadow-md flex flex-col h-full ml-12 sm:ml-0 border border-gray-100 dark:border-gray-700">
+                                    {/* Header */}
+                                    <div className="relative z-10 p-5 bg-gray-50 dark:bg-gray-700/30 border-b border-gray-200 dark:border-gray-700 flex items-start justify-between">
+                                        <div className="flex items-center gap-3 w-full">
+                                            <div className="w-10 h-10 rounded-lg bg-gray-200 dark:bg-gray-600 flex-shrink-0"></div>
+                                            <div className="flex-1 w-full">
+                                                <div className="hidden sm:block h-3 w-16 bg-gray-200 dark:bg-gray-600 rounded mb-2"></div>
+                                                <div className="h-5 w-3/4 bg-gray-200 dark:bg-gray-600 rounded mb-2"></div>
+                                                <div className="h-4 w-1/4 bg-gray-200 dark:bg-gray-600 rounded"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    {/* Body */}
+                                    <div className="relative p-5 flex flex-col flex-grow">
+                                        <div className="space-y-2 mb-4 flex-grow">
+                                            <div className="h-3.5 bg-gray-200 dark:bg-gray-600 rounded w-full"></div>
+                                            <div className="h-3.5 bg-gray-200 dark:bg-gray-600 rounded w-5/6"></div>
+                                        </div>
+                                        <div className="flex items-center gap-4 mb-4">
+                                            <div className="h-3 w-20 bg-gray-200 dark:bg-gray-600 rounded"></div>
+                                            <div className="h-3 w-24 bg-gray-200 dark:bg-gray-600 rounded"></div>
+                                        </div>
+                                        <div className="mb-4">
+                                            <div className="h-1.5 bg-gray-200 dark:bg-gray-600 rounded-full w-full mb-2"></div>
+                                            <div className="h-3 bg-gray-200 dark:bg-gray-600 rounded w-1/3"></div>
+                                        </div>
+                                        <div className="h-10 bg-gray-200 dark:bg-gray-600 rounded-lg w-full mt-auto"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        ))}
                     </div>
                 </div>
             )}
