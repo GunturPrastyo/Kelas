@@ -30,29 +30,40 @@ const gagalin = localFont({
 });
 
 export const metadata: Metadata = {
-  title: 'KELAS - Kartini E-learning Apps',
-  description: 'Platform e-learning inovatif untuk siswa SMK Ibu Kartini Semarang. Akses materi, tugas, dan ujian secara online.',
-  keywords: ['e-learning SMK', 'SMK Ibu Kartini', 'belajar online', 'KELAS apps'],
+  title: 'Kelas Edu | Kartini E-learning Apps',
+  description: 'Kelas Edu adalah platform e-learning inovatif untuk siswa SMK Ibu Kartini Semarang. Akses materi, tugas, dan ujian secara online dengan jalur pembelajaran yang dipersonalisasi.',
+  keywords: ['Kelas Edu', 'E-learning Personalisasi', 'e-learning SMK', 'SMK Ibu Kartini', 'belajar online', 'KELAS apps', 'Belajar Pemrograman'],
   authors: [{ name: 'Guntur Prastyo' }],
+  creator: 'Kelas Edu',
   verification: {
     google: 'googlef6e3ac674118baa3', 
   },
   openGraph: {
-    title: 'KELAS - Platform Belajar Digital SMK',
-    description: 'Tingkatkan kualitas belajar dengan sistem manajemen pembelajaran yang terintegrasi.',
+    title: 'Kelas Edu | Platform Belajar Digital SMK',
+    description: 'Tingkatkan kualitas belajar dengan sistem manajemen pembelajaran yang terintegrasi dan terpersonalisasi di Kelas Edu.',
     url: 'https://kelas-edu.vercel.app',
-    siteName: 'KELAS',
-
+    siteName: 'Kelas Edu',
     images: [
       {
         url: '/logo.webp',
-        alt: 'KELAS Logo',
+        alt: 'Kelas Edu Logo',
         width: 1200,
         height: 630,
       },
     ],
     locale: 'id_ID',
     type: 'website',
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-video-preview': -1,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+    },
   },
   icons: {
     icon: '/logo.webp',
@@ -77,8 +88,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             __html: JSON.stringify({
               "@context": "https://schema.org",
               "@type": "WebSite",
-              "name": "KELAS",
-              "alternateName": ["Kartini E-learning Apps", "KELAS SMK"],
+              "name": "Kelas Edu",
+              "alternateName": ["Kelas Edu", "Kartini E-learning Apps", "KELAS SMK"],
               "url": "https://kelas-edu.vercel.app",
             }),
           }}
@@ -89,7 +100,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             __html: JSON.stringify({
               "@context": "https://schema.org",
               "@type": "Organization",
-              "name": "KELAS",
+              "name": "Kelas Edu",
               "url": "https://kelas-edu.vercel.app",
               "logo": "https://kelas-edu.vercel.app/logo.webp",
               "sameAs": [
