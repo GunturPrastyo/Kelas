@@ -46,7 +46,6 @@ interface Practice {
     title: string;
     description: string;
     initialCode: string;
-    hint: string;
     hint?: string;
     hints?: string[];
     expectedOutputRegex: string[]; // Array of regex strings to validate
