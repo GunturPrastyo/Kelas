@@ -656,14 +656,26 @@ export default function LandingPage() {
                   className="absolute w-full max-w-xs sm:max-w-sm md:max-w-md p-8 md:p-10 rounded-[2rem] bg-white dark:bg-gray-800 border border-slate-100 dark:border-gray-700 flex flex-col items-start text-left cursor-pointer overflow-hidden group min-h-[360px] md:min-h-[400px]"
                   onClick={() => setActiveFeature(idx)}
                 >
-                  {/* Decorative SVG - Softer Colors */}
-                  <svg xmlns="http://www.w3.org/2000/svg" id="visual" viewBox="0 0 900 600" className="absolute left-0 top-0 w-full h-full opacity-100 dark:opacity-10 pointer-events-none transition-transform duration-700 group-hover:scale-110" version="1.1" preserveAspectRatio="none">
+                  {/* 1. Background Illustration Layer */}
+                  <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden">
+                    <img 
+                      src="/ilustrasi2.png" 
+                      alt="Ilustrasi Background" 
+                      className="w-full h-full object-cover opacity-20 dark:opacity-10 group-hover:scale-110 transition-transform duration-700"
+                    />
+                    {/* Efek Blur & Gradient Fade Putih/Gelap di Bagian Bawah */}
+                    <div className="absolute inset-0 bg-gradient-to-t from-white via-white/60 to-transparent dark:from-gray-800 dark:via-gray-800/60 backdrop-blur-[2px]"></div>
+                  </div>
+
+                  {/* 2. Decorative SVG - Softer Colors */}
+                  <svg xmlns="http://www.w3.org/2000/svg" id="visual" viewBox="0 0 900 600" className="absolute left-0 top-0 w-full h-full opacity-100 dark:opacity-10 pointer-events-none transition-transform duration-700 group-hover:scale-110 z-0" version="1.1" preserveAspectRatio="none">
                     <path d="M336 0L259 0L259 86L297 86L297 171L376 171L376 257L288 257L288 343L344 343L344 429L361 429L361 514L290 514L290 600L0 600L0 514L0 514L0 429L0 429L0 343L0 343L0 257L0 257L0 171L0 171L0 86L0 86L0 0L0 0Z" className="fill-sky-100 dark:fill-sky-100/10" />
                     <path d="M263 0L264 0L264 86L289 86L289 171L216 171L216 257L253 257L253 343L280 343L280 429L226 429L226 514L197 514L197 600L0 600L0 514L0 514L0 429L0 429L0 343L0 343L0 257L0 257L0 171L0 171L0 86L0 86L0 0L0 0Z" className="fill-sky-200 dark:fill-sky-200/10" />
                     <path d="M196 0L171 0L171 86L156 86L156 171L194 171L194 257L192 257L192 343L144 343L144 429L152 429L152 514L200 514L200 600L0 600L0 514L0 514L0 429L0 429L0 343L0 343L0 257L0 257L0 171L0 171L0 86L0 86L0 0L0 0Z" className="fill-sky-300 dark:fill-sky-300/10" />
                     <path d="M119 0L127 0L127 86L109 86L109 171L77 171L77 257L95 257L95 343L107 343L107 429L123 429L123 514L46 514L46 600L0 600L0 514L0 514L0 429L0 429L0 343L0 343L0 257L0 257L0 171L0 171L0 86L0 86L0 0L0 0Z" className="fill-sky-400 dark:fill-sky-400/10" />
                   </svg>
 
+                  {/* 3. Text Content */}
                   <div className="relative z-10 flex flex-col h-full w-full">
                     <div className="flex items-start justify-between mb-6">
                       <div className="w-16 h-16 md:w-20 md:h-20 bg-gradient-to-br from-white to-slate-50 dark:from-gray-700 dark:to-gray-800 rounded-2xl shadow-lg border border-slate-100 dark:border-gray-600 flex items-center justify-center transform group-hover:-translate-y-2 transition-transform duration-500">
