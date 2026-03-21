@@ -47,6 +47,8 @@ interface Practice {
     description: string;
     initialCode: string;
     hint: string;
+    hint?: string;
+    hints?: string[];
     expectedOutputRegex: string[]; // Array of regex strings to validate
     isCompleted?: boolean;
 }
@@ -116,6 +118,7 @@ const PracticeSection = ({ topicId, practices: initialPractices, onSuccess }: { 
     const [output, setOutput] = useState<string[]>([]);
     const [isCorrect, setIsCorrect] = useState(false);
     const [showHint, setShowHint] = useState(false);
+    const [revealedHints, setRevealedHints] = useState<number>(0);
     const [iframeSrc, setIframeSrc] = useState('');
     const [activePracticeTab, setActivePracticeTab] = useState('code');
 
@@ -154,6 +157,7 @@ const PracticeSection = ({ topicId, practices: initialPractices, onSuccess }: { 
             setOutput([]);
             setIsCorrect(false);
             setShowHint(false);
+            setRevealedHints(0);
             setIframeSrc('');
             setActivePracticeTab('code');
         }

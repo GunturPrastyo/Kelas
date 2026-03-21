@@ -21,7 +21,8 @@ interface Practice {
   title: string;
   description: string;
   initialCode: string;
-  hint: string;
+  hint?: string;
+  hints: string[];
   expectedOutputRegex: string[];
 }
 
@@ -87,7 +88,12 @@ export default function MateriEditorPage({ params }: MateriEditorPageProps) {
           setYoutubeInput(data.youtube || "");
           setYoutubeEmbedUrl(data.youtube ? getEmbedUrl(data.youtube) : null);
           setTopikId(data.topikId);
-          setPractices(data.practices || []);
+          // Migrasi hint lama ke array hints agar tidak hilang
+          const loadedPractices = (data.practices || []).map((p: any) => ({
+            ...p,
+            hints: p.hints && p.hints.length > 0 ? p.hints : (p.hint ? [p.hint] : [""])
+          }));
+          setPractices(loadedPractices);
         }
       } catch (err) {
         console.error("❌ Error saat memuat materi:", err);
@@ -144,7 +150,7 @@ export default function MateriEditorPage({ params }: MateriEditorPageProps) {
       title: "", 
       description: "", 
       initialCode: "", 
-      hint: "", 
+      hints: [""], 
       expectedOutputRegex: [] 
     }]);
   };
@@ -158,6 +164,24 @@ export default function MateriEditorPage({ params }: MateriEditorPageProps) {
   const handlePracticeChange = (index: number, field: keyof Practice, value: any) => {
     const newPractices = [...practices];
     newPractices[index] = { ...newPractices[index], [field]: value };
+    setPractices(newPractices);
+  };
+
+  const handleAddHint = (practiceIndex: number) => {
+    const newPractices = [...practices];
+    newPractices[practiceIndex].hints.push("");
+    setPractices(newPractices);
+  };
+
+  const handleRemoveHint = (practiceIndex: number, hintIndex: number) => {
+    const newPractices = [...practices];
+    newPractices[practiceIndex].hints.splice(hintIndex, 1);
+    setPractices(newPractices);
+  };
+
+  const handleHintChange = (practiceIndex: number, hintIndex: number, value: string) => {
+    const newPractices = [...practices];
+    newPractices[practiceIndex].hints[hintIndex] = value;
     setPractices(newPractices);
   };
 
