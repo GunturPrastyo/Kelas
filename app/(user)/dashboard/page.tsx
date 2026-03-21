@@ -681,14 +681,14 @@ export default function DashboardPage() {
       </section>
 
       {/* Learning Path - Sekarang dengan data dinamis */}
-      {loading ? (
-        <div className="text-center p-8">Memuat modul...</div>
-      ) : (
-        // Gabungkan semua modul ke dalam satu section "Jalur Belajar"
-        <div id="learning-path-section">
-          <ModuleList title="Jalur Pembelajaran" allModules={personalizedModules} filter={() => true} />
-        </div>
-      )}
+      <div id="learning-path-section">
+        <ModuleList 
+          title="Jalur Pembelajaran" 
+          allModules={personalizedModules} 
+          filter={() => true} 
+          loading={loading} 
+        />
+      </div>
 
       {/* Modal Pop-up Pre-Test */}
       <PreTestModal
