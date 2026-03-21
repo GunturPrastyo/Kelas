@@ -1167,8 +1167,8 @@ export default function LandingPage() {
       {/* --- FOOTER --- */}
       <footer className="bg-white dark:bg-gray-900 border-t border-slate-200 border-t-white dark:border-gray-800 dark:border-t-gray-900 pt-4 pb-6">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-12 mb-12">
-            <div>
+          <div className="grid grid-cols-1 md:grid-cols-12 gap-8 lg:gap-12 mb-12">
+            <div className="md:col-span-3">
               <div className="flex items-center gap-2 mb-4">
                 <img src="/logo.webp" alt="KELAS Icon" className="h-8 w-auto" />
 
@@ -1178,7 +1178,7 @@ export default function LandingPage() {
               </p>
             </div>
 
-            <div className="flex flex-col items-start w-full">
+            <div className="md:col-span-4 flex flex-col items-start w-full">
               <div className="group relative bg-gradient-to-br from-sky-100 to-sky-300 dark:from-sky-600/20 dark:to-sky-800/20 p-5 rounded-lg border border-blue-100 dark:border-gray-700 shadow-sm w-full sm:max-w-md overflow-hidden">
                 <div className="relative z-10">
                   <h4 className="font-bold text-slate-900 dark:text-white mb-2 flex items-center gap-2">
@@ -1245,26 +1245,37 @@ export default function LandingPage() {
               </div>
             </div>
 
-            <div>
-              <h4 className="font-bold text-slate-900 dark:text-white mb-4">Hubungi Kami</h4>
-              <ul className="space-y-3 text-sm text-slate-500 dark:text-slate-400">
-                <li className="flex items-start gap-3">
-                  <Mail size={18} className="text-blue-600 mt-0.5 shrink-0" />
-                  <a href="mailto:kartinielearningapps@gmail.com" className="hover:text-blue-600 break-all">kartinielearningapps@gmail.com</a>
-                </li>
-                <li className="flex items-start gap-3">
-                  <MapPin size={18} className="text-blue-600 mt-0.5 shrink-0" />
-                  <span>Semarang, Jawa Tengah, Indonesia</span>
-                </li>
-                <li className="flex items-start gap-3 pt-2">
-                  <Link href="https://instagram.com/kartinielearning" target="_blank" className="text-slate-400 hover:text-pink-600 transition-colors">
-                    <Instagram size={20} />
+            <div className="md:col-span-5 flex flex-row justify-between gap-4 sm:gap-6 w-full">
+              <div className="flex-1">
+                <h4 className="font-bold text-slate-900 dark:text-white mb-4">Hubungi Kami</h4>
+                <ul className="space-y-3 text-sm text-slate-500 dark:text-slate-400">
+                  <li className="flex items-start gap-3">
+                    <Mail size={18} className="text-blue-600 mt-0.5 shrink-0" />
+                    <a href="mailto:kartinielearningapps@gmail.com" className="hover:text-blue-600 break-all">kartinielearningapps@gmail.com</a>
+                  </li>
+                  <li className="flex items-start gap-3">
+                    <MapPin size={18} className="text-blue-600 mt-0.5 shrink-0" />
+                    <span>Semarang, Jawa Tengah, Indonesia</span>
+                  </li>
+                </ul>
+              </div>
+              <div className="shrink-0">
+                <h4 className="font-bold text-slate-900 dark:text-white mb-4">Sosial Media</h4>
+                <div className="flex flex-col gap-3">
+                  <Link href="https://youtube.com/@kartinielearning" target="_blank" className="group flex items-center gap-3 text-sm text-slate-500 dark:text-slate-400 hover:text-red-600 transition-colors">
+                    <div className="p-2 bg-slate-100 dark:bg-gray-800 rounded-full group-hover:bg-red-50 dark:group-hover:bg-red-900/30 transition-colors">
+                      <Youtube size={16} />
+                    </div>
+                    <span className="font-medium">YouTube</span>
                   </Link>
-                  <Link href="https://youtube.com/@kartinielearning" target="_blank" className="text-slate-400 hover:text-red-600 transition-colors">
-                    <Youtube size={20} />
+                  <Link href="https://instagram.com/kartinielearning" target="_blank" className="group flex items-center gap-3 text-sm text-slate-500 dark:text-slate-400 hover:text-pink-600 transition-colors">
+                    <div className="p-2 bg-slate-100 dark:bg-gray-800 rounded-full group-hover:bg-pink-50 dark:group-hover:bg-pink-900/30 transition-colors">
+                      <Instagram size={16} />
+                    </div>
+                    <span className="font-medium">Instagram</span>
                   </Link>
-                </li>
-              </ul>
+                </div>
+              </div>
             </div>
           </div>
 
