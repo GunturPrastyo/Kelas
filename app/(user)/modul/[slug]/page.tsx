@@ -1989,7 +1989,7 @@ export default function ModulDetailPage() {
             })()}
 
             {/* Floating Action Buttons */}
-            <div className="fixed bottom-6 right-6 z-50 flex flex-col items-center gap-4">
+            <div className="fixed bottom-20 md:bottom-6 right-4 md:right-6 z-[45] flex flex-col items-center gap-4">
                 {/* Floating Action Button for Chatbot Gemini */}
                 <button
                     id="chatbot-gemini-btn"
