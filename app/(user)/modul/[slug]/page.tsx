@@ -367,7 +367,7 @@ const PracticeSection = ({ topicId, practices: initialPractices, onSuccess }: { 
                         <Terminal size={14} /> Console
                     </button>
                     <div className="flex-1"></div> {/* Spacer */}
-                    <button onClick={handleRun} className="flex items-center gap-1.5 bg-green-600 hover:bg-green-700 text-white px-3 py-1.5 my-1 mr-2 rounded-md text-xs font-bold transition-colors shadow-sm">
+                    <button onClick={handleRun} className="flex items-center gap-1.5 bg-green-600 hover:bg-green-700 text-white px-3 py-1.5 sm:px-4 sm:py-1.5 my-1 mr-2 rounded-md text-xs sm:text-sm font-medium transition-colors shadow-sm">
                         <Play size={12} /> Jalankan
                     </button>
                 </div>
@@ -405,11 +405,11 @@ const PracticeSection = ({ topicId, practices: initialPractices, onSuccess }: { 
                 </div>
             </div>
 
-            <div className="flex justify-between items-center pt-2">
+            <div className="flex justify-between items-center mt-2">
                 <button
                     onClick={() => { setIsCorrect(false); setCurrentIndex(prev => Math.max(0, prev - 1)); }}
                     disabled={currentIndex === 0}
-                    className="px-4 py-2 text-sm font-semibold text-gray-600 dark:text-gray-400 bg-gray-100 dark:bg-gray-800 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="px-3 py-1.5 sm:px-4 sm:py-2 text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-md hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors shadow-sm"
                 >
                     Sebelumnya
                 </button>
@@ -418,18 +418,18 @@ const PracticeSection = ({ topicId, practices: initialPractices, onSuccess }: { 
                     currentIndex < practices.length - 1 ? (
                         <button 
                             onClick={() => { setIsCorrect(false); setCurrentIndex(prev => prev + 1); }}
-                            className={`flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-xl font-bold transition-all shadow-lg hover:shadow-blue-500/30 ${isCorrect ? 'animate-bounce' : ''}`}
+                            className="flex items-center gap-1.5 bg-blue-600 hover:bg-blue-700 text-white px-3 py-1.5 sm:px-4 sm:py-2 rounded-md text-xs sm:text-sm font-medium transition-colors shadow-sm"
                         >
-                            Lanjut Soal Berikutnya <ArrowRight size={18} />
+                            Selanjutnya <ArrowRight size={16} />
                         </button>
                     ) : (
-                        <div className="flex items-center gap-2 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 px-5 py-2.5 rounded-xl font-bold border border-green-200 dark:border-green-800">
-                            <CheckCircle2 size={20} /> Selamat! Semua soal praktik selesai.
+                        <div className="flex items-center gap-1.5 bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-400 px-3 py-1.5 sm:px-4 sm:py-2 rounded-md text-xs sm:text-sm font-medium border border-green-200 dark:border-green-800/30 shadow-sm">
+                            <CheckCircle2 size={16} /> Semua soal praktik selesai
                         </div>
                     )
                 ) : (
-                    <button disabled className="bg-gray-200 text-md dark:bg-gray-700 text-gray-400 dark:text-gray-500 px-5 py-2.5 rounded-xl font-bold cursor-not-allowed border border-gray-300 dark:border-gray-600">
-                        Selanjutnya
+                    <button disabled className="px-3 py-1.5 sm:px-4 sm:py-2 text-xs sm:text-sm font-medium bg-gray-100 dark:bg-gray-800 text-gray-400 dark:text-gray-500 rounded-md cursor-not-allowed border border-gray-200 dark:border-gray-700 flex items-center gap-1.5 shadow-sm">
+                        Selanjutnya <ArrowRight size={16} />
                     </button>
                 )}
             </div>
