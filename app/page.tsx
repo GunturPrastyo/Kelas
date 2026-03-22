@@ -798,7 +798,9 @@ export default function LandingPage() {
                         key={`scroll-card-${modul._id}-${idx}`}
                         className="bg-white dark:bg-gray-800 rounded-2xl p-6 border border-slate-100 dark:border-gray-700 shadow-sm hover:shadow-lg transition-all group mx-2 relative overflow-hidden"
                       >
-                        <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-bl from-blue-50 dark:from-blue-900/20 to-transparent rounded-bl-full -mr-4 -mt-4 opacity-50 group-hover:opacity-100 transition-opacity"></div>
+                        {/* Decorative Stacked Bubbles */}
+                        <div className="absolute -top-12 -left-10 w-32 h-32 bg-blue-50 dark:bg-blue-900/20 rounded-full group-hover:scale-110 transition-transform duration-500 ease-out"></div>
+                        <div className="absolute top-4 -left-6 w-20 h-20 bg-blue-100 dark:bg-blue-800/30 rounded-full group-hover:scale-110 transition-transform duration-500 ease-out delay-75"></div>
 
                         <div className="flex justify-between items-start mb-4 relative z-10">
                           <div className="p-3 bg-slate-50 dark:bg-gray-700/50 rounded-xl group-hover:scale-110 transition-transform duration-300 shadow-sm">
