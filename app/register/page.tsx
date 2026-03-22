@@ -140,7 +140,7 @@ function RegisterContent() {
               <h2 className="text-2xl font-bold text-center text-gray-900 dark:text-white mb-2">
                 Buat Akun Baru
               </h2>
-              <p className="text-center text-gray-500 dark:text-gray-400 text-sm mb-6">
+              <p className="text-center text-gray-500 dark:text-gray-400 text-sm -mt-2 mb-6">
                 Daftar untuk mulai belajar
               </p>
 

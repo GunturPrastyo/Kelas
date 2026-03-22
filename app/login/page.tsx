@@ -150,16 +150,13 @@ function LoginContent() {
           {/* === FORM LOGIN === */}
           <div className="p-10 md:p-14 bg-[#EAF0FF] dark:bg-gray-900 rounded-4xl z-30 -mt-5 sm:m-0">
 
-            <div className="flex justify-center mb-6">
-              <img src="/logo1.webp" alt="Logo" width={256} height={256} className="w-18 h-auto drop-shadow-md" />
+            <div className="flex justify-center mb-10">
+              <img src="/logo.webp" alt="Logo Kelas Edu" width={200} height={60} className="w-42 h-auto drop-shadow-md" />
             </div>
 
-            <h2 className="text-2xl font-bold text-center text-gray-900 dark:text-white mb-2">
-              Selamat Datang 
-            </h2>
-            <p className="text-center text-gray-500 dark:text-gray-400 text-sm mb-6">
+            {/* <p className="text-center text-gray-500 dark:text-gray-400 text-sm mb-6">
               Silakan masuk ke akun kamu
-            </p>
+            </p> */}
 
             {error && (
               <div className="text-red-700 bg-red-100 p-3 text-center rounded-lg mb-4 text-sm border border-red-300">
