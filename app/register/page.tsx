@@ -107,7 +107,7 @@ function RegisterContent() {
             alt="Ilustrasi Daftar"
             width={800}
             height={800}
-            className="w-full h-auto object-containt rounded-xl"
+            className="w-full h-auto object-containt mb-4 rounded-xl"
           />
         </div>
 
@@ -133,14 +133,14 @@ function RegisterContent() {
             </div>
           ) : (
             <>
-              <div className="flex justify-center mb-5">
+              {/* <div className="flex justify-center mb-5">
                 <img src="/logo1.webp" alt="Logo" width={256} height={256} className="w-20 h-auto drop-shadow-md" />
-              </div>
+              </div> */}
 
               <h2 className="text-2xl font-bold text-center text-gray-900 dark:text-white mb-2">
                 Buat Akun Baru
               </h2>
-              <p className="text-center text-gray-500 dark:text-gray-400 text-sm -mt-2 mb-6">
+              <p className="text-center text-gray-500 dark:text-gray-400 text-sm -mt-2 mb-8">
                 Daftar untuk mulai belajar
               </p>
 
