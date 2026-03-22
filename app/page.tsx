@@ -1067,6 +1067,7 @@ export default function LandingPage() {
 
                     {/* Card */}
                     <div className="flex-1 bg-slate-50 dark:bg-gray-800 p-6 rounded-2xl border border-slate-100 dark:border-gray-700 shadow-sm">
+                      <Quote className="text-blue-100 dark:text-blue-900/30 w-8 h-8 mb-3 rotate-180" />
                       <p className="text-slate-600 dark:text-slate-300 mb-4 italic text-sm">"{item.content}"</p>
                       <div className="flex items-center gap-3">
                         <img src={item.avatar} alt={item.name} className="w-10 h-10 rounded-full bg-gray-200" />
