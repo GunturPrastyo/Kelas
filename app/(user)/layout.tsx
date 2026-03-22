@@ -8,24 +8,15 @@ import { AlertProvider } from "@/context/AlertContext";
 import AlertDialog from "@/components/AlertDialog";
 
 function UserLayoutContent({ children }: { children: React.ReactNode }) {
-  const { isSidebarCollapsed, isMobileDrawerOpen, toggleMobileDrawer } = useUI();
+  const { isSidebarCollapsed } = useUI();
 
   return (
     <div className="font-poppins bg-gray-100 dark:bg-gray-900 text-gray-800 dark:text-gray-100 flex min-h-screen">
       <SidebarUser />
 
-      {/* Mobile Overlay */}
-      {isMobileDrawerOpen && (
-        <div
-          className="fixed inset-0 z-40 bg-opacity-50 md:hidden"
-          onClick={toggleMobileDrawer}
-          aria-hidden="true"
-        />
-      )}
-
       <div
         id="main-content"
-        className={`flex-1 flex flex-col min-w-0 transition-all duration-300 ease-in-out overflow-hidden ${
+        className={`flex-1 flex flex-col min-w-0 transition-all duration-300 ease-in-out overflow-hidden pb-16 md:pb-0 ${
           isSidebarCollapsed ? "md:pl-20" : "md:pl-64"
         }`}
       >
