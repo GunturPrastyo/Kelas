@@ -85,9 +85,9 @@ export default function Sidebar() {
             <Link
               key={link.href}
               href={link.href}
-              className={`nav-link flex flex-col md:flex-row items-center justify-center md:justify-start gap-1 md:gap-4 p-2 md:p-3 rounded-xl md:rounded-lg transition-colors ${active ? 'text-blue-600 dark:text-blue-400 md:bg-blue-100 md:dark:bg-gray-700 md:text-blue-600 md:dark:text-white' : 'text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 md:hover:bg-gray-200/50 md:dark:hover:bg-gray-700'}`}
+              className={`nav-link relative flex flex-col md:flex-row items-center justify-center md:justify-start gap-1 md:gap-4 p-2 md:p-3 rounded-xl md:rounded-lg transition-all duration-300 ease-out ${active ? 'text-blue-600 dark:text-blue-400 md:bg-blue-100 md:dark:bg-gray-700 md:text-blue-600 md:dark:text-white max-md:-translate-y-2 max-md:scale-110' : 'text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 md:hover:bg-gray-200/50 md:dark:hover:bg-gray-700 max-md:translate-y-0 max-md:scale-100'}`}
             >
-              <img src={link.icon} alt={link.alt} className={`flex-shrink-0 transition-opacity w-6 h-6 md:w-8 md:h-auto ${active ? 'opacity-100' : 'opacity-70'}`} />
+              <img src={link.icon} alt={link.alt} className={`flex-shrink-0 transition-all duration-300 w-6 h-6 md:w-8 md:h-auto ${active ? 'opacity-100 drop-shadow-md' : 'opacity-70'}`} />
               <span className={`sidebar-text whitespace-nowrap transition-opacity duration-300 text-[10px] md:text-sm font-medium ${isSidebarCollapsed ? 'md:opacity-0 md:hidden' : 'md:opacity-100'} ${active ? 'font-bold md:font-semibold' : ''}`}>
                 {link.label}
               </span>

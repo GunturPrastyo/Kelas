@@ -4,7 +4,6 @@ import { useState, useEffect, useMemo } from "react"
 import { useTheme } from "next-themes"
 import { usePathname } from "next/navigation"
 import { useUI } from "@/context/UIContext"
-import Image from "next/image"
 import NotificationBell from "./NotificationBell" // Import komponen notifikasi
 import UserDropdown from "./UserDropdown" // Import komponen UserDropdown
 
@@ -68,21 +67,10 @@ export default function Navbar() {
     >
       {/* Kiri */}
       <div id="header-left" className="flex items-center flex-shrink-0" suppressHydrationWarning>
-        {/* Tombol Mobile Drawer */}
-        <button
-          id="mobile-drawer-toggle"
-          type="button"
-          className=" text-gray-500 rounded-lg sm:hidden hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:text-gray-400 dark:hover:bg-gray-700 dark:focus:ring-gray-600"
-          onClick={toggleMobileDrawer}
-        >
-          <span className="sr-only">Open sidebar</span>
-          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16" />
-          </svg>
-        </button>
-        <div id="header-title-placeholder" suppressHydrationWarning>
+        <div id="header-title-placeholder" suppressHydrationWarning className="flex items-center">
+          {/* Logo on Desktop (only when collapsed) */}
           {isSidebarCollapsed && (
-            <Image src="/logo.webp" alt="KELAS Logo" width={150} height={40} className="h-10 w-auto" />
+            <img src="/logo.webp" alt="KELAS Logo" width={150} height={40} className="h-8 w-auto ml-2 hidden md:block" />
           )}
         </div>
       </div>
