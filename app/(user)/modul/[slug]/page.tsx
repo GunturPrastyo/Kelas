@@ -405,7 +405,7 @@ const PracticeSection = ({ topicId, practices: initialPractices, onSuccess }: { 
                 </div>
             </div>
 
-            <div className="flex justify-between items-center mt-2">
+            <div className="flex justify-between items-center mt-2 px-1 sm:px-0">
                 <button
                     onClick={() => { setIsCorrect(false); setCurrentIndex(prev => Math.max(0, prev - 1)); }}
                     disabled={currentIndex === 0}
@@ -420,16 +420,16 @@ const PracticeSection = ({ topicId, practices: initialPractices, onSuccess }: { 
                             onClick={() => { setIsCorrect(false); setCurrentIndex(prev => prev + 1); }}
                             className="flex items-center gap-1.5 bg-blue-600 hover:bg-blue-700 text-white px-3 py-1.5 sm:px-4 sm:py-2 rounded-md text-xs sm:text-sm font-medium transition-colors shadow-sm"
                         >
-                            Selanjutnya <ArrowRight size={16} />
+                            Selanjutnya <span className="font-bold text-sm sm:text-base leading-none">&gt;</span>
                         </button>
                     ) : (
                         <div className="flex items-center gap-1.5 bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-400 px-3 py-1.5 sm:px-4 sm:py-2 rounded-md text-xs sm:text-sm font-medium border border-green-200 dark:border-green-800/30 shadow-sm">
-                            <CheckCircle2 size={16} /> Semua soal praktik selesai
+                            <CheckCircle2 size={16} className="flex-shrink-0" /> <span className="text-center sm:text-left">Semua soal praktik selesai</span>
                         </div>
                     )
                 ) : (
                     <button disabled className="px-3 py-1.5 sm:px-4 sm:py-2 text-xs sm:text-sm font-medium bg-gray-100 dark:bg-gray-800 text-gray-400 dark:text-gray-500 rounded-md cursor-not-allowed border border-gray-200 dark:border-gray-700 flex items-center gap-1.5 shadow-sm">
-                        Selanjutnya <ArrowRight size={16} />
+                        Selanjutnya <span className="font-bold text-sm sm:text-base leading-none">&gt;</span>
                     </button>
                 )}
             </div>
