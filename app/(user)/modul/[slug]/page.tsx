@@ -261,17 +261,42 @@ const PracticeSection = ({ topicId, practices: initialPractices, onSuccess }: { 
                 </div>
                 <div className="text-sm text-gray-600 dark:text-gray-300 prose prose-sm dark:prose-invert max-w-none" dangerouslySetInnerHTML={{ __html: currentQ.description }} />
                 
-                <button 
-                    onClick={() => setShowHint(!showHint)}
-                    className="text-xs flex items-center gap-1 text-blue-600 hover:text-blue-700 font-medium mt-3"
-                >
-                    <Lightbulb size={14} /> {showHint ? "Sembunyikan Tips" : "Lihat Tips"}
-                </button>
-                
-                {showHint && (
-                    <div className="mt-2 p-3 bg-blue-50 dark:bg-blue-900/20 text-blue-800 dark:text-blue-200 text-xs rounded-lg border border-blue-100 dark:border-blue-800/50 flex gap-2">
-                        <span className="shrink-0">💡</span>
-                        <div className="prose prose-sm max-w-none prose-p:m-0 text-blue-800 dark:text-blue-200" dangerouslySetInnerHTML={{ __html: currentQ.hint }} />
+                {/* Fallback untuk hint lama yang belum dimigrasi */}
+                {(!currentQ.hints || currentQ.hints.length === 0 || (currentQ.hints.length === 1 && currentQ.hints[0] === "")) && currentQ.hint && (
+                    <>
+                        <button 
+                            onClick={() => setShowHint(!showHint)}
+                            className="text-xs flex items-center gap-1 px-3 py-1.5 bg-blue-50 text-blue-600 hover:bg-blue-100 dark:bg-blue-900/30 dark:text-blue-400 dark:hover:bg-blue-900/50 rounded-lg font-medium transition-colors mt-3"
+                        >
+                            <Lightbulb size={14} /> {showHint ? "Sembunyikan Tips" : "Lihat Tips"}
+                        </button>
+                        
+                        {showHint && (
+                            <div className="mt-2 p-3 bg-blue-50 dark:bg-blue-900/20 text-blue-800 dark:text-blue-200 text-xs rounded-lg border border-blue-100 dark:border-blue-800/50 flex gap-2">
+                                <span className="shrink-0">💡</span>
+                                <div className="prose prose-sm max-w-none prose-p:m-0 text-blue-800 dark:text-blue-200" dangerouslySetInnerHTML={{ __html: currentQ.hint }} />
+                            </div>
+                        )}
+                    </>
+                )}
+
+                {/* Untuk list hint yang mendukung banyak bagian */}
+                {currentQ.hints && currentQ.hints.length > 0 && currentQ.hints.some((h: string) => h.trim() !== "") && (
+                    <div className="mt-3 flex flex-col gap-2">
+                        {currentQ.hints.filter((h: string) => h.trim() !== "").slice(0, revealedHints).map((hint: string, idx: number) => (
+                            <div key={idx} className="p-3 bg-blue-50 dark:bg-blue-900/20 text-blue-800 dark:text-blue-200 text-xs rounded-lg border border-blue-100 dark:border-blue-800/50 flex gap-2">
+                                <span className="shrink-0 font-bold mt-0.5">💡 Petunjuk {idx + 1}:</span>
+                                <div className="prose prose-sm max-w-none prose-p:m-0 text-blue-800 dark:text-blue-200" dangerouslySetInnerHTML={{ __html: hint }} />
+                            </div>
+                        ))}
+                        {revealedHints < currentQ.hints.filter((h: string) => h.trim() !== "").length && (
+                            <button 
+                                onClick={() => setRevealedHints(prev => prev + 1)}
+                                className="self-start text-xs flex items-center gap-1 px-3 py-1.5 bg-blue-50 text-blue-600 hover:bg-blue-100 dark:bg-blue-900/30 dark:text-blue-400 dark:hover:bg-blue-900/50 rounded-lg font-medium transition-colors"
+                            >
+                                <Lightbulb size={14} /> Lihat Petunjuk {revealedHints + 1}
+                            </button>
+                        )}
                     </div>
                 )}
             </div>
