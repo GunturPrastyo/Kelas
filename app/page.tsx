@@ -1112,9 +1112,10 @@ export default function LandingPage() {
                 <p className="text-blue-100 text-lg mb-8 text-left md:text-center">
                   Jangan buang waktu mempelajari apa yang sudah kamu tahu. Ikuti tes awal kami dan dapatkan kurikulum yang dipersonalisasi khusus untukmu.
                 </p>
-                <div className="flex flex-col sm:flex-row gap-4 justify-start md:justify-center">
-                  <Link href="/register" className="bg-white text-blue-600 px-8 py-3.5 rounded-full font-bold hover:bg-blue-50 transition shadow-lg">
+                <div className="flex flex-col sm:flex-row gap-4 justify-start md:justify-center items-start md:items-center">
+                  <Link href="/register" className="group inline-flex items-center justify-center gap-2 bg-white text-blue-600 px-8 py-3.5 rounded-full font-bold hover:bg-blue-50 transition shadow-lg">
                     Daftar Gratis Sekarang
+                    <ChevronRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
                   </Link>
                 </div>
               </div>
