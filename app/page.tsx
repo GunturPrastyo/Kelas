@@ -12,6 +12,7 @@ import {
   ChevronFirst,
   ChevronRight,
   ChevronLeft,
+  ChevronDown,
   Moon,
   Sun,
   ArrowUp,
@@ -159,6 +160,7 @@ export default function LandingPage() {
   const [displayedBadgeText, setDisplayedBadgeText] = useState("");
   const [count, setCount] = useState(0);
   const [activeFeature, setActiveFeature] = useState(0);
+  const [openFaqIndex, setOpenFaqIndex] = useState<number | null>(null);
   const { theme, setTheme, resolvedTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
   const [showScrollTop, setShowScrollTop] = useState(false);
@@ -1127,15 +1129,30 @@ export default function LandingPage() {
               >Pertanyaan Umum</motion.h2>
               <div className="space-y-4">
                 {[
-                  { q: "Apakah Pre-Test ini wajib?", a: "Sangat disarankan. Pre-test membantu sistem kami menentukan level materi yang paling cocok untukmu (Dasar, Menengah, atau Lanjut)." },
-                  { q: "Apakah sertifikatnya valid untuk melamar kerja?", a: "Ya, sertifikat KELAS diakui oleh banyak mitra industri kami sebagai bukti kompetensi." },
-                  { q: "Berapa lama akses materi berlaku?", a: "Sekali kamu mendaftar pada sebuah modul, kamu memiliki akses seumur hidup ke materi tersebut." }
-                ].map((item, idx) => (
-                  <div key={idx} className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm border border-slate-200 dark:border-gray-700">
-                    <h3 className="font-bold text-lg text-slate-900 dark:text-white mb-2">{item.q}</h3>
-                    <p className="text-slate-600 dark:text-slate-400 text-left">{item.a}</p>
-                  </div>
-                ))}
+                  { q: "Bagaimana sistem jalur belajar personalisasi bekerja?", a: "Berdasarkan hasil Tes Awal (Pre-Test), sistem akan merekomendasikan modul yang sesuai dengan kemampuanmu—mulai dari tingkat Dasar, Menengah, hingga Lanjut." },
+                  { q: "Apakah ada fitur untuk berlatih coding secara langsung?", a: "Tentu! Kami menyediakan fitur Live Code Playground. Kamu bisa menulis, menjalankan, dan melihat hasil kode HTML maupun JavaScript secara real-time langsung di browser." },
+                  { q: "Bagaimana jika saya kesulitan memahami materi?", a: "Jangan khawatir! Ada Kak Gem, asisten tutor AI yang siap membantu menjawab pertanyaanmu dan memecahkan masalah koding yang sedang kamu hadapi kapan saja." },
+                  { q: "Apakah saya bisa mengulang modul jika skor tes masih rendah?", a: "Tentu bisa! Sistem analitik kami akan merekomendasikan topik spesifik yang perlu kamu perkuat. Kamu bisa mengulang materi dan uji pemahaman kapan saja." },
+                  { q: "Bagaimana cara mendapatkan sertifikat?", a: "Sertifikat resmi Kelas Edu bisa kamu unduh otomatis di halaman Profil setelah kamu menyelesaikan 100% progres belajar dan lulus semua post-test." }
+                ].map((item, idx) => {
+                  const isOpen = openFaqIndex === idx;
+                  return (
+                    <div key={idx} className={`bg-white dark:bg-gray-800 rounded-xl shadow-sm border transition-colors duration-300 ${isOpen ? 'border-blue-500 dark:border-blue-400' : 'border-slate-200 dark:border-gray-700'}`}>
+                      <button
+                        onClick={() => setOpenFaqIndex(isOpen ? null : idx)}
+                        className="w-full flex justify-between items-center p-6 text-left focus:outline-none"
+                      >
+                        <h3 className={`font-bold text-md transition-colors pr-4 ${isOpen ? 'text-blue-600 dark:text-blue-400' : 'text-slate-800 dark:text-white'}`}>{item.q}</h3>
+                        <ChevronDown className={`w-5 h-5 flex-shrink-0 transition-transform duration-300 ${isOpen ? 'rotate-180 text-blue-600 dark:text-blue-400' : 'text-slate-400'}`} />
+                      </button>
+                      <div className={`grid transition-all duration-300 ease-in-out ${isOpen ? 'grid-rows-[1fr] opacity-100' : 'grid-rows-[0fr] opacity-0'}`}>
+                        <div className="overflow-hidden">
+                          <p className="text-slate-600 dark:text-slate-400 text-left px-6 pb-6 pt-0">{item.a}</p>
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
               </div>
             </div>
 
