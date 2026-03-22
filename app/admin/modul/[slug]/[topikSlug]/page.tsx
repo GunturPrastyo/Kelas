@@ -411,12 +411,23 @@ export default function MateriEditorPage({ params }: MateriEditorPageProps) {
                 </div>
     
                 <div className="mb-4">
-                    <label className="block text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">Hint (Petunjuk)</label>
-                    <TiptapEditor 
-                      content={practice.hint} 
-                      onChange={(val) => handlePracticeChange(pIndex, 'hint', val)} 
-                      placeholder="Berikan petunjuk jika siswa kesulitan..." 
-                    />
+                    <label className="block text-sm font-medium text-gray-500 dark:text-gray-400 mb-2">Hint / Petunjuk (Opsional)</label>
+                    {practice.hints.map((hint, hIndex) => (
+                        <div key={hIndex} className="mb-3 border border-gray-200 dark:border-gray-700 rounded-lg p-3 relative">
+                            <div className="flex justify-between items-center mb-2">
+                                <span className="text-xs font-semibold text-gray-500 dark:text-gray-400">Petunjuk {hIndex + 1}</span>
+                                {practice.hints.length > 1 && (
+                                    <button onClick={() => handleRemoveHint(pIndex, hIndex)} className="text-red-500 hover:text-red-700 text-xs font-medium">Hapus</button>
+                                )}
+                            </div>
+                            <TiptapEditor 
+                              content={hint} 
+                              onChange={(val) => handleHintChange(pIndex, hIndex, val)} 
+                              placeholder={`Petunjuk ${hIndex + 1}...`} 
+                            />
+                        </div>
+                    ))}
+                    <button onClick={() => handleAddHint(pIndex)} className="text-sm text-blue-600 dark:text-blue-400 hover:text-blue-700 font-medium flex items-center gap-1 mt-1">+ Tambah Petunjuk Selanjutnya</button>
                 </div>
     
                 <div className="mb-4">
