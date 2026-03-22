@@ -162,13 +162,57 @@ const PracticeSection = ({ topicId, practices: initialPractices, onSuccess }: { 
         }
     }, [currentIndex, currentQ]);
 
+    // Listener untuk menangkap pesan console dari iframe
+    useEffect(() => {
+        const handleMessage = (event: MessageEvent) => {
+            if (event.data && event.data.type === 'console') {
+                setOutput(prev => [...prev, `[${event.data.level}] ${event.data.message}`]);
+            }
+        };
+
+        window.addEventListener('message', handleMessage);
+        return () => window.removeEventListener('message', handleMessage);
+    }, []);
+
     const handleRun = async () => {
         if (!currentQ) return;
         setIsCorrect(false);
-        setActivePracticeTab('preview');
+        setActivePracticeTab(currentQ.type === 'html' ? 'preview' : 'console');
         
         if (currentQ.type === 'html') {
-            setIframeSrc(code);
+            const consoleInterceptor = `
+            <script>
+                (function() {
+                    var oldLog = console.log;
+                    var oldError = console.error;
+                    var oldWarn = console.warn;
+                    function safeStringify(obj) {
+                        try { return JSON.stringify(obj, null, 2); } catch(e) { return '[Object]'; }
+                    }
+                    function send(level, args) {
+                        try {
+                            var msg = args.map(arg => typeof arg === 'object' ? safeStringify(arg) : String(arg)).join(' ');
+                            window.parent.postMessage({ type: 'console', level: level, message: msg }, '*');
+                        } catch(e) {}
+                    }
+                    console.log = function(...args) { oldLog.apply(console, args); send('log', args); };
+                    console.error = function(...args) { oldError.apply(console, args); send('error', args); };
+                    console.warn = function(...args) { oldWarn.apply(console, args); send('warn', args); };
+                    window.onerror = function(msg, url, line) { send('error', [msg + ' (Line: ' + line + ')']); };
+                })();
+            </script>
+            `;
+            let finalHtml = code;
+            if (finalHtml.includes('<head>')) {
+                finalHtml = finalHtml.replace('<head>', '<head>' + consoleInterceptor);
+            } else if (finalHtml.includes('<body>')) {
+                finalHtml = finalHtml.replace('<body>', '<body>' + consoleInterceptor);
+            } else {
+                finalHtml = consoleInterceptor + finalHtml;
+            }
+            
+            setOutput([]); // Reset output for HTML
+            setIframeSrc(finalHtml);
         } else {
             setOutput(['Menjalankan kode di server...']);
         }
@@ -191,6 +235,9 @@ const PracticeSection = ({ topicId, practices: initialPractices, onSuccess }: { 
                 
                 if (currentQ.type === 'javascript') {
                     setOutput(data.output || []);
+                } else if (currentQ.type === 'html' && data.output && data.output.length > 0) {
+                    // Sometimes backend might send validation output for HTML too
+                    setOutput(prev => [...prev, ...data.output]);
                 }
 
                 if (data.isCorrect && onSuccess) {
@@ -219,11 +266,15 @@ const PracticeSection = ({ topicId, practices: initialPractices, onSuccess }: { 
             } else {
                 if (currentQ.type === 'javascript') {
                     setOutput([data.message || 'Gagal memvalidasi kode.']);
+                } else if (currentQ.type === 'html') {
+                    setOutput(prev => [...prev, data.message || 'Gagal memvalidasi kode.']);
                 }
             }
         } catch (error: any) {
             if (currentQ.type === 'javascript') {
                 setOutput([error.toString()]);
+            } else if (currentQ.type === 'html') {
+                setOutput(prev => [...prev, error.toString()]);
             }
             console.error("Gagal menjalankan praktik:", error);
         }
@@ -307,9 +358,13 @@ const PracticeSection = ({ topicId, practices: initialPractices, onSuccess }: { 
                     <button onClick={() => setActivePracticeTab('code')} className={`flex items-center gap-2 px-4 py-2 text-sm font-medium ${activePracticeTab === 'code' ? 'bg-white dark:bg-gray-900 border-b-2 border-blue-500 text-gray-800 dark:text-white' : 'text-gray-500 hover:bg-gray-200 dark:hover:bg-gray-700'}`}>
                         <Code size={14} /> Code
                     </button>
-                    <button onClick={() => setActivePracticeTab('preview')} className={`flex items-center gap-2 px-4 py-2 text-sm font-medium ${activePracticeTab === 'preview' ? 'bg-white dark:bg-gray-900 border-b-2 border-blue-500 text-gray-800 dark:text-white' : 'text-gray-500 hover:bg-gray-200 dark:hover:bg-gray-700'}`}>
-                        {currentQ.type === 'html' ? <Eye size={14} /> : <Terminal size={14} />}
-                        {currentQ.type === 'html' ? 'Preview' : 'Console'}
+                    {currentQ.type === 'html' && (
+                        <button onClick={() => setActivePracticeTab('preview')} className={`flex items-center gap-2 px-4 py-2 text-sm font-medium ${activePracticeTab === 'preview' ? 'bg-white dark:bg-gray-900 border-b-2 border-blue-500 text-gray-800 dark:text-white' : 'text-gray-500 hover:bg-gray-200 dark:hover:bg-gray-700'}`}>
+                            <Eye size={14} /> Preview
+                        </button>
+                    )}
+                    <button onClick={() => setActivePracticeTab('console')} className={`flex items-center gap-2 px-4 py-2 text-sm font-medium ${activePracticeTab === 'console' ? 'bg-white dark:bg-gray-900 border-b-2 border-blue-500 text-gray-800 dark:text-white' : 'text-gray-500 hover:bg-gray-200 dark:hover:bg-gray-700'}`}>
+                        <Terminal size={14} /> Console
                     </button>
                     <div className="flex-1"></div> {/* Spacer */}
                     <button onClick={handleRun} className="flex items-center gap-1.5 bg-green-600 hover:bg-green-700 text-white px-3 py-1.5 my-1 mr-2 rounded-md text-xs font-bold transition-colors shadow-sm">
@@ -331,19 +386,21 @@ const PracticeSection = ({ topicId, practices: initialPractices, onSuccess }: { 
                             options={{ minimap: { enabled: false }, fontSize: 14, scrollBeyondLastLine: false, automaticLayout: true }}
                         />
                     </div>
-                    {/* Preview/Console */}
-                    <div className={`absolute inset-0 p-4 sm:p-6 overflow-auto ${activePracticeTab === 'preview' ? '' : 'hidden'} ${currentQ.type === 'html' ? 'bg-white' : 'bg-[#1e1e1e]'}`}>
-                        {currentQ.type === 'html' ? (
-                            <iframe srcDoc={iframeSrc} className="w-full h-full border-none bg-white rounded-md" title="Preview" />
-                        ) : (
-                            <div className="font-mono text-sm text-gray-200">
-                                {output.length > 0 ? (
-                                    output.map((line, i) => <div key={i} className="mb-1 border-b border-gray-700/20 pb-1 last:border-0">{line}</div>)
-                                ) : (
-                                    <span className="text-gray-400 italic">Klik "Jalankan" untuk melihat hasil...</span>
-                                )}
-                            </div>
-                        )}
+                    {/* Preview */}
+                    {currentQ.type === 'html' && (
+                        <div className={`absolute inset-0 p-4 sm:p-6 overflow-auto bg-white ${activePracticeTab === 'preview' ? '' : 'hidden'}`}>
+                            <iframe srcDoc={iframeSrc} className="w-full h-full border-none bg-white rounded-md" title="Preview" sandbox="allow-scripts allow-same-origin allow-modals" />
+                        </div>
+                    )}
+                    {/* Console */}
+                    <div className={`absolute inset-0 p-4 sm:p-6 overflow-auto bg-[#1e1e1e] ${activePracticeTab === 'console' ? '' : 'hidden'}`}>
+                        <div className="font-mono text-sm text-gray-200">
+                            {output.length > 0 ? (
+                                output.map((line, i) => <div key={i} className={`mb-1 border-b border-gray-700/20 pb-1 last:border-0 ${line.startsWith('[error]') ? 'text-red-400' : line.startsWith('[warn]') ? 'text-yellow-400' : 'text-gray-300'}`}>{line}</div>)
+                            ) : (
+                                <span className="text-gray-400 italic">Klik "Jalankan" untuk melihat hasil...</span>
+                            )}
+                        </div>
                     </div>
                 </div>
             </div>
