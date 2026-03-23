@@ -55,10 +55,10 @@ export default function Sidebar() {
         bottom-0 left-0 w-full h-16 border-t flex flex-row items-center justify-around px-2 pb-[env(safe-area-inset-bottom)]
         /* Desktop (Sidebar) */
         md:top-0 md:h-screen md:border-t-0 md:border-r md:flex-col md:justify-start md:px-0 md:pb-0
-        ${isSidebarCollapsed ? 'md:w-20' : 'md:w-64'}`}
+        ${isSidebarCollapsed ? 'md:w-20' : 'md:w-48'}`}
     >
       {/* Sidebar Header (Desktop) */}
-      <div className={`hidden md:flex px-4 h-20 items-center gap-3 flex-shrink-0 ${isSidebarCollapsed ? 'justify-center ml-4' : 'justify-start'}`}>
+      <div className={`hidden md:flex px-4 h-20 items-center gap-3 flex-shrink-0 ${isSidebarCollapsed ? 'justify-center' : 'justify-start'}`}>
         <button
           id="sidebar-toggle"
           type="button"
@@ -66,13 +66,13 @@ export default function Sidebar() {
           onClick={toggleSidebar}
         >
           <span className="sr-only">Toggle sidebar</span>
-          <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16" />
           </svg>
         </button>
         <div id="sidebar-title-container" className="flex-1 flex items-center gap-4 overflow-hidden" >
           {!isSidebarCollapsed && (
-            <img id="sidebar-title" src="/logo.webp" alt="KELAS Logo" className="ml-4 sm:ml-2 h-10 sm:h-8 w-auto transition-opacity duration-300" />
+            <img id="sidebar-title" src="/logo.webp" alt="KELAS Logo" className="h-8 w-auto transition-opacity duration-300" />
           )}
         </div>
       </div>
@@ -87,7 +87,7 @@ export default function Sidebar() {
               href={link.href}
               className={`nav-link relative flex flex-col md:flex-row items-center justify-center md:justify-start gap-1 md:gap-4 p-2 md:p-3 rounded-xl md:rounded-lg transition-all duration-300 ease-out ${active ? 'text-blue-600 dark:text-blue-400 md:bg-blue-100 md:dark:bg-gray-700 md:text-blue-600 md:dark:text-white max-md:-translate-y-2 max-md:scale-110' : 'text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 md:hover:bg-gray-200/50 md:dark:hover:bg-gray-700 max-md:translate-y-0 max-md:scale-100'}`}
             >
-              <img src={link.icon} alt={link.alt} className={`flex-shrink-0 transition-all duration-300 w-6 h-6 md:w-8 md:h-auto ${active ? 'opacity-100 drop-shadow-md' : 'opacity-70'}`} />
+              <img src={link.icon} alt={link.alt} className={`flex-shrink-0 transition-all duration-300 w-6 h-6 md:w-6 md:h-6 ${active ? 'opacity-100 drop-shadow-md' : 'opacity-70'}`} />
               <span className={`sidebar-text whitespace-nowrap transition-opacity duration-300 text-[10px] md:text-sm font-medium ${isSidebarCollapsed ? 'md:opacity-0 md:hidden' : 'md:opacity-100'} ${active ? 'font-bold md:font-semibold' : ''}`}>
                 {link.label}
               </span>

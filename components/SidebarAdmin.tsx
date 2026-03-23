@@ -72,7 +72,7 @@ export default function SidebarAdmin() {
       className={`fixed z-50 transition-all duration-300 ease-in-out bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700
         bottom-0 left-0 w-full h-16 border-t flex flex-row items-center justify-around px-2 pb-[env(safe-area-inset-bottom)]
         md:top-0 md:h-screen md:border-t-0 md:border-r md:flex-col md:justify-start md:px-0 md:pb-0
-        ${mounted ? (isSidebarCollapsed ? 'md:w-20' : 'md:w-64') : 'md:w-64'}`}
+        ${mounted ? (isSidebarCollapsed ? 'md:w-20' : 'md:w-48') : 'md:w-48'}`}
     >
       {/* Sidebar Header (Desktop) */}
       <div className={`hidden md:flex px-4 h-20 items-center gap-3 flex-shrink-0 ${isSidebarCollapsed ? 'justify-center' : 'justify-start'}`} suppressHydrationWarning>
@@ -104,7 +104,7 @@ export default function SidebarAdmin() {
               href={link.href}
               className={`nav-link relative flex flex-col md:flex-row items-center justify-center md:justify-start gap-1 md:gap-4 p-2 md:p-3 rounded-xl md:rounded-lg transition-all duration-300 ease-out ${active ? 'text-blue-600 dark:text-blue-400 md:bg-blue-100 md:dark:bg-gray-700 md:text-blue-600 md:dark:text-white max-md:-translate-y-2 max-md:scale-110' : 'text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 md:hover:bg-gray-200/50 md:dark:hover:bg-gray-700 max-md:translate-y-0 max-md:scale-100'}`}
             >
-              <img src={link.icon} alt={link.alt} className={`flex-shrink-0 transition-all duration-300 w-6 h-6 md:w-8 md:h-auto ${active ? 'opacity-100 drop-shadow-md' : 'opacity-70'}`} />
+              <img src={link.icon} alt={link.alt} className={`flex-shrink-0 transition-all duration-300 w-6 h-6 md:w-6 md:h-6 ${active ? 'opacity-100 drop-shadow-md' : 'opacity-70'}`} />
               <span className={`sidebar-text whitespace-nowrap transition-opacity duration-300 text-[10px] md:text-sm font-medium ${isSidebarCollapsed ? 'md:opacity-0 md:hidden' : 'md:opacity-100'} ${active ? 'font-bold md:font-semibold' : ''}`}>
                 {link.label}
               </span>

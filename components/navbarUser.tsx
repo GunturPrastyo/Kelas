@@ -68,8 +68,8 @@ export default function Navbar() {
   return (
     <header
       suppressHydrationWarning
-      className={`bg-white/80 dark:bg-gray-900/80 border-b border-gray-200/80 dark:border-gray-700/80 pr-2 sm:p-4  flex justify-between items-center backdrop-blur-sm fixed w-full max-w-full top-0 right-0 z-40 gap-4 h-20 mb-10 transition-all duration-300 ${
-        isSidebarCollapsed ? "w-full p-0 sm:pl-25" : "w-full sm:w-10/12"
+      className={`bg-white/80 dark:bg-gray-900/80 border-b border-gray-200/80 dark:border-gray-700/80 pr-2 sm:p-4 flex justify-between items-center backdrop-blur-sm fixed top-0 right-0 z-40 gap-4 h-20 transition-all duration-300 ${
+        isSidebarCollapsed ? "w-full md:w-[calc(100%-5rem)]" : "w-full md:w-[calc(100%-12rem)]"
       }`}
     >
       {/* Kiri */}
