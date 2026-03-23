@@ -4,11 +4,11 @@ const ModuleCardSkeleton = () => {
     return (
         <div className="relative sm:static">
             {/* Skeleton untuk nomor urut mobile */}
-            <div className="absolute top-5 left-0 z-10 w-12 h-12 flex items-center justify-center md:hidden">
+            <div className="absolute top-5 left-0 z-10 w-8 h-8 flex items-center justify-center md:hidden">
                 <div className="w-8 h-8 rounded-full bg-gray-200 dark:bg-gray-700 animate-pulse"></div>
             </div>
 
-            <div className="bg-white dark:bg-gray-800 rounded-xl shadow-md p-5 flex flex-col ml-12 sm:ml-0 h-full animate-pulse">
+            <div className="bg-white dark:bg-gray-800 rounded-xl shadow-md p-4 sm:p-5 flex flex-col ml-10 sm:ml-0 h-full animate-pulse">
                 {/* Header Skeleton */}
                 <div className="flex items-start justify-between mb-3">
                     <div className="flex items-center gap-3">
