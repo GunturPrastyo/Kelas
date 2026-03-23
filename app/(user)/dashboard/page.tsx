@@ -493,9 +493,12 @@ export default function DashboardPage() {
                     ? `/modul/${recommendation.continueToModule.moduleSlug}#${recommendation.continueToModule.nextTopic.id}`
                     : `/modul/${recommendation.continueToModule.moduleSlug}`
                 }
-                className="block p-3 border border-slate-200 dark:border-slate-600 border-l-[5px] border-l-blue-500 dark:border-l-gray-600 rounded-2xl bg-white dark:bg-gray-800 hover:bg-blue-50/60 dark:hover:bg-gray-700 cursor-pointer transition-all group shadow-sm hover:shadow-md"
+                className="relative overflow-hidden block p-3 border border-slate-200 dark:border-slate-600 border-b-[5px] border-b-blue-500 border-l-[2px] border-l-blue-500 dark:border-l-gray-600  dark:border-b-gray-600 rounded-xl bg-gray-100 dark:bg-gray-800 hover:bg-blue-50/60 dark:hover:bg-gray-700 cursor-pointer transition-all group shadow-sm hover:shadow-md"
               >
-                <div className="flex items-start gap-2">
+                {/* Background Icon Watermark */}
+                <Rocket className="absolute -bottom-3 -right-3 w-20 h-20 text-blue-500 opacity-[0.08] group-hover:scale-110 group-hover:opacity-20 transition-all duration-500 -rotate-12 pointer-events-none" />
+
+                <div className="relative z-10 flex items-start gap-2">
 
                   <div className="flex-1 min-w-0">
                     <h3 className="font-bold text-blue-700 dark:text-blue-400 group-hover:text-blue-800 dark:group-hover:text-blue-300 transition-colors">
@@ -513,29 +516,34 @@ export default function DashboardPage() {
                 </div>
               </Link>
             ) : (
-              <div className="p-4 border border-slate-200 dark:border-slate-800 border-l-[5px] border-l-blue-500 dark:border-l-gray-600 rounded-2xl bg-white/60 dark:bg-gray-900/50 text-center shadow-sm">
-                {!hasTakenPreTest || overallProgress === 0 ? (
-                  <>
-                   
-                    <p className="text-xs text-gray-600 dark:text-gray-400 mt-1">
-                      Kerjakan Tes Awal dulu untuk membuka materi yang pas buat kamu, atau mulai dari modul dasar.
-                    </p>
-                  </>
-                ) : overallProgress === 100 ? (
-                  <>
-                   
-                    <p className="text-xs text-gray-600 dark:text-gray-400 mt-1">
-                      Kamu telah menyelesaikan semua materi dengan sangat baik. Pertahankan semangat belajarmu!
-                    </p>
-                  </>
-                ) : (
-                  <>
-                   
-                    <p className="text-xs text-gray-600 dark:text-gray-400 mt-1">
-                      Mantap! Lanjutkan progres belajarmu dan eksplor topik-topik baru yang menantang.
-                    </p>
-                  </>
-                )}
+              <div className="relative overflow-hidden p-4 border border-slate-200 dark:border-slate-800 border-l-[5px] border-l-blue-500 dark:border-l-gray-600 rounded-2xl bg-white/60 dark:bg-gray-900/50 text-center shadow-sm">
+                {/* Background Icon Watermark */}
+                <Target className="absolute -bottom-4 -right-4 w-24 h-24 text-blue-500/10 dark:text-gray-400/10 rotate-12 pointer-events-none" />
+                
+                <div className="relative z-10">
+                  {!hasTakenPreTest || overallProgress === 0 ? (
+                    <>
+                     
+                      <p className="text-xs text-gray-600 dark:text-gray-400 mt-1">
+                        Kerjakan Tes Awal dulu untuk membuka materi yang pas buat kamu, atau mulai dari modul dasar.
+                      </p>
+                    </>
+                  ) : overallProgress === 100 ? (
+                    <>
+                     
+                      <p className="text-xs text-gray-600 dark:text-gray-400 mt-1">
+                        Kamu telah menyelesaikan semua materi dengan sangat baik. Pertahankan semangat belajarmu!
+                      </p>
+                    </>
+                  ) : (
+                    <>
+                     
+                      <p className="text-xs text-gray-600 dark:text-gray-400 mt-1">
+                        Mantap! Lanjutkan progres belajarmu dan eksplor topik-topik baru yang menantang.
+                      </p>
+                    </>
+                  )}
+                </div>
               </div>
             )}
           </div>
