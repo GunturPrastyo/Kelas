@@ -516,7 +516,7 @@ export default function DashboardPage() {
                 </div>
               </Link>
             ) : (
-              <div className="relative overflow-hidden p-4 border border-slate-200 dark:border-slate-800 border-l-[5px] border-l-blue-500 dark:border-l-gray-600 rounded-2xl bg-white/60 dark:bg-gray-900/50 text-center shadow-sm">
+              <div className="relative overflow-hidden p-4 border border-slate-200 dark:border-slate-800 border-l-[5px] border-l-blue-500 dark:border-l-gray-600 rounded-xl bg-white/60 dark:bg-gray-900/50 text-center shadow-sm">
                 {/* Background Icon Watermark */}
                 <Target className="absolute -bottom-4 -right-4 w-24 h-24 text-blue-500/10 dark:text-gray-400/10 rotate-12 pointer-events-none" />
                 
