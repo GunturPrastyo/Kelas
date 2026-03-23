@@ -443,17 +443,17 @@ export default function ModulPage() {
                     {/* Skeleton Module Grid */}
                     <div className="relative grid gap-6 sm:grid-cols-2 lg:grid-cols-3 grid-auto-rows-fr">
                         {/* Garis vertikal untuk tampilan mobile */}
-                        <div className="absolute left-6 top-0 bottom-0 w-0.5 bg-gray-200 dark:bg-gray-700 md:hidden"></div>
+                        <div className="absolute left-2 top-0 bottom-0 w-0.5 bg-gray-200 dark:bg-gray-700 md:hidden"></div>
 
                         {[1, 2, 3, 4, 5, 6].map((i) => (
                             <div key={i} className="relative sm:static">
                                 {/* Nomor urut skeleton (mobile) */}
-                                <div className="absolute top-5 left-0 z-10 w-12 h-12 flex items-center justify-center md:hidden">
+                                <div className="absolute top-5 left-0 z-10 w-8 h-8 flex items-center justify-center md:hidden">
                                     <div className="w-8 h-8 rounded-full bg-gray-300 dark:bg-gray-600 border-2 border-white dark:border-gray-800"></div>
                                 </div>
-                                <div className="group relative overflow-hidden bg-white dark:bg-gray-800 rounded-xl shadow-md flex flex-col h-full ml-12 sm:ml-0 border border-gray-100 dark:border-gray-700">
+                                <div className="group relative overflow-hidden bg-white dark:bg-gray-800 rounded-xl shadow-md flex flex-col h-full ml-10 sm:ml-0 border border-gray-100 dark:border-gray-700">
                                     {/* Header */}
-                                    <div className="relative z-10 p-5 bg-gray-50 dark:bg-gray-700/30 border-b border-gray-200 dark:border-gray-700 flex items-start justify-between">
+                                    <div className="relative z-10 p-4 sm:p-5 bg-gray-50 dark:bg-gray-700/30 border-b border-gray-200 dark:border-gray-700 flex items-start justify-between">
                                         <div className="flex items-center gap-3 w-full">
                                             <div className="w-10 h-10 rounded-lg bg-gray-200 dark:bg-gray-600 flex-shrink-0"></div>
                                             <div className="flex-1 w-full">
@@ -464,7 +464,7 @@ export default function ModulPage() {
                                         </div>
                                     </div>
                                     {/* Body */}
-                                    <div className="relative p-5 flex flex-col flex-grow">
+                                    <div className="relative p-4 sm:p-5 flex flex-col flex-grow">
                                         <div className="space-y-2 mb-4 flex-grow">
                                             <div className="h-3.5 bg-gray-200 dark:bg-gray-600 rounded w-full"></div>
                                             <div className="h-3.5 bg-gray-200 dark:bg-gray-600 rounded w-5/6"></div>
@@ -526,7 +526,7 @@ export default function ModulPage() {
 
             {!loading && <div id="module-grid" className="relative grid gap-6 sm:grid-cols-2 lg:grid-cols-3 grid-auto-rows-fr">
                 {/* Garis vertikal untuk tampilan mobile */}
-                <div className="absolute left-6 top-0 bottom-0 w-0.5 bg-gray-200 dark:bg-gray-700 md:hidden"></div>
+                <div className="absolute left-2 top-0 bottom-0 w-0.5 bg-gray-200 dark:bg-gray-700 md:hidden"></div>
 
                 {personalizedModules.map((modul) => (
                     <div
@@ -536,7 +536,7 @@ export default function ModulPage() {
                         className="relative sm:static"
                     >
                         {/* Nomor urut yang "duduk" di atas garis (hanya mobile) */}
-                        <div className="absolute top-5 left-0 z-10 w-12 h-12 flex items-center justify-center md:hidden">
+                        <div className="absolute top-5 -left-2 z-10 w-8 h-8 flex  md:hidden">
                             <div className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm
                                 ${modul.status === 'Selesai' ? 'bg-green-500 text-white border-2 border-white dark:border-gray-800' :
                                  modul.status === 'Berjalan' || modul.isHighlighted ? 'bg-blue-500 text-white border-2 border-white dark:border-gray-800' + (modul.isHighlighted ? ' ring-4 ring-blue-300 dark:ring-blue-500/50' : '') : // Modul berjalan atau direkomendasikan
@@ -546,9 +546,9 @@ export default function ModulPage() {
                                 {modul.status === 'Selesai' ? <CheckCircle2 size={16} /> : modul.status === 'Terkunci' ? <Lock size={14}/> : (personalizedModules.indexOf(modul) + 1)}
                             </div>
                         </div>
-                        <div className={`group relative overflow-hidden bg-white dark:bg-gray-800 rounded-xl shadow-md flex flex-col transition-all duration-300 ml-12 sm:ml-0 h-full ${modul.isHighlighted ? 'ring-2 ring-blue-500 shadow-blue-500/20' : 'hover:-translate-y-1 hover:shadow-lg'} ${modul.status === 'Terkunci' ? 'opacity-60 bg-gray-50 dark:bg-gray-800/50' : ''}`}>
+                        <div className={`group relative overflow-hidden bg-white dark:bg-gray-800 rounded-xl shadow-md flex flex-col transition-all duration-300 ml-9 sm:ml-0 h-full ${modul.isHighlighted ? 'ring-2 ring-blue-500 shadow-blue-500/20' : 'hover:-translate-y-1 hover:shadow-lg'} ${modul.status === 'Terkunci' ? 'opacity-60 bg-gray-50 dark:bg-gray-800/50' : ''}`}>
                             {/* Header */}
-                            <div className="relative z-10 p-5 bg-white dark:bg-gray-700/30 border-b border-gray-200 dark:border-gray-700 flex items-start justify-between ">
+                            <div className="relative z-10 p-4 sm:p-5 bg-white dark:bg-gray-700/30 border-b border-gray-200 dark:border-gray-700 flex items-start justify-between ">
                                 <div className="flex items-center gap-3">
                                     <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${modul.isHighlighted ? 'bg-blue-100 dark:bg-blue-900/50' : 'bg-gray-100 dark:bg-gray-700'}`}>
                                         <img className="w-6 h-6 object-cover" src={modul.icon.startsWith('http') ? modul.icon : `${process.env.NEXT_PUBLIC_API_URL}/uploads/${modul.icon}`} alt={modul.title} />
@@ -570,7 +570,7 @@ export default function ModulPage() {
                             </div>
 
                             {/* Body */}
-                            <div className="relative p-5 flex flex-col flex-grow overflow-hidden">
+                            <div className="relative p-4 sm:p-5 flex flex-col flex-grow overflow-hidden">
                                 {/* Decorative Background */}
                                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 600" className={`absolute inset-0 w-full h-full z-0 pointer-events-none transition-transform duration-500 group-hover:scale-105 ${
                                     modul.progress === 100 ? "text-green-200/80 dark:text-green-800/20" : "text-blue-200/80 dark:text-blue-800/20"
