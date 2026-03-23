@@ -6,7 +6,7 @@ import Link from "next/link"
 import { authFetch } from "@/lib/authFetch";
 import ModuleList from "@/components/ModuleList"
 import PreTestModal from "@/components/PreTestModal";
-import { BarChart2, Clock, TrendingUp, Target, PlayCircle, Rocket, ClipboardCheck } from "lucide-react";
+import { BarChart2, Clock, TrendingUp, Target, PlayCircle, Rocket, ClipboardCheck, Play } from "lucide-react";
 import { driver } from "driver.js";
 import "driver.js/dist/driver.css";
 import { useAlert } from "@/context/AlertContext";
@@ -498,7 +498,7 @@ export default function DashboardPage() {
                 {/* Background Icon Watermark */}
                 <Rocket className="absolute -bottom-3 -right-3 w-20 h-20 text-blue-500 opacity-[0.08] group-hover:scale-110 group-hover:opacity-20 transition-all duration-500 -rotate-12 pointer-events-none" />
 
-                <div className="relative z-10 flex items-start gap-2">
+                <div className="relative z-10 flex items-center justify-between gap-3 sm:gap-4">
 
                   <div className="flex-1 min-w-0">
                     <h3 className="font-bold text-blue-700 dark:text-blue-400 group-hover:text-blue-800 dark:group-hover:text-blue-300 transition-colors">
@@ -512,7 +512,9 @@ export default function DashboardPage() {
                       </span>.
                     </p>
                   </div>
-                  {/* <PlayCircle className="w-10 h-10 text-green-800/70 dark:text-green-400/70 group-hover:text-green-600 dark:group-hover:text-green-400 transition-colors flex-shrink-0 mt-2" /> */}
+                  <div className="flex-shrink-0 flex items-center justify-center w-10 h-10 rounded-full bg-blue-600 group-hover:bg-blue-700 transition-colors text-white shadow-md">
+                    <Play className="w-5 h-5 ml-0.5 fill-current" />
+                  </div>
                 </div>
               </Link>
             ) : (
