@@ -354,20 +354,21 @@ const PracticeSection = ({ topicId, practices: initialPractices, onSuccess }: { 
 
             <div className="flex-1 flex flex-col border border-gray-300 dark:border-gray-700 rounded-xl overflow-hidden shadow-sm">
                 {/* Tab Headers */}
-                <div className="flex border-b border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 items-center">
-                    <button onClick={() => setActivePracticeTab('code')} className={`flex items-center gap-2 px-4 py-2 text-sm font-medium ${activePracticeTab === 'code' ? 'bg-white dark:bg-gray-900 border-b-2 border-blue-500 text-gray-800 dark:text-white' : 'text-gray-500 hover:bg-gray-200 dark:hover:bg-gray-700'}`}>
-                        <Code size={14} /> Code
-                    </button>
-                    {currentQ.type === 'html' && (
-                        <button onClick={() => setActivePracticeTab('preview')} className={`flex items-center gap-2 px-4 py-2 text-sm font-medium ${activePracticeTab === 'preview' ? 'bg-white dark:bg-gray-900 border-b-2 border-blue-500 text-gray-800 dark:text-white' : 'text-gray-500 hover:bg-gray-200 dark:hover:bg-gray-700'}`}>
-                            <Eye size={14} /> Preview
+                <div className="flex border-b border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 items-center justify-between">
+                    <div className="flex overflow-x-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+                        <button onClick={() => setActivePracticeTab('code')} className={`flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-2 text-xs sm:text-sm font-medium whitespace-nowrap ${activePracticeTab === 'code' ? 'bg-white dark:bg-gray-900 border-b-2 border-blue-500 text-gray-800 dark:text-white' : 'text-gray-500 hover:bg-gray-200 dark:hover:bg-gray-700'}`}>
+                            <Code size={14} /> Code
                         </button>
-                    )}
-                    <button onClick={() => setActivePracticeTab('console')} className={`flex items-center gap-2 px-4 py-2 text-sm font-medium ${activePracticeTab === 'console' ? 'bg-white dark:bg-gray-900 border-b-2 border-blue-500 text-gray-800 dark:text-white' : 'text-gray-500 hover:bg-gray-200 dark:hover:bg-gray-700'}`}>
-                        <Terminal size={14} /> Console
-                    </button>
-                    <div className="flex-1"></div> {/* Spacer */}
-                    <button onClick={handleRun} className="flex items-center gap-1.5 bg-green-600 hover:bg-green-700 text-white px-3 py-1.5 sm:px-4 sm:py-1.5 my-1 mr-2 rounded-md text-xs sm:text-sm font-medium transition-colors shadow-sm">
+                        {currentQ.type === 'html' && (
+                            <button onClick={() => setActivePracticeTab('preview')} className={`flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-2 text-xs sm:text-sm font-medium whitespace-nowrap ${activePracticeTab === 'preview' ? 'bg-white dark:bg-gray-900 border-b-2 border-blue-500 text-gray-800 dark:text-white' : 'text-gray-500 hover:bg-gray-200 dark:hover:bg-gray-700'}`}>
+                                <Eye size={14} /> Preview
+                            </button>
+                        )}
+                        <button onClick={() => setActivePracticeTab('console')} className={`flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-2 text-xs sm:text-sm font-medium whitespace-nowrap ${activePracticeTab === 'console' ? 'bg-white dark:bg-gray-900 border-b-2 border-blue-500 text-gray-800 dark:text-white' : 'text-gray-500 hover:bg-gray-200 dark:hover:bg-gray-700'}`}>
+                            <Terminal size={14} /> Console
+                        </button>
+                    </div>
+                    <button onClick={handleRun} className="flex shrink-0 items-center gap-1.5 bg-green-600 hover:bg-green-700 text-white px-3 py-1.5 sm:px-4 sm:py-1.5 my-1 mx-2 rounded-md text-xs sm:text-sm font-medium transition-colors shadow-sm">
                         <Play size={12} /> Jalankan
                     </button>
                 </div>
