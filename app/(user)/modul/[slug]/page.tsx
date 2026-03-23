@@ -1237,7 +1237,6 @@ export default function ModulDetailPage() {
                     <div className="flex-1 w-full">
                         <div className="h-3 bg-gray-200 dark:bg-gray-700 rounded w-24 mb-3"></div>
                         <div className="h-8 bg-gray-200 dark:bg-gray-700 rounded w-3/4 mb-4"></div>
-                        <div className="md:hidden h-20 w-20 rounded-lg bg-gray-200 dark:bg-gray-700 mx-auto mb-4"></div>
                         <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-full mb-2"></div>
                         <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-5/6 mb-4"></div>
                         <div className="h-2.5 bg-gray-200 dark:bg-gray-700 rounded-full w-full mb-3"></div>
@@ -1753,15 +1752,17 @@ export default function ModulDetailPage() {
             {/* Header Modul */}
             <header id="module-header" className="relative overflow-hidden bg-blue-600 dark:bg-blue-700 rounded-xl p-6 mt-6 shadow-md text-white flex flex-col items-start gap-2 mb-6 md:flex-row md:items-center md:gap-4">
                
+                {/* Ikon Background untuk Mobile */}
+                <div className="absolute inset-0 z-0 md:hidden flex items-center justify-end overflow-hidden opacity-20 pointer-events-none">
+                    <img src={`${process.env.NEXT_PUBLIC_API_URL}/uploads/${modul.icon}`} alt="" className="w-56 h-56 object-contain translate-x-1/4" />
+                </div>
+
                 {/* Ikon untuk desktop (di kiri) */}
-                <img src={`${process.env.NEXT_PUBLIC_API_URL}/uploads/${modul.icon}`} alt={modul.title} className="relative z-10 hidden md:block h-20 w-20 rounded-lg object-cover bg-white/20 p-1" />
+                <img src={`${process.env.NEXT_PUBLIC_API_URL}/uploads/${modul.icon}`} alt={modul.title} className="relative z-10 hidden md:block h-20 w-20 rounded-lg object-cover bg-white/20 p-1 shrink-0" />
 
                 <div className="relative z-10 flex-1 text-left w-full"> {/* Wrapper untuk teks dan ikon mobile */}
                     <span className="text-xs font-semibold uppercase tracking-wider text-blue-200">{modul.category}</span>
                     <h1 className="text-3xl font-bold text-white mt-1 mb-2">{modul.title}</h1>
-
-                    {/* Ikon untuk mobile (di bawah judul, di tengah) */}
-                    <img src={`${process.env.NEXT_PUBLIC_API_URL}/uploads/${modul.icon}`} alt={modul.title} className="hidden h-20 w-20 rounded-lg object-cover bg-white/20 p-1 mb-4 mx-auto" />
 
                     <p className="text-sm text-white/90 mb-2">{modul.overview}</p>
                     <div className="w-full bg-white/30 rounded-full h-2.5">
