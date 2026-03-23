@@ -95,5 +95,6 @@ body {
 
 /* Inline code style */
 .prose code:not(pre > code) {
-  @apply bg-gray-200 dark:bg-gray-700 text-red-600 dark:text-red-400 font-mono text-sm px-1.5 py-0.5 rounded-md;
+  @apply bg-gray-200 dark:bg-gray-700 text-red-600 dark:text-red-400 font-mono px-1.5 py-0.5 rounded-md;
+  font-size: 0.9em; /* Menggunakan em agar ukurannya sedikit lebih kecil namun tetap proporsional dengan teks di sekitarnya */
 }
