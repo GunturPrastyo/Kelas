@@ -300,32 +300,32 @@ const PracticeSection = ({ topicId, practices: initialPractices, onSuccess }: { 
         <div className="flex flex-col gap-4 h-full min-h-[500px]">
             <div className="bg-white dark:bg-gray-800 p-4 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm">
                 <div className="flex justify-between items-start mb-2">
-                    <h3 className="font-bold text-lg text-gray-800 dark:text-white flex items-center gap-2">
+                    <h3 className="font-bold text-base sm:text-lg text-gray-800 dark:text-white flex items-center gap-2">
                         {currentQ.title}
                         {currentQ.isCompleted && (
                             <span title="Selesai" className="flex items-center"><CheckCircle2 className="text-green-500" size={18} /></span>
                         )}
                     </h3>
-                    <span className={`text-xs px-2 py-1 rounded font-medium ${currentQ.type === 'html' ? 'bg-orange-100 text-orange-700' : 'bg-yellow-100 text-yellow-700'}`}>
+                    <span className={`text-[10px] sm:text-xs px-2 py-1 rounded font-medium ${currentQ.type === 'html' ? 'bg-orange-100 text-orange-700' : 'bg-yellow-100 text-yellow-700'}`}>
                         {currentQ.type.toUpperCase()}
                     </span>
                 </div>
-                <div className="text-sm text-gray-600 dark:text-gray-300 prose prose-sm dark:prose-invert max-w-none" dangerouslySetInnerHTML={{ __html: currentQ.description }} />
+                <div className="text-xs sm:text-sm text-gray-600 dark:text-gray-300 prose prose-sm dark:prose-invert max-w-none prose-p:text-xs sm:prose-p:text-sm" dangerouslySetInnerHTML={{ __html: currentQ.description }} />
                 
                 {/* Fallback untuk hint lama yang belum dimigrasi */}
                 {(!currentQ.hints || currentQ.hints.length === 0 || (currentQ.hints.length === 1 && currentQ.hints[0] === "")) && currentQ.hint && (
                     <>
                         <button 
                             onClick={() => setShowHint(!showHint)}
-                            className="text-xs flex items-center gap-1 px-3 py-1.5 bg-blue-50 text-blue-600 hover:bg-blue-100 dark:bg-blue-900/30 dark:text-blue-400 dark:hover:bg-blue-900/50 rounded-lg font-medium transition-colors mt-3"
+                            className="text-[10px] sm:text-xs flex items-center gap-1 px-3 py-1.5 bg-blue-50 text-blue-600 hover:bg-blue-100 dark:bg-blue-900/30 dark:text-blue-400 dark:hover:bg-blue-900/50 rounded-lg font-medium transition-colors mt-3"
                         >
                             <Lightbulb size={14} /> {showHint ? "Sembunyikan Tips" : "Lihat Tips"}
                         </button>
                         
                         {showHint && (
-                            <div className="mt-2 p-3 bg-blue-50 dark:bg-blue-900/20 text-blue-800 dark:text-blue-200 text-xs rounded-lg border border-blue-100 dark:border-blue-800/50 flex gap-2">
+                            <div className="mt-2 p-3 bg-blue-50 dark:bg-blue-900/20 text-blue-800 dark:text-blue-200 text-[10px] sm:text-xs rounded-lg border border-blue-100 dark:border-blue-800/50 flex gap-2">
                                 <span className="shrink-0">💡</span>
-                                <div className="prose prose-sm max-w-none prose-p:m-0 text-blue-800 dark:text-blue-200" dangerouslySetInnerHTML={{ __html: currentQ.hint }} />
+                                <div className="prose prose-sm max-w-none prose-p:m-0 text-blue-800 dark:text-blue-200 prose-p:text-[10px] sm:prose-p:text-xs" dangerouslySetInnerHTML={{ __html: currentQ.hint }} />
                             </div>
                         )}
                     </>
@@ -335,15 +335,15 @@ const PracticeSection = ({ topicId, practices: initialPractices, onSuccess }: { 
                 {currentQ.hints && currentQ.hints.length > 0 && currentQ.hints.some((h: string) => h.trim() !== "") && (
                     <div className="mt-3 flex flex-col gap-2">
                         {currentQ.hints.filter((h: string) => h.trim() !== "").slice(0, revealedHints).map((hint: string, idx: number) => (
-                            <div key={idx} className="p-3 bg-blue-50 dark:bg-blue-900/20 text-blue-800 dark:text-blue-200 text-xs rounded-lg border border-blue-100 dark:border-blue-800/50 flex gap-2">
+                            <div key={idx} className="p-3 bg-blue-50 dark:bg-blue-900/20 text-blue-800 dark:text-blue-200 text-[10px] sm:text-xs rounded-lg border border-blue-100 dark:border-blue-800/50 flex gap-2">
                                 <span className="shrink-0 font-bold mt-0.5">💡 Tips {idx + 1}:</span>
-                                <div className="prose prose-sm max-w-none prose-p:m-0 text-blue-800 dark:text-blue-200" dangerouslySetInnerHTML={{ __html: hint }} />
+                                <div className="prose prose-sm max-w-none prose-p:m-0 text-blue-800 dark:text-blue-200 prose-p:text-[10px] sm:prose-p:text-xs" dangerouslySetInnerHTML={{ __html: hint }} />
                             </div>
                         ))}
                         {revealedHints < currentQ.hints.filter((h: string) => h.trim() !== "").length && (
                             <button 
                                 onClick={() => setRevealedHints(prev => prev + 1)}
-                                className="self-start text-xs flex items-center gap-1 px-3 py-1.5 bg-blue-50 text-blue-600 hover:bg-blue-100 dark:bg-blue-900/30 dark:text-blue-400 dark:hover:bg-blue-900/50 rounded-lg font-medium transition-colors"
+                                className="self-start text-[10px] sm:text-xs flex items-center gap-1 px-3 py-1.5 bg-blue-50 text-blue-600 hover:bg-blue-100 dark:bg-blue-900/30 dark:text-blue-400 dark:hover:bg-blue-900/50 rounded-lg font-medium transition-colors"
                             >
                                 <Lightbulb size={14} /> Lihat Tips {revealedHints + 1}
                             </button>
