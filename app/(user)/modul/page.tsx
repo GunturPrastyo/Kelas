@@ -63,7 +63,7 @@ export default function ModulPage() {
                     title: 'Jalur Belajar: Lanjut',
                     description: 'Pemahamanmu sudah kuat. Kamu siap untuk tantangan materi tingkat lanjut!',
                     icon: '/lanjut.webp',
-                    bgClass: 'border border-slate-200 dark:border-slate-700 border-l-green-500 border-l-[5px] from-green-100 to-emerald-200 dark:from-gray-800 dark:to-emerald-900',
+                    bgClass: 'border border-slate-200 dark:border-slate-700 border-l-green-500 border-l-[5px] border-b-green-500 border-b-[2px] from-green-100 to-emerald-200 dark:from-gray-800 dark:to-emerald-900',
                     textClass: 'text-green-800 dark:text-green-300'
                 });
             } else if (learningLevel === 'menengah') {
@@ -72,7 +72,7 @@ export default function ModulPage() {
                     title: 'Jalur Belajar: Menengah',
                     description: 'Dasar-dasarmu sudah cukup. Mari perdalam dengan manipulasi DOM dan event.',
                     icon: '/menengah.webp',
-                    bgClass: 'border border-slate-200 dark:border-slate-700 border-l-blue-500 border-l-[5px] from-blue-100 to-sky-200 dark:from-gray-800 dark:to-sky-900',
+                    bgClass: 'border border-slate-200 dark:border-slate-700 border-l-blue-500 border-l-[5px] border-b-blue-500 border-b-[2px] from-blue-100 to-sky-200 dark:from-gray-800 dark:to-sky-900',
                     textClass: 'text-blue-800 dark:text-blue-300'
                 });
             } else if (learningLevel === 'dasar') {
@@ -81,7 +81,7 @@ export default function ModulPage() {
                     title: 'Jalur Belajar: Dasar',
                     description: 'Mari kita mulai dari awal untuk membangun fondasi JavaScript yang kokoh.',
                     icon: '/dasar.webp',
-                    bgClass: 'border border-slate-50 dark:border-slate-700 border-l-yellow-500 border-l-[5px] from-yellow-100 to-amber-200 dark:from-gray-800 dark:to-amber-900',
+                    bgClass: 'border border-slate-50 dark:border-slate-700 border-l-yellow-500 border-l-[5px] border-b-yellow-500 border-b-[2px] from-yellow-100 to-amber-200 dark:from-gray-800 dark:to-amber-900',
                     textClass: 'text-yellow-800 dark:text-yellow-300'
                 });
             } else {
@@ -122,7 +122,7 @@ export default function ModulPage() {
                                 title: 'Jalur Belajar: Lanjut',
                                 description: 'Pemahamanmu sudah kuat. Kamu siap untuk tantangan materi tingkat lanjut!',
                                 icon: '/lanjut.webp',
-                                bgClass: 'border border-slate-200 dark:border-slate-700 border-l-green-400 border-l-[8px] from-green-100 to-emerald-200 dark:from-gray-800 dark:to-emerald-900',
+                                bgClass: 'border border-slate-200 dark:border-slate-700 border-l-green-400 border-l-[8px] border-b-green-400 border-b-[2px] from-green-100 to-emerald-200 dark:from-gray-800 dark:to-emerald-900',
                                 textClass: 'text-green-800 dark:text-green-300'
                             });
                         } else if (level === 'menengah') {
@@ -131,7 +131,7 @@ export default function ModulPage() {
                                 title: 'Jalur Belajar: Menengah',
                                 description: 'Dasar-dasarmu sudah cukup. Mari perdalam dengan manipulasi DOM dan event.',
                                 icon: '/menengah.webp',
-                                bgClass: 'border border-slate-200 dark:border-slate-700 border-l-blue-400 border-l-[8px] from-blue-100 to-sky-200 dark:from-gray-800 dark:to-sky-900',
+                                bgClass: 'border border-slate-200 dark:border-slate-700 border-l-blue-400 border-l-[8px] border-b-blue-400 border-b-[2px] from-blue-100 to-sky-200 dark:from-gray-800 dark:to-sky-900',
                                 textClass: 'text-blue-800 dark:text-blue-300'
                             });
                         } else {
@@ -140,7 +140,7 @@ export default function ModulPage() {
                                 title: 'Jalur Belajar: Dasar',
                                 description: 'Mari kita mulai dari awal untuk membangun fondasi JavaScript yang kokoh.',
                                 icon: '/dasar.webp',
-                                bgClass: 'border border-slate-50 dark:border-slate-700 border-l-yellow-400 border-l-[8px] from-yellow-100 to-amber-200 dark:from-gray-800 dark:to-amber-900',
+                                bgClass: 'border border-slate-50 dark:border-slate-700 border-l-yellow-400 border-l-[8px] border-b-yellow-400 border-b-[2px] from-yellow-100 to-amber-200 dark:from-gray-800 dark:to-amber-900',
                                 textClass: 'text-yellow-800 dark:text-yellow-300'
                             });
                         }
@@ -553,7 +553,7 @@ export default function ModulPage() {
                                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 600" className={`absolute inset-0 w-full h-full z-0 pointer-events-none transition-transform duration-500 group-hover:scale-105 ${
                                     modul.progress === 100 ? "text-green-200/80 dark:text-green-800/20" : "text-blue-200/80 dark:text-blue-800/20"
                                 }`} preserveAspectRatio="none">
-                                    <g transform="translate(900, 0)">
+                                    <g transform="translate(900, 0) scale(1)">
                                         <path d="M0 324.5C-40.8 299.5 -81.5 274.4 -99.9 241.1C-118.2 207.9 -114.2 166.3 -150.6 150.6C-187.1 134.9 -264.1 145 -299.8 124.2C-335.5 103.4 -330 51.7 -324.5 0L0 0Z" fill="currentColor"/>
                                     </g>
                                    
