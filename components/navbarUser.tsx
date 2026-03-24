@@ -33,7 +33,7 @@ export default function Navbar() {
 
 
   const { theme, setTheme } = useTheme()
-  const { isSidebarCollapsed, toggleMobileDrawer, searchQuery, setSearchQuery } = useUI()
+  const { isSidebarCollapsed, toggleMobileDrawer, searchQuery, setSearchQuery, toggleSidebar } = useUI()
   const pathname = usePathname();
   const isAdminPage = pathname.startsWith('/admin');
 
@@ -68,17 +68,22 @@ export default function Navbar() {
   return (
     <header
       suppressHydrationWarning
-      className={`bg-white/80 dark:bg-gray-900/80 border-b border-gray-200/80 dark:border-gray-700/80 pr-2 sm:p-4 flex justify-between items-center backdrop-blur-sm fixed top-0 right-0 z-40 gap-4 h-20 transition-all duration-300 ${
-        isSidebarCollapsed ? "w-full md:w-[calc(100%-5rem)]" : "w-full md:w-[calc(100%-12rem)]"
-      }`}
+      className={`bg-white/80 dark:bg-gray-900/80 border-b border-gray-200/80 dark:border-gray-700/80 pr-2 sm:p-4 flex justify-between items-center backdrop-blur-sm fixed top-0 right-0 z-40 gap-4 h-20 transition-all duration-300 w-full`}
     >
       {/* Kiri */}
       <div id="header-left" className="flex items-center flex-shrink-0" suppressHydrationWarning>
+        <button
+          type="button"
+          className="hidden md:block p-2 mr-2 text-gray-500 rounded-lg hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:text-gray-400 dark:hover:bg-gray-700 dark:focus:ring-gray-600"
+          onClick={toggleSidebar}
+        >
+          <span className="sr-only">Toggle sidebar</span>
+          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16" />
+          </svg>
+        </button>
         <div id="header-title-placeholder" suppressHydrationWarning className="flex items-center">
-          {/* Logo on Desktop (only when collapsed) */}
-          {isSidebarCollapsed && (
-            <img src="/logo.webp" alt="KELAS Logo" width={150} height={40} className="h-8 w-auto ml-2 hidden md:block" />
-          )}
+          <img src="/logo.webp" alt="KELAS Logo" width={150} height={40} className="h-8 w-auto ml-2 hidden md:block" />
         </div>
       </div>
 
