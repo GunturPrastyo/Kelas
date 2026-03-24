@@ -466,6 +466,7 @@ export default function ModulDetailPage() {
     const [autoRunPlayground, setAutoRunPlayground] = useState(false);
     const [showMobileNav, setShowMobileNav] = useState(false);
     const [isChatbotOpen, setIsChatbotOpen] = useState(false);
+    const [isMobileToolsOpen, setIsMobileToolsOpen] = useState(false);
     
     const [fontSize, setFontSize] = useState<string>('16px');
     const [fontStyle, setFontStyle] = useState<string>('font-poppins');
@@ -1001,6 +1002,15 @@ export default function ModulDetailPage() {
 
         return () => clearInterval(timerInterval);
     }, [activeTest, testStartTime, testResult, submitTest]);
+
+    // --- Listen to Custom Event from Sidebar FAB for Mobile Tools ---
+    useEffect(() => {
+        const handleToggleTools = () => {
+            setIsMobileToolsOpen(prev => !prev);
+        };
+        window.addEventListener('toggleMobileTools', handleToggleTools);
+        return () => window.removeEventListener('toggleMobileTools', handleToggleTools);
+    }, []);
 
     // --- Add Copy Button to Code Blocks ---
     useEffect(() => {
@@ -1990,9 +2000,41 @@ export default function ModulDetailPage() {
                 );
             })()}
 
-            {/* Floating Action Buttons */}
-            <div className="fixed bottom-20 md:bottom-6 right-4 md:right-6 z-[45] flex flex-col items-center gap-4">
-                {/* Floating Action Button for Chatbot Gemini */}
+            {/* Mobile Tools Popup (Triggered by Sidebar FAB) */}
+            {isMobileToolsOpen && (
+                <div className="md:hidden fixed bottom-24 left-1/2 transform -translate-x-1/2 z-[60] bg-white dark:bg-gray-800 rounded-3xl shadow-2xl border border-gray-200 dark:border-gray-700 p-5 flex gap-8 w-max animate-in fade-in zoom-in-95 slide-in-from-bottom-4 duration-200">
+                    <button
+                        onClick={() => {
+                            setIsChatbotOpen(true);
+                            setIsMobileToolsOpen(false);
+                        }}
+                        className="flex flex-col items-center gap-3 group outline-none"
+                    >
+                        <div className="w-16 h-16 bg-purple-100 dark:bg-purple-900/30 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform shadow-inner">
+                            <img src="/robot.png" alt="Kak Gem" width={44} height={44} className="object-contain" />
+                        </div>
+                        <span className="text-xs font-bold text-slate-700 dark:text-slate-300">Kak Gem</span>
+                    </button>
+
+                    <button
+                        onClick={() => {
+                            setIsPlaygroundOpen(true);
+                            setAutoRunPlayground(false);
+                            setIsMobileToolsOpen(false);
+                        }}
+                        className="flex flex-col items-center gap-3 group outline-none"
+                    >
+                        <div className="w-16 h-16 bg-indigo-100 dark:bg-indigo-900/30 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform shadow-inner">
+                            <img src="/coding.webp" alt="Live Code" width={44} height={44} className="object-contain" />
+                        </div>
+                        <span className="text-xs font-bold text-slate-700 dark:text-slate-300">Live Code</span>
+                    </button>
+                </div>
+            )}
+
+            {/* Floating Action Buttons (Desktop Only) */}
+            <div className="hidden md:flex fixed bottom-6 right-6 z-[45] flex-col items-center gap-4">
+                {/* Desktop Floating Action Button for Chatbot Gemini */}
                 <button
                     id="chatbot-gemini-btn"
                     onClick={() => {
@@ -2027,7 +2069,7 @@ export default function ModulDetailPage() {
                     </div>
                 </button>
 
-                {/* Floating Action Button for Code Playground */}
+                {/* Desktop Floating Action Button for Code Playground */}
                 <button
                     id="code-playground-btn"
                     onClick={() => {
