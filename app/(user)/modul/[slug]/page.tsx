@@ -384,7 +384,13 @@ const PracticeSection = ({ topicId, practices: initialPractices, onSuccess }: { 
                             value={code} 
                             onChange={(val) => setCode(val || "")}
                             theme="vs-dark"
-                            options={{ minimap: { enabled: false }, fontSize: 14, scrollBeyondLastLine: false, automaticLayout: true }}
+                            options={{ 
+                                minimap: { enabled: false }, 
+                                fontSize: 14, 
+                                scrollBeyondLastLine: false, 
+                                automaticLayout: true,
+                                scrollbar: { alwaysConsumeMouseWheel: false } 
+                            }}
                         />
                     </div>
                     {/* Preview */}
