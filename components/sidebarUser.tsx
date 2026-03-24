@@ -1,11 +1,12 @@
 "use client"
 
 import Link from "next/link"
-import { useEffect } from "react"
+import React, { useEffect } from "react"
 import { usePathname, useRouter } from 'next/navigation';
 import { useUI } from "@/context/UIContext"
-import { LogOut } from "lucide-react";
+import { LogOut, LayoutGrid } from "lucide-react";
 import { authFetch } from "@/lib/authFetch";
+import { useAlert } from "@/context/AlertContext";
 
 const navLinks = [
     { href: "/dashboard", label: "Dashboard", icon: "/dashboard.png", alt: "Dashboard Icon" },
@@ -18,6 +19,7 @@ export default function Sidebar() {
   const { isSidebarCollapsed, isMobileDrawerOpen, toggleMobileDrawer, toggleSidebar } = useUI();
   const pathname = usePathname();
   const router = useRouter();
+  const { showAlert } = useAlert();
 
   useEffect(() => {
    
@@ -44,6 +46,19 @@ export default function Sidebar() {
       localStorage.removeItem("user");
       localStorage.removeItem("token"); 
       router.push("/login");
+    }
+  };
+
+  const handleToolsClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    // Hanya trigger event jika pengguna sedang berada di dalam halaman modul
+    if (pathname.startsWith('/modul/') && pathname !== '/modul/') {
+        window.dispatchEvent(new CustomEvent('toggleMobileTools'));
+    } else {
+        showAlert({
+            title: "Informasi",
+            message: "Alat Belajar (Kak Gem & Live Code) hanya tersedia saat kamu sedang mempelajari materi modul.",
+        });
     }
   };
 
@@ -79,19 +94,32 @@ export default function Sidebar() {
 
       {/* Navigasi Sidebar */}
       <nav className="flex-1 flex flex-row md:flex-col w-full md:w-auto md:space-y-2 md:px-4 md:overflow-y-auto justify-around md:justify-start items-center md:items-stretch h-full md:h-auto">
-        {navLinks.map((link) => {
+        {navLinks.map((link, index) => {
           const active = isActive(link.href);
           return (
-            <Link
-              key={link.href}
-              href={link.href}
-              className={`nav-link relative flex flex-col md:flex-row items-center justify-center md:justify-start gap-1 md:gap-4 p-2 md:p-3 rounded-xl md:rounded-lg transition-all duration-300 ease-out ${active ? 'text-blue-600 dark:text-blue-400 md:bg-blue-100 md:dark:bg-gray-700 md:text-blue-600 md:dark:text-white max-md:-translate-y-2 max-md:scale-110' : 'text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 md:hover:bg-gray-200/50 md:dark:hover:bg-gray-700 max-md:translate-y-0 max-md:scale-100'}`}
-            >
-              <img src={link.icon} alt={link.alt} className={`flex-shrink-0 transition-all duration-300 w-6 h-6 md:w-6 md:h-6 ${active ? 'opacity-100 drop-shadow-md' : 'opacity-70'}`} />
-              <span className={`sidebar-text whitespace-nowrap transition-opacity duration-300 text-[10px] md:text-sm font-medium ${isSidebarCollapsed ? 'md:opacity-0 md:hidden' : 'md:opacity-100'} ${active ? 'font-bold md:font-semibold' : ''}`}>
-                {link.label}
-              </span>
-            </Link>
+            <React.Fragment key={link.href}>
+              {/* Tombol Alat Belajar Melayang di Tengah Khusus Mobile */}
+              {index === 2 && (
+                <div className="md:hidden relative flex-shrink-0 w-12 h-12">
+                  <button
+                    onClick={handleToolsClick}
+                    className="absolute left-1/2 -translate-x-1/2 -top-6 w-14 h-14 bg-gradient-to-tr from-blue-600 to-indigo-600 text-white rounded-full flex items-center justify-center shadow-[0_4px_15px_rgba(37,99,235,0.4)] border-4 border-white dark:border-gray-800 hover:scale-105 active:scale-95 transition-transform z-50"
+                    title="Alat Belajar"
+                  >
+                    <LayoutGrid size={24} className="drop-shadow-md" />
+                  </button>
+                </div>
+              )}
+              <Link
+                href={link.href}
+                className={`nav-link relative flex flex-col md:flex-row items-center justify-center md:justify-start gap-1 md:gap-4 p-2 md:p-3 rounded-xl md:rounded-lg transition-all duration-300 ease-out ${active ? 'text-blue-600 dark:text-blue-400 md:bg-blue-100 md:dark:bg-gray-700 md:text-blue-600 md:dark:text-white max-md:-translate-y-2 max-md:scale-110' : 'text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 md:hover:bg-gray-200/50 md:dark:hover:bg-gray-700 max-md:translate-y-0 max-md:scale-100'}`}
+              >
+                <img src={link.icon} alt={link.alt} className={`flex-shrink-0 transition-all duration-300 w-6 h-6 md:w-6 md:h-6 ${active ? 'opacity-100 drop-shadow-md' : 'opacity-70'}`} />
+                <span className={`sidebar-text whitespace-nowrap transition-opacity duration-300 text-[10px] md:text-sm font-medium ${isSidebarCollapsed ? 'md:opacity-0 md:hidden' : 'md:opacity-100'} ${active ? 'font-bold md:font-semibold' : ''}`}>
+                  {link.label}
+                </span>
+              </Link>
+            </React.Fragment>
           );
         })}
       </nav>
