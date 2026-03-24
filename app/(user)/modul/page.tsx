@@ -499,10 +499,10 @@ export default function ModulPage() {
 
             {!loading && userLevel && (
                 <section className={`relative overflow-hidden bg-gradient-to-br ${recommendation.bgClass} p-5 rounded-xl shadow-md flex items-center gap-4 sm:gap-6 mb-6`}>
-                    <Image src={recommendation.icon} alt="Rekomendasi" width={256} height={256} className="w-20 h-20 z-0 max-[380px]:absolute max-[380px]:-right-4 max-[380px]:-bottom-2 max-[380px]:w-28 max-[380px]:h-28 max-[380px]:opacity-15 max-[380px]:pointer-events-none transition-all" />
+                    <Image src={recommendation.icon} alt="Rekomendasi" width={256} height={256} className="w-20 h-20 z-0 max-[400px]:absolute max-[400px]:-right-4 max-[400px]:-bottom-2 max-[400px]:w-28 max-[400px]:h-28 max-[400px]:opacity-25 max-[400px]:pointer-events-none transition-all" />
                     <div className="relative z-10">
-                        <h2 className={`text-lg font-semibold ${recommendation.textClass}`}>{recommendation.title}</h2>
-                        <p className="text-sm text-gray-700 dark:text-gray-300">{recommendation.description}</p>
+                        <h2 className={`text-lg font-bold ${recommendation.textClass}`}>{recommendation.title}</h2>
+                        <p className="text-sm text-justify w-[80%] text-gray-700 dark:text-gray-300 ">{recommendation.description}</p>
                     </div>
                 </section>
             )}
