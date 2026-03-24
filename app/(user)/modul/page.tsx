@@ -499,10 +499,10 @@ export default function ModulPage() {
 
             {!loading && userLevel && (
                 <section className={`relative overflow-hidden bg-gradient-to-br ${recommendation.bgClass} p-5 rounded-xl shadow-md flex items-center gap-4 sm:gap-6 mb-6`}>
-                    <Image src={recommendation.icon} alt="Rekomendasi" width={256} height={256} className="w-20 h-20 z-0 max-[400px]:absolute max-[400px]:-right-4 max-[400px]:-bottom-2 max-[400px]:w-28 max-[400px]:h-28 max-[400px]:opacity-25 max-[400px]:pointer-events-none transition-all" />
+                    <Image src={recommendation.icon} alt="Rekomendasi" width={256} height={256} className="absolute -right-4 -bottom-2 w-28 h-28 opacity-25 pointer-events-none sm:static sm:w-20 sm:h-20 sm:opacity-100 sm:pointer-events-auto z-0 transition-all" />
                     <div className="relative z-10">
                         <h2 className={`text-lg font-bold ${recommendation.textClass}`}>{recommendation.title}</h2>
-                        <p className="text-sm text-justify w-[80%] text-gray-700 dark:text-gray-300 ">{recommendation.description}</p>
+                        <p className="text-sm text-justify w-[90%] sm:w-full text-gray-700 dark:text-gray-300 ">{recommendation.description}</p>
                     </div>
                 </section>
             )}
@@ -548,8 +548,18 @@ export default function ModulPage() {
                         </div>
                         <div className={`group relative overflow-hidden bg-white dark:bg-gray-800 rounded-xl shadow-md flex flex-col transition-all duration-300 ml-9 sm:ml-0 h-full ${modul.isHighlighted ? 'ring-2 ring-blue-500 shadow-blue-500/20' : 'hover:-translate-y-1 hover:shadow-lg'} ${modul.status === 'Terkunci' ? 'opacity-60 bg-gray-50 dark:bg-gray-800/50' : ''}`}>
                             {/* Header */}
-                            <div className="relative z-10 p-4 sm:p-5 bg-white dark:bg-gray-700/30 border-b border-gray-200 dark:border-gray-700 flex items-start justify-between ">
-                                <div className="flex items-center gap-3">
+                            <div className="relative z-10 p-4 sm:p-5 bg-white dark:bg-gray-700/30 border-b border-gray-200 dark:border-gray-700 flex items-start justify-between overflow-hidden">
+                                {/* Decorative Background */}
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 600" className={`absolute inset-0 w-full h-full z-0 pointer-events-none transition-transform duration-500 group-hover:scale-105 ${
+                                    modul.progress === 100 ? "text-green-200/80 dark:text-green-800/20" : "text-blue-200/80 dark:text-blue-800/20"
+                                }`} preserveAspectRatio="none">
+                                    <g transform="translate(900, 0)">
+                                        <path d="M0 324.5C-40.8 299.5 -81.5 274.4 -99.9 241.1C-118.2 207.9 -114.2 166.3 -150.6 150.6C-187.1 134.9 -264.1 145 -299.8 124.2C-335.5 103.4 -330 51.7 -324.5 0L0 0Z" fill="currentColor"/>
+                                    </g>
+                                   
+                                </svg>
+
+                                <div className="flex items-center gap-3 relative z-10">
                                     <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${modul.isHighlighted ? 'bg-blue-100 dark:bg-blue-900/50' : 'bg-gray-100 dark:bg-gray-700'}`}>
                                         <img className="w-6 h-6 object-cover" src={modul.icon.startsWith('http') ? modul.icon : `${process.env.NEXT_PUBLIC_API_URL}/uploads/${modul.icon}`} alt={modul.title} />
                                     </div>
@@ -566,23 +576,13 @@ export default function ModulPage() {
                                         </div>
                                     </div>
                                 </div>
-                                {getStatusBadge(modul.status, modul.progress)}
+                                <div className="relative z-10">
+                                    {getStatusBadge(modul.status, modul.progress)}
+                                </div>
                             </div>
 
                             {/* Body */}
                             <div className="relative p-4 sm:p-5 flex flex-col flex-grow overflow-hidden">
-                                {/* Decorative Background */}
-                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 600" className={`absolute inset-0 w-full h-full z-0 pointer-events-none transition-transform duration-500 group-hover:scale-105 ${
-                                    modul.progress === 100 ? "text-green-200/80 dark:text-green-800/20" : "text-blue-200/80 dark:text-blue-800/20"
-                                }`} preserveAspectRatio="none">
-                                    <g transform="translate(900, 0)">
-                                        <path d="M0 324.5C-40.8 299.5 -81.5 274.4 -99.9 241.1C-118.2 207.9 -114.2 166.3 -150.6 150.6C-187.1 134.9 -264.1 145 -299.8 124.2C-335.5 103.4 -330 51.7 -324.5 0L0 0Z" fill="currentColor"/>
-                                    </g>
-                                    <g transform="translate(0, 600)">
-                                        <path d="M0 -324.5C24.1 -278.2 48.3 -231.9 92.6 -223.6C136.9 -215.3 201.5 -245 229.5 -229.5C257.5 -213.9 248.9 -152.9 258.7 -107.2C268.4 -61.4 296.5 -30.7 324.5 0L0 0Z" fill="currentColor"/>
-                                    </g>
-                                </svg>
-
                                 <p className="relative z-10 text-sm text-gray-600 dark:text-gray-400 mb-4 line-clamp-2 flex-grow">
                                     {modul.overview}
                                 </p>
