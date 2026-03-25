@@ -1117,7 +1117,7 @@ export default function LandingPage() {
       </section>
 
       {/* --- CTA & FAQ SECTION --- */}
-      <section id="faq" className="py-8 sm:py-20 bg-slate-50 dark:bg-gray-900 relative overflow-hidden">
+      <section id="faq" className="py-8 sm:py-12 bg-slate-50 dark:bg-gray-900 relative overflow-hidden">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
 
