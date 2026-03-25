@@ -407,12 +407,7 @@ export default function PreTestPage() {
                     { name: "Dashboard", href: "/dashboard" },
                     { name: "Hasil Pre-test", href: "#" }
                 ]} />
-                <header className="flex items-center justify-between gap-2 font-poppins mt-6">
-                    <div className="flex items-center gap-2">
-                        <img src="/logo1.webp" width={256} height={256} className="h-10 w-auto" alt="Logo" />
-                        <h1 className="text-lg font-bold text-slate-800 dark:text-slate-200">Hasil Tes Awal</h1>
-                    </div>
-                </header>
+              
 
                 <section className="bg-gradient-to-r from-indigo-500 to-blue-600 rounded-xl p-4 mt-6 shadow-md text-white flex items-center gap-4">
                     <img src="/test.webp" width={256} height={256} className="h-24 w-24" alt="pre test" />
