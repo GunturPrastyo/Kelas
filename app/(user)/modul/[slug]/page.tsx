@@ -505,7 +505,7 @@ export default function ModulDetailPage() {
     const createNotification = useCallback(async (message: string, link: string) => {
         if (!user) return;
         try {
-            await authFetch(`${process.env.NEXT_PUBLIC_API_URL}/api/notifications`, {
+            const res = await authFetch(`${process.env.NEXT_PUBLIC_API_URL}/api/notifications`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
@@ -514,6 +514,9 @@ export default function ModulDetailPage() {
                     link,
                 }),
             });
+            if (!res.ok) {
+                console.warn("Gagal membuat notifikasi, status:", res.status);
+            }
         } catch (error) {
             console.warn("Gagal membuat notifikasi:", error);
         }

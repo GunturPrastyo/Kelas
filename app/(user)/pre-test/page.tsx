@@ -34,7 +34,7 @@ export default function PreTestPage() {
     const [questions, setQuestions] = useState<Question[]>([]);
     const [answers, setAnswers] = useState<{ [key: string]: string }>({});
     const [idx, setIdx] = useState(0);
-    const [startTime, setStartTime] = useState(Date.now());
+    const [startTime, setStartTime] = useState(0);
     const [totalDuration, setTotalDuration] = useState(0);
     const [timeLeft, setTimeLeft] = useState(0);
     const [result, setResult] = useState<any>(null);
@@ -46,6 +46,7 @@ export default function PreTestPage() {
     const [isRecommendationInfoModalOpen, setIsRecommendationInfoModalOpen] = useState(false);
     const [tabExitCount, setTabExitCount] = useState(0);
     const questionAreaRef = useRef<HTMLDivElement>(null);
+    const [isSubmitting, setIsSubmitting] = useState(false);
 
     const { showAlert } = useAlert();
     const total = questions.length;
@@ -54,7 +55,7 @@ export default function PreTestPage() {
     const createNotification = useCallback(async (message: string, link: string) => {
         if (!user) return;
         try {
-            await authFetch(`${process.env.NEXT_PUBLIC_API_URL}/api/notifications`, {
+            const res = await authFetch(`${process.env.NEXT_PUBLIC_API_URL}/api/notifications`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
@@ -63,13 +64,17 @@ export default function PreTestPage() {
                     link,
                 }),
             });
+            if (!res.ok) {
+                console.warn("Endpoint notifikasi mungkin belum tersedia atau gagal:", res.status);
+            }
         } catch (error) {
             console.warn("Gagal membuat notifikasi:", error);
         }
     }, [user]);
 
     const grade = useCallback(() => {
-        if (!user) return; // Pastikan user sudah ada
+        if (!user || isSubmitting) return; // Pastikan user sudah ada dan tidak sedang submit
+        setIsSubmitting(true);
         const timeTaken = Math.round((Date.now() - startTime) / 1000);
 
         // Pastikan semua soal terkirim, meskipun tidak dijawab
@@ -103,18 +108,20 @@ export default function PreTestPage() {
 
                 // Buat notifikasi
                 createNotification(
-                    `Kamu telah menyelesaikan Pre-Test dengan skor ${resultData.data.score}%.`,
+                    `Kamu telah menyelesaikan Pre-Test dengan skor ${Math.round(resultData.data.score)}%.`,
                     '/profil' // Arahkan ke halaman profil/hasil
                 );
 
             } catch (error) {
                 console.error("Error saat mengirim hasil pre-test:", error);
                 showAlert({ title: 'Error', message: 'Gagal mengirimkan hasil pre-test.' });
+            } finally {
+                setIsSubmitting(false);
             }
         };
 
         submitAndGrade();
-    }, [answers, createNotification, showAlert, startTime, user, tabExitCount, questions]);
+    }, [answers, createNotification, showAlert, startTime, user, tabExitCount, questions, isSubmitting]);
 
     useEffect(() => {
         const userRaw = localStorage.getItem('user');
@@ -227,7 +234,7 @@ export default function PreTestPage() {
 
     useEffect(() => {
         // Jangan jalankan timer jika hasil sudah ditampilkan
-        if (result) return;
+        if (result || startTime === 0 || totalDuration === 0) return;
 
         const end = startTime + totalDuration * 1000;
         const timerInterval = setInterval(() => {
@@ -697,9 +704,10 @@ export default function PreTestPage() {
                                                 });
                                             }
                                         }}
-                                        className="flex-1 sm:flex-none bg-green-600 text-white border-none px-3 py-2 sm:px-4 sm:py-2.5 rounded-lg cursor-pointer hover:bg-green-700 transition text-xs sm:text-base"
+                                        disabled={isSubmitting}
+                                        className="flex-1 sm:flex-none bg-green-600 text-white border-none px-3 py-2 sm:px-4 sm:py-2.5 rounded-lg cursor-pointer hover:bg-green-700 transition text-xs sm:text-base disabled:opacity-50"
                                     >
-                                        Kirim Jawaban
+                                        {isSubmitting ? 'Mengirim...' : 'Kirim Jawaban'}
                                     </button>
                                 ) : null}
                             </div>
