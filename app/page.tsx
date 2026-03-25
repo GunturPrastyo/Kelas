@@ -13,6 +13,7 @@ import {
   ChevronRight,
   ChevronLeft,
   ChevronDown,
+  ChevronUp,
   Moon,
   Sun,
   ArrowUp,
@@ -160,11 +161,11 @@ export default function LandingPage() {
   const [displayedBadgeText, setDisplayedBadgeText] = useState("");
   const [count, setCount] = useState(0);
   const [activeFeature, setActiveFeature] = useState(0);
+  const [activeMentorIdx, setActiveMentorIdx] = useState(0);
   const [openFaqIndex, setOpenFaqIndex] = useState<number | null>(null);
   const { theme, setTheme, resolvedTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
   const [showScrollTop, setShowScrollTop] = useState(false);
-  const mentorScrollRef = useRef<HTMLDivElement>(null);
   const [selectedMentor, setSelectedMentor] = useState<typeof mentors[0] | null>(null);
   const [modules, setModules] = useState<Module[]>([]);
   const [loadingModules, setLoadingModules] = useState(true);
@@ -314,30 +315,11 @@ export default function LandingPage() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
-  const scrollMentors = (direction: 'left' | 'right') => {
-    if (mentorScrollRef.current) {
-      const { current } = mentorScrollRef;
-      const scrollAmount = direction === 'left' ? -current.offsetWidth / 2 : current.offsetWidth / 2;
-      current.scrollBy({ left: scrollAmount, behavior: 'smooth' });
-    }
-  };
-
-  // Auto scroll mentors
+  // Auto rotate mentors
   useEffect(() => {
-    const scrollContainer = mentorScrollRef.current;
-    if (!scrollContainer) return;
-
     const interval = setInterval(() => {
-      const cardWidth = scrollContainer.children[0]?.clientWidth || 300;
-      const gap = 24;
-      const maxScrollLeft = scrollContainer.scrollWidth - scrollContainer.clientWidth;
-
-      if (scrollContainer.scrollLeft >= maxScrollLeft - 10) {
-        scrollContainer.scrollTo({ left: 0, behavior: 'smooth' });
-      } else {
-        scrollContainer.scrollBy({ left: cardWidth + gap, behavior: 'smooth' });
-      }
-    }, 3000);
+      setActiveMentorIdx((prev) => (prev + 1) % mentors.length);
+    }, 4000);
 
     return () => clearInterval(interval);
   }, []);
@@ -848,68 +830,111 @@ export default function LandingPage() {
       </section>
 
       {/* --- MENTOR SECTION --- */}
-      <section id="mentor" className="relative py-24 bg-sky-300 dark:bg-sky-700 overflow-hidden">
-        <div className="relative z-10 max-w-7xl mx-auto px-2 sm:px-6 lg:px-8 ">
-          <div className="text-left md:text-center max-w-3xl mx-auto mb-10 -mt-20">
-            <motion.h2
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5 }}
-              className="text-3xl md:text-4xl  text-slate-800 dark:text-white mb-4 font-[family-name:var(--font-gagalin)]"
-            >
-              Belajar Langsung dari Ahlinya
-            </motion.h2>
-            <motion.p
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5, delay: 0.1 }}
-              className="text-slate-700 dark:text-blue-100 text-lg font-medium text-left md:text-center"
-            >
-              Dapatkan wawasan berharga dari praktisi industri dan akademisi berpengalaman yang siap membimbing perjalanan karirmu.
-            </motion.p>
-          </div>
+      <section id="mentor" className="relative pt-8 sm:pt-0 pb-16 sm:pb-24 bg-sky-300 dark:bg-sky-700 overflow-hidden">
+        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex flex-col-reverse lg:flex-row items-center gap-6 lg:gap-20">
+            {/* Left Column: Vertical Carousel */}
+            <div className="w-full lg:w-1/2 relative mt-4 sm:mt-0 h-[450px] sm:h-[550px] flex items-center justify-center perspective-1000">
+              <motion.div 
+                className="relative w-full max-w-xs sm:max-w-sm h-full flex items-center justify-center touch-pan-x"
+                onPanEnd={(e, info) => {
+                  const swipeDistance = info.offset.y;
+                  if (swipeDistance < -50) {
+                    setActiveMentorIdx((prev) => (prev + 1) % mentors.length);
+                  } else if (swipeDistance > 50) {
+                    setActiveMentorIdx((prev) => (prev - 1 + mentors.length) % mentors.length);
+                  }
+                }}
+              >
+                {mentors.map((mentor, idx) => {
+                  const position = (idx - activeMentorIdx + mentors.length) % mentors.length;
+                  
+                  let animateProps = {};
+                  if (position === 0) { // Active
+                    animateProps = { y: 0, scale: 1, zIndex: 30, opacity: 1, boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.25)" };
+                  } else if (position === 1) { // Next (below)
+                    animateProps = { y: 60, scale: 0.9, zIndex: 20, opacity: 0.4, boxShadow: "0 0px 0px rgba(0,0,0,0)" };
+                  } else if (position === mentors.length - 1) { // Prev (above)
+                    animateProps = { y: -60, scale: 0.9, zIndex: 20, opacity: 0.4, boxShadow: "0 0px 0px rgba(0,0,0,0)" };
+                  } else { // Hidden
+                    animateProps = { y: 0, scale: 0.6, zIndex: 10, opacity: 0, boxShadow: "0 0px 0px rgba(0,0,0,0)" };
+                  }
+                  
+                  return (
+                    <motion.div
+                      key={idx}
+                      animate={animateProps}
+                      transition={{ type: "spring", stiffness: 200, damping: 25 }}
+                      className="absolute w-full rounded-2xl overflow-hidden cursor-pointer bg-white dark:bg-gray-800"
+                      onClick={() => {
+                        if (position === 0) setSelectedMentor(mentor);
+                        else setActiveMentorIdx(idx);
+                      }}
+                    >
+                      <div className="aspect-[4/5] w-full relative group">
+                        <img
+                          src={mentor.image}
+                          alt={mentor.name}
+                          className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-t from-slate-900/90 via-slate-900/40 to-transparent opacity-80 group-hover:opacity-90 transition-opacity"></div>
 
-          <div className="relative group px-4 md:px-10">
-            <div
-              ref={mentorScrollRef}
-              className={`flex gap-6 overflow-x-auto snap-x snap-mandatory pb-8 [&::-webkit-scrollbar]:hidden`}
-              style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
-            >
-              {mentors.map((mentor, idx) => (
-                <motion.div
-                  key={idx}
-                  initial={{ opacity: 0, y: 30 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.5, delay: idx * 0.1 }}
-                  className="flex-shrink-0 w-full md:w-[calc(33.333%-1rem)] snap-center group/card relative overflow-hidden rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 bg-white dark:bg-gray-800"
-                  onClick={() => setSelectedMentor(mentor)}
-                >
-                  <div className="aspect-[4/5] w-full relative overflow-hidden">
-                    <img
-                      src={mentor.image}
-                      alt={mentor.name}
-                      className="w-full h-full object-cover transition-transform duration-700 group-hover/card:scale-110"
-                    />
-                    {/* Overlay Gradient */}
-                    <div className="absolute inset-0 bg-gradient-to-t from-slate-900/90 via-slate-900/40 to-transparent opacity-80 group-hover/card:opacity-90 transition-opacity"></div>
+                        <div className="absolute bottom-0 left-0 p-6 text-white w-full transform translate-y-2 group-hover:translate-y-0 transition-transform duration-300">
+                          <div className="w-12 h-1 bg-blue-500 mb-4 rounded-full"></div>
+                          <p className="text-blue-300 text-xs font-bold uppercase tracking-wider mb-1">{mentor.role}</p>
+                          <h3 className="text-2xl font-bold mb-2">{mentor.name}</h3>
+                          <p className="text-sm text-gray-300 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-all duration-300 delay-100 h-auto md:h-0 md:group-hover:h-auto overflow-hidden text-left">
+                            {mentor.desc}
+                          </p>
+                        </div>
+                      </div>
+                    </motion.div>
+                  )
+                })}
+              </motion.div>
 
-                    <div className="absolute bottom-0 left-0 p-6 text-white w-full transform translate-y-2 group-hover/card:translate-y-0 transition-transform duration-300">
-                      <div className="w-12 h-1 bg-blue-500 mb-4 rounded-full"></div>
-                      <p className="text-blue-300 text-xs font-bold uppercase tracking-wider mb-1">{mentor.role}</p>
-                      <h3 className="text-2xl font-bold mb-2">{mentor.name}</h3>
-                      <p className="text-sm text-gray-300 opacity-100 md:opacity-0 md:group-hover/card:opacity-100 transition-all duration-300 delay-100 h-auto md:h-0 md:group-hover/card:h-auto overflow-hidden text-left">
-                        {mentor.desc}
-                      </p>
-                    </div>
-                  </div>
-                </motion.div>
-              ))}
+              {/* Dots Indicator */}
+              <div className="absolute right-2 sm:right-12 lg:right-4 top-1/2 -translate-y-1/2 flex flex-col gap-3 z-40">
+                {mentors.map((_, idx) => (
+                  <span
+                    key={idx}
+                    onClick={() => setActiveMentorIdx(idx)}
+                    className={`w-2.5 rounded-full transition-all duration-300 cursor-pointer ${
+                      activeMentorIdx === idx 
+                        ? "h-8 bg-blue-600 dark:bg-blue-400" 
+                        : "h-2.5 bg-blue-600/30 dark:bg-blue-400/30 hover:bg-blue-600/50 dark:hover:bg-blue-400/50"
+                    }`}
+                  />
+                ))}
+              </div>
             </div>
 
+            {/* Right Column: Text Content */}
+            <div className="w-full lg:w-1/2 text-left relative z-20">
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.5 }}
+              >
+                <span className="text-blue-800 dark:text-blue-300 font-bold tracking-wider uppercase text-sm mb-2 block">
+                  Tutor Berpengalaman
+                </span>
+                <h2 className="text-3xl md:text-5xl text-slate-900 dark:text-white mb-4 font-[family-name:var(--font-gagalin)] leading-tight">
+                  Belajar Langsung dari <br /> <span className="text-blue-700 dark:text-blue-400">Ahlinya</span>
+                </h2>
+              </motion.div>
 
+              <motion.p
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.5, delay: 0.1 }}
+                className="text-slate-700 dark:text-blue-100 text-lg font-medium leading-relaxed max-w-lg"
+              >
+                Dapatkan wawasan berharga dari praktisi industri dan akademisi berpengalaman yang siap membimbing perjalanan karirmu.
+              </motion.p>
+            </div>
           </div>
         </div>
 
@@ -988,7 +1013,7 @@ export default function LandingPage() {
       )}
 
       {/* --- TESTIMONIALS SECTION --- */}
-      <section className="pt-6 pb-0 bg-white dark:bg-gray-900 relative overflow-hidden">
+      <section className="pt-6 sm:pt-0 pb-0 bg-white dark:bg-gray-900 relative overflow-hidden">
         <div className="z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center max-w-3xl mx-auto mb-12">
             <motion.h2
