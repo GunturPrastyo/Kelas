@@ -984,7 +984,7 @@ export default function ModulDetailPage() {
 
     // --- Timer Effect for Test ---
     useEffect(() => {
-        if (!activeTest || testResult) return;
+        if (!activeTest || testResult || testStartTime === 0) return;
 
         // Hitung total durasi dari semua soal di tes aktif
         const DURATION = activeTest.questions.reduce(
@@ -1127,107 +1127,96 @@ export default function ModulDetailPage() {
         let driverObj: any;
         let timeoutId: NodeJS.Timeout;
 
-        const initTour = async () => {
+        const initTour = () => {
             if (!loading && modul && user) {
                 try {
-                    const res = await authFetch(`${process.env.NEXT_PUBLIC_API_URL}/api/users/status`);
-                    if (res.ok) {
-                        const data = await res.json();
-                        if (!data.hasSeenModuleDetailTour) {
-                const steps = [
-                    {
-                        element: '#module-header',
-                        popover: {
-                            title: 'Detail Modul',
-                            description: 'Ini adalah halaman detail modul. Kamu bisa melihat progres dan ringkasan materi di sini.'
-                        }
-                    },
-                    {
-                        element: '#topic-list',
-                        popover: {
-                            title: 'Daftar Topik',
-                            description: 'Materi dibagi menjadi beberapa topik. Kerjakan secara berurutan ya!'
-                        }
-                    }
-                ];
+                    const hasSeenTour = localStorage.getItem(`hasSeenModuleDetailTour_${user._id}`);
+                    if (!hasSeenTour) {
+                        const steps = [
+                            {
+                                element: '#module-header',
+                                popover: {
+                                    title: 'Detail Modul',
+                                    description: 'Ini adalah halaman detail modul. Kamu bisa melihat progres dan ringkasan materi di sini.'
+                                }
+                            },
+                            {
+                                element: '#topic-list',
+                                popover: {
+                                    title: 'Daftar Topik',
+                                    description: 'Materi dibagi menjadi beberapa topik. Kerjakan secara berurutan ya!'
+                                }
+                            }
+                        ];
 
-                if (nextTopic) {
-                    steps.push({
-                        element: `#topic-card-${nextTopic._id}`,
-                        popover: {
-                            title: 'Lanjutkan di Sini',
-                            description: 'Kami merekomendasikan kamu untuk melanjutkan pembelajaran pada topik ini.'
-                        }
-                    });
-                }
-
-                steps.push(
-                    {
-                        element: '#module-post-test',
-                        popover: {
-                            title: 'Uji Pemahaman Akhir Modul',
-                            description: 'Setelah semua topik selesai, kerjakan uji pemahaman akhir ini untuk mendapatkan nilai modul.'
-                        }
-                    },
-                    {
-                        element: '#code-playground-btn',
-                        popover: {
-                            title: 'Live Code',
-                            description: 'Gunakan fitur ini untuk mencoba menulis dan menjalankan kode secara langsung.'
-                        }
-                    }
-                );
-
-                let isDestroying = false;
-
-                driverObj = driver({
-                    showProgress: true,
-                    animate: true,
-                    steps: steps,
-                    onDestroyStarted: () => {
-                        if (isDestroying) return;
-
-                        if (!driverObj.hasNextStep()) {
-                            authFetch(`${process.env.NEXT_PUBLIC_API_URL}/api/users/status`, {
-                                method: 'PUT',
-                                headers: { 'Content-Type': 'application/json' },
-                                body: JSON.stringify({ key: 'hasSeenModuleDetailTour', value: true })
+                        if (nextTopic) {
+                            steps.push({
+                                element: `#topic-card-${nextTopic._id}`,
+                                popover: {
+                                    title: 'Lanjutkan di Sini',
+                                    description: 'Kami merekomendasikan kamu untuk melanjutkan pembelajaran pada topik ini.'
+                                }
                             });
-                            driverObj.destroy();
-                        } else {
-                            const activeIndex = driverObj.getActiveIndex();
-                            driverObj.destroy();
-                            setTimeout(() => {
-                                showAlert({
-                                    type: 'confirm',
-                                    title: 'Akhiri Tur?',
-                                    message: 'Apakah kamu yakin ingin mengakhiri tur pengenalan ini?',
-                                    confirmText: 'Ya, Akhiri',
-                                    cancelText: 'Lanjut Tur',
-                                    onConfirm: () => {
-                                        isDestroying = true;
-                                        authFetch(`${process.env.NEXT_PUBLIC_API_URL}/api/users/status`, {
-                                            method: 'PUT',
-                                            headers: { 'Content-Type': 'application/json' },
-                                            body: JSON.stringify({ key: 'hasSeenModuleDetailTour', value: true })
-                                        });
-                                    },
-                                    onCancel: () => {
-                                        if (typeof activeIndex === 'number') {
-                                            driverObj.drive(activeIndex);
-                                        }
-                                    }
-                                });
-                            }, 100);
                         }
-                    },
-                });
 
-                timeoutId = setTimeout(() => {
-                    driverObj.drive();
-                }, 1500);
-            }
-        }
+                        steps.push(
+                            {
+                                element: '#module-post-test',
+                                popover: {
+                                    title: 'Uji Pemahaman Akhir Modul',
+                                    description: 'Setelah semua topik selesai, kerjakan uji pemahaman akhir ini untuk mendapatkan nilai modul.'
+                                }
+                            },
+                            {
+                                element: '#code-playground-btn',
+                                popover: {
+                                    title: 'Live Code',
+                                    description: 'Gunakan fitur ini untuk mencoba menulis dan menjalankan kode secara langsung.'
+                                }
+                            }
+                        );
+
+                        let isDestroying = false;
+
+                        driverObj = driver({
+                            showProgress: true,
+                            animate: true,
+                            steps: steps,
+                            onDestroyStarted: () => {
+                                if (isDestroying) return;
+
+                                if (!driverObj.hasNextStep()) {
+                                    localStorage.setItem(`hasSeenModuleDetailTour_${user._id}`, 'true');
+                                    driverObj.destroy();
+                                } else {
+                                    const activeIndex = driverObj.getActiveIndex();
+                                    driverObj.destroy();
+                                    setTimeout(() => {
+                                        showAlert({
+                                            type: 'confirm',
+                                            title: 'Akhiri Tur?',
+                                            message: 'Apakah kamu yakin ingin mengakhiri tur pengenalan ini?',
+                                            confirmText: 'Ya, Akhiri',
+                                            cancelText: 'Lanjut Tur',
+                                            onConfirm: () => {
+                                                isDestroying = true;
+                                                localStorage.setItem(`hasSeenModuleDetailTour_${user._id}`, 'true');
+                                            },
+                                            onCancel: () => {
+                                                if (typeof activeIndex === 'number') {
+                                                    driverObj.drive(activeIndex);
+                                                }
+                                            }
+                                        });
+                                    }, 100);
+                                }
+                            },
+                        });
+
+                        timeoutId = setTimeout(() => {
+                            driverObj.drive();
+                        }, 1500);
+                    }
                 } catch (e) { console.error(e); }
             }
         };

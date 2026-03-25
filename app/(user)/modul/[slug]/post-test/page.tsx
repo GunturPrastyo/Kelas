@@ -362,7 +362,7 @@ export default function PostTestPage() {
     }, [slug, user, searchParams]);
 
     useEffect(() => {
-        if (result || loading || error || questions.length === 0) return;
+        if (result || loading || error || questions.length === 0 || startTime === 0) return;
 
         const DURATION = questions.reduce((acc, q) => acc + (q.durationPerQuestion || 60), 0);
         const end = startTime + DURATION * 1000;
