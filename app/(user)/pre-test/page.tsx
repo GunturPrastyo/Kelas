@@ -423,7 +423,7 @@ export default function PreTestPage() {
                         <p className="text-sm opacity-90">Berikut adalah hasil dan rekomendasi jalur belajarmu.</p>
                     </div>
                 </section>
-                <section className="bg-white dark:bg-gray-800 rounded-xl p-6 mt-6 shadow-lg font-poppins" id="resultCard">
+                <section className="bg-white dark:bg-gray-800 rounded-xl p-6 mt-6 shadow-md font-poppins" id="resultCard">
                     <div className="flex items-center justify-between gap-2 sm:gap-4 bg-slate-50 dark:bg-gray-700/50 p-3 sm:p-4 rounded-lg border border-slate-200 dark:border-gray-700">
                         <div>
                             <div className="flex items-center gap-1.5">
@@ -480,7 +480,7 @@ export default function PreTestPage() {
                     </div>
                    
                 </section>
-                <footer className="bg-white dark:bg-gray-800 p-4 text-center text-gray-600 dark:text-gray-400 text-sm mt-8 shadow-inner font-poppins">
+                <footer className="bg-white dark:bg-gray-800 p-4 text-center text-gray-600 dark:text-gray-400 text-sm mt-8 shadow-md font-poppins">
                     <p>&copy; 2025 KELAS. All rights reserved.</p>
                 </footer>
 
@@ -618,9 +618,9 @@ export default function PreTestPage() {
                             {currentQuestion && (
                                 <div className="py-0 lg:py-2">
                                     <div className="flex items-start mb-4 text-base text-slate-800 dark:text-slate-200">
-                                        <span className="mr-2 text-xs sm:text-lg">{idx + 1}.</span>
+                                        <span className="mr-2 text-sm sm:text-lg">{idx + 1}.</span>
                                         <div className="flex-1 overflow-x-auto">
-                                            <div className="text-xs sm:text-lg prose dark:prose-invert max-w-none"
+                                            <div className="text-sm sm:text-lg prose dark:prose-invert max-w-none"
                                                 dangerouslySetInnerHTML={questionHtml}
                                             />
                                         </div>
@@ -629,7 +629,7 @@ export default function PreTestPage() {
                                         {currentQuestion.options.map((option, oIndex) => (
                                             <label
                                                 key={oIndex}
-                                                className="flex items-start prose dark:prose-invert border text-xs sm:text-lg border-slate-200 dark:border-gray-700 p-3 rounded-lg cursor-pointer hover:bg-slate-50 dark:hover:bg-gray-700/50 has-[:checked]:bg-indigo-50 dark:has-[:checked]:bg-indigo-900/50 has-[:checked]:border-blue-400 dark:has-[:checked]:border-blue-500 text-slate-700 dark:text-slate-300"
+                                                className="flex items-start prose dark:prose-invert border text-sm sm:text-lg border-slate-200 dark:border-gray-700 p-3 rounded-lg cursor-pointer hover:bg-slate-50 dark:hover:bg-gray-700/50 has-[:checked]:bg-indigo-50 dark:has-[:checked]:bg-indigo-900/50 has-[:checked]:border-blue-400 dark:has-[:checked]:border-blue-500 text-slate-700 dark:text-slate-300"
                                             >
                                                 <input
                                                     type="radio"
@@ -659,7 +659,7 @@ export default function PreTestPage() {
                                     id="prevBtn"
                                     onClick={() => setIdx(i => Math.max(0, i - 1))}
                                     disabled={idx === 0}
-                                    className="flex-1 bg-white  dark:bg-gray-700 text-slate-700 dark:text-slate-300 border border-slate-300 dark:border-gray-600 px-3 py-2 sm:px-4 sm:py-2.5 rounded-lg cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed hover:bg-slate-50 dark:hover:bg-gray-600 text-xs sm:text-base"
+                                    className="flex-1 bg-white  dark:bg-gray-700 text-slate-700 dark:text-slate-300 border border-slate-300 dark:border-gray-600 px-3 py-2 sm:px-4 sm:py-2.5 rounded-lg cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed hover:bg-slate-50 dark:hover:bg-gray-600 text-sm sm:text-base"
                                 >
                                     Sebelumnya
                                 </button>
@@ -668,7 +668,7 @@ export default function PreTestPage() {
                                         id="nextBtn"
                                         onClick={() => setIdx(i => Math.min(total - 1, i + 1))}
                                         disabled={idx === total - 1}
-                                        className="flex-1 bg-blue-600 text-white border-none px-3 py-2 sm:px-4 sm:py-2.5 rounded-lg cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed hover:bg-blue-700 transition text-xs sm:text-base"
+                                        className="flex-1 bg-blue-600 text-white border-none px-3 py-2 sm:px-4 sm:py-2.5 rounded-lg cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed hover:bg-blue-700 transition text-sm sm:text-base"
                                     >
                                         Berikutnya
                                     </button>
@@ -678,7 +678,7 @@ export default function PreTestPage() {
                                 <button
                                     id="saveBtn"
                                     onClick={persist}
-                                    className="flex-1 sm:flex-none bg-blue-100 text-blue-700 dark:bg-blue-900/50 dark:text-blue-300 border-none px-3 py-2 sm:px-4 sm:py-2.5 rounded-lg cursor-pointer hover:bg-blue-200 dark:hover:bg-blue-900/80 transition text-xs sm:text-base"
+                                    className="flex-1 sm:flex-none bg-blue-100 text-blue-700 dark:bg-blue-900/50 dark:text-blue-300 border-none px-3 py-2 sm:px-4 sm:py-2.5 rounded-lg cursor-pointer hover:bg-blue-200 dark:hover:bg-blue-900/80 transition text-sm sm:text-base"
                                 >
                                     Simpan
                                 </button>
@@ -705,7 +705,7 @@ export default function PreTestPage() {
                                             }
                                         }}
                                         disabled={isSubmitting}
-                                        className="flex-1 sm:flex-none bg-green-600 text-white border-none px-3 py-2 sm:px-4 sm:py-2.5 rounded-lg cursor-pointer hover:bg-green-700 transition text-xs sm:text-base disabled:opacity-50"
+                                        className="flex-1 sm:flex-none bg-green-600 text-white border-none px-3 py-2 sm:px-4 sm:py-2.5 rounded-lg cursor-pointer hover:bg-green-700 transition text-sm sm:text-base disabled:opacity-50"
                                     >
                                         {isSubmitting ? 'Mengirim...' : 'Kirim Jawaban'}
                                     </button>

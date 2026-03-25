@@ -487,13 +487,8 @@ export default function PostTestPage() {
 
                 <nav className="flex mb-6" aria-label="Breadcrumb">
                     <ol className="inline-flex items-center md:space-x-2 rtl:space-x-reverse text-slate-700 dark:text-slate-300">
-                        <li className="inline-flex items-center">
-                            <Link href="/modul" className="inline-flex items-center text-sm font-medium hover:text-blue-600 dark:hover:text-blue-400">
-                                <Home className="w-4 h-4 me-2" />
-                                Modul
-                            </Link>
-                        </li>
-                        <li><div className="flex items-center"><svg className="rtl:rotate-180 w-3 h-3 text-slate-400 mx-1" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 6 10"><path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="m1 9 4-4-4-4" /></svg><Link href={`/modul/${slug}`} className="ms-1 text-sm font-medium hover:text-blue-600 md:ms-2 dark:hover:text-blue-400">{modul?.title || "..."}</Link></div></li>
+                      
+                        <li><div className="flex items-center"><Link href={`/modul/${slug}`} className="ms-1 text-sm font-medium hover:text-blue-600 md:ms-2 dark:hover:text-blue-400">{modul?.title || "..."}</Link></div></li>
                         <li aria-current="page"><div className="flex items-center"><svg className="rtl:rotate-180 w-3 h-3 text-slate-400 mx-1" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 6 10"><path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="m1 9 4-4-4-4" /></svg><span className="ms-1 text-sm font-medium text-gray-800 dark:text-gray-200 md:ms-2">Hasil Uji Pemahaman Akhir Modul</span></div></li>
                     </ol>
                 </nav>
@@ -719,15 +714,15 @@ export default function PostTestPage() {
                             {currentQuestion && (
                                 <div className="py-0 lg:py-2 quiz-content">
                                     <div className="flex items-start mb-4 text-base text-slate-800 dark:text-slate-200">
-                                        <span className="mr-2 text-xs sm:text-lg">{testIdx + 1}.</span>
+                                        <span className="mr-2 text-sm sm:text-lg">{testIdx + 1}.</span>
                                         <div className="flex-1 overflow-x-auto">
-                                            <div className="text-xs sm:text-lg prose pre max-w-none" dangerouslySetInnerHTML={questionHtml} />
+                                            <div className="text-sm sm:text-lg prose pre max-w-none" dangerouslySetInnerHTML={questionHtml} />
                                         </div>
                                     </div>
 
                                     <div className="flex flex-col gap-3">
                                         {currentQuestion.options.map((option, oIndex) => (
-                                            <label key={oIndex} className="flex prose pre text-xs sm:text-lg items-start border border-slate-200 dark:border-gray-700 p-3 rounded-lg cursor-pointer hover:bg-slate-50 dark:hover:bg-gray-700/50 has-[:checked]:bg-indigo-50 dark:has-[:checked]:bg-indigo-900/50 has-[:checked]:border-blue-400 dark:has-[:checked]:border-blue-500 text-slate-700 dark:text-slate-300">
+                                            <label key={oIndex} className="flex prose pre text-sm sm:text-lg items-start border border-slate-200 dark:border-gray-700 p-3 rounded-lg cursor-pointer hover:bg-slate-50 dark:hover:bg-gray-700/50 has-[:checked]:bg-indigo-50 dark:has-[:checked]:bg-indigo-900/50 has-[:checked]:border-blue-400 dark:has-[:checked]:border-blue-500 text-slate-700 dark:text-slate-300">
                                                 <input
                                                     type="radio"
                                                     className="mr-2.5 mt-0.5 flex-shrink-0"
@@ -745,11 +740,11 @@ export default function PostTestPage() {
 
                         <div className="flex flex-col sm:flex-row gap-3 sm:gap-2 items-center mt-6">
                             <div className="flex gap-2 w-full sm:w-auto">
-                                <button onClick={() => setTestIdx(i => Math.max(0, i - 1))} disabled={testIdx === 0} className="flex-1 bg-white text-xs sm:text-base dark:bg-gray-700 text-slate-700 dark:text-slate-300 border border-slate-300 dark:border-gray-600 px-4 py-2.5 rounded-lg cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed hover:bg-slate-50 dark:hover:bg-gray-600">
+                                <button onClick={() => setTestIdx(i => Math.max(0, i - 1))} disabled={testIdx === 0} className="flex-1 bg-white text-sm sm:text-base dark:bg-gray-700 text-slate-700 dark:text-slate-300 border border-slate-300 dark:border-gray-600 px-4 py-2.5 rounded-lg cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed hover:bg-slate-50 dark:hover:bg-gray-600">
                                     Sebelumnya
                                 </button>
                                 {testIdx < total - 1 ? (
-                                    <button onClick={() => setTestIdx(i => Math.min(total - 1, i + 1))} className="flex-1 bg-blue-600 text-white text-xs sm:text-base border-none px-4 py-2.5 rounded-lg cursor-pointer hover:bg-blue-700 transition">
+                                    <button onClick={() => setTestIdx(i => Math.min(total - 1, i + 1))} className="flex-1 bg-blue-600 text-white text-sm sm:text-base border-none px-4 py-2.5 rounded-lg cursor-pointer hover:bg-blue-700 transition">
                                         Berikutnya
                                     </button>
                                 ) : (
@@ -778,7 +773,7 @@ export default function PostTestPage() {
                                             });
                                         }}
                                         disabled={isSubmitting}
-                                        className="flex-1 sm:flex-none text-xs sm:text-base bg-green-600 text-white border-none px-4 py-2.5 rounded-lg cursor-pointer hover:bg-green-700 transition disabled:opacity-50"
+                                        className="flex-1 sm:flex-none text-sm sm:text-base bg-green-600 text-white border-none px-4 py-2.5 rounded-lg cursor-pointer hover:bg-green-700 transition disabled:opacity-50"
                                     >
                                         {isSubmitting ? 'Mengirim...' : 'Kirim Jawaban'}
                                     </button>

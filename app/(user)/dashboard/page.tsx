@@ -496,7 +496,7 @@ export default function DashboardPage() {
                 className="relative overflow-hidden block p-3 border border-slate-200 dark:border-slate-600 border-b-[5px] border-b-blue-500 border-l-[2px] border-l-blue-500 dark:border-l-gray-600  dark:border-b-gray-600 rounded-xl bg-gray-100 dark:bg-gray-800 hover:bg-blue-50/60 dark:hover:bg-gray-700 cursor-pointer transition-all group shadow-sm hover:shadow-md"
               >
                 {/* Background Icon Watermark */}
-                <Rocket className="absolute -bottom-3 -right-3 w-20 h-20 text-blue-500 opacity-[0.08] group-hover:scale-110 group-hover:opacity-20 transition-all duration-500 -rotate-12 pointer-events-none" />
+                <Rocket className="absolute -bottom-3 -right-3 w-20 h-20 text-blue-500 opacity-[0.1] group-hover:scale-110 group-hover:opacity-20 transition-all duration-500 -rotate-12 pointer-events-none" />
 
                 <div className="relative z-10 flex items-center justify-between gap-3 sm:gap-4">
 
