@@ -1120,7 +1120,7 @@ export default function ModulDetailPage() {
             observers.forEach(observer => observer.disconnect());
             // Tidak perlu disconnect observer lagi
         };
-    }, [activeTest, openTopicId, isPlaygroundOpen, testIdx, activeTopicTab]);
+    }, [activeTest, openTopicId, isPlaygroundOpen, testIdx, activeTopicTab, modul, loading]);
 
     // --- Tour Guide Effect ---
     useEffect(() => {
