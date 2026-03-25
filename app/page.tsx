@@ -6,6 +6,7 @@ import {
   CheckCircle2,
   Play,
   Star,
+  Sparkles,
   Menu,
   Home,
   X,
@@ -162,7 +163,6 @@ export default function LandingPage() {
   const [count, setCount] = useState(0);
   const [activeFeature, setActiveFeature] = useState(0);
   const [activeMentorIdx, setActiveMentorIdx] = useState(0);
-  const [openFaqIndex, setOpenFaqIndex] = useState<number | null>(null);
   const { theme, setTheme, resolvedTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
   const [showScrollTop, setShowScrollTop] = useState(false);
@@ -293,7 +293,7 @@ export default function LandingPage() {
     const handleScroll = () => {
       setShowScrollTop(window.scrollY > 400);
 
-      const sections = ["fitur", "modul", "mentor", "faq"];
+      const sections = ["fitur", "modul", "mentor", "mulai"];
       let current = "";
 
       for (const section of sections) {
@@ -339,7 +339,7 @@ export default function LandingPage() {
 
             {/* Desktop Menu */}
             <div className="hidden md:flex items-center space-x-2">
-              {['fitur', 'modul', 'mentor', 'faq'].map((item) => (
+              {['fitur', 'modul', 'mentor'].map((item) => (
                 <Link
                   key={item}
                   href={`#${item}`}
@@ -430,13 +430,6 @@ export default function LandingPage() {
                 onClick={() => setIsMobileMenuOpen(false)}
               >
                 Mentor
-              </Link>
-              <Link
-                href="#faq"
-                className={`block px-4 py-3 rounded-xl text-base font-medium transition-all ${activeSection === 'faq' ? 'text-blue-600 dark:text-blue-400 bg-slate-50 dark:bg-gray-800' : 'text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-gray-800 hover:text-blue-600 dark:hover:text-blue-400'}`}
-                onClick={() => setIsMobileMenuOpen(false)}
-              >
-                FAQ
               </Link>
 
               <div className="pt-4 mt-2 border-t border-slate-100 dark:border-gray-800 flex">
@@ -1116,13 +1109,13 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* --- CTA & FAQ SECTION --- */}
-      <section id="faq" className="py-8 sm:py-12 bg-slate-50 dark:bg-gray-900 relative overflow-hidden">
+      {/* --- CTA SECTION --- */}
+      <section id="mulai" className="py-8 sm:py-12 bg-slate-50 dark:bg-gray-900 relative overflow-hidden">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-          <div className="grid lg:grid-cols-2 gap-12 items-center">
+          <div className="grid lg:grid-cols-2 gap-6 lg:gap-8 items-stretch">
 
             {/* CTA Card */}
-            <div className="bg-blue-600 rounded-2xl p-8 md:p-12 text-left md:text-center text-white relative overflow-hidden shadow-2xl shadow-blue-600/30 h-full flex flex-col justify-center">
+            <div className="bg-blue-600 rounded-2xl p-8 md:p-12 text-left md:text-center text-white relative overflow-hidden shadow-2xl shadow-blue-600/30 h-full flex flex-col justify-center w-full">
               {/* Decorative Circles */}
               <div className="absolute top-0 left-0 w-64 h-64 bg-white opacity-10 rounded-full -translate-x-1/2 -translate-y-1/2 blur-2xl"></div>
               <div className="absolute bottom-0 right-0 w-64 h-64 bg-indigo-900 opacity-20 rounded-full translate-x-1/2 translate-y-1/2 blur-2xl"></div>
@@ -1147,41 +1140,98 @@ export default function LandingPage() {
               </div>
             </div>
 
-            {/* FAQ List */}
-            <div className="w-full">
-              <motion.h2
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.5 }}
-                className="text-3xl font-medium text-slate-900 dark:text-white mb-8 font-[family-name:var(--font-gagalin)]"
-              >Pertanyaan Umum</motion.h2>
-              <div className="space-y-4">
-                {[
-                  { q: "Bagaimana sistem jalur belajar personalisasi bekerja?", a: "Berdasarkan hasil Tes Awal (Pre-Test), sistem akan merekomendasikan modul yang sesuai dengan kemampuanmu—mulai dari tingkat Dasar, Menengah, hingga Lanjut." },
-                  { q: "Apakah ada fitur untuk berlatih coding secara langsung?", a: "Tentu! Kami menyediakan fitur Live Code Playground. Kamu bisa menulis, menjalankan, dan melihat hasil kode HTML maupun JavaScript secara real-time langsung di browser." },
-                  { q: "Bagaimana jika saya kesulitan memahami materi?", a: "Jangan khawatir! Ada Kak Gem, asisten tutor AI yang siap membantu menjawab pertanyaanmu dan memecahkan masalah koding yang sedang kamu hadapi kapan saja." },
-                  { q: "Apakah saya bisa mengulang modul jika skor tes masih rendah?", a: "Tentu bisa! Sistem analitik kami akan merekomendasikan topik spesifik yang perlu kamu perkuat. Kamu bisa mengulang materi dan uji pemahaman kapan saja." },
-                  { q: "Bagaimana cara mendapatkan sertifikat?", a: "Sertifikat resmi Kelas Edu bisa kamu unduh otomatis di halaman Profil setelah kamu menyelesaikan 100% progres belajar dan lulus semua post-test." }
-                ].map((item, idx) => {
-                  const isOpen = openFaqIndex === idx;
-                  return (
-                    <div key={idx} className={`bg-white dark:bg-gray-800 rounded-xl shadow-sm border transition-colors duration-300 ${isOpen ? 'border-blue-500 dark:border-blue-400' : 'border-slate-200 dark:border-gray-700'}`}>
-                      <button
-                        onClick={() => setOpenFaqIndex(isOpen ? null : idx)}
-                        className="w-full flex justify-between items-center p-6 text-left focus:outline-none"
-                      >
-                        <h3 className={`font-bold text-md transition-colors pr-4 ${isOpen ? 'text-blue-600 dark:text-blue-400' : 'text-slate-800 dark:text-white'}`}>{item.q}</h3>
-                        <ChevronDown className={`w-5 h-5 flex-shrink-0 transition-transform duration-300 ${isOpen ? 'rotate-180 text-blue-600 dark:text-blue-400' : 'text-slate-400'}`} />
-                      </button>
-                      <div className={`grid transition-all duration-300 ease-in-out ${isOpen ? 'grid-rows-[1fr] opacity-100' : 'grid-rows-[0fr] opacity-0'}`}>
-                        <div className="overflow-hidden">
-                          <p className="text-slate-600 dark:text-slate-400 text-left px-6 pb-6 pt-0">{item.a}</p>
+            {/* Mobile App Card */}
+            <div className="w-full h-full flex">
+              <div className="group relative bg-gradient-to-br from-sky-100 to-sky-300 dark:from-sky-900/40 dark:to-blue-900/40 p-8 md:p-10 rounded-2xl border border-blue-100 dark:border-gray-700 shadow-lg w-full overflow-hidden h-full flex flex-col justify-center">
+                <div className="relative z-10 w-full sm:w-2/3 lg:w-3/4 xl:w-2/3">
+                  <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-100 dark:bg-blue-900/50 text-blue-700 dark:text-blue-300 text-xs font-bold uppercase tracking-wider mb-4 border border-blue-200 dark:border-blue-800">
+                  
+                    <span>Segera Hadir</span>
+                  </div>
+                  <h4 className="font-bold text-2xl lg:text-3xl text-slate-900 dark:text-white mb-3">
+                    Belajar Kapan Saja, Di Mana Saja
+                  </h4>
+                  <p className="text-sm text-slate-600 dark:text-slate-300 mb-6 leading-relaxed">
+                    Aplikasi mobile KELAS sedang dikembangkan! Bersiaplah untuk pengalaman belajar yang lebih fleksibel, langsung dari smartphone kamu.
+                  </p>
+                  
+                  <ul className="space-y-2.5 mb-8 hidden sm:block">
+                    <li className="flex items-center gap-2.5 text-sm text-slate-700 dark:text-slate-300 font-medium">
+                      <CheckCircle2 className="w-4 h-4 text-green-600 dark:text-green-400 flex-shrink-0" />
+                      <span>Notifikasi pengingat belajar harian</span>
+                    </li>
+                    <li className="flex items-center gap-2.5 text-sm text-slate-700 dark:text-slate-300 font-medium">
+                      <CheckCircle2 className="w-4 h-4 text-green-600 dark:text-green-400 flex-shrink-0" />
+                      <span>Live Code Playground versi mobile</span>
+                    </li>
+                    <li className="flex items-center gap-2.5 text-sm text-slate-700 dark:text-slate-300 font-medium">
+                      <CheckCircle2 className="w-4 h-4 text-green-600 dark:text-green-400 flex-shrink-0" />
+                      <span>Tanya Kak Gem langsung dari aplikasi</span>
+                    </li>
+                  </ul>
+
+                  <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
+                    <button className="flex items-center gap-3 bg-slate-900 dark:bg-white text-white dark:text-slate-900 px-5 py-3 rounded-xl hover:opacity-90 transition-opacity w-full sm:w-auto justify-center shadow-lg shadow-slate-900/20 dark:shadow-none cursor-default border border-transparent dark:border-slate-200">
+                      <svg className="w-6 h-6 fill-current flex-shrink-0" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M3.609 1.814L13.792 12 3.61 22.186c-.185-.182-.29-.413-.309-.65V2.47c.01-.24.115-.47.309-.656zM15.3 13.51l3.484-3.485L5.753.896c.365.176.67.45.875.79l8.672 11.824zm1.425 1.425L7.996 23.64c-.37.33-.8.47-1.22.42l9.95-10.556zM4.777 22.825l10.55-10.55-10.55-10.55v21.1z" />
+                      </svg>
+                      <div className="text-left">
+                        <div className="text-[10px] uppercase font-medium leading-none opacity-80">Google Play</div>
+                        <div className="text-sm font-bold leading-none mt-1">Coming Soon</div>
+                      </div>
+                    </button>
+                    <button className="flex items-center gap-3 bg-slate-900 dark:bg-white text-white dark:text-slate-900 px-5 py-3 rounded-xl hover:opacity-90 transition-opacity w-full sm:w-auto justify-center shadow-lg shadow-slate-900/20 dark:shadow-none cursor-default border border-transparent dark:border-slate-200">
+                      <svg className="w-6 h-6 fill-current flex-shrink-0" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.48 2.43-2.45 4.13-2.48 1.28-.03 2.5.87 3.29.87.94 0 2.25-1.09 3.93-.99 1.42.09 2.48.51 3.28 1.68-2.65 1.69-2.2 6.04 1.1 7.07-1.09 2.18-2.36 3.72-2.73 4.21zM13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.53-2.95 1.46-.15-1.17.32-2.35 1.05-3.15z" />
+                      </svg>
+                      <div className="text-left">
+                        <div className="text-[10px] uppercase font-medium leading-none opacity-80">App Store</div>
+                        <div className="text-sm font-bold leading-none mt-1">Coming Soon</div>
+                      </div>
+                    </button>
+                  </div>
+                </div>
+
+                {/* Mockup Phone Positioned Absolute */}
+                <div className="absolute bottom-[-30px] right-[-30px] sm:right-[-10px] transform rotate-[-12deg] group-hover:rotate-[-5deg] group-hover:translate-y-[-10px] transition-all duration-500 ease-out opacity-30 sm:opacity-100 z-0 pointer-events-none">
+                  <div className="relative border-slate-800 dark:border-slate-700 bg-slate-800 border-[8px] rounded-[2rem] h-[260px] w-[130px] shadow-2xl overflow-hidden">
+                    <div className="absolute top-0 left-1/2 transform -translate-x-1/2 w-1/2 h-[6px] bg-slate-800 rounded-b-md z-20"></div>
+                    {/* Screen Content */}
+                    <div className="w-full h-full bg-slate-50 dark:bg-slate-900 p-2.5 flex flex-col gap-3">
+                      {/* Header Skeleton */}
+                      <div className="flex justify-between items-center mt-2">
+                        <div className="w-6 h-6 bg-blue-500 rounded-full opacity-80 shadow-sm"></div>
+                        <div className="w-4 h-4 bg-slate-200 dark:bg-slate-700 rounded-full"></div>
+                      </div>
+                      
+                      {/* Progress Card Skeleton */}
+                      <div className="w-full h-16 bg-white dark:bg-slate-800 rounded-xl shadow-sm p-2 flex flex-col justify-center gap-1.5 border border-slate-100 dark:border-slate-700">
+                         <div className="w-2/3 h-2 bg-slate-200 dark:bg-slate-600 rounded"></div>
+                         <div className="w-full h-1.5 bg-blue-100 dark:bg-blue-900/50 rounded-full overflow-hidden mt-1">
+                            <div className="w-3/4 h-full bg-blue-500 rounded-full"></div>
+                         </div>
+                      </div>
+
+                      {/* Small Grid */}
+                      <div className="grid grid-cols-2 gap-2">
+                        <div className="h-12 bg-blue-50 dark:bg-blue-900/20 rounded-xl border border-blue-100 dark:border-blue-800/30"></div>
+                        <div className="h-12 bg-purple-50 dark:bg-purple-900/20 rounded-xl border border-purple-100 dark:border-purple-800/30"></div>
+                      </div>
+                      
+                      {/* List */}
+                      <div className="space-y-2 mt-1">
+                        <div className="w-full h-8 bg-white dark:bg-slate-800 rounded-lg shadow-sm border border-slate-100 dark:border-slate-700 flex items-center p-1.5 gap-2">
+                            <div className="w-5 h-5 bg-green-100 dark:bg-green-900/50 rounded flex-shrink-0"></div>
+                            <div className="w-1/2 h-1.5 bg-slate-200 dark:bg-slate-600 rounded"></div>
+                        </div>
+                        <div className="w-full h-8 bg-white dark:bg-slate-800 rounded-lg shadow-sm border border-slate-100 dark:border-slate-700 flex items-center p-1.5 gap-2">
+                            <div className="w-5 h-5 bg-amber-100 dark:bg-amber-900/50 rounded flex-shrink-0"></div>
+                            <div className="w-2/3 h-1.5 bg-slate-200 dark:bg-slate-600 rounded"></div>
                         </div>
                       </div>
                     </div>
-                  );
-                })}
+                  </div>
+                </div>
               </div>
             </div>
 
@@ -1214,7 +1264,7 @@ export default function LandingPage() {
       <footer className="bg-white dark:bg-gray-900 border-t border-slate-200 border-t-white dark:border-gray-800 dark:border-t-gray-900 pt-4 pb-6">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 md:grid-cols-12 gap-8 lg:gap-12 mb-12">
-            <div className="md:col-span-3">
+            <div className="md:col-span-5 lg:col-span-4">
               <div className="flex items-center gap-2 mb-4">
                 <img src="/logo.webp" alt="KELAS Icon" className="h-8 w-auto" />
 
@@ -1224,74 +1274,7 @@ export default function LandingPage() {
               </p>
             </div>
 
-            <div className="md:col-span-4 flex flex-col items-start w-full">
-              <div className="group relative bg-gradient-to-br from-sky-100 to-sky-300 dark:from-sky-600/20 dark:to-sky-800/20 p-5 rounded-lg border border-blue-100 dark:border-gray-700 shadow-sm w-full sm:max-w-md overflow-hidden">
-                <div className="relative z-10">
-                  <h4 className="font-bold text-slate-900 dark:text-white mb-2 flex items-center gap-2">
-                    <Smartphone className="text-blue-600 dark:text-blue-400 w-5 h-5" />
-                    Mobile App
-                  </h4>
-                  <p className="text-sm text-slate-600 dark:text-slate-400 mb-4 leading-relaxed max-w-[350px] sm:max-w-[280px]">
-                    Belajar jadi lebih mudah dalam genggaman. Segera hadir untuk Android & iOS!
-                  </p>
-                  <div className="flex flex-row gap-3 w-full sm:w-auto">
-                    <button className="flex items-center gap-3 bg-slate-900 dark:bg-white text-white dark:text-slate-900 px-4 py-2 rounded-xl hover:opacity-90 transition-opacity w-full sm:w-auto justify-start shadow-lg shadow-slate-900/20 dark:shadow-none cursor-default border border-transparent dark:border-slate-200">
-                      <svg className="w-6 h-6 fill-current flex-shrink-0" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M3.609 1.814L13.792 12 3.61 22.186c-.185-.182-.29-.413-.309-.65V2.47c.01-.24.115-.47.309-.656zM15.3 13.51l3.484-3.485L5.753.896c.365.176.67.45.875.79l8.672 11.824zm1.425 1.425L7.996 23.64c-.37.33-.8.47-1.22.42l9.95-10.556zM4.777 22.825l10.55-10.55-10.55-10.55v21.1z" />
-                      </svg>
-                      <div className="text-left">
-                        <div className="text-[9px] uppercase font-medium leading-none opacity-80">Segera di</div>
-                        <div className="text-sm font-bold leading-none">Google Play</div>
-                      </div>
-                    </button>
-                    <button className="flex items-center gap-3 bg-slate-900 dark:bg-white text-white dark:text-slate-900 px-4 py-2 rounded-xl hover:opacity-90 transition-opacity w-full sm:w-auto justify-start shadow-lg shadow-slate-900/20 dark:shadow-none cursor-default border border-transparent dark:border-slate-200">
-                      <svg className="w-6 h-6 fill-current flex-shrink-0" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.48 2.43-2.45 4.13-2.48 1.28-.03 2.5.87 3.29.87.94 0 2.25-1.09 3.93-.99 1.42.09 2.48.51 3.28 1.68-2.65 1.69-2.2 6.04 1.1 7.07-1.09 2.18-2.36 3.72-2.73 4.21zM13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.53-2.95 1.46-.15-1.17.32-2.35 1.05-3.15z" />
-                      </svg>
-                      <div className="text-left">
-                        <div className="text-[9px] uppercase font-medium leading-none opacity-80">Segera di</div>
-                        <div className="text-sm font-bold leading-none">App Store</div>
-                      </div>
-                    </button>
-                  </div>
-                </div>
-
-                {/* Mockup Phone Positioned Absolute */}
-                <div className="absolute bottom-[-20px] right-[-20px] sm:right-[-10px] transform rotate-[-10deg] group-hover:rotate-0 group-hover:translate-y-[-5px] transition-all duration-500 ease-out opacity-40 sm:opacity-100">
-                  <div className="relative border-slate-800 dark:border-slate-700 bg-slate-800 border-[6px] rounded-[1.5rem] h-[180px] w-[100px] shadow-xl overflow-hidden">
-                    <div className="absolute top-0 left-1/2 transform -translate-x-1/2 w-1/3 h-[4px] bg-slate-800 rounded-b-md z-20"></div>
-                    {/* Screen Content */}
-                    <div className="w-full h-full bg-white dark:bg-slate-900 p-2 flex flex-col gap-2">
-                      {/* Header Skeleton */}
-                      <div className="flex justify-between items-center mt-1">
-                        <div className="w-5 h-5 bg-blue-500 rounded-full opacity-80"></div>
-                        <div className="w-3 h-3 bg-slate-200 dark:bg-slate-700 rounded-full"></div>
-                      </div>
-                      {/* Card Skeleton */}
-                      <div className="w-full h-12 bg-blue-50 dark:bg-blue-900/30 rounded-lg border border-blue-100 dark:border-blue-800/50 flex items-center p-2 gap-2">
-                        <div className="w-8 h-8 bg-blue-200 dark:bg-blue-800 rounded-md"></div>
-                        <div className="flex-1 space-y-1">
-                          <div className="w-full h-1.5 bg-blue-200 dark:bg-blue-800 rounded"></div>
-                          <div className="w-1/2 h-1.5 bg-blue-100 dark:bg-blue-900 rounded"></div>
-                        </div>
-                      </div>
-                      {/* Small Grid */}
-                      <div className="grid grid-cols-2 gap-2">
-                        <div className="h-10 bg-slate-100 dark:bg-slate-800 rounded-lg"></div>
-                        <div className="h-10 bg-slate-100 dark:bg-slate-800 rounded-lg"></div>
-                      </div>
-                      {/* List */}
-                      <div className="space-y-1 mt-1">
-                        <div className="w-full h-6 bg-slate-50 dark:bg-slate-800/50 rounded border border-slate-100 dark:border-slate-800"></div>
-                        <div className="w-full h-6 bg-slate-50 dark:bg-slate-800/50 rounded border border-slate-100 dark:border-slate-800"></div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div className="md:col-span-5 flex flex-row justify-between gap-4 sm:gap-6 w-full">
+            <div className="md:col-span-7 lg:col-span-8 flex flex-row justify-between gap-4 sm:gap-6 w-full">
               <div className="flex-1">
                 <h4 className="font-bold text-slate-900 dark:text-white mb-4">Hubungi Kami</h4>
                 <ul className="space-y-3 text-sm text-slate-500 dark:text-slate-400">
