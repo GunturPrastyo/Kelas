@@ -600,7 +600,7 @@ export default function LandingPage() {
 
           {/* 3D Carousel Slider */}
           <motion.div 
-            className="relative h-[450px] md:h-[500px] w-full max-w-6xl mx-auto flex items-center mt-2 md:mt-8 mb-12 md:mb-20 justify-center perspective-1000 touch-pan-y"
+            className="relative h-[450px] md:h-[500px] w-full max-w-6xl mx-auto flex items-center mt-2 mb-12 md:-mb-12 z-20 justify-center perspective-1000 touch-pan-y"
             onPanEnd={(e, info) => {
               const swipeDistance = info.offset.x;
               if (swipeDistance < -50) {
@@ -1274,8 +1274,8 @@ export default function LandingPage() {
               </p>
             </div>
 
-            <div className="md:col-span-7 lg:col-span-8 flex flex-row justify-between gap-4 sm:gap-6 w-full">
-              <div className="flex-1">
+            <div className="md:col-span-7 lg:col-span-8 flex flex-col sm:flex-row justify-start gap-8 sm:gap-16 lg:gap-24 w-full">
+              <div>
                 <h4 className="font-bold text-slate-900 dark:text-white mb-4">Hubungi Kami</h4>
                 <ul className="space-y-3 text-sm text-slate-500 dark:text-slate-400">
                   <li className="flex items-start gap-3">
