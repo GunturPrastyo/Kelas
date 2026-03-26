@@ -455,20 +455,15 @@ export default function LandingPage() {
       <section className="relative pt-32 pb-20 lg:pt-40 lg:pb-28 overflow-hidden">
         {/* Background Decoration */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
-          {/* Blob 1 - Top Right (Bentuk Cat Besar) */}
-          <svg className="absolute top-0 right-0 w-full h-full pointer-events-none z-0 rotate-180" viewBox="0 0 400 540" preserveAspectRatio="xMinYMax slice">
-            <g transform="translate(0, 540)" className="opacity-60 dark:opacity-20">
-              <path d="M0 -189C39 -187.5 78 -186 94.5 -163.7C111 -141.4 104.9 -98.2 116.9 -67.5C128.9 -36.8 159 -18.4 189 0L0 0Z" className="fill-sky-200 dark:fill-sky-900" />
-            </g>
-          </svg>
+        
           {/* Blob 2 - Bottom Wave Divider */}
           <div className="absolute bottom-0 left-0 w-full">
-            <svg className="w-full h-auto" viewBox="0 320 900 280" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
-              <path d="M0 351L21.5 362C43 373 86 395 128.8 395.2C171.7 395.3 214.3 373.7 257.2 367.8C300 362 343 372 385.8 376.5C428.7 381 471.3 380 514.2 380.7C557 381.3 600 383.7 642.8 392.2C685.7 400.7 728.3 415.3 771.2 411.8C814 408.3 857 386.7 878.5 375.8L900 365L900 601L878.5 601C857 601 814 601 771.2 601C728.3 601 685.7 601 642.8 601C600 601 557 601 514.2 601C471.3 601 428.7 601 385.8 601C343 601 300 601 257.2 601C214.3 601 171.7 601 128.8 601C86 601 43 601 21.5 601L0 601Z" className="fill-sky-100 dark:fill-slate-800" />
-              <path d="M0 462L21.5 463.2C43 464.3 86 466.7 128.8 459C171.7 451.3 214.3 433.7 257.2 424.7C300 415.7 343 415.3 385.8 415.5C428.7 415.7 471.3 416.3 514.2 427.2C557 438 600 459 642.8 466.3C685.7 473.7 728.3 467.3 771.2 463.2C814 459 857 457 878.5 456L900 455L900 601L878.5 601C857 601 814 601 771.2 601C728.3 601 685.7 601 642.8 601C600 601 557 601 514.2 601C471.3 601 428.7 601 385.8 601C343 601 300 601 257.2 601C214.3 601 171.7 601 128.8 601C86 601 43 601 21.5 601L0 601Z" className="fill-sky-200 dark:fill-sky-900" />
-              <path d="M0 455L21.5 454.5C43 454 86 453 128.8 456.3C171.7 459.7 214.3 467.3 257.2 473.3C300 479.3 343 483.7 385.8 488.2C428.7 492.7 471.3 497.3 514.2 489.7C557 482 600 462 642.8 463.2C685.7 464.3 728.3 486.7 771.2 487C814 487.3 857 465.7 878.5 454.8L900 444L900 601L878.5 601C857 601 814 601 771.2 601C728.3 601 685.7 601 642.8 601C600 601 557 601 514.2 601C471.3 601 428.7 601 385.8 601C343 601 300 601 257.2 601C214.3 601 171.7 601 128.8 601C86 601 43 601 21.5 601L0 601Z" className="fill-sky-300 dark:fill-sky-800" />
-              <path d="M0 535L21.5 532.7C43 530.3 86 525.7 128.8 520.5C171.7 515.3 214.3 509.7 257.2 505C300 500.3 343 496.7 385.8 502.5C428.7 508.3 471.3 523.7 514.2 524.2C557 524.7 600 510.3 642.8 506.5C685.7 502.7 728.3 509.3 771.2 512C814 514.7 857 513.3 878.5 512.7L900 512L900 601L878.5 601C857 601 814 601 771.2 601C728.3 601 685.7 601 642.8 601C600 601 557 601 514.2 601C471.3 601 428.7 601 385.8 601C343 601 300 601 257.2 601C214.3 601 171.7 601 128.8 601C86 601 43 601 21.5 601L0 601Z" className="fill-sky-400 dark:fill-sky-700" />
-              <path d="M0 569L21.5 563.8C43 558.7 86 548.3 128.8 542.3C171.7 536.3 214.3 534.7 257.2 534.3C300 534 343 535 385.8 534.7C428.7 534.3 471.3 532.7 514.2 536.8C557 541 600 551 642.8 554.2C685.7 557.3 728.3 553.7 771.2 554.2C814 554.7 857 559.3 878.5 561.7L900 564L900 601L878.5 601C857 601 814 601 771.2 601C728.3 601 685.7 601 642.8 601C600 601 557 601 514.2 601C471.3 601 428.7 601 385.8 601C343 601 300 601 257.2 601C214.3 601 171.7 601 128.8 601C86 601 43 601 21.5 601L0 601Z" className="fill-sky-500 dark:fill-sky-600" />
+            <svg className="w-full h-auto sm:h-60" viewBox="0 320 900 280" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
+              <path d="M0 351L21.5 362C43 373 86 395 128.8 395.2C171.7 395.3 214.3 373.7 257.2 367.8C300 362 343 372 385.8 376.5C428.7 381 471.3 380 514.2 380.7C557 381.3 600 383.7 642.8 392.2C685.7 400.7 728.3 415.3 771.2 411.8C814 408.3 857 386.7 878.5 375.8L900 365L900 601L878.5 601C857 601 814 601 771.2 601C728.3 601 685.7 601 642.8 601C600 601 557 601 514.2 601C471.3 601 428.7 601 385.8 601C343 601 300 601 257.2 601C214.3 601 171.7 601 128.8 601C86 601 43 601 21.5 601L0 601Z" className="fill-sky-50 dark:fill-slate-800/40" />
+              <path d="M0 462L21.5 463.2C43 464.3 86 466.7 128.8 459C171.7 451.3 214.3 433.7 257.2 424.7C300 415.7 343 415.3 385.8 415.5C428.7 415.7 471.3 416.3 514.2 427.2C557 438 600 459 642.8 466.3C685.7 473.7 728.3 467.3 771.2 463.2C814 459 857 457 878.5 456L900 455L900 601L878.5 601C857 601 814 601 771.2 601C728.3 601 685.7 601 642.8 601C600 601 557 601 514.2 601C471.3 601 428.7 601 385.8 601C343 601 300 601 257.2 601C214.3 601 171.7 601 128.8 601C86 601 43 601 21.5 601L0 601Z" className="fill-sky-100 dark:fill-slate-800/60" />
+              <path d="M0 455L21.5 454.5C43 454 86 453 128.8 456.3C171.7 459.7 214.3 467.3 257.2 473.3C300 479.3 343 483.7 385.8 488.2C428.7 492.7 471.3 497.3 514.2 489.7C557 482 600 462 642.8 463.2C685.7 464.3 728.3 486.7 771.2 487C814 487.3 857 465.7 878.5 454.8L900 444L900 601L878.5 601C857 601 814 601 771.2 601C728.3 601 685.7 601 642.8 601C600 601 557 601 514.2 601C471.3 601 428.7 601 385.8 601C343 601 300 601 257.2 601C214.3 601 171.7 601 128.8 601C86 601 43 601 21.5 601L0 601Z" className="fill-sky-200/60 dark:fill-sky-900/40" />
+              <path d="M0 535L21.5 532.7C43 530.3 86 525.7 128.8 520.5C171.7 515.3 214.3 509.7 257.2 505C300 500.3 343 496.7 385.8 502.5C428.7 508.3 471.3 523.7 514.2 524.2C557 524.7 600 510.3 642.8 506.5C685.7 502.7 728.3 509.3 771.2 512C814 514.7 857 513.3 878.5 512.7L900 512L900 601L878.5 601C857 601 814 601 771.2 601C728.3 601 685.7 601 642.8 601C600 601 557 601 514.2 601C471.3 601 428.7 601 385.8 601C343 601 300 601 257.2 601C214.3 601 171.7 601 128.8 601C86 601 43 601 21.5 601L0 601Z" className="fill-sky-200 dark:fill-sky-900/60" />
+              <path d="M0 569L21.5 563.8C43 558.7 86 548.3 128.8 542.3C171.7 536.3 214.3 534.7 257.2 534.3C300 534 343 535 385.8 534.7C428.7 534.3 471.3 532.7 514.2 536.8C557 541 600 551 642.8 554.2C685.7 557.3 728.3 553.7 771.2 554.2C814 554.7 857 559.3 878.5 561.7L900 564L900 601L878.5 601C857 601 814 601 771.2 601C728.3 601 685.7 601 642.8 601C600 601 557 601 514.2 601C471.3 601 428.7 601 385.8 601C343 601 300 601 257.2 601C214.3 601 171.7 601 128.8 601C86 601 43 601 21.5 601L0 601Z" className="fill-sky-300 dark:fill-sky-900" />
             </svg>
           </div>
 
@@ -495,13 +490,13 @@ export default function LandingPage() {
 
 
             {/* Mobile Hero Image */}
-            <div className="hidden items-center justify-center w-full my-6">
+            <div className="hidden items-center justify-center w-full -mx-2 my-6">
               <Image
-                src="/ilustrasi2.png"
+                src={mounted && resolvedTheme === 'dark' ? "/ilustrasi4.png" : "/ilustrasi3.png"}
                 alt="Ilustrasi Belajar Online"
                 width={500}
                 height={500}
-                className="w-full max-w-md object-contain"
+                className="w-full max-w-sm object-contain"
                 priority
               />
             </div>
@@ -514,7 +509,7 @@ export default function LandingPage() {
               {/* Tablet Image (Visible MD, Hidden LG) */}
               <div className="hidden md:flex lg:hidden flex-1 items-center justify-center">
                 <Image
-                  src="/ilustrasi2.png"
+                  src={mounted && resolvedTheme === 'dark' ? "/ilustrasi4.png" : "/ilustrasi3.png"}
                   alt="Ilustrasi Belajar Online"
                   width={400}
                   height={400}
@@ -545,11 +540,11 @@ export default function LandingPage() {
           {/* Hero Image / Illustration */}
           <div className="hidden lg:flex flex-1 items-center justify-center">
             <Image
-              src="/ilustrasi2.png" // Ganti dengan path ilustrasi yang sesuai
+              src={mounted && resolvedTheme === 'dark' ? "/ilustrasi4.png" : "/ilustrasi3.png"}
               alt="Ilustrasi Belajar Online"
               width={500}
               height={500}
-              className="w-full max-w-md lg:max-w-lg object-contain"
+              className="w-full max-w-2xl lg:max-w-2xl object-contain"
               priority
             />
           </div>
@@ -562,7 +557,7 @@ export default function LandingPage() {
         {/* Top Wave Decoration */}
         <div className="absolute top-0 left-0 w-full pointer-events-none z-0">
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 120" className="w-full h-12 md:h-20" preserveAspectRatio="none">
-            <path d="M0 69L37.5 69.5C75 70 150 71 225 80.8C300 90.7 375 109.3 450 109.2C525 109 600 90 675 85.7C750 81.3 825 91.7 862.5 96.8L900 102L900 0L862.5 0C825 0 750 0 675 0C600 0 525 0 450 0C375 0 300 0 225 0C150 0 75 0 37.5 0L0 0Z" className="fill-sky-500 dark:fill-sky-600" strokeLinecap="round" strokeLinejoin="miter" />
+            <path d="M0 69L37.5 69.5C75 70 150 71 225 80.8C300 90.7 375 109.3 450 109.2C525 109 600 90 675 85.7C750 81.3 825 91.7 862.5 96.8L900 102L900 0L862.5 0C825 0 750 0 675 0C600 0 525 0 450 0C375 0 300 0 225 0C150 0 75 0 37.5 0L0 0Z" className="fill-sky-300 dark:fill-sky-600" strokeLinecap="round" strokeLinejoin="miter" />
           </svg>
         </div>
 
@@ -704,8 +699,8 @@ export default function LandingPage() {
             {/* Left Column: Text Content */}
             <div className="w-full lg:w-1/2 text-left relative z-20">
               <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
+                initial={{ opacity: 0, x: -20 }}
+                whileInView={{ opacity: 1, x: 0 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.5 }}
               >
@@ -718,10 +713,10 @@ export default function LandingPage() {
               </motion.div>
 
               <motion.p
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
+                initial={{ opacity: 0, x: -20 }}
+                whileInView={{ opacity: 1, x: 0 }}
                 viewport={{ once: true }}
-                transition={{ duration: 0.5, delay: 0.1 }}
+                transition={{ duration: 0.5, delay: 0.2 }}
                 className="text-lg text-slate-600 dark:text-slate-400 max-w-lg leading-relaxed"
               >
                 Kurikulum dirancang khusus oleh praktisi industri untuk mempersiapkanmu menghadapi dunia kerja. Pilih jalur yang sesuai dengan minatmu dan mulai belajar sekarang.
@@ -903,8 +898,8 @@ export default function LandingPage() {
             {/* Right Column: Text Content */}
             <div className="w-full md:w-1/2 text-left relative z-20">
               <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
+                initial={{ opacity: 0, x: 20 }}
+                whileInView={{ opacity: 1, x: 0 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.5 }}
               >
@@ -917,10 +912,10 @@ export default function LandingPage() {
               </motion.div>
 
               <motion.p
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
+                initial={{ opacity: 0, x: 20 }}
+                whileInView={{ opacity: 1, x: 0 }}
                 viewport={{ once: true }}
-                transition={{ duration: 0.5, delay: 0.1 }}
+                transition={{ duration: 0.5, delay: 0.2 }}
                 className="text-slate-700 dark:text-blue-100 text-lg font-medium leading-relaxed max-w-lg"
               >
                 Dapatkan wawasan berharga dari praktisi industri dan akademisi berpengalaman yang siap membimbing perjalanan karirmu.
