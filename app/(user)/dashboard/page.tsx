@@ -412,7 +412,7 @@ export default function DashboardPage() {
             </div>
 
             <div className="flex items-center gap-3">
-              <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-3 overflow-hidden">
+              <div className="w-64 bg-gradient-to-r from-gray-50 to-gray-100  dark:from-gray-600 dark:to-gray-700 rounded-full h-3 overflow-hidden">
                 <div className="bg-blue-500 h-3 rounded-full" style={{ width: `${overallProgress}%` }}></div>
               </div>
               <p className="text-sm font-medium text-blue-600 dark:text-blue-400 flex-shrink-0">{animatedOverallProgress}%</p>
