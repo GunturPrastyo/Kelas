@@ -160,8 +160,7 @@ export default function LandingPage() {
   const [displayedText1, setDisplayedText1] = useState("");
   const [displayedText2, setDisplayedText2] = useState("");
   const [displayedBadgeText, setDisplayedBadgeText] = useState("");
-  const [count, setCount] = useState(0);
-  const [activeFeature, setActiveFeature] = useState(0);
+  const [count, setCount] = useState(0);  const [activeFeature, setActiveFeature] = useState(0);
   const [activeMentorIdx, setActiveMentorIdx] = useState(0);
   const { theme, setTheme, resolvedTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
@@ -273,22 +272,20 @@ export default function LandingPage() {
     };
   }, []);
 
-  // Auto-rotate slider
+  // Auto-rotate feature slider
   useEffect(() => {
     const interval = setInterval(() => {
       setActiveFeature((prev) => (prev + 1) % features.length);
     }, 5000);
     return () => clearInterval(interval);
-  }, []);
+  }, [features.length]);
 
   const handleNextFeature = () => {
     setActiveFeature((prev) => (prev + 1) % features.length);
   };
-
   const handlePrevFeature = () => {
     setActiveFeature((prev) => (prev - 1 + features.length) % features.length);
   };
-
   useEffect(() => {
     const handleScroll = () => {
       setShowScrollTop(window.scrollY > 400);
@@ -571,107 +568,96 @@ export default function LandingPage() {
         </div>
 
         <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-left md:text-center max-w-3xl mx-auto">
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5 }}
-            >
-              <span className="text-blue-600 dark:text-blue-400 font-semibold tracking-wider uppercase text-sm">Keunggulan Kami</span>
-              <h2 className="mt-2 text-3xl md:text-4xl  text-slate-900 dark:text-white mb-4 font-[family-name:var(--font-gagalin)]">Kenapa Memilih KELAS?</h2>
-            </motion.div>
-
-            <motion.p
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5, delay: 0.1 }}
-              className="text-lg text-slate-600 dark:text-slate-400 text-left md:text-center"
-            >
-              Kami menggabungkan teknologi dan pedagogi untuk menciptakan pengalaman belajar yang tidak hanya efektif, tapi juga menyenangkan.
-            </motion.p>
-          </div>
-
-          {/* 3D Carousel Slider */}
-          <motion.div 
-            className="relative h-[450px] md:h-[500px] w-full max-w-6xl mx-auto flex items-center mb-12 md:-mb-12 z-20 justify-center perspective-1000 touch-pan-y"
-            onPanEnd={(e, info) => {
-              const swipeDistance = info.offset.x;
-              if (swipeDistance < -50) {
-                handleNextFeature();
-              } else if (swipeDistance > 50) {
-                handlePrevFeature();
-              }
-            }}
-          >
-            {features.map((feature, idx) => {
-              const position = (idx - activeFeature + features.length) % features.length;
-
-              // Tentukan properti animasi berdasarkan posisi
-              let animateProps = {};
-              if (position === 0) { // Active (Tengah)
-                animateProps = { x: 0, scale: 1, zIndex: 30, opacity: 1, boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.15)" };
-              } else if (position === 1) { // Kanan
-                animateProps = { x: 300, scale: 0.85, zIndex: 20, opacity: 0.5, boxShadow: "0 0px 0px rgba(0,0,0,0)" };
-              } else if (position === features.length - 1) { // Kiri
-                animateProps = { x: -300, scale: 0.85, zIndex: 20, opacity: 0.5, boxShadow: "0 0px 0px rgba(0,0,0,0)" };
-              } else { // Belakang (Hidden/Faint)
-                animateProps = { x: 0, scale: 0.6, zIndex: 10, opacity: 0, boxShadow: "0 0px 0px rgba(0,0,0,0)" };
-              }
-
-              return (
-                <motion.div
-                  key={idx}
-                  animate={animateProps}
-                  transition={{ type: "spring", stiffness: 200, damping: 25 }}
-                  className="absolute w-full max-w-xs sm:max-w-sm md:max-w-md p-8 md:p-10 rounded-[2rem] bg-white dark:bg-gray-800 border border-slate-100 dark:border-gray-700 flex flex-col items-start text-left cursor-pointer overflow-hidden group min-h-[360px] md:min-h-[400px]"
-                  onClick={() => setActiveFeature(idx)}
-                >
-                  {/* Decorative SVG - Softer Colors */}
-                  <svg xmlns="http://www.w3.org/2000/svg" id="visual" viewBox="0 0 900 600" className="absolute left-0 top-0 w-full h-full opacity-100 dark:opacity-10 pointer-events-none transition-transform duration-700 group-hover:scale-110" version="1.1" preserveAspectRatio="none">
-                    <path d="M336 0L259 0L259 86L297 86L297 171L376 171L376 257L288 257L288 343L344 343L344 429L361 429L361 514L290 514L290 600L0 600L0 514L0 514L0 429L0 429L0 343L0 343L0 257L0 257L0 171L0 171L0 86L0 86L0 0L0 0Z" className="fill-sky-100 dark:fill-sky-100/10" />
-                    <path d="M263 0L264 0L264 86L289 86L289 171L216 171L216 257L253 257L253 343L280 343L280 429L226 429L226 514L197 514L197 600L0 600L0 514L0 514L0 429L0 429L0 343L0 343L0 257L0 257L0 171L0 171L0 86L0 86L0 0L0 0Z" className="fill-sky-200 dark:fill-sky-200/10" />
-                    <path d="M196 0L171 0L171 86L156 86L156 171L194 171L194 257L192 257L192 343L144 343L144 429L152 429L152 514L200 514L200 600L0 600L0 514L0 514L0 429L0 429L0 343L0 343L0 257L0 257L0 171L0 171L0 86L0 86L0 0L0 0Z" className="fill-sky-300 dark:fill-sky-300/10" />
-                    <path d="M119 0L127 0L127 86L109 86L109 171L77 171L77 257L95 257L95 343L107 343L107 429L123 429L123 514L46 514L46 600L0 600L0 514L0 514L0 429L0 429L0 343L0 343L0 257L0 257L0 171L0 171L0 86L0 86L0 0L0 0Z" className="fill-sky-400 dark:fill-sky-400/10" />
-                  </svg>
-
-                  <div className="relative z-10 flex flex-col h-full w-full">
-                    <div className="flex items-start justify-between mb-6">
-                      <div className="w-16 h-16 md:w-20 md:h-20 bg-gradient-to-br from-white to-slate-50 dark:from-gray-700 dark:to-gray-800 rounded-2xl shadow-lg border border-slate-100 dark:border-gray-600 flex items-center justify-center transform group-hover:-translate-y-2 transition-transform duration-500">
+          <div className="flex flex-col lg:flex-row items-center lg:items-start gap-12 lg:gap-16">
+            
+            {/* LEFT COLUMN: SLIDER (order-2 on mobile, order-1 on lg) */}
+            <div className="w-full lg:w-7/12 order-2 lg:order-1">
+              <div className="relative h-[480px] sm:h-[450px] overflow-hidden">
+                {features.map((feature, idx) => (
+                  <motion.div
+                    key={idx}
+                    className="absolute top-0 left-0 w-full h-full p-2"
+                    initial={{ x: "100%", opacity: 0 }}
+                    animate={{
+                      x: `${(idx - activeFeature) * 100}%`,
+                      opacity: Math.abs(idx - activeFeature) < 2 ? 1 : 0,
+                      scale: idx === activeFeature ? 1 : 0.9,
+                      zIndex: features.length - Math.abs(idx - activeFeature),
+                    }}
+                    transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+                  >
+                    <div className="h-full bg-white dark:bg-gray-800 rounded-3xl p-8 shadow-[0_8px_30px_rgb(0,0,0,0.08)] dark:shadow-[0_8px_30px_rgb(0,0,0,0.15)] border border-slate-100 dark:border-gray-700 flex flex-col group">
+                      <div className="w-16 h-16 rounded-2xl bg-slate-50 dark:bg-gray-700/50 flex items-center justify-center mb-6 group-hover:scale-110 group-hover:rotate-3 transition-transform duration-300">
                         {feature.icon}
                       </div>
-                      <div className="text-6xl font-black text-slate-100 dark:text-gray-700/30 font-[family-name:var(--font-gagalin)] select-none">
-                        0{idx + 1}
-                      </div>
+                      <h3 className="text-xl font-bold text-slate-800 dark:text-gray-100 mb-3 font-[family-name:var(--font-gagalin)] tracking-wide group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+                        {feature.title}
+                      </h3>
+                      <p className="text-slate-600 dark:text-slate-400 text-sm leading-relaxed">
+                        {feature.desc}
+                      </p>
                     </div>
-                    
-                    <h3 className="text-2xl md:text-3xl font-bold text-slate-800 dark:text-gray-100 mb-3 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors duration-300 font-[family-name:var(--font-gagalin)] tracking-wide">
-                      {feature.title}
-                    </h3>
-                    
-                    <p className="text-slate-600 dark:text-slate-300 leading-relaxed text-sm md:text-base text-left font-medium opacity-90 group-hover:opacity-100 transition-opacity duration-300">
-                      {feature.desc}
-                    </p>
+                  </motion.div>
+                ))}
+              </div>
+              {/* Navigation and Dots */}
+              <div className="flex items-center justify-between mt-8 px-2">
+                <div className="flex items-center gap-2.5">
+                  {features.map((_, idx) => (
+                    <button
+                      key={idx}
+                      onClick={() => setActiveFeature(idx)}
+                      className={`h-2.5 rounded-full transition-all duration-500 ease-out ${activeFeature === idx ? 'w-8 bg-blue-600 dark:bg-blue-500' : 'w-2.5 bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 dark:hover:bg-slate-600'}`}
+                      aria-label={`Go to feature ${idx + 1}`}
+                    />
+                  ))}
+                </div>
+                <div className="flex items-center gap-3">
+                  <button onClick={handlePrevFeature} className="p-3 rounded-full bg-white dark:bg-gray-800 border border-slate-200 dark:border-gray-700 shadow-sm hover:shadow-md hover:bg-slate-50 dark:hover:bg-gray-700 transition-all text-slate-600 dark:text-slate-300">
+                    <ChevronLeft className="w-5 h-5" />
+                  </button>
+                  <button onClick={handleNextFeature} className="p-3 rounded-full bg-white dark:bg-gray-800 border border-slate-200 dark:border-gray-700 shadow-sm hover:shadow-md hover:bg-slate-50 dark:hover:bg-gray-700 transition-all text-slate-600 dark:text-slate-300">
+                    <ChevronRight className="w-5 h-5" />
+                  </button>
+                </div>
+              </div>
+            </div>
 
-                    <div className="mt-auto pt-6 opacity-0 group-hover:opacity-100 transition-opacity duration-300 transform translate-y-2 group-hover:translate-y-0">
-                      <div className="inline-flex items-center text-sm font-bold text-blue-600 dark:text-blue-400">
-                        Pelajari Lebih Lanjut <ArrowRight className="ml-2 w-4 h-4" />
+            {/* RIGHT COLUMN: TEXT (order-1 on mobile, order-2 on lg) */}
+            <div className="w-full lg:w-5/12 order-1 lg:order-2 lg:sticky lg:top-32 pt-0">
+              <motion.div
+                initial={{ opacity: 0, x: 20 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.5 }}
+              >
+                <div className="inline-flex items-center gap-2 px-3 rounded-full bg-blue-50 dark:bg-blue-900/30 border border-blue-100 dark:border-blue-800 text-blue-600 dark:text-blue-400 text-xs font-bold uppercase tracking-wider mb-6">
+                  Keunggulan Kami
+                </div>
+                <h2 className="text-3xl md:text-5xl text-slate-900 dark:text-white mb-6 font-[family-name:var(--font-gagalin)] leading-tight">
+                  Kenapa Memilih <br/><span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-500">KELAS?</span>
+                </h2>
+                <p className="text-lg text-slate-600 dark:text-slate-400 leading-relaxed mb-8">
+                  Kami menggabungkan teknologi modern dan metode pedagogi terbaik untuk menciptakan pengalaman belajar yang tidak hanya efektif, tapi juga menyenangkan dan terpersonalisasi untuk setiap siswa.
+                </p>
+                
+                <div className="space-y-4">
+                  {[
+                    "Materi interaktif & terstruktur",
+                    "Fokus pada praktik langsung"
+                  ].map((item, i) => (
+                    <div key={i} className="flex items-center gap-3">
+                      <div className="w-6 h-6 rounded-full bg-green-100 dark:bg-green-900/30 flex items-center justify-center shrink-0">
+                        <CheckCircle2 className="w-4 h-4 text-green-600 dark:text-green-400" />
                       </div>
+                      <span className="text-slate-700 dark:text-slate-300 font-medium">{item}</span>
                     </div>
-                  </div>
-                </motion.div>
-              );
-            })}
+                  ))}
+                </div>
+              </motion.div>
+            </div>
 
-            {/* Navigation Buttons */}
-            <button onClick={handlePrevFeature} className="hidden md:block absolute left-4 md:left-10 z-40 p-3 rounded-full bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm shadow-lg hover:bg-white dark:hover:bg-gray-700 transition-all text-slate-700 dark:text-slate-200">
-              <ChevronLeft className="w-6 h-6" />
-            </button>
-            <button onClick={handleNextFeature} className="hidden md:block absolute right-4 md:right-10 z-40 p-3 rounded-full bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm shadow-lg hover:bg-white dark:hover:bg-gray-700 transition-all text-slate-700 dark:text-slate-200">
-              <ChevronRight className="w-6 h-6" />
-            </button>
-          </motion.div>
+          </div>
         </div>
 
 
