@@ -885,21 +885,6 @@ export default function LandingPage() {
                   )
                 })}
               </motion.div>
-
-              {/* Dots Indicator */}
-              <div className="absolute right-2 sm:right-12 lg:right-4 top-1/2 -translate-y-1/2 flex flex-col gap-3 z-40">
-                {mentors.map((_, idx) => (
-                  <span
-                    key={idx}
-                    onClick={() => setActiveMentorIdx(idx)}
-                    className={`w-2.5 rounded-full transition-all duration-300 cursor-pointer ${
-                      activeMentorIdx === idx 
-                        ? "h-8 bg-blue-600 dark:bg-blue-400" 
-                        : "h-2.5 bg-blue-600/30 dark:bg-blue-400/30 hover:bg-blue-600/50 dark:hover:bg-blue-400/50"
-                    }`}
-                  />
-                ))}
-              </div>
             </div>
 
             {/* Right Column: Text Content */}
@@ -927,6 +912,22 @@ export default function LandingPage() {
               >
                 Dapatkan wawasan berharga dari praktisi industri dan akademisi berpengalaman yang siap membimbing perjalanan karirmu.
               </motion.p>
+
+              {/* Dots Indicator */}
+              <div className="hidden md:flex gap-3 mt-8">
+                {mentors.map((_, idx) => (
+                  <button
+                    key={idx}
+                    onClick={() => setActiveMentorIdx(idx)}
+                    className={`rounded-full transition-all duration-300 ${
+                      activeMentorIdx === idx
+                        ? "w-8 h-2.5 bg-blue-600 dark:bg-blue-400"
+                        : "w-2.5 h-2.5 bg-blue-600/30 dark:bg-blue-400/30 hover:bg-blue-600/50 dark:hover:bg-blue-400/50"
+                    }`}
+                    aria-label={`Go to mentor ${idx + 1}`}
+                  />
+                ))}
+              </div>
             </div>
           </div>
         </div>
