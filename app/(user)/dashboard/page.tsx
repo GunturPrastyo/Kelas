@@ -493,7 +493,7 @@ export default function DashboardPage() {
                     ? `/modul/${recommendation.continueToModule.moduleSlug}#${recommendation.continueToModule.nextTopic.id}`
                     : `/modul/${recommendation.continueToModule.moduleSlug}`
                 }
-                className="relative overflow-hidden block p-3 border border-slate-200 dark:border-slate-600 border-b-[5px] border-b-blue-500 border-l-[2px] border-l-blue-500 dark:border-l-gray-600  dark:border-b-gray-600 rounded-xl bg-gray-100 dark:bg-gray-800 hover:bg-blue-50/60 dark:hover:bg-gray-700 cursor-pointer transition-all group shadow-sm hover:shadow-md"
+                className="relative overflow-hidden block p-3 border border-slate-200 dark:border-slate-600 border-b-[5px] border-b-blue-500 border-l-[2px] border-l-blue-500 dark:border-l-gray-600  dark:border-b-gray-600 rounded-xl bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-700 dark:to-gray-800 hover:bg-blue-50/60 dark:hover:bg-gray-700 cursor-pointer transition-all group shadow-sm hover:shadow-md"
               >
                 {/* Background Icon Watermark */}
                 <Rocket className="absolute -bottom-3 -right-3 w-20 h-20 text-blue-500 opacity-[0.1] group-hover:scale-110 group-hover:opacity-20 transition-all duration-500 -rotate-12 pointer-events-none" />
@@ -518,7 +518,7 @@ export default function DashboardPage() {
                 </div>
               </Link>
             ) : (
-              <div className="relative overflow-hidden p-4 border border-slate-200 dark:border-slate-800 border-l-[5px] border-l-blue-500 dark:border-l-gray-600 rounded-xl bg-white/60 dark:bg-gray-900/50 text-center shadow-sm">
+              <div className="relative overflow-hidden p-4 border border-slate-200 dark:border-slate-600 border-b-[5px] border-b-blue-500 border-l-[2px] border-l-blue-500 dark:border-l-gray-600  dark:border-b-gray-600  rounded-xl bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-700 dark:to-gray-800 text-center shadow-sm">
                 {/* Background Icon Watermark */}
                 <Target className="absolute -bottom-4 -right-4 w-24 h-24 text-blue-500/10 dark:text-gray-400/10 rotate-12 pointer-events-none" />
                 
