@@ -168,10 +168,8 @@ export default function ModuleList({ title, allModules, filter, loading = false 
               className={`
               group relative flex flex-col justify-between
               w-full h-[240px]
-              rounded-2xl overflow-hidden 
-              bg-slate-50 dark:bg-gray-800
-              border border-slate-200 dark:border-gray-700
-              border-b-4 border-r-4 border-gray-300 dark:border-gray-600
+              overflow-hidden 
+              border border-slate-200 dark:border-slate-600 border-b-[5px] border-b-blue-500 border-l-[2px] border-l-blue-500 dark:border-l-gray-600  dark:border-b-gray-600 rounded-xl bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-700 dark:to-gray-800
               shadow-sm hover:shadow-xl hover:-translate-y-1
               transition-all duration-300 snap-start
               ${effectiveStatus === "Terkunci" ? "grayscale opacity-70 cursor-not-allowed" : ""}
