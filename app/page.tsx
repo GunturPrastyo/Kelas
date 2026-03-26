@@ -600,7 +600,7 @@ export default function LandingPage() {
 
           {/* 3D Carousel Slider */}
           <motion.div 
-            className="relative h-[450px] md:h-[500px] w-full max-w-6xl mx-auto flex items-center mt-2 mb-12 md:-mb-12 z-20 justify-center perspective-1000 touch-pan-y"
+            className="relative h-[450px] md:h-[500px] w-full max-w-6xl mx-auto flex items-center mb-12 md:-mb-12 z-20 justify-center perspective-1000 touch-pan-y"
             onPanEnd={(e, info) => {
               const swipeDistance = info.offset.x;
               if (swipeDistance < -50) {
@@ -754,8 +754,21 @@ export default function LandingPage() {
                 style={{ maskImage: 'linear-gradient(to bottom, transparent, black 10%, black 90%, transparent)', WebkitMaskImage: 'linear-gradient(to bottom, transparent, black 10%, black 90%, transparent)' }}
               >
                 {loadingModules ? (
-                  <div className="flex items-center justify-center h-full">
-                    <p className="text-slate-500 dark:text-slate-400">Memuat modul...</p>
+                  <div className="flex flex-col gap-5 animate-pulse">
+                    {[1, 2, 3].map((i) => (
+                      <div
+                        key={i}
+                        className="bg-white dark:bg-gray-800 rounded-2xl p-6 border border-slate-100 dark:border-gray-700 shadow-sm mx-2 relative overflow-hidden"
+                      >
+                        <div className="flex justify-between items-start mb-4 relative z-10">
+                          <div className="w-12 h-12 bg-slate-200 dark:bg-gray-700 rounded-xl"></div>
+                          <div className="w-16 h-6 bg-slate-200 dark:bg-gray-700 rounded-full"></div>
+                        </div>
+                        <div className="h-6 w-3/4 bg-slate-200 dark:bg-gray-700 rounded-md mb-3 relative z-10"></div>
+                        <div className="h-4 w-full bg-slate-200 dark:bg-gray-700 rounded-md mb-2 relative z-10"></div>
+                        <div className="h-4 w-5/6 bg-slate-200 dark:bg-gray-700 rounded-md mb-4 relative z-10"></div>
+                      </div>
+                    ))}
                   </div>
                 ) : (
                   <motion.div
