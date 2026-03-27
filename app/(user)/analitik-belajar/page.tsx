@@ -197,7 +197,6 @@ const patternDark = `data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg
 export default function AnalitikBelajarPage() {
   const router = useRouter();
   const { showAlert } = useAlert();
-  const [summaryCardRef, isSummaryCardInView] = useInView({ threshold: 0.2, triggerOnce: true }) as [React.RefObject<HTMLHeadingElement>, boolean];
   const [chartPerbandinganRef, isChartPerbandinganInView] = useInView({ threshold: 0.5, triggerOnce: true }) as [React.RefObject<HTMLCanvasElement>, boolean];
   const [summary, setSummary] = useState<SummaryData | null>(null);
   const [weeklyActivity, setWeeklyActivity] = useState<number[]>([]);
@@ -513,13 +512,6 @@ export default function AnalitikBelajarPage() {
     }
   }, [comparisonData, isChartPerbandinganInView, chartPerbandinganRef]);
 
-  // --- Gunakan hook animasi untuk ringkasan ---
-  const animatedCompletedModules = useCountUp(summary?.completedModules || 0, 1500, isSummaryCardInView);
-  const animatedTotalModules = useCountUp(summary?.totalModules || 0, 1500, isSummaryCardInView);
-  const averageScoreForAnimation = parseFloat((summary?.averageScore || 0).toFixed(2));
-  const animatedAverageScore = useCountUp(averageScoreForAnimation, 1500, isSummaryCardInView);
-  const animatedStudyHours = useCountUp(summary?.studyHours || 0, 1500, isSummaryCardInView);
-  const animatedDailyStreak = useCountUp(summary?.dailyStreak || 0, 1500, isSummaryCardInView);
 
   // --- Logic for Weak Topics Search and Pagination ---
   const filteredWeakTopics = weakTopics?.filter(topic =>
@@ -611,13 +603,6 @@ export default function AnalitikBelajarPage() {
           showProgress: true,
           animate: true,
           steps: [
-            {
-              element: '#analytics-summary',
-              popover: {
-                title: 'Ringkasan Kemajuan',
-                description: 'Lihat statistik umum pencapaian belajarmu, termasuk modul selesai, rata-rata nilai, dan waktu belajar.'
-              }
-            },
             {
               element: '#weak-topics-section',
               popover: {
@@ -731,114 +716,6 @@ export default function AnalitikBelajarPage() {
             background-image: url("${patternDark}");
         }
       `}</style>
-      {/* RINGKASAN */}
-      <section id="analytics-summary">
-        <h2 ref={summaryCardRef} className="text-xl font-semibold text-gray-700 dark:text-gray-200 mb-3 flex items-center gap-2">
-          <LayoutDashboard className="w-6 h-6" />
-          Ringkasan Kemajuan
-        </h2>
-        <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-5" >
-          {/* Card 1 */}
-          <div className="relative overflow-hidden bg-gradient-to-br from-blue-50 to-blue-100 dark:from-gray-800 dark:to-gray-900 text-gray-800 dark:text-gray-100 rounded-2xl p-4 shadow-md hover:scale-[1.02] transition-transform dark:shadow-lg dark:shadow-gray-800/40 border border-slate-200 dark:border-slate-800 border-b-[6px] border-l-2 border-b-slate-200 border-l-slate-200 dark:border-b-slate-700 dark:border-l-slate-700">
-            <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-br from-blue-200/60 to-transparent dark:from-blue-900/20 rounded-bl-[60px] -mr-4 -mt-4" />
-            <div className="relative z-10 flex flex-col gap-2 items-center sm:items-start text-center sm:text-left">
-              <p className="text-base font-bold text-gray-800 dark:text-gray-400">Modul Selesai</p>
-              <div className="flex flex-col items-center sm:flex-row sm:items-center gap-2 sm:gap-3">
-                <div className="flex-shrink-0">
-                  <img src="/modules2.webp" alt="Modul Icon" width={48} height={48} className="w-14 h-14 rounded-lg bg-blue-100 dark:bg-gray-700 p-1" />
-                </div>
-                {loading || !summary ? (
-                  <div className="h-8 w-24 bg-blue-100/50 dark:bg-gray-700/50 rounded-md animate-pulse"></div>
-                ) : (
-                  <h2 className="text-3xl font-bold text-blue-600 dark:text-blue-400">{animatedCompletedModules} / {animatedTotalModules}</h2>
-                )}
-              </div>
-              {loading || !summary ? (
-                <div className="h-4 w-full bg-blue-100/50 dark:bg-gray-700/50 rounded-md animate-pulse"></div>
-              ) : (
-                <p className="text-sm sm:text-md text-gray-500 dark:text-gray-400">
-                  Kamu telah menyelesaikan {summary.totalModules > 0 ? Math.round((summary.completedModules / summary.totalModules) * 100) : 0}%
-                </p>
-              )}
-            </div>
-          </div>
-
-          {/* Card 2 */}
-          <div className="relative overflow-hidden bg-gradient-to-br from-green-50 to-green-100 dark:from-gray-800 dark:to-gray-900 text-gray-800 dark:text-gray-100 rounded-2xl p-4 shadow-md hover:scale-[1.02] transition-transform dark:shadow-lg dark:shadow-gray-800/40 border border-slate-200 dark:border-slate-800 border-b-[6px] border-l-2 border-b-slate-200 border-l-slate-200 dark:border-b-slate-700 dark:border-l-slate-700">
-            <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-br from-green-200/60 to-transparent dark:from-green-900/20 rounded-bl-[60px] -mr-4 -mt-4" />
-            <div className="relative z-10 flex flex-col gap-2 items-center sm:items-start text-center sm:text-left">
-              <p className="text-base font-bold text-gray-800 dark:text-gray-400">Rata-rata Nilai</p>
-              <div className="flex flex-col items-center sm:flex-row sm:items-center gap-2 sm:gap-3">
-                <div className="flex-shrink-0">
-                  <img src="/star.webp" alt="Score Icon" width={48} height={48} className="w-14 h-14 rounded-lg bg-green-100 dark:bg-gray-700 p-1" />
-                </div>
-                {loading || !summary ? (
-                  <div className="h-8 w-20 bg-green-100/50 dark:bg-gray-700/50 rounded-md animate-pulse"></div>
-                ) : (
-                  <h2 className="text-3xl font-bold text-green-600 dark:text-green-400">{animatedAverageScore}%</h2>
-                )}
-              </div>
-              {loading || !summary ? (
-                <div className="h-4 w-full bg-green-100/50 dark:bg-gray-700/50 rounded-md animate-pulse"></div>
-              ) : (
-                <p className="text-sm sm:text-md text-gray-500 dark:text-gray-400">Dari semua tes setiap topik</p>
-              )}
-            </div>
-          </div>
-
-          {/* Card 3 */}
-          <div className="relative overflow-hidden bg-gradient-to-br from-purple-50 to-purple-100 dark:from-gray-800 dark:to-gray-900 text-gray-800 dark:text-gray-100 rounded-2xl p-4 shadow-md hover:scale-[1.02] transition-transform dark:shadow-lg dark:shadow-gray-800/40 border border-slate-200 dark:border-slate-800 border-b-[6px] border-l-2 border-b-slate-200 border-l-slate-200 dark:border-b-slate-700 dark:border-l-slate-700">
-            <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-br from-purple-200/60 to-transparent dark:from-purple-900/20 rounded-bl-[60px] -mr-4 -mt-4" />
-            <div className="relative z-10 flex flex-col gap-2 items-center sm:items-start text-center sm:text-left">
-              <p className="text-base font-bold text-gray-800 dark:text-gray-400">Total Waktu Belajar</p>
-              <div className="flex flex-col items-center sm:flex-row sm:items-center gap-2 sm:gap-3">
-                <div className="flex-shrink-0">
-                  <img src="/study.webp" alt="Time Icon" width={48} height={48} className="w-16 h-16 rounded-lg bg-purple-100 dark:bg-gray-700 p-1" />
-                </div>
-                {loading || !summary ? (
-                  <div className="h-8 w-24 bg-purple-100/50 dark:bg-gray-700/50 rounded-md animate-pulse"></div>
-                ) : (
-                  <div className="flex items-baseline gap-1.5 flex-wrap justify-center sm:justify-start">
-                    <h2 className="text-3xl font-bold text-purple-600 dark:text-purple-400 leading-none">{animatedStudyHours}</h2>
-                    <span className="text-xl font-semibold text-purple-500 dark:text-purple-300">jam</span>
-                    <p className="text-base text-purple-500 dark:text-purple-400">{summary.studyMinutes} menit</p>                </div>
-                )}
-              </div>
-              {loading || !summary ? (
-                <div className="h-4 w-full bg-purple-100/50 dark:bg-gray-700/50 rounded-md animate-pulse"></div>
-
-              ) : (
-
-                null
-              )}
-            </div>
-          </div>
-
-          {/* Card 4 */}
-          <div className="relative overflow-hidden bg-gradient-to-br from-orange-50 to-orange-100 dark:from-gray-800 dark:to-gray-900 text-gray-800 dark:text-gray-100 rounded-2xl p-4 shadow-md hover:scale-[1.02] transition-transform dark:shadow-lg dark:shadow-gray-800/40 border border-slate-200 dark:border-slate-800 border-b-[6px] border-l-2 border-b-slate-200 border-l-slate-200 dark:border-b-slate-700 dark:border-l-slate-700">
-            <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-br from-orange-200/60 to-transparent dark:from-orange-900/20 rounded-bl-[60px] -mr-4 -mt-4" />
-            <div className="relative z-10 flex flex-col gap-2 items-center sm:items-start text-center sm:text-left">
-              <p className="text-base font-bold text-gray-800 dark:text-gray-400">Streak Harian</p>
-              <div className="flex flex-col items-center sm:flex-row sm:items-center gap-2 sm:gap-3">
-                <div className="flex-shrink-0">
-                  <img src="/streak.webp" alt="Streak Icon" width={48} height={48} className="w-14 h-14 rounded-lg bg-orange-100 dark:bg-gray-700 p-1" />
-                </div>
-                {loading || !summary ? (
-                  <div className="h-8 w-16 bg-orange-100/50 dark:bg-gray-700/50 rounded-md animate-pulse"></div>
-                ) : (
-                  <h2 className="text-3xl font-bold text-orange-600 dark:text-orange-400">{animatedDailyStreak}</h2>
-                )}
-              </div>
-              {loading || !summary ? (
-                <div className="h-4 w-full bg-orange-100/50 dark:bg-gray-700/50 rounded-md animate-pulse"></div>
-              ) : (
-                <p className="text-sm sm:text-md text-gray-500 dark:text-gray-400">Hari berturut-turut aktif</p>
-              )}
-            </div>
-          </div>
-        </div>
-      </section>
-
       {/* TOPIK YANG PERLU DIPERKUAT */}
       <section id="weak-topics-section" className="relative overflow-hidden custom-pattern-bg p-6 rounded-2xl shadow-md border border-slate-200 dark:border-slate-800 border-b-[6px] border-l-2 border-b-slate-200 border-l-slate-200 dark:border-b-slate-700 dark:border-l-slate-700">
         {/* Dekorasi Latar Belakang: Watermark Icon */}
