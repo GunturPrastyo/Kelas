@@ -489,7 +489,7 @@ export default function LandingPage() {
             {/* Mobile Hero Image */}
             <div className="hidden items-center justify-center w-full -mx-2 my-6">
               <Image
-                src={mounted && resolvedTheme === 'dark' ? "/ilustrasi4.png" : "/ilustrasi3.png"}
+                src={mounted && resolvedTheme === 'dark' ? "/ilustrasi10.webp" : "/ilustrasi9.webp"}
                 alt="Ilustrasi Belajar Online"
                 width={500}
                 height={500}
@@ -506,7 +506,7 @@ export default function LandingPage() {
               {/* Tablet Image (Visible MD, Hidden LG) */}
               <div className="hidden md:flex lg:hidden flex-1 items-center justify-center">
                 <Image
-                  src={mounted && resolvedTheme === 'dark' ? "/ilustrasi4.png" : "/ilustrasi3.png"}
+                  src={mounted && resolvedTheme === 'dark' ? "/ilustrasi10.webp" : "/ilustrasi9.webp"}
                   alt="Ilustrasi Belajar Online"
                   width={400}
                   height={400}
@@ -537,7 +537,7 @@ export default function LandingPage() {
           {/* Hero Image / Illustration */}
           <div className="hidden lg:flex flex-1 items-center justify-center">
             <Image
-              src={mounted && resolvedTheme === 'dark' ? "/ilustrasi4.png" : "/ilustrasi3.png"}
+              src={mounted && resolvedTheme === 'dark' ? "/ilustrasi10.webp" : "/ilustrasi9.webp"}
               alt="Ilustrasi Belajar Online"
               width={500}
               height={500}
