@@ -1,15 +1,16 @@
 "use client";
 
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState, useRef } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useUI } from '@/context/UIContext';
-import { Home, CheckCircle2, Activity, Lock, Rocket, Users, Clock } from "lucide-react";
+import { Home, CheckCircle2, Activity, Lock, Rocket, Users, Clock, ChevronLeft, ChevronRight } from "lucide-react";
 import { authFetch } from '@/lib/authFetch';
 import ModuleCardSkeleton from '@/components/ModuleCardSkeleton'; 
 import { driver } from "driver.js";
 import "driver.js/dist/driver.css";
 import { useAlert } from "@/context/AlertContext";
+import { motion } from 'framer-motion';
 
 interface User {
     _id: string;
@@ -18,6 +19,82 @@ interface User {
 type Category = 'mudah' | 'sedang' | 'sulit';
 type UserLevel = 'dasar' | 'menengah' | 'lanjut' | null;
 type ModuleStatus = 'Selesai' | 'Berjalan' | 'Terkunci' | 'Belum Mulai';
+
+interface SummaryData {
+  completedModules: number;
+  totalModules: number;
+  averageScore: number;
+  studyHours: number;
+  studyMinutes: number;
+  dailyStreak: number;
+}
+
+// Opsi untuk useInView, termasuk properti kustom `triggerOnce`
+interface InViewOptions extends IntersectionObserverInit {
+  triggerOnce?: boolean;
+}
+
+// --- Custom Hook untuk mendeteksi elemen di viewport ---
+const useInView = (options: InViewOptions = { threshold: 0.1, triggerOnce: true }) => {
+  const [isInView, setIsInView] = useState(false);
+  const ref = useRef<HTMLDivElement | HTMLHeadingElement>(null);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(([entry]) => {
+      if (entry.isIntersecting) {
+        setIsInView(true);
+        if (ref.current && options.triggerOnce) {
+          observer.unobserve(ref.current);
+        }
+      }
+    }, options);
+
+    const currentRef = ref.current;
+    if (currentRef) {
+      observer.observe(currentRef);
+    }
+    return () => { if (currentRef) observer.unobserve(currentRef); };
+  }, [options]);
+
+  return [ref, isInView] as const;
+};
+
+// --- Custom Hook untuk Animasi Hitung (dengan pemicu) ---
+const useCountUp = (end: number, duration: number = 1500, start: boolean = true) => {
+  const [count, setCount] = useState(0); // Memberikan nilai awal
+  const frameRef = useRef<number | null>(null); // Mengizinkan undefined
+  const startTimeRef = useRef<number | null>(null); // Mengizinkan undefined
+
+  const easeOutExpo = (t: number) => (t === 1 ? 1 : 1 - Math.pow(2, -10 * t));
+
+  useEffect(() => {
+    if (!start || end === undefined || isNaN(end)) return;
+
+    const animate = (timestamp: number) => {
+      if (startTimeRef.current === null) {
+        startTimeRef.current = timestamp;
+      }
+
+      const elapsed = timestamp - startTimeRef.current;
+      const progress = Math.min(elapsed / duration, 1);
+      const easedProgress = easeOutExpo(progress);
+
+      const currentCount = Math.floor(easedProgress * end);
+      setCount(currentCount);
+
+      if (progress < 1) {
+        frameRef.current = requestAnimationFrame(animate);
+      }
+    };
+
+    startTimeRef.current = null;
+    frameRef.current = requestAnimationFrame(animate);
+
+    return () => { if (frameRef.current) cancelAnimationFrame(frameRef.current) };
+  }, [end, duration, start]);
+
+  return count;
+};
 
 export interface Module {
     _id: string;
@@ -46,6 +123,16 @@ export default function ModulPage() {
     const [recommendation, setRecommendation] = useState({ title: '', description: '', icon: '', bgClass: '', textClass: '' });
     const [user, setUser] = useState<User | null>(null); 
     const { showAlert } = useAlert();
+    const [summary, setSummary] = useState<SummaryData | null>(null);
+    const [summaryCardRef, isSummaryCardInView] = useInView({ threshold: 0.2, triggerOnce: true }) as [React.RefObject<HTMLDivElement>, boolean];
+    const animatedCompletedModules = useCountUp(summary?.completedModules || 0, 1500, isSummaryCardInView);
+    const animatedTotalModules = useCountUp(summary?.totalModules || 0, 1500, isSummaryCardInView);
+    const averageScoreForAnimation = parseFloat((summary?.averageScore || 0).toFixed(2));
+    const animatedAverageScore = useCountUp(averageScoreForAnimation, 1500, isSummaryCardInView);
+    const animatedStudyHours = useCountUp(summary?.studyHours || 0, 1500, isSummaryCardInView);
+    const animatedDailyStreak = useCountUp(summary?.dailyStreak || 0, 1500, isSummaryCardInView);
+
+    const [activeSummarySlide, setActiveSummarySlide] = useState(0);
 
 
     useEffect(() => {
@@ -90,28 +177,54 @@ export default function ModulPage() {
             }
         }
 
-        // Fetch modules from API
-        const fetchModules = async () => {
+        const fetchAllData = async () => {
             try {
                 setLoading(true);
-                // Endpoint baru yang menyertakan progres
-                const res = await authFetch(`${process.env.NEXT_PUBLIC_API_URL}/api/modul/progress`);
-                if (!res.ok) throw new Error("Gagal memuat data modul.");
-                const data = await res.json();
-                setModules(data);
-            } catch (error) {
-                console.error("Error fetching modules:", error);
-            } finally {
-                setLoading(false);
-            }
-        };
+                const [modulesRes, userLevelRes, analyticsRes, studyTimeRes] = await Promise.all([
+                    authFetch(`${process.env.NEXT_PUBLIC_API_URL}/api/modul/progress`),
+                    authFetch(`${process.env.NEXT_PUBLIC_API_URL}/api/results/check-pre-test`),
+                    authFetch(`${process.env.NEXT_PUBLIC_API_URL}/api/results/analytics`),
+                    authFetch(`${process.env.NEXT_PUBLIC_API_URL}/api/results/study-time`)
+                ]);
 
-        // Fetch user level from API to ensure it's up to date (overriding localStorage if needed)
-        const fetchUserLevel = async () => {
-            try {
-                const res = await authFetch(`${process.env.NEXT_PUBLIC_API_URL}/api/results/check-pre-test`);
-                if (res.ok) {
-                    const data = await res.json();
+                if (modulesRes.ok) {
+                    const modulesData = await modulesRes.json();
+                    setModules(modulesData);
+                    
+                    const completedModules = modulesData.filter((m: Module) => m.progress === 100).length;
+                    const totalModules = modulesData.length;
+
+                    let averageScore = 0;
+                    let dailyStreak = 0;
+                    if (analyticsRes.ok) {
+                        const analyticsData = await analyticsRes.json();
+                        averageScore = analyticsData.averageScore || 0;
+                        dailyStreak = analyticsData.dailyStreak || 0;
+                    }
+
+                    let studyHours = 0;
+                    let studyMinutes = 0;
+                    if (studyTimeRes.ok) {
+                        const studyTimeData = await studyTimeRes.json();
+                        const totalSeconds = studyTimeData.totalTimeInSeconds || 0;
+                        studyHours = Math.floor(totalSeconds / 3600);
+                        studyMinutes = Math.floor((totalSeconds % 3600) / 60);
+                    }
+
+                    setSummary({
+                        completedModules,
+                        totalModules,
+                        averageScore,
+                        studyHours,
+                        studyMinutes,
+                        dailyStreak
+                    });
+                } else {
+                    throw new Error("Gagal memuat data modul.");
+                }
+
+                if (userLevelRes.ok) {
+                    const data = await userLevelRes.json();
                     if (data.learningLevel) {
                         const level = data.learningLevel.toLowerCase();
                         let newLevel: UserLevel = null;
@@ -148,13 +261,111 @@ export default function ModulPage() {
                     }
                 }
             } catch (error) {
-                console.error("Error fetching user level:", error);
+                console.error("Error fetching data:", error);
+            } finally {
+                setLoading(false);
             }
         };
 
-        fetchModules();
-        fetchUserLevel();
+        fetchAllData();
     }, []); // Hanya dijalankan sekali saat komponen dimuat
+
+    // Auto-rotate summary card carousel
+    useEffect(() => {
+        const slideInterval = setInterval(() => {
+            setActiveSummarySlide((prev) => (prev === 4 ? 0 : prev + 1));
+        }, 7000); // Change slide every 7 seconds
+        return () => clearInterval(slideInterval);
+    }, []);
+
+    const summaryCards = useMemo(() => [
+        {
+            id: 'recommendation',
+            content: (
+                <div className={`relative overflow-hidden bg-gradient-to-br ${recommendation.bgClass} p-5 rounded-xl shadow-md flex items-center gap-4 sm:gap-6 h-full`}>
+                    <Image src={recommendation.icon} alt="Rekomendasi" width={256} height={256} className="absolute -right-4 -bottom-2 w-28 h-28 opacity-25 pointer-events-none sm:static sm:w-20 sm:h-20 sm:opacity-100 sm:pointer-events-auto z-0 transition-all" />
+                    <div className="relative z-10">
+                        <h2 className={`text-lg font-bold ${recommendation.textClass}`}>{recommendation.title}</h2>
+                        <p className="text-sm text-justify w-[90%] sm:w-full text-gray-700 dark:text-gray-300 ">{recommendation.description}</p>
+                    </div>
+                </div>
+            )
+        },
+        {
+            id: 'completedModules',
+            content: (
+                <div className="bg-white dark:bg-gray-800 rounded-xl shadow-md p-5 flex flex-col justify-between border border-gray-100 dark:border-gray-700 h-full">
+                    <div>
+                        <div className="flex items-center gap-3 mb-2">
+                            <div className="w-10 h-10 rounded-lg bg-blue-100 dark:bg-gray-700 flex items-center justify-center">
+                                <img src="/modules2.webp" alt="Modul Icon" width={28} height={28} />
+                            </div>
+                            <p className="font-semibold text-gray-700 dark:text-gray-300">Modul Selesai</p>
+                        </div>
+                        <h3 className="text-3xl font-bold text-gray-900 dark:text-white">{animatedCompletedModules} <span className="text-xl text-gray-500">/ {animatedTotalModules}</span></h3>
+                    </div>
+                    <p className="text-sm text-gray-500 dark:text-gray-400 mt-3">
+                        {summary?.totalModules && summary.totalModules > 0 ? Math.round((summary.completedModules / summary.totalModules) * 100) : 0}% selesai
+                    </p>
+                </div>
+            )
+        },
+        {
+            id: 'averageScore',
+            content: (
+                <div className="bg-white dark:bg-gray-800 rounded-xl shadow-md p-5 flex flex-col justify-between border border-gray-100 dark:border-gray-700 h-full">
+                    <div>
+                        <div className="flex items-center gap-3 mb-2">
+                            <div className="w-10 h-10 rounded-lg bg-green-100 dark:bg-gray-700 flex items-center justify-center">
+                                <img src="/star.webp" alt="Score Icon" width={28} height={28} />
+                            </div>
+                            <p className="font-semibold text-gray-700 dark:text-gray-300">Rata-rata Nilai</p>
+                        </div>
+                        <h3 className="text-3xl font-bold text-gray-900 dark:text-white">{animatedAverageScore}<span className="text-xl text-gray-500">%</span></h3>
+                    </div>
+                    <p className="text-sm text-gray-500 dark:text-gray-400 mt-3">Dari semua tes topik</p>
+                </div>
+            )
+        },
+        {
+            id: 'studyTime',
+            content: (
+                <div className="bg-white dark:bg-gray-800 rounded-xl shadow-md p-5 flex flex-col justify-between border border-gray-100 dark:border-gray-700 h-full">
+                    <div>
+                        <div className="flex items-center gap-3 mb-2">
+                            <div className="w-10 h-10 rounded-lg bg-purple-100 dark:bg-gray-700 flex items-center justify-center">
+                                <img src="/study.webp" alt="Time Icon" width={28} height={28} />
+                            </div>
+                            <p className="font-semibold text-gray-700 dark:text-gray-300">Total Waktu Belajar</p>
+                        </div>
+                        <div className="flex items-baseline gap-1.5 flex-wrap">
+                            <h3 className="text-3xl font-bold text-gray-900 dark:text-white leading-none">{animatedStudyHours}</h3>
+                            <span className="font-semibold text-gray-500 dark:text-gray-400">jam</span>
+                            <p className="text-gray-500 dark:text-gray-400">{summary?.studyMinutes || 0} menit</p>
+                        </div>
+                    </div>
+                    <p className="text-sm text-gray-500 dark:text-gray-400 mt-3">Total waktu di semua modul</p>
+                </div>
+            )
+        },
+        {
+            id: 'dailyStreak',
+            content: (
+                <div className="bg-white dark:bg-gray-800 rounded-xl shadow-md p-5 flex flex-col justify-between border border-gray-100 dark:border-gray-700 h-full">
+                    <div>
+                        <div className="flex items-center gap-3 mb-2">
+                            <div className="w-10 h-10 rounded-lg bg-orange-100 dark:bg-gray-700 flex items-center justify-center">
+                                <img src="/streak.webp" alt="Streak Icon" width={28} height={28} />
+                            </div>
+                            <p className="font-semibold text-gray-700 dark:text-gray-300">Streak Harian</p>
+                        </div>
+                        <h3 className="text-3xl font-bold text-gray-900 dark:text-white">{animatedDailyStreak} <span className="text-xl text-gray-500">hari</span></h3>
+                    </div>
+                    <p className="text-sm text-gray-500 dark:text-gray-400 mt-3">Hari berturut-turut aktif</p>
+                </div>
+            )
+        }
+    ], [recommendation, animatedCompletedModules, animatedTotalModules, animatedAverageScore, animatedStudyHours, summary, animatedDailyStreak]);
 
     const personalizedModules = useMemo(() => {
         // Map 'mudah' -> 'dasar', 'sedang' -> 'menengah', 'sulit' -> 'lanjut'
@@ -401,6 +612,32 @@ export default function ModulPage() {
 
     return (
         <>
+            <style jsx global>{`
+                .hide-scrollbar-on-mobile::-webkit-scrollbar {
+                    display: none;
+                }
+                .hide-scrollbar-on-mobile {
+                    -ms-overflow-style: none;
+                    scrollbar-width: none;
+                }
+                @media (min-width: 640px) {
+                    .custom-scrollbar::-webkit-scrollbar {
+                        height: 6px;
+                        display: block;
+                    }
+                    .custom-scrollbar::-webkit-scrollbar-track {
+                        background: rgba(0,0,0,0.05);
+                        border-radius: 8px;
+                    }
+                    .custom-scrollbar::-webkit-scrollbar-thumb {
+                        background: rgba(156, 163, 175, 0.5);
+                        border-radius: 8px;
+                    }
+                    .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+                        background: rgba(156, 163, 175, 0.8);
+                    }
+                }
+            `}</style>
             {/* Breadcrumb */}
             <nav className="flex mt-22" aria-label="Breadcrumb">
                 <ol className="inline-flex items-center space-x-1 md:space-x-2 rtl:space-x-reverse text-slate-700 dark:text-slate-300">
@@ -498,11 +735,49 @@ export default function ModulPage() {
             )}
 
             {!loading && userLevel && (
-                <section className={`relative overflow-hidden bg-gradient-to-br ${recommendation.bgClass} p-5 rounded-xl shadow-md flex items-center gap-4 sm:gap-6 mb-6`}>
-                    <Image src={recommendation.icon} alt="Rekomendasi" width={256} height={256} className="absolute -right-4 -bottom-2 w-28 h-28 opacity-25 pointer-events-none sm:static sm:w-20 sm:h-20 sm:opacity-100 sm:pointer-events-auto z-0 transition-all" />
-                    <div className="relative z-10">
-                        <h2 className={`text-lg font-bold ${recommendation.textClass}`}>{recommendation.title}</h2>
-                        <p className="text-sm text-justify w-[90%] sm:w-full text-gray-700 dark:text-gray-300 ">{recommendation.description}</p>
+                <section ref={summaryCardRef} className="relative mb-6">
+                    <div className="relative h-[160px] sm:h-[150px] overflow-hidden">
+                        {summaryCards.map((card, index) => (
+                            <motion.div
+                                key={card.id}
+                                className="absolute w-full h-full px-1"
+                                initial={{ x: "100%", opacity: 0 }}
+                                animate={{
+                                    x: `${(index - activeSummarySlide) * 100}%`,
+                                    opacity: index === activeSummarySlide ? 1 : 0,
+                                    scale: index === activeSummarySlide ? 1 : 0.98,
+                                    zIndex: 5 - Math.abs(index - activeSummarySlide),
+                                }}
+                                transition={{ type: 'spring', stiffness: 200, damping: 30 }}
+                            >
+                                {card.content}
+                            </motion.div>
+                        ))}
+                    </div>
+                    {/* Navigation Buttons */}
+                    <button 
+                        onClick={() => setActiveSummarySlide(prev => (prev - 1 + summaryCards.length) % summaryCards.length)}
+                        className="absolute top-1/2 -translate-y-1/2 left-0 z-10 p-2 bg-white/50 dark:bg-black/20 rounded-full hover:bg-white dark:hover:bg-black/40 backdrop-blur-sm transition-colors hidden sm:block"
+                        aria-label="Previous slide"
+                    >
+                        <ChevronLeft size={20} />
+                    </button>
+                    <button 
+                        onClick={() => setActiveSummarySlide(prev => (prev + 1) % summaryCards.length)}
+                        className="absolute top-1/2 -translate-y-1/2 right-0 z-10 p-2 bg-white/50 dark:bg-black/20 rounded-full hover:bg-white dark:hover:bg-black/40 backdrop-blur-sm transition-colors hidden sm:block"
+                        aria-label="Next slide"
+                    >
+                        <ChevronRight size={20} />
+                    </button>
+                    <div className="flex justify-center items-center gap-2 mt-4">
+                        {summaryCards.map((_, index) => (
+                            <button
+                                key={index}
+                                onClick={() => setActiveSummarySlide(index)}
+                                className={`w-2 h-2 rounded-full transition-all duration-300 ${activeSummarySlide === index ? 'bg-blue-600 scale-125' : 'bg-gray-300 dark:bg-gray-600 hover:bg-gray-400'}`}
+                                aria-label={`Go to slide ${index + 1}`}
+                            />
+                        ))}
                     </div>
                 </section>
             )}
