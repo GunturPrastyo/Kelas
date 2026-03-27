@@ -116,32 +116,38 @@ const features = [
   {
     icon: <Compass className="w-8 h-8 md:w-10 md:h-10 text-blue-600 dark:text-blue-400" strokeWidth={1.5} />,
     title: "Jalur Belajar Personal",
-    desc: "Sistem cerdas kami menyesuaikan tingkat kesulitan materi berdasarkan hasil Tes Awal. Belajar mulai dari Dasar, Menengah, atau Lanjut sesuai kemampuanmu."
+    desc: "Sistem cerdas kami menyesuaikan tingkat kesulitan materi berdasarkan hasil Tes Awal. Belajar mulai dari Dasar, Menengah, atau Lanjut sesuai kemampuanmu.",
+    image: "/progress.webp"
   },
   {
     icon: <Layout className="w-8 h-8 md:w-10 md:h-10 text-purple-600 dark:text-purple-400" strokeWidth={1.5} />,
     title: "Mode Belajar Fleksibel",
-    desc: "Pilih gaya belajarmu sendiri. Tersedia materi dalam bentuk teks interaktif, video pembelajaran, hingga sesi praktik langsung untuk pengalaman yang optimal."
+    desc: "Pilih gaya belajarmu sendiri. Tersedia materi dalam bentuk teks interaktif, video pembelajaran, hingga sesi praktik langsung untuk pengalaman yang optimal.",
+    image: "/book.webp"
   },
   {
     icon: <BarChart2 className="w-8 h-8 md:w-10 md:h-10 text-emerald-500 dark:text-emerald-400" strokeWidth={1.5} />,
     title: "Analisis Pembelajaran",
-    desc: "Pantau perkembanganmu secara terperinci. Dapatkan laporan akurasi, kecepatan, fokus, serta rekomendasi untuk topik yang masih menjadi kelemahanmu."
+    desc: "Pantau perkembanganmu secara terperinci. Dapatkan laporan akurasi, kecepatan, fokus, serta rekomendasi untuk topik yang masih menjadi kelemahanmu.",
+    image: "/analisis.webp"
   },
   {
     icon: <Code className="w-8 h-8 md:w-10 md:h-10 text-indigo-500 dark:text-indigo-400" strokeWidth={1.5} />,
     title: "Live Code Playground",
-    desc: "Terapkan teori langsung ke praktik. Tulis, jalankan, dan lihat hasil kode HTML maupun JavaScript secara real-time di dalam browser tanpa aplikasi tambahan."
+    desc: "Terapkan teori langsung ke praktik. Tulis, jalankan, dan lihat hasil kode HTML maupun JavaScript secara real-time di dalam browser tanpa aplikasi tambahan.",
+    image: "/score.webp"
   },
   {
     icon: <Bot className="w-8 h-8 md:w-10 md:h-10 text-sky-500 dark:text-sky-400" strokeWidth={1.5} />,
     title: "Tutor AI 'Kak Gem'",
-    desc: "Buntu saat belajar? Tanyakan saja pada Kak Gem, asisten AI cerdas yang siap membantumu memahami materi dan memecahkan masalah koding kapan saja."
+    desc: "Buntu saat belajar? Tanyakan saja pada Kak Gem, asisten AI cerdas yang siap membantumu memahami materi dan memecahkan masalah koding kapan saja.",
+    image: "/thunder.png"
   },
   {
     icon: <Award className="w-8 h-8 md:w-10 md:h-10 text-amber-500 dark:text-amber-400" strokeWidth={1.5} />,
     title: "Gamifikasi & Sertifikat",
-    desc: "Jaga motivasi belajar dengan sistem streak harian, raih skor terbaik di setiap post-test, dan dapatkan sertifikat resmi setelah menyelesaikan modul."
+    desc: "Jaga motivasi belajar dengan sistem streak harian, raih skor terbaik di setiap post-test, dan dapatkan sertifikat resmi setelah menyelesaikan modul.",
+    image: "/target.webp"
   }
 ];
 
@@ -572,7 +578,7 @@ export default function LandingPage() {
             
             {/* LEFT COLUMN: SLIDER (order-2 on mobile, order-1 on lg) */}
             <div className="w-full lg:w-7/12 order-2 lg:order-1">
-              <div className="relative h-[480px] sm:h-[450px] overflow-hidden">
+              <div className="relative h-[520px] sm:h-[480px] overflow-hidden">
                 {features.map((feature, idx) => (
                   <motion.div
                     key={idx}
@@ -586,40 +592,53 @@ export default function LandingPage() {
                     }}
                     transition={{ type: 'spring', stiffness: 300, damping: 30 }}
                   >
-                    <div className="h-full bg-white dark:bg-gray-800 rounded-3xl p-8 shadow-[0_8px_30px_rgb(0,0,0,0.08)] dark:shadow-[0_8px_30px_rgb(0,0,0,0.15)] border border-slate-100 dark:border-gray-700 flex flex-col group">
-                      <div className="w-16 h-16 rounded-2xl bg-slate-50 dark:bg-gray-700/50 flex items-center justify-center mb-6 group-hover:scale-110 group-hover:rotate-3 transition-transform duration-300">
-                        {feature.icon}
+                    <div className="h-full bg-white dark:bg-gray-800 rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.08)] dark:shadow-[0_8px_30px_rgb(0,0,0,0.15)] border border-slate-100 dark:border-gray-700 flex flex-col group relative overflow-hidden">
+                      
+                      {/* Card Content */}
+                      <div className="p-8 pb-28 relative z-10 flex-1 flex flex-col sm:flex-row items-start sm:items-center gap-6">
+                        <div className="flex-1 relative z-10">
+                          <div className="w-16 h-16 rounded-2xl bg-slate-50 dark:bg-gray-700/50 flex items-center justify-center mb-6 group-hover:scale-110 group-hover:rotate-3 transition-transform duration-300">
+                            {feature.icon}
+                          </div>
+                          <h3 className="text-xl font-bold text-slate-800 dark:text-gray-100 mb-3 font-[family-name:var(--font-gagalin)] tracking-wide group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+                            {feature.title}
+                          </h3>
+                          <p className="text-slate-600 dark:text-slate-400 text-sm leading-relaxed">
+                            {feature.desc}
+                          </p>
+                        </div>
+
+                        {/* Illustration */}
+                        <div className="absolute right-[-20px] bottom-24 sm:static sm:right-auto sm:bottom-auto w-40 h-40 sm:w-48 sm:h-48 opacity-20 sm:opacity-90 group-hover:scale-110 sm:group-hover:-translate-x-2 sm:group-hover:-translate-y-2 transition-all duration-500 pointer-events-none z-0 drop-shadow-xl flex-shrink-0">
+                          <img src={feature.image} alt={feature.title} className="w-full h-full object-contain" />
+                        </div>
                       </div>
-                      <h3 className="text-xl font-bold text-slate-800 dark:text-gray-100 mb-3 font-[family-name:var(--font-gagalin)] tracking-wide group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
-                        {feature.title}
-                      </h3>
-                      <p className="text-slate-600 dark:text-slate-400 text-sm leading-relaxed">
-                        {feature.desc}
-                      </p>
+
+                      {/* Overlay Navigation (Inside Card) */}
+                      <div className="absolute bottom-0 left-0 w-full px-8 py-5 flex items-center justify-between z-20 bg-slate-50/90 dark:bg-gray-900/90 backdrop-blur-sm border-t border-slate-100 dark:border-gray-700">
+                        <div className="flex items-center gap-2.5">
+                          {features.map((_, dotIdx) => (
+                            <button
+                              key={dotIdx}
+                              onClick={() => setActiveFeature(dotIdx)}
+                              className={`h-2.5 rounded-full transition-all duration-500 ease-out ${activeFeature === dotIdx ? 'w-8 bg-blue-600 dark:bg-blue-500' : 'w-2.5 bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 dark:hover:bg-slate-600'}`}
+                              aria-label={`Go to feature ${dotIdx + 1}`}
+                            />
+                          ))}
+                        </div>
+                        <div className="flex items-center gap-3">
+                          <button onClick={handlePrevFeature} className="p-2.5 sm:p-3 rounded-full bg-white dark:bg-gray-800 border border-slate-200 dark:border-gray-700 shadow-sm hover:shadow-md hover:bg-slate-50 dark:hover:bg-gray-700 transition-all text-slate-600 dark:text-slate-300">
+                            <ChevronLeft className="w-5 h-5" />
+                          </button>
+                          <button onClick={handleNextFeature} className="p-2.5 sm:p-3 rounded-full bg-white dark:bg-gray-800 border border-slate-200 dark:border-gray-700 shadow-sm hover:shadow-md hover:bg-slate-50 dark:hover:bg-gray-700 transition-all text-slate-600 dark:text-slate-300">
+                            <ChevronRight className="w-5 h-5" />
+                          </button>
+                        </div>
+                      </div>
+
                     </div>
                   </motion.div>
                 ))}
-              </div>
-              {/* Navigation and Dots */}
-              <div className="flex items-center justify-between mt-8 px-2">
-                <div className="flex items-center gap-2.5">
-                  {features.map((_, idx) => (
-                    <button
-                      key={idx}
-                      onClick={() => setActiveFeature(idx)}
-                      className={`h-2.5 rounded-full transition-all duration-500 ease-out ${activeFeature === idx ? 'w-8 bg-blue-600 dark:bg-blue-500' : 'w-2.5 bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 dark:hover:bg-slate-600'}`}
-                      aria-label={`Go to feature ${idx + 1}`}
-                    />
-                  ))}
-                </div>
-                <div className="flex items-center gap-3">
-                  <button onClick={handlePrevFeature} className="p-3 rounded-full bg-white dark:bg-gray-800 border border-slate-200 dark:border-gray-700 shadow-sm hover:shadow-md hover:bg-slate-50 dark:hover:bg-gray-700 transition-all text-slate-600 dark:text-slate-300">
-                    <ChevronLeft className="w-5 h-5" />
-                  </button>
-                  <button onClick={handleNextFeature} className="p-3 rounded-full bg-white dark:bg-gray-800 border border-slate-200 dark:border-gray-700 shadow-sm hover:shadow-md hover:bg-slate-50 dark:hover:bg-gray-700 transition-all text-slate-600 dark:text-slate-300">
-                    <ChevronRight className="w-5 h-5" />
-                  </button>
-                </div>
               </div>
             </div>
 
