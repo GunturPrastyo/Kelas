@@ -1105,12 +1105,12 @@ export default function LandingPage() {
       </section>
 
       {/* --- CTA SECTION --- */}
-      <section id="mulai" className="py-8 sm:py-12 bg-slate-50 dark:bg-gray-900 relative overflow-hidden">
+      <section id="mulai" className="py-4 sm:py-2 -mt-4 bg-sky-300 dark:bg-sky-700 relative overflow-hidden">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <div className="grid lg:grid-cols-2 gap-6 lg:gap-8 items-stretch">
 
             {/* CTA Card */}
-            <div className="bg-blue-600 rounded-2xl p-8 md:p-12 text-left md:text-center text-white relative overflow-hidden shadow-2xl shadow-blue-600/30 h-full flex flex-col justify-center w-full">
+            <div className="bg-blue-600 dark:bg-blue-800 rounded-2xl p-8 md:p-12 text-left md:text-center text-white relative overflow-hidden shadow-xl shadow-blue-900/20 h-full flex flex-col justify-center w-full">
               {/* Decorative Circles */}
               <div className="absolute top-0 left-0 w-64 h-64 bg-white opacity-10 rounded-full -translate-x-1/2 -translate-y-1/2 blur-2xl"></div>
               <div className="absolute bottom-0 right-0 w-64 h-64 bg-indigo-900 opacity-20 rounded-full translate-x-1/2 translate-y-1/2 blur-2xl"></div>
@@ -1121,13 +1121,13 @@ export default function LandingPage() {
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
                   transition={{ duration: 0.5 }}
-                  className="text-3xl md:text-4xl font-medium mb-6 font-[family-name:var(--font-gagalin)]"
+                  className="text-2xl md:text-4xl font-medium mb-6 font-[family-name:var(--font-gagalin)]"
                 >Siap Memulai Perjalanan Belajarmu?</motion.h2>
                 <p className="text-blue-100 text-lg mb-8 text-left md:text-center">
                   Jangan buang waktu mempelajari apa yang sudah kamu tahu. Ikuti tes awal kami dan dapatkan kurikulum yang dipersonalisasi khusus untukmu.
                 </p>
                 <div className="flex flex-col sm:flex-row gap-4 justify-start md:justify-center items-start md:items-center">
-                  <Link href="/register" className="group inline-flex items-center justify-center gap-2 bg-white text-blue-600 px-8 py-3.5 rounded-full font-bold hover:bg-blue-50 transition shadow-lg">
+                  <Link href="/register" className="text-md md:text-lg group inline-flex items-center justify-center gap-2 bg-white text-blue-600 px-8 py-3.5 rounded-full font-bold hover:bg-blue-50 transition shadow-lg">
                     Daftar Gratis Sekarang
                     <ChevronRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
                   </Link>
@@ -1137,20 +1137,20 @@ export default function LandingPage() {
 
             {/* Mobile App Card */}
             <div className="w-full h-full flex">
-              <div className="group relative bg-gradient-to-br from-sky-100 to-sky-300 dark:from-sky-900/40 dark:to-blue-900/40 p-8 md:p-10 rounded-2xl border border-blue-100 dark:border-gray-700 shadow-lg w-full overflow-hidden h-full flex flex-col justify-center">
+              <div className="group relative bg-white dark:bg-gray-800 p-8 md:p-10 rounded-2xl border border-white/50 dark:border-gray-700 shadow-xl w-full overflow-hidden h-full flex flex-col justify-center">
                 <div className="relative z-10 w-full sm:w-2/3 lg:w-3/4 xl:w-2/3">
-                  <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-100 dark:bg-blue-900/50 text-blue-700 dark:text-blue-300 text-xs font-bold uppercase tracking-wider mb-4 border border-blue-200 dark:border-blue-800">
+                  <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 text-xs font-bold uppercase tracking-wider mb-4 border border-blue-100 dark:border-blue-800">
                   
                     <span>Segera Hadir</span>
                   </div>
-                  <h4 className="font-bold text-2xl lg:text-3xl text-slate-900 dark:text-white mb-3">
+                  <h4 className="font-bold text-xl lg:text-3xl text-slate-900 dark:text-white mb-3">
                     Belajar Kapan Saja, Di Mana Saja
                   </h4>
                   <p className="text-sm text-slate-600 dark:text-slate-300 mb-6 leading-relaxed">
                     Aplikasi mobile KELAS sedang dikembangkan! Bersiaplah untuk pengalaman belajar yang lebih fleksibel, langsung dari smartphone kamu.
                   </p>
                   
-                  <ul className="space-y-2.5 mb-8 hidden sm:block">
+                  {/* <ul className="space-y-2.5 mb-8 hidden sm:block">
                     <li className="flex items-center gap-2.5 text-sm text-slate-700 dark:text-slate-300 font-medium">
                       <CheckCircle2 className="w-4 h-4 text-green-600 dark:text-green-400 flex-shrink-0" />
                       <span>Notifikasi pengingat belajar harian</span>
@@ -1163,10 +1163,10 @@ export default function LandingPage() {
                       <CheckCircle2 className="w-4 h-4 text-green-600 dark:text-green-400 flex-shrink-0" />
                       <span>Tanya Kak Gem langsung dari aplikasi</span>
                     </li>
-                  </ul>
+                  </ul> */}
 
-                  <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
-                    <button className="flex items-center gap-3 bg-slate-900 dark:bg-white text-white dark:text-slate-900 px-5 py-3 rounded-xl hover:opacity-90 transition-opacity w-full sm:w-auto justify-center shadow-lg shadow-slate-900/20 dark:shadow-none cursor-default border border-transparent dark:border-slate-200">
+                  <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-xl">
+                    <button className="flex items-center gap-3 bg-slate-900 dark:bg-slate-700 text-white px-5 py-3 rounded-xl hover:opacity-90 transition-opacity w-full sm:w-auto justify-center shadow-lg shadow-slate-900/20 cursor-default border border-transparent">
                       <svg className="w-6 h-6 fill-current flex-shrink-0" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                         <path d="M3.609 1.814L13.792 12 3.61 22.186c-.185-.182-.29-.413-.309-.65V2.47c.01-.24.115-.47.309-.656zM15.3 13.51l3.484-3.485L5.753.896c.365.176.67.45.875.79l8.672 11.824zm1.425 1.425L7.996 23.64c-.37.33-.8.47-1.22.42l9.95-10.556zM4.777 22.825l10.55-10.55-10.55-10.55v21.1z" />
                       </svg>
@@ -1175,7 +1175,7 @@ export default function LandingPage() {
                         <div className="text-sm font-bold leading-none mt-1">Coming Soon</div>
                       </div>
                     </button>
-                    <button className="flex items-center gap-3 bg-slate-900 dark:bg-white text-white dark:text-slate-900 px-5 py-3 rounded-xl hover:opacity-90 transition-opacity w-full sm:w-auto justify-center shadow-lg shadow-slate-900/20 dark:shadow-none cursor-default border border-transparent dark:border-slate-200">
+                    <button className="flex items-center gap-3 bg-slate-900 dark:bg-slate-700 text-white px-5 py-3 rounded-xl hover:opacity-90 transition-opacity w-full sm:w-auto justify-center shadow-lg shadow-slate-900/20 cursor-default border border-transparent">
                       <svg className="w-6 h-6 fill-current flex-shrink-0" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                         <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.48 2.43-2.45 4.13-2.48 1.28-.03 2.5.87 3.29.87.94 0 2.25-1.09 3.93-.99 1.42.09 2.48.51 3.28 1.68-2.65 1.69-2.2 6.04 1.1 7.07-1.09 2.18-2.36 3.72-2.73 4.21zM13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.53-2.95 1.46-.15-1.17.32-2.35 1.05-3.15z" />
                       </svg>
@@ -1244,7 +1244,7 @@ export default function LandingPage() {
         <ArrowUp className="w-6 h-6" />
       </button>
 
-      <div className="relative w-full pointer-events-none z-0 -mb-1">
+      <div className="relative w-full pointer-events-none z-0 -mb-1 bg-white dark:bg-gray-900">
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 200" className="w-full h-16 sm:h-24 block" preserveAspectRatio="none">
           <path
             d="M0 111L22.8 122.5C45.7 134 91.3 157 137 166.2C182.7 175.3 228.3 170.7 274 154.5C319.7 138.3 365.3 110.7 411.2 95.5C457 80.3 503 77.7 548.8 87.2C594.7 96.7 640.3 118.3 686 120C731.7 121.7 777.3 103.3 823 98.2C868.7 93 914.3 101 937.2 105L960 109L960 0L937.2 0C914.3 0 868.7 0 823 0C777.3 0 731.7 0 686 0C640.3 0 594.7 0 548.8 0C503 0 457 0 411.2 0C365.3 0 319.7 0 274 0C228.3 0 182.7 0 137 0C91.3 0 45.7 0 22.8 0L0 0Z"
