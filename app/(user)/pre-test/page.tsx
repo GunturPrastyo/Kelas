@@ -716,7 +716,7 @@ export default function PreTestPage() {
                         <div className="h-2.5 bg-indigo-100 dark:bg-gray-700 rounded-full overflow-hidden mt-6" aria-hidden="true">
                             <div
                                 id="progBar"
-                                className="h-full rounded-full bg-gradient-to-r from-blue-500 to-violet-500 transition-all duration-500 ease-out"
+                                className="h-full rounded-full bg-gradient-to-r from-blue-500 to-sky-500 transition-all duration-500 ease-out"
                                 style={{
                                     width: `${((idx + 1) / total) * 100}%`,
                                     backgroundImage: 'linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.15) 50%, rgba(255, 2_55, 255, 0.15) 75%, transparent 75%, transparent)',
