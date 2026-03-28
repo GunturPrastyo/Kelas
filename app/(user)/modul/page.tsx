@@ -150,7 +150,7 @@ export default function ModulPage() {
                     title: 'Jalur Lanjut',
                     description: 'Pemahamanmu sudah kuat. Kamu siap untuk tantangan materi tingkat lanjut!',
                     icon: '/lanjut.webp',
-                    bgClass: 'from-emerald-700 via-emerald-600 to-green-500',
+                        bgClass: 'from-emerald-700 via-emerald-600 to-green-500 dark:from-emerald-950 dark:via-emerald-900 dark:to-green-900',
                     textClass: 'text-emerald-800 dark:text-emerald-300'
                 });
             } else if (learningLevel === 'menengah') {
@@ -159,7 +159,7 @@ export default function ModulPage() {
                     title: 'Jalur Menengah',
                     description: 'Dasar-dasarmu cukup. Mari perdalam dengan manipulasi DOM dan event.',
                     icon: '/menengah.webp',
-                    bgClass: 'from-blue-700 via-blue-600 to-indigo-600',
+                        bgClass: 'from-blue-700 via-blue-600 to-indigo-600 dark:from-blue-950 dark:via-blue-900 dark:to-indigo-900',
                     textClass: 'text-sky-800 dark:text-sky-300'
                 });
             } else if (learningLevel === 'dasar') {
@@ -168,7 +168,7 @@ export default function ModulPage() {
                     title: 'Jalur Dasar',
                     description: 'Mari kita mulai dari awal untuk membangun fondasi JavaScript yang kokoh.',
                     icon: '/dasar.webp',
-                    bgClass: 'from-amber-800 via-amber-700 to-orange-600',
+                        bgClass: 'from-amber-800 via-amber-700 to-orange-600 dark:from-amber-950 dark:via-amber-900 dark:to-orange-900',
                     textClass: 'text-amber-800 dark:text-amber-300'
                 });
             } else {
@@ -235,7 +235,7 @@ export default function ModulPage() {
                                 title: 'Jalur Lanjut',
                                 description: 'Pemahamanmu sudah kuat. Kamu siap untuk tantangan materi tingkat lanjut!',
                                 icon: '/lanjut.webp',
-                                bgClass: 'from-emerald-700 via-emerald-600 to-green-500',
+                                bgClass: 'from-emerald-700 via-emerald-600 to-green-500 dark:from-emerald-950 dark:via-emerald-900 dark:to-green-900',
                                 textClass: 'text-emerald-800 dark:text-emerald-300'
                             });
                         } else if (level === 'menengah') {
@@ -244,7 +244,7 @@ export default function ModulPage() {
                                 title: 'Jalur Menengah',
                                 description: 'Dasar-dasarmu cukup. Mari perdalam dengan manipulasi DOM dan event.',
                                 icon: '/menengah.webp',
-                                bgClass: 'from-blue-700 via-blue-600 to-indigo-600',
+                                bgClass: 'from-blue-700 via-blue-600 to-indigo-600 dark:from-blue-950 dark:via-blue-900 dark:to-indigo-900',
                                 textClass: 'text-sky-800 dark:text-sky-300'
                             });
                         } else {
@@ -253,7 +253,7 @@ export default function ModulPage() {
                                 title: 'Jalur Dasar',
                                 description: 'Mari kita mulai dari awal untuk membangun fondasi JavaScript yang kokoh.',
                                 icon: '/dasar.webp',
-                                bgClass: 'from-amber-800 via-amber-700 to-orange-600',
+                                bgClass: 'from-amber-800 via-amber-700 to-orange-600 dark:from-amber-950 dark:via-amber-900 dark:to-orange-900',
                                 textClass: 'text-amber-800 dark:text-amber-300'
                             });
                         }
@@ -300,12 +300,12 @@ export default function ModulPage() {
             id: 'progress',
             content: (
                 <div className="min-w-full h-full relative flex items-center px-5 sm:px-12 overflow-hidden rounded-2xl">
-                    <div className="absolute inset-0 bg-gradient-to-r from-indigo-700 via-purple-600 to-fuchsia-600"></div>
+                    <div className="absolute inset-0 bg-gradient-to-r from-indigo-700 via-purple-600 to-fuchsia-600 dark:from-indigo-950 dark:via-purple-900 dark:to-fuchsia-900"></div>
                     <div className="absolute left-0 bottom-0 w-64 h-64 bg-white/10 rounded-full blur-3xl translate-y-1/2 -translate-x-1/3 pointer-events-none"></div>
                     <div className="relative z-10 w-full flex flex-col sm:flex-row justify-between items-start sm:items-center gap-5 sm:gap-6 py-2 sm:py-0">
                         <div className="max-w-sm text-left w-full sm:w-auto">
                             <span className="bg-white/20 text-[10px] sm:text-xs font-bold px-2 sm:px-3 py-1 rounded-md mb-2 sm:mb-3 inline-block backdrop-blur-sm border border-white/20 shadow-sm text-white uppercase tracking-wider">PROGRES BELAJAR</span>
-                            <h2 className="text-xl sm:text-3xl font-bold text-white mb-1 sm:mb-2 leading-tight drop-shadow-md">Terus Tingkatkan Prestasimu!</h2>
+                            <h2 className="text-xl sm:text-3xl font-bold text-white mb-1 sm:mb-2 leading-tight drop-shadow-md">"Terus Tingkatkan Prestasimu!"</h2>
                             <p className="text-sm sm:text-base text-purple-100 leading-relaxed drop-shadow-sm hidden sm:block">Kamu telah menuntaskan {summary?.totalModules && summary.totalModules > 0 ? Math.round((summary.completedModules / summary.totalModules) * 100) : 0}% materi dengan sangat baik.</p>
                         </div>
                         <div className="flex gap-3 sm:gap-5 w-full sm:w-auto">
@@ -332,12 +332,12 @@ export default function ModulPage() {
             id: 'activity',
             content: (
                 <div className="min-w-full h-full relative flex items-center px-5 sm:px-12 overflow-hidden rounded-2xl">
-                    <div className="absolute inset-0 bg-gradient-to-r from-orange-600 via-rose-500 to-pink-600"></div>
+                    <div className="absolute inset-0 bg-gradient-to-r from-orange-600 via-rose-500 to-pink-600 dark:from-orange-950 dark:via-rose-900 dark:to-pink-900"></div>
                     <div className="absolute right-0 bottom-0 w-64 h-64 bg-white/10 rounded-full blur-3xl translate-y-1/3 translate-x-1/4 pointer-events-none"></div>
                     <div className="relative z-10 w-full flex flex-col sm:flex-row justify-between items-start sm:items-center gap-5 sm:gap-6 py-2 sm:py-0">
                         <div className="max-w-sm text-left w-full sm:w-auto">
                             <span className="bg-white/20 text-[10px] sm:text-xs font-bold px-2 sm:px-3 py-1 rounded-md mb-2 sm:mb-3 inline-block backdrop-blur-sm border border-white/20 shadow-sm text-white uppercase tracking-wider">AKTIVITAS HARIAN</span>
-                            <h2 className="text-xl sm:text-3xl font-bold text-white mb-1 sm:mb-2 leading-tight drop-shadow-md">Konsistensi Adalah Kunci!</h2>
+                            <h2 className="text-xl sm:text-3xl font-bold text-white mb-1 sm:mb-2 leading-tight drop-shadow-md">"Konsistensi Adalah Kunci!"</h2>
                             <p className="text-sm sm:text-base text-rose-100 leading-relaxed drop-shadow-sm hidden sm:block">Pertahankan streak harianmu dan luangkan waktu setiap hari untuk belajar.</p>
                         </div>
                         <div className="flex gap-3 sm:gap-5 w-full sm:w-auto">
@@ -735,7 +735,7 @@ export default function ModulPage() {
             )}
 
             {!loading && userLevel && (
-                <section ref={summaryCardRef} className="relative mb-8 w-full h-[220px] sm:h-[240px] rounded-2xl overflow-hidden shadow-lg group/carousel">
+                <section ref={summaryCardRef} className="relative mb-8 w-full h-[220px] sm:h-[240px] rounded-lg overflow-hidden shadow-lg group/carousel">
                     {/* Slides Container */}
                     <div className="relative w-full h-full">
                         {summaryCards.map((card, index) => (
