@@ -4,7 +4,7 @@ import { useEffect, useMemo, useState, useRef } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useUI } from '@/context/UIContext';
-import { Home, CheckCircle2, Activity, Lock, Rocket, Users, Clock, ChevronLeft, ChevronRight } from "lucide-react";
+import { Home, CheckCircle2, Activity, Lock, Rocket, Users, Clock, ChevronLeft, ChevronRight, Quote } from "lucide-react";
 import { authFetch } from '@/lib/authFetch';
 import ModuleCardSkeleton from '@/components/ModuleCardSkeleton'; 
 import { driver } from "driver.js";
@@ -305,7 +305,10 @@ export default function ModulPage() {
                     <div className="relative z-10 w-full flex flex-col sm:flex-row justify-between items-start sm:items-center gap-5 sm:gap-6 py-2 sm:py-0">
                         <div className="max-w-sm text-left w-full sm:w-auto">
                             <span className="bg-white/20 text-[10px] sm:text-xs font-bold px-2 sm:px-3 py-1 rounded-md mb-2 sm:mb-3 inline-block backdrop-blur-sm border border-white/20 shadow-sm text-white uppercase tracking-wider">PROGRES BELAJAR</span>
-                            <h2 className="text-xl sm:text-3xl font-bold text-white mb-1 sm:mb-2 leading-tight drop-shadow-md">"Terus Tingkatkan Prestasimu!"</h2>
+                            <div className="flex items-start gap-2 mb-1 sm:mb-2">
+                                <Quote className="w-5 h-5 sm:w-8 sm:h-8 text-white/30 shrink-0 rotate-180 mt-0.5" fill="currentColor" strokeWidth={1} />
+                                <h2 className="text-xl sm:text-3xl font-bold text-white leading-tight drop-shadow-md">Terus Tingkatkan Prestasimu!</h2>
+                            </div>
                             <p className="text-sm sm:text-base text-purple-100 leading-relaxed drop-shadow-sm hidden sm:block">Kamu telah menuntaskan {summary?.totalModules && summary.totalModules > 0 ? Math.round((summary.completedModules / summary.totalModules) * 100) : 0}% materi dengan sangat baik.</p>
                         </div>
                         <div className="flex gap-3 sm:gap-5 w-full sm:w-auto">
@@ -337,7 +340,10 @@ export default function ModulPage() {
                     <div className="relative z-10 w-full flex flex-col sm:flex-row justify-between items-start sm:items-center gap-5 sm:gap-6 py-2 sm:py-0">
                         <div className="max-w-sm text-left w-full sm:w-auto">
                             <span className="bg-white/20 text-[10px] sm:text-xs font-bold px-2 sm:px-3 py-1 rounded-md mb-2 sm:mb-3 inline-block backdrop-blur-sm border border-white/20 shadow-sm text-white uppercase tracking-wider">AKTIVITAS HARIAN</span>
-                            <h2 className="text-xl sm:text-3xl font-bold text-white mb-1 sm:mb-2 leading-tight drop-shadow-md">"Konsistensi Adalah Kunci!"</h2>
+                            <div className="flex items-start gap-2 mb-1 sm:mb-2">
+                                <Quote className="w-5 h-5 sm:w-8 sm:h-8 text-white/30 shrink-0 rotate-180 mt-0.5" fill="currentColor" strokeWidth={1} />
+                                <h2 className="text-xl sm:text-3xl font-bold text-white leading-tight drop-shadow-md">Konsistensi Adalah Kunci!</h2>
+                            </div>
                             <p className="text-sm sm:text-base text-rose-100 leading-relaxed drop-shadow-sm hidden sm:block">Pertahankan streak harianmu dan luangkan waktu setiap hari untuk belajar.</p>
                         </div>
                         <div className="flex gap-3 sm:gap-5 w-full sm:w-auto">
