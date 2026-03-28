@@ -168,7 +168,7 @@ export default function ModulPage() {
                     title: 'Jalur Dasar',
                     description: 'Mari kita mulai dari awal untuk membangun fondasi JavaScript yang kokoh.',
                     icon: '/dasar.webp',
-                    bgClass: 'from-amber-600 via-orange-500 to-orange-600',
+                    bgClass: 'from-amber-800 via-amber-700 to-orange-600',
                     textClass: 'text-amber-800 dark:text-amber-300'
                 });
             } else {
@@ -253,7 +253,7 @@ export default function ModulPage() {
                                 title: 'Jalur Dasar',
                                 description: 'Mari kita mulai dari awal untuk membangun fondasi JavaScript yang kokoh.',
                                 icon: '/dasar.webp',
-                                bgClass: 'from-amber-600 via-orange-500 to-orange-600',
+                                bgClass: 'from-amber-800 via-amber-700 to-orange-600',
                                 textClass: 'text-amber-800 dark:text-amber-300'
                             });
                         }
@@ -285,12 +285,12 @@ export default function ModulPage() {
                 <div className="min-w-full h-full relative flex items-center px-5 sm:px-12 overflow-hidden rounded-2xl">
                     <div className={`absolute inset-0 bg-gradient-to-r ${recommendation.bgClass || 'from-gray-700 to-gray-600'}`}></div>
                     <div className="absolute right-0 top-0 w-64 h-64 bg-white/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/3 pointer-events-none"></div>
-                    <div className="relative z-10 w-full flex flex-col sm:flex-row items-center gap-4 sm:gap-8">
-                        <Image src={recommendation.icon || '/dasar.webp'} alt="Rekomendasi" width={128} height={128} className="w-20 h-20 sm:w-28 sm:h-28 drop-shadow-xl transition-transform duration-500 hover:scale-105 hidden sm:block" />
-                        <div className="max-w-xl text-center sm:text-left">
-                            <span className="bg-white/20 text-xs font-bold px-3 py-1 rounded-md mb-2 sm:mb-3 inline-block backdrop-blur-sm border border-white/20 shadow-sm text-white uppercase tracking-wider">REKOMENDASI JALUR BELAJAR</span>
-                            <h2 className="text-2xl sm:text-3xl font-bold text-white mb-1.5 sm:mb-2 leading-tight drop-shadow-md">{recommendation.title}</h2>
-                            <p className="text-sm sm:text-base text-blue-50 leading-relaxed drop-shadow-sm">{recommendation.description}</p>
+                    <div className="relative z-10 w-full flex flex-row items-center gap-4 sm:gap-8">
+                        <Image src={recommendation.icon || '/dasar.webp'} alt="Rekomendasi" width={128} height={128} className="w-20 h-20 sm:w-28 sm:h-28 drop-shadow-xl transition-transform duration-500 hover:scale-105" />
+                        <div className="max-w-xl text-left">
+                            <span className="bg-white/20 text-[10px] sm:text-xs font-bold px-2 sm:px-3 py-1 rounded-md mb-2 sm:mb-3 inline-block backdrop-blur-sm border border-white/20 shadow-sm text-white uppercase tracking-wider">REKOMENDASI JALUR BELAJAR</span>
+                            <h2 className="text-xl sm:text-3xl font-bold text-white mb-1 sm:mb-2 leading-tight drop-shadow-md">{recommendation.title}</h2>
+                            <p className="text-xs sm:text-base text-blue-50 leading-relaxed drop-shadow-sm line-clamp-3 sm:line-clamp-none">{recommendation.description}</p>
                         </div>
                     </div>
                 </div>
