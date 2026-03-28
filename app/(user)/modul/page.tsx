@@ -285,9 +285,9 @@ export default function ModulPage() {
                 <div className="min-w-full h-full relative flex items-center px-5 sm:px-12 overflow-hidden rounded-2xl">
                     <div className={`absolute inset-0 bg-gradient-to-r ${recommendation.bgClass || 'from-gray-700 to-gray-600'}`}></div>
                     <div className="absolute right-0 top-0 w-64 h-64 bg-white/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/3 pointer-events-none"></div>
-                    <div className="relative z-10 w-full flex flex-row items-center gap-4 sm:gap-8">
-                        <Image src={recommendation.icon || '/dasar.webp'} alt="Rekomendasi" width={128} height={128} className="w-20 h-20 sm:w-28 sm:h-28 drop-shadow-xl transition-transform duration-500 hover:scale-105" />
-                        <div className="max-w-xl text-left">
+                    <div className="relative z-10 w-full flex flex-row items-center sm:gap-8">
+                        <Image src={recommendation.icon || '/dasar.webp'} alt="Rekomendasi" width={128} height={128} className="absolute -right-2 w-32 h-32 opacity-50 z-0 pointer-events-none sm:pointer-events-auto sm:relative sm:right-auto sm:w-28 sm:h-28 sm:opacity-100 sm:z-10 drop-shadow-xl transition-transform duration-500 hover:scale-105" />
+                        <div className="max-w-xl text-left relative z-10">
                             <span className="bg-white/20 text-[10px] sm:text-xs font-bold px-2 sm:px-3 py-1 rounded-md mb-2 sm:mb-3 inline-block backdrop-blur-sm border border-white/20 shadow-sm text-white uppercase tracking-wider">REKOMENDASI JALUR BELAJAR</span>
                             <h2 className="text-xl sm:text-3xl font-bold text-white mb-1 sm:mb-2 leading-tight drop-shadow-md">{recommendation.title}</h2>
                             <p className="text-xs sm:text-base text-blue-50 leading-relaxed drop-shadow-sm line-clamp-3 sm:line-clamp-none">{recommendation.description}</p>
