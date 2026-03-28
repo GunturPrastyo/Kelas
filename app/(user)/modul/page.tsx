@@ -147,29 +147,29 @@ export default function ModulPage() {
             if (learningLevel === 'lanjut' || learningLevel === 'lanjutan') {
                 setUserLevel('lanjut');
                 setRecommendation({
-                    title: 'Jalur Belajar: Lanjut',
+                    title: 'Jalur Lanjut',
                     description: 'Pemahamanmu sudah kuat. Kamu siap untuk tantangan materi tingkat lanjut!',
                     icon: '/lanjut.webp',
-                    bgClass: 'border border-slate-200 dark:border-slate-700 border-l-green-500 border-l-[5px] border-b-green-500 border-b-[2px] from-green-100 to-emerald-200 dark:from-gray-800 dark:to-emerald-900',
-                    textClass: 'text-green-800 dark:text-green-300'
+                    bgClass: 'from-emerald-700 via-emerald-600 to-green-500',
+                    textClass: 'text-emerald-800 dark:text-emerald-300'
                 });
             } else if (learningLevel === 'menengah') {
                 setUserLevel('menengah');
                 setRecommendation({
-                    title: 'Jalur Belajar: Menengah',
-                    description: 'Dasar-dasarmu sudah cukup. Mari perdalam dengan manipulasi DOM dan event.',
+                    title: 'Jalur Menengah',
+                    description: 'Dasar-dasarmu cukup. Mari perdalam dengan manipulasi DOM dan event.',
                     icon: '/menengah.webp',
-                    bgClass: 'border border-slate-200 dark:border-slate-700 border-l-blue-500 border-l-[5px] border-b-blue-500 border-b-[2px] from-blue-100 to-sky-200 dark:from-gray-800 dark:to-sky-900',
-                    textClass: 'text-blue-800 dark:text-blue-300'
+                    bgClass: 'from-blue-700 via-blue-600 to-indigo-600',
+                    textClass: 'text-sky-800 dark:text-sky-300'
                 });
             } else if (learningLevel === 'dasar') {
                 setUserLevel('dasar');
                 setRecommendation({
-                    title: 'Jalur Belajar: Dasar',
+                    title: 'Jalur Dasar',
                     description: 'Mari kita mulai dari awal untuk membangun fondasi JavaScript yang kokoh.',
                     icon: '/dasar.webp',
-                    bgClass: 'border border-slate-50 dark:border-slate-700 border-l-yellow-500 border-l-[5px] border-b-yellow-500 border-b-[2px] from-yellow-100 to-amber-200 dark:from-gray-800 dark:to-amber-900',
-                    textClass: 'text-yellow-800 dark:text-yellow-300'
+                    bgClass: 'from-amber-600 via-orange-500 to-orange-600',
+                    textClass: 'text-amber-800 dark:text-amber-300'
                 });
             } else {
                 // Jika 'learningLevel' tidak ada atau tidak valid, set ke null
@@ -232,29 +232,29 @@ export default function ModulPage() {
                         if (level === 'lanjut' || level === 'lanjutan') {
                             newLevel = 'lanjut';
                             setRecommendation({
-                                title: 'Jalur Belajar: Lanjut',
+                                title: 'Jalur Lanjut',
                                 description: 'Pemahamanmu sudah kuat. Kamu siap untuk tantangan materi tingkat lanjut!',
                                 icon: '/lanjut.webp',
-                                bgClass: 'border border-slate-200 dark:border-slate-700 border-l-green-400 border-l-[8px] border-b-green-400 border-b-[2px] from-green-100 to-emerald-200 dark:from-gray-800 dark:to-emerald-900',
-                                textClass: 'text-green-800 dark:text-green-300'
+                                bgClass: 'from-emerald-700 via-emerald-600 to-green-500',
+                                textClass: 'text-emerald-800 dark:text-emerald-300'
                             });
                         } else if (level === 'menengah') {
                             newLevel = 'menengah';
                             setRecommendation({
-                                title: 'Jalur Belajar: Menengah',
-                                description: 'Dasar-dasarmu sudah cukup. Mari perdalam dengan manipulasi DOM dan event.',
+                                title: 'Jalur Menengah',
+                                description: 'Dasar-dasarmu cukup. Mari perdalam dengan manipulasi DOM dan event.',
                                 icon: '/menengah.webp',
-                                bgClass: 'border border-slate-200 dark:border-slate-700 border-l-blue-400 border-l-[8px] border-b-blue-400 border-b-[2px] from-blue-100 to-sky-200 dark:from-gray-800 dark:to-sky-900',
-                                textClass: 'text-blue-800 dark:text-blue-300'
+                                bgClass: 'from-blue-700 via-blue-600 to-indigo-600',
+                                textClass: 'text-sky-800 dark:text-sky-300'
                             });
                         } else {
                             newLevel = 'dasar';
                             setRecommendation({
-                                title: 'Jalur Belajar: Dasar',
+                                title: 'Jalur Dasar',
                                 description: 'Mari kita mulai dari awal untuk membangun fondasi JavaScript yang kokoh.',
                                 icon: '/dasar.webp',
-                                bgClass: 'border border-slate-50 dark:border-slate-700 border-l-yellow-400 border-l-[8px] border-b-yellow-400 border-b-[2px] from-yellow-100 to-amber-200 dark:from-gray-800 dark:to-amber-900',
-                                textClass: 'text-yellow-800 dark:text-yellow-300'
+                                bgClass: 'from-amber-600 via-orange-500 to-orange-600',
+                                textClass: 'text-amber-800 dark:text-amber-300'
                             });
                         }
                         setUserLevel(newLevel);
@@ -273,7 +273,7 @@ export default function ModulPage() {
     // Auto-rotate summary card carousel
     useEffect(() => {
         const slideInterval = setInterval(() => {
-            setActiveSummarySlide((prev) => (prev === 4 ? 0 : prev + 1));
+            setActiveSummarySlide((prev) => (prev + 1) % 3);
         }, 7000); // Change slide every 7 seconds
         return () => clearInterval(slideInterval);
     }, []);
@@ -282,86 +282,86 @@ export default function ModulPage() {
         {
             id: 'recommendation',
             content: (
-                <div className={`relative overflow-hidden bg-gradient-to-br ${recommendation.bgClass} p-5 rounded-xl shadow-md flex items-center gap-4 sm:gap-6 h-full`}>
-                    <Image src={recommendation.icon} alt="Rekomendasi" width={256} height={256} className="absolute -right-4 -bottom-2 w-28 h-28 opacity-25 pointer-events-none sm:static sm:w-20 sm:h-20 sm:opacity-100 sm:pointer-events-auto z-0 transition-all" />
-                    <div className="relative z-10">
-                        <h2 className={`text-lg font-bold ${recommendation.textClass}`}>{recommendation.title}</h2>
-                        <p className="text-sm text-justify w-[90%] sm:w-full text-gray-700 dark:text-gray-300 ">{recommendation.description}</p>
+                <div className="min-w-full h-full relative flex items-center px-5 sm:px-12 overflow-hidden rounded-2xl">
+                    <div className={`absolute inset-0 bg-gradient-to-r ${recommendation.bgClass || 'from-gray-700 to-gray-600'}`}></div>
+                    <div className="absolute right-0 top-0 w-64 h-64 bg-white/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/3 pointer-events-none"></div>
+                    <div className="relative z-10 w-full flex flex-col sm:flex-row items-center gap-4 sm:gap-8">
+                        <Image src={recommendation.icon || '/dasar.webp'} alt="Rekomendasi" width={128} height={128} className="w-20 h-20 sm:w-28 sm:h-28 drop-shadow-xl transition-transform duration-500 hover:scale-105 hidden sm:block" />
+                        <div className="max-w-xl text-center sm:text-left">
+                            <span className="bg-white/20 text-xs font-bold px-3 py-1 rounded-md mb-2 sm:mb-3 inline-block backdrop-blur-sm border border-white/20 shadow-sm text-white uppercase tracking-wider">REKOMENDASI JALUR BELAJAR</span>
+                            <h2 className="text-2xl sm:text-3xl font-bold text-white mb-1.5 sm:mb-2 leading-tight drop-shadow-md">{recommendation.title}</h2>
+                            <p className="text-sm sm:text-base text-blue-50 leading-relaxed drop-shadow-sm">{recommendation.description}</p>
+                        </div>
                     </div>
                 </div>
             )
         },
         {
-            id: 'completedModules',
+            id: 'progress',
             content: (
-                <div className="bg-white dark:bg-gray-800 rounded-xl shadow-md p-5 flex flex-col justify-between border border-gray-100 dark:border-gray-700 h-full">
-                    <div>
-                        <div className="flex items-center gap-3 mb-2">
-                            <div className="w-10 h-10 rounded-lg bg-blue-100 dark:bg-gray-700 flex items-center justify-center">
-                                <img src="/modules2.webp" alt="Modul Icon" width={28} height={28} />
-                            </div>
-                            <p className="font-semibold text-gray-700 dark:text-gray-300">Modul Selesai</p>
+                <div className="min-w-full h-full relative flex items-center px-5 sm:px-12 overflow-hidden rounded-2xl">
+                    <div className="absolute inset-0 bg-gradient-to-r from-indigo-700 via-purple-600 to-fuchsia-600"></div>
+                    <div className="absolute left-0 bottom-0 w-64 h-64 bg-white/10 rounded-full blur-3xl translate-y-1/2 -translate-x-1/3 pointer-events-none"></div>
+                    <div className="relative z-10 w-full flex flex-col sm:flex-row justify-between items-center sm:items-center gap-4 sm:gap-6">
+                        <div className="max-w-sm text-center sm:text-left">
+                            <span className="bg-white/20 text-xs font-bold px-3 py-1 rounded-md mb-2 sm:mb-3 inline-block backdrop-blur-sm border border-white/20 shadow-sm text-white uppercase tracking-wider">PROGRES BELAJAR</span>
+                            <h2 className="text-2xl sm:text-3xl font-bold text-white mb-1.5 sm:mb-2 leading-tight drop-shadow-md">Terus Tingkatkan Prestasimu!</h2>
+                            <p className="text-sm sm:text-base text-purple-100 leading-relaxed drop-shadow-sm hidden sm:block">Kamu telah menuntaskan {summary?.totalModules && summary.totalModules > 0 ? Math.round((summary.completedModules / summary.totalModules) * 100) : 0}% materi dengan sangat baik.</p>
                         </div>
-                        <h3 className="text-3xl font-bold text-gray-900 dark:text-white">{animatedCompletedModules} <span className="text-xl text-gray-500">/ {animatedTotalModules}</span></h3>
+                        <div className="flex gap-3 sm:gap-5 w-full sm:w-auto">
+                            <div className="bg-white/10 backdrop-blur-md rounded-xl p-3 sm:p-4 border border-white/20 flex flex-col items-center justify-center flex-1 sm:w-36 shadow-lg">
+                                <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-white/20 flex items-center justify-center mb-1 sm:mb-2">
+                                    <CheckCircle2 className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
+                                </div>
+                                <h3 className="text-xl sm:text-2xl font-bold text-white leading-none">{animatedCompletedModules}<span className="text-xs sm:text-sm font-medium text-white/70 ml-1">/ {animatedTotalModules}</span></h3>
+                                <span className="text-[9px] sm:text-[10px] text-white/80 uppercase tracking-wider font-semibold mt-1">Modul Selesai</span>
+                            </div>
+                            <div className="bg-white/10 backdrop-blur-md rounded-xl p-3 sm:p-4 border border-white/20 flex flex-col items-center justify-center flex-1 sm:w-36 shadow-lg">
+                                <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-white/20 flex items-center justify-center mb-1 sm:mb-2">
+                                    <Activity className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
+                                </div>
+                                <h3 className="text-xl sm:text-2xl font-bold text-white leading-none">{animatedAverageScore}<span className="text-xs sm:text-sm font-medium text-white/70 ml-0.5">%</span></h3>
+                                <span className="text-[9px] sm:text-[10px] text-white/80 uppercase tracking-wider font-semibold mt-1">Rata-rata Skor</span>
+                            </div>
+                        </div>
                     </div>
-                    <p className="text-sm text-gray-500 dark:text-gray-400 mt-3">
-                        {summary?.totalModules && summary.totalModules > 0 ? Math.round((summary.completedModules / summary.totalModules) * 100) : 0}% selesai
-                    </p>
                 </div>
             )
         },
         {
-            id: 'averageScore',
+            id: 'activity',
             content: (
-                <div className="bg-white dark:bg-gray-800 rounded-xl shadow-md p-5 flex flex-col justify-between border border-gray-100 dark:border-gray-700 h-full">
-                    <div>
-                        <div className="flex items-center gap-3 mb-2">
-                            <div className="w-10 h-10 rounded-lg bg-green-100 dark:bg-gray-700 flex items-center justify-center">
-                                <img src="/star.webp" alt="Score Icon" width={28} height={28} />
+                <div className="min-w-full h-full relative flex items-center px-5 sm:px-12 overflow-hidden rounded-2xl">
+                    <div className="absolute inset-0 bg-gradient-to-r from-orange-600 via-rose-500 to-pink-600"></div>
+                    <div className="absolute right-0 bottom-0 w-64 h-64 bg-white/10 rounded-full blur-3xl translate-y-1/3 translate-x-1/4 pointer-events-none"></div>
+                    <div className="relative z-10 w-full flex flex-col sm:flex-row justify-between items-center sm:items-center gap-4 sm:gap-6">
+                        <div className="max-w-sm text-center sm:text-left">
+                            <span className="bg-white/20 text-xs font-bold px-3 py-1 rounded-md mb-2 sm:mb-3 inline-block backdrop-blur-sm border border-white/20 shadow-sm text-white uppercase tracking-wider">AKTIVITAS HARIAN</span>
+                            <h2 className="text-2xl sm:text-3xl font-bold text-white mb-1.5 sm:mb-2 leading-tight drop-shadow-md">Konsistensi Adalah Kunci!</h2>
+                            <p className="text-sm sm:text-base text-rose-100 leading-relaxed drop-shadow-sm hidden sm:block">Pertahankan streak harianmu dan luangkan waktu setiap hari untuk belajar.</p>
+                        </div>
+                        <div className="flex gap-3 sm:gap-5 w-full sm:w-auto">
+                            <div className="bg-white/10 backdrop-blur-md rounded-xl p-3 sm:p-4 border border-white/20 flex flex-col items-center justify-center flex-1 sm:w-36 shadow-lg">
+                                <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-white/20 flex items-center justify-center mb-1 sm:mb-2">
+                                    <Clock className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
+                                </div>
+                                <div className="flex items-baseline gap-0.5">
+                                    <h3 className="text-xl sm:text-2xl font-bold text-white leading-none">{animatedStudyHours}</h3>
+                                    <span className="text-[10px] sm:text-xs text-white/80 font-medium">j</span>
+                                    <h3 className="text-lg sm:text-xl font-bold text-white leading-none ml-1">{summary?.studyMinutes || 0}</h3>
+                                    <span className="text-[10px] sm:text-xs text-white/80 font-medium">m</span>
+                                </div>
+                                <span className="text-[9px] sm:text-[10px] text-white/80 uppercase tracking-wider font-semibold mt-1">Waktu Belajar</span>
                             </div>
-                            <p className="font-semibold text-gray-700 dark:text-gray-300">Rata-rata Nilai</p>
-                        </div>
-                        <h3 className="text-3xl font-bold text-gray-900 dark:text-white">{animatedAverageScore}<span className="text-xl text-gray-500">%</span></h3>
-                    </div>
-                    <p className="text-sm text-gray-500 dark:text-gray-400 mt-3">Dari semua tes topik</p>
-                </div>
-            )
-        },
-        {
-            id: 'studyTime',
-            content: (
-                <div className="bg-white dark:bg-gray-800 rounded-xl shadow-md p-5 flex flex-col justify-between border border-gray-100 dark:border-gray-700 h-full">
-                    <div>
-                        <div className="flex items-center gap-3 mb-2">
-                            <div className="w-10 h-10 rounded-lg bg-purple-100 dark:bg-gray-700 flex items-center justify-center">
-                                <img src="/study.webp" alt="Time Icon" width={28} height={28} />
+                            <div className="bg-white/10 backdrop-blur-md rounded-xl p-3 sm:p-4 border border-white/20 flex flex-col items-center justify-center flex-1 sm:w-36 shadow-lg">
+                                <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-white/20 flex items-center justify-center mb-1 sm:mb-2">
+                                    <Rocket className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
+                                </div>
+                                <h3 className="text-xl sm:text-2xl font-bold text-white leading-none">{animatedDailyStreak} <span className="text-xs sm:text-sm font-medium text-white/70 ml-0.5">hari</span></h3>
+                                <span className="text-[9px] sm:text-[10px] text-white/80 uppercase tracking-wider font-semibold mt-1">Streak Aktif</span>
                             </div>
-                            <p className="font-semibold text-gray-700 dark:text-gray-300">Total Waktu Belajar</p>
-                        </div>
-                        <div className="flex items-baseline gap-1.5 flex-wrap">
-                            <h3 className="text-3xl font-bold text-gray-900 dark:text-white leading-none">{animatedStudyHours}</h3>
-                            <span className="font-semibold text-gray-500 dark:text-gray-400">jam</span>
-                            <p className="text-gray-500 dark:text-gray-400">{summary?.studyMinutes || 0} menit</p>
                         </div>
                     </div>
-                    <p className="text-sm text-gray-500 dark:text-gray-400 mt-3">Total waktu di semua modul</p>
-                </div>
-            )
-        },
-        {
-            id: 'dailyStreak',
-            content: (
-                <div className="bg-white dark:bg-gray-800 rounded-xl shadow-md p-5 flex flex-col justify-between border border-gray-100 dark:border-gray-700 h-full">
-                    <div>
-                        <div className="flex items-center gap-3 mb-2">
-                            <div className="w-10 h-10 rounded-lg bg-orange-100 dark:bg-gray-700 flex items-center justify-center">
-                                <img src="/streak.webp" alt="Streak Icon" width={28} height={28} />
-                            </div>
-                            <p className="font-semibold text-gray-700 dark:text-gray-300">Streak Harian</p>
-                        </div>
-                        <h3 className="text-3xl font-bold text-gray-900 dark:text-white">{animatedDailyStreak} <span className="text-xl text-gray-500">hari</span></h3>
-                    </div>
-                    <p className="text-sm text-gray-500 dark:text-gray-400 mt-3">Hari berturut-turut aktif</p>
                 </div>
             )
         }
@@ -735,46 +735,54 @@ export default function ModulPage() {
             )}
 
             {!loading && userLevel && (
-                <section ref={summaryCardRef} className="relative mb-6">
-                    <div className="relative h-[160px] sm:h-[150px] overflow-hidden">
+                <section ref={summaryCardRef} className="relative mb-8 w-full h-[220px] sm:h-[240px] rounded-2xl overflow-hidden shadow-lg group/carousel">
+                    {/* Slides Container */}
+                    <div className="relative w-full h-full">
                         {summaryCards.map((card, index) => (
                             <motion.div
                                 key={card.id}
-                                className="absolute w-full h-full px-1"
+                                className="absolute w-full h-full"
                                 initial={{ x: "100%", opacity: 0 }}
                                 animate={{
                                     x: `${(index - activeSummarySlide) * 100}%`,
                                     opacity: index === activeSummarySlide ? 1 : 0,
-                                    scale: index === activeSummarySlide ? 1 : 0.98,
+                                    scale: index === activeSummarySlide ? 1 : 0.95,
                                     zIndex: 5 - Math.abs(index - activeSummarySlide),
                                 }}
-                                transition={{ type: 'spring', stiffness: 200, damping: 30 }}
+                                transition={{ type: 'spring', stiffness: 300, damping: 25 }}
                             >
                                 {card.content}
                             </motion.div>
                         ))}
                     </div>
-                    {/* Navigation Buttons */}
+                        
+                    {/* Navigation Arrows */}
                     <button 
                         onClick={() => setActiveSummarySlide(prev => (prev - 1 + summaryCards.length) % summaryCards.length)}
-                        className="absolute top-1/2 -translate-y-1/2 left-0 z-10 p-2 bg-white/50 dark:bg-black/20 rounded-full hover:bg-white dark:hover:bg-black/40 backdrop-blur-sm transition-colors hidden sm:block"
+                        className="absolute left-4 top-1/2 -translate-y-1/2 z-30 bg-black/20 hover:bg-black/40 text-white p-2 rounded-full backdrop-blur-sm transition-all opacity-0 group-hover/carousel:opacity-100 hidden sm:flex items-center justify-center shadow-lg"
                         aria-label="Previous slide"
                     >
-                        <ChevronLeft size={20} />
+                        <ChevronLeft size={24} />
                     </button>
                     <button 
                         onClick={() => setActiveSummarySlide(prev => (prev + 1) % summaryCards.length)}
-                        className="absolute top-1/2 -translate-y-1/2 right-0 z-10 p-2 bg-white/50 dark:bg-black/20 rounded-full hover:bg-white dark:hover:bg-black/40 backdrop-blur-sm transition-colors hidden sm:block"
+                        className="absolute right-4 top-1/2 -translate-y-1/2 z-30 bg-black/20 hover:bg-black/40 text-white p-2 rounded-full backdrop-blur-sm transition-all opacity-0 group-hover/carousel:opacity-100 hidden sm:flex items-center justify-center shadow-lg"
                         aria-label="Next slide"
                     >
-                        <ChevronRight size={20} />
+                        <ChevronRight size={24} />
                     </button>
-                    <div className="flex justify-center items-center gap-2 mt-4">
+
+                    {/* Dots INSIDE the banner container */}
+                    <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-30 flex gap-2 items-center">
                         {summaryCards.map((_, index) => (
                             <button
                                 key={index}
                                 onClick={() => setActiveSummarySlide(index)}
-                                className={`w-2 h-2 rounded-full transition-all duration-300 ${activeSummarySlide === index ? 'bg-blue-600 scale-125' : 'bg-gray-300 dark:bg-gray-600 hover:bg-gray-400'}`}
+                                className={`h-2.5 rounded-full transition-all duration-300 shadow-sm ${
+                                    activeSummarySlide === index 
+                                    ? 'w-8 bg-white' 
+                                    : 'w-2.5 bg-white/50 hover:bg-white/80'
+                                }`}
                                 aria-label={`Go to slide ${index + 1}`}
                             />
                         ))}
