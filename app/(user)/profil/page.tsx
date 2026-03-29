@@ -5,7 +5,7 @@ import { authFetch } from "@/lib/authFetch";
 import Avatar from "@/components/Avatar"; 
 import Breadcrumb from "@/components/Breadcrumb";
 import { motion, AnimatePresence } from "framer-motion";
-import { Award, Download, Star, Info, Shield, Zap, Trophy, Hexagon, TrendingUp, TrendingDown, Activity, Swords, Target, Sparkles, BookOpen, X, ZoomIn, ZoomOut, Save, RotateCcw, RotateCw, RefreshCw, User as UserIcon, Mail, Lock, Type, ALargeSmall } from "lucide-react";
+import { Award, Download, Star, Info, Shield, Zap, Trophy, Hexagon, TrendingUp, TrendingDown, Activity, Swords, Target, Sparkles, BookOpen, X, ZoomIn, ZoomOut, Save, RotateCcw, RotateCw, RefreshCw, User as UserIcon, Mail, Lock, Type, ALargeSmall, Bell } from "lucide-react";
 import { useAlert } from "@/context/AlertContext";
 import { useSearchParams } from "next/navigation";
 import { Chart, registerables } from "chart.js";
@@ -37,6 +37,7 @@ interface User {
   learningLevel?: string;
   fontSize?: string;
   fontStyle?: string;
+  reminderEnabled?: boolean;
 }
 
 interface CompetencyFeature {
@@ -291,6 +292,7 @@ const ProfileContent = () => {
 
   const [fontSize, setFontSize] = useState<string>('16px'); // Ukuran font default
   const [fontStyle, setFontStyle] = useState<string>('font-poppins');
+  const [reminderEnabled, setReminderEnabled] = useState<boolean>(true);
   const [activeTab, setActiveTab] = useState("info");
   const chartRef = useRef<HTMLCanvasElement>(null);
 
@@ -326,6 +328,10 @@ const ProfileContent = () => {
       } else {
         const storedFontStyle = localStorage.getItem('materiFontStyle');
         if (storedFontStyle) setFontStyle(storedFontStyle);
+      }
+
+      if (userData.reminderEnabled !== undefined) {
+        setReminderEnabled(userData.reminderEnabled);
       }
     }
     setLoading(false);
@@ -747,6 +753,7 @@ const ProfileContent = () => {
     formData.append("email", email);
     formData.append("fontSize", fontSize);
     formData.append("fontStyle", fontStyle);
+    formData.append("reminderEnabled", String(reminderEnabled));
 
     try {
       const res = await authFetch(`${process.env.NEXT_PUBLIC_API_URL}/api/users/profile`, {
@@ -1247,6 +1254,30 @@ const ProfileContent = () => {
                     <option value="20px">Besar (20px)</option>
                     <option value="24px">Sangat Besar (24px)</option>
                   </select>
+                </div>
+              </div>
+
+              {/* Toggle Email Reminder */}
+              <div className="pt-4 border-t border-gray-200 dark:border-gray-700 mt-4">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <div className="p-2 bg-blue-50 dark:bg-blue-900/20 rounded-lg text-blue-600 dark:text-blue-400">
+                      <Bell size={20} />
+                    </div>
+                    <div>
+                      <h4 className="text-sm font-medium text-gray-800 dark:text-gray-200">Email Pengingat Belajar</h4>
+                      <p className="text-xs text-gray-500 dark:text-gray-400">Kirim pengingat melalui email jika saya lama tidak belajar.</p>
+                    </div>
+                  </div>
+                  <label className="relative inline-flex items-center cursor-pointer">
+                    <input 
+                      type="checkbox" 
+                      className="sr-only peer" 
+                      checked={reminderEnabled}
+                      onChange={(e) => setReminderEnabled(e.target.checked)}
+                    />
+                    <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
+                  </label>
                 </div>
               </div>
 
