@@ -285,11 +285,11 @@ export default function ModulPage() {
                 <div className="min-w-full h-full relative flex items-center px-5 sm:px-12 overflow-hidden rounded-2xl">
                     <div className={`absolute inset-0 bg-gradient-to-r ${recommendation.bgClass || 'from-gray-700 to-gray-600'}`}></div>
                     {/* Decorative Bubbles */}
-                    <div className="absolute -top-20 -right-20 w-80 h-80 bg-white/10 rounded-full pointer-events-none"></div>
-                    <div className="absolute top-10 -right-10 w-64 h-64 bg-white/10 rounded-full pointer-events-none"></div>
+                    <div className="absolute z-0 -top-20 -right-20 w-80 h-80 bg-white/10 rounded-full pointer-events-none"></div>
+                    <div className="absolute z-0 top-10 -right-10 w-64 h-64 bg-white/10 rounded-full pointer-events-none"></div>
                     <div className="relative z-10 w-full flex flex-row items-center sm:gap-8">
-                        <Image src={recommendation.icon || '/dasar.webp'} alt="Rekomendasi" width={128} height={128} className="absolute -right-2 w-32 h-32 opacity-50 z-0 pointer-events-none sm:pointer-events-auto sm:relative sm:right-auto sm:w-28 sm:h-28 sm:opacity-100 sm:z-10 drop-shadow-xl transition-transform duration-500 hover:scale-105" />
-                        <div className="max-w-xl text-left relative z-10">
+                        <Image src={recommendation.icon || '/dasar.webp'} alt="Rekomendasi" width={128} height={128} className="absolute -right-2 w-32 h-32 opacity-90 z-10 pointer-events-none sm:pointer-events-auto sm:relative sm:right-auto sm:w-28 sm:h-28 sm:opacity-100 sm:z-10 drop-shadow-xl transition-transform duration-500 hover:scale-105" />
+                        <div className="max-w-xl text-left relative z-20">
                             <span className="bg-white/20 text-[10px] sm:text-xs font-bold px-2 sm:px-3 py-1 rounded-md mb-2 sm:mb-3 inline-block backdrop-blur-sm border border-white/20 shadow-sm text-white uppercase tracking-wider">REKOMENDASI JALUR BELAJAR</span>
                             <h2 className="text-xl sm:text-3xl font-bold text-white mb-1 sm:mb-2 leading-tight drop-shadow-md">{recommendation.title}</h2>
                             <p className="text-xs sm:text-base text-blue-50 leading-relaxed drop-shadow-sm line-clamp-3 sm:line-clamp-none">{recommendation.description}</p>
@@ -304,10 +304,10 @@ export default function ModulPage() {
                 <div className="min-w-full h-full relative flex items-center px-5 sm:px-12 overflow-hidden rounded-2xl">
                     <div className="absolute inset-0 bg-gradient-to-r from-blue-700 via-blue-600 to-cyan-600 dark:from-blue-950 dark:via-blue-900 dark:to-cyan-900"></div>
                     {/* Decorative Bubbles */}
-                    <div className="absolute -bottom-20 -left-20 w-80 h-80 bg-white/10 rounded-full pointer-events-none"></div>
-                    <div className="absolute bottom-10 -left-10 w-64 h-64 bg-white/10 rounded-full pointer-events-none"></div>
+                    <div className="absolute z-0 -bottom-20 -left-20 w-80 h-80 bg-white/10 rounded-full pointer-events-none"></div>
+                    <div className="absolute z-0 bottom-10 -left-10 w-64 h-64 bg-white/10 rounded-full pointer-events-none"></div>
                     <div className="relative z-10 w-full flex flex-col sm:flex-row justify-between items-start sm:items-center gap-5 sm:gap-6 py-2 sm:py-0">
-                        <div className="max-w-sm text-left w-full sm:w-auto">
+                        <div className="max-w-sm text-left w-full sm:w-auto relative z-20">
                             <span className="bg-white/20 text-[10px] sm:text-xs font-bold px-2 sm:px-3 py-1 rounded-md mb-2 sm:mb-3 inline-block backdrop-blur-sm border border-white/20 shadow-sm text-white uppercase tracking-wider">PROGRES BELAJAR</span>
                             <div className="flex items-start gap-2 mb-1 sm:mb-2">
                                 <Quote className="w-5 h-5 sm:w-8 sm:h-8 text-white/30 shrink-0 rotate-180 mt-0.5" fill="currentColor" strokeWidth={1} />
@@ -341,10 +341,10 @@ export default function ModulPage() {
                 <div className="min-w-full h-full relative flex items-center px-5 sm:px-12 overflow-hidden rounded-2xl">
                     <div className="absolute inset-0 bg-gradient-to-r from-emerald-700 via-emerald-600 to-teal-500 dark:from-emerald-950 dark:via-emerald-900 dark:to-teal-900"></div>
                     {/* Decorative Bubbles */}
-                    <div className="absolute -bottom-20 -right-20 w-80 h-80 bg-white/10 rounded-full pointer-events-none"></div>
-                    <div className="absolute bottom-10 -right-10 w-64 h-64 bg-white/10 rounded-full pointer-events-none"></div>
+                    <div className="absolute z-0 -bottom-20 -right-20 w-80 h-80 bg-white/10 rounded-full pointer-events-none"></div>
+                    <div className="absolute z-0 bottom-10 -right-10 w-64 h-64 bg-white/10 rounded-full pointer-events-none"></div>
                     <div className="relative z-10 w-full flex flex-col sm:flex-row justify-between items-start sm:items-center gap-5 sm:gap-6 py-2 sm:py-0">
-                        <div className="max-w-sm text-left w-full sm:w-auto">
+                        <div className="max-w-sm text-left w-full sm:w-auto relative z-20">
                             <span className="bg-white/20 text-[10px] sm:text-xs font-bold px-2 sm:px-3 py-1 rounded-md mb-2 sm:mb-3 inline-block backdrop-blur-sm border border-white/20 shadow-sm text-white uppercase tracking-wider">AKTIVITAS HARIAN</span>
                             <div className="flex items-start gap-2 mb-1 sm:mb-2">
                                 <Quote className="w-5 h-5 sm:w-8 sm:h-8 text-white/30 shrink-0 rotate-180 mt-0.5" fill="currentColor" strokeWidth={1} />
