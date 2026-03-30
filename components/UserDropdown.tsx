@@ -274,7 +274,7 @@ export default function UserDropdown() {
                             )}
                         </div>
                         )}
-                        <Link href="/profil?tab=settings" onClick={() => setIsOpen(false)} className="w-full text-left flex items-center gap-3 px-3 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700/50 rounded-md transition-colors">
+                        <Link href="/profil?tab=settings#profile-settings" onClick={() => setIsOpen(false)} className="w-full text-left flex items-center gap-3 px-3 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700/50 rounded-md transition-colors">
                             <Settings className="w-5 h-5" />
                             <span>Pengaturan</span>
                         </Link>
