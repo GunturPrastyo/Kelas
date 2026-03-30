@@ -311,7 +311,7 @@ export default function ModulPage() {
                             <span className="bg-white/20 text-[10px] sm:text-xs font-bold px-2 sm:px-3 py-1 rounded-md mb-2 sm:mb-3 inline-block backdrop-blur-sm border border-white/20 shadow-sm text-white uppercase tracking-wider">PROGRES BELAJAR</span>
                             <div className="flex items-start gap-2 mb-1 sm:mb-2">
                                 <Quote className="w-5 h-5 sm:w-8 sm:h-8 text-white/30 shrink-0 rotate-180 mt-0.5" fill="currentColor" strokeWidth={1} />
-                                <h2 className="text-xl sm:text-3xl font-bold text-white leading-tight drop-shadow-md">Terus Tingkatkan Prestasimu!</h2>
+                                <h2 className="text-lg sm:text-3xl font-bold text-white leading-tight drop-shadow-md">Terus Tingkatkan Prestasimu!</h2>
                             </div>
                             <p className="text-sm sm:text-base text-blue-50 leading-relaxed drop-shadow-sm hidden sm:block">Kamu telah menuntaskan {summary?.totalModules && summary.totalModules > 0 ? Math.round((summary.completedModules / summary.totalModules) * 100) : 0}% materi dengan sangat baik.</p>
                         </div>
@@ -348,7 +348,7 @@ export default function ModulPage() {
                             <span className="bg-white/20 text-[10px] sm:text-xs font-bold px-2 sm:px-3 py-1 rounded-md mb-2 sm:mb-3 inline-block backdrop-blur-sm border border-white/20 shadow-sm text-white uppercase tracking-wider">AKTIVITAS HARIAN</span>
                             <div className="flex items-start gap-2 mb-1 sm:mb-2">
                                 <Quote className="w-5 h-5 sm:w-8 sm:h-8 text-white/30 shrink-0 rotate-180 mt-0.5" fill="currentColor" strokeWidth={1} />
-                                <h2 className="text-xl sm:text-3xl font-bold text-white leading-tight drop-shadow-md">Konsistensi Adalah Kunci!</h2>
+                                <h2 className="text-lg sm:text-3xl font-bold text-white leading-tight drop-shadow-md">Konsistensi Adalah Kunci!</h2>
                             </div>
                             <p className="text-sm sm:text-base text-emerald-50 leading-relaxed drop-shadow-sm hidden sm:block">Pertahankan streak harianmu dan luangkan waktu setiap hari untuk belajar.</p>
                         </div>
