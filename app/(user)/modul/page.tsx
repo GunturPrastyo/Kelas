@@ -282,7 +282,7 @@ export default function ModulPage() {
         {
             id: 'recommendation',
             content: (
-                <div className="min-w-full h-full relative flex items-center px-5 sm:px-12 overflow-hidden rounded-2xl">
+                <div className="min-w-full h-full relative flex items-center px-5 sm:px-12 overflow-hidden rounded-xl">
                     <div className={`absolute inset-0 bg-gradient-to-r ${recommendation.bgClass || 'from-gray-700 to-gray-600'}`}></div>
                     {/* Decorative Bubbles */}
                     <div className="absolute z-0 -top-20 -right-20 w-80 h-80 bg-white/10 rounded-full pointer-events-none"></div>
@@ -301,7 +301,7 @@ export default function ModulPage() {
         {
             id: 'progress',
             content: (
-                <div className="min-w-full h-full relative flex items-center px-5 sm:px-12 overflow-hidden rounded-2xl">
+                <div className="min-w-full h-full relative flex items-center px-5 sm:px-12 overflow-hidden rounded-xl">
                     <div className="absolute inset-0 bg-gradient-to-r from-blue-700 via-blue-600 to-cyan-600 dark:from-blue-950 dark:via-blue-900 dark:to-cyan-900"></div>
                     {/* Decorative Bubbles */}
                     <div className="absolute z-0 -bottom-20 -left-20 w-80 h-80 bg-white/10 rounded-full pointer-events-none"></div>
@@ -317,15 +317,15 @@ export default function ModulPage() {
                         </div>
                         <div className="flex gap-3 sm:gap-5 w-full sm:w-auto">
                             <div className="bg-white/10 backdrop-blur-md rounded-xl p-3 sm:p-4 border border-white/20 flex flex-col items-center justify-center flex-1 sm:w-36 shadow-lg">
-                                <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-white/20 flex items-center justify-center mb-1 sm:mb-2">
-                                    <CheckCircle2 className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
+                                <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-white/20 flex items-center justify-center mb-1 sm:mb-2 p-1.5 sm:p-2">
+                                    <img src="/book.webp" alt="Modul Selesai" width={40} height={40} className="w-full h-full object-contain" />
                                 </div>
                                 <h3 className="text-xl sm:text-2xl font-bold text-white leading-none">{animatedCompletedModules}<span className="text-xs sm:text-sm font-medium text-white/70 ml-1">/ {animatedTotalModules}</span></h3>
                                 <span className="text-[9px] sm:text-[10px] text-white/80 uppercase tracking-wider font-semibold mt-1">Modul Selesai</span>
                             </div>
                             <div className="bg-white/10 backdrop-blur-md rounded-xl p-3 sm:p-4 border border-white/20 flex flex-col items-center justify-center flex-1 sm:w-36 shadow-lg">
-                                <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-white/20 flex items-center justify-center mb-1 sm:mb-2">
-                                    <Activity className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
+                                <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-white/20 flex items-center justify-center mb-1 sm:mb-2 p-1.5 sm:p-2">
+                                    <img src="/score.webp" alt="Rata-rata Skor" width={40} height={40} className="w-full h-full object-contain" />
                                 </div>
                                 <h3 className="text-xl sm:text-2xl font-bold text-white leading-none">{animatedAverageScore}<span className="text-xs sm:text-sm font-medium text-white/70 ml-0.5">%</span></h3>
                                 <span className="text-[9px] sm:text-[10px] text-white/80 uppercase tracking-wider font-semibold mt-1">Rata-rata Skor</span>
@@ -338,7 +338,7 @@ export default function ModulPage() {
         {
             id: 'activity',
             content: (
-                <div className="min-w-full h-full relative flex items-center px-5 sm:px-12 overflow-hidden rounded-2xl">
+                <div className="min-w-full h-full relative flex items-center px-5 sm:px-12 overflow-hidden rounded-xl">
                     <div className="absolute inset-0 bg-gradient-to-r from-emerald-700 via-emerald-600 to-teal-500 dark:from-emerald-950 dark:via-emerald-900 dark:to-teal-900"></div>
                     {/* Decorative Bubbles */}
                     <div className="absolute z-0 -bottom-20 -right-20 w-80 h-80 bg-white/10 rounded-full pointer-events-none"></div>
@@ -354,8 +354,8 @@ export default function ModulPage() {
                         </div>
                         <div className="flex gap-3 sm:gap-5 w-full sm:w-auto">
                             <div className="bg-white/10 backdrop-blur-md rounded-xl p-3 sm:p-4 border border-white/20 flex flex-col items-center justify-center flex-1 sm:w-36 shadow-lg">
-                                <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-white/20 flex items-center justify-center mb-1 sm:mb-2">
-                                    <Clock className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
+                                <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-white/20 flex items-center justify-center mb-1 sm:mb-2 p-1.5 sm:p-2">
+                                    <img src="/clock2.webp" alt="Waktu Belajar" width={40} height={40} className="w-full h-full object-contain" />
                                 </div>
                                 <div className="flex items-baseline gap-0.5">
                                     <h3 className="text-xl sm:text-2xl font-bold text-white leading-none">{animatedStudyHours}</h3>
@@ -366,8 +366,8 @@ export default function ModulPage() {
                                 <span className="text-[9px] sm:text-[10px] text-white/80 uppercase tracking-wider font-semibold mt-1">Waktu Belajar</span>
                             </div>
                             <div className="bg-white/10 backdrop-blur-md rounded-xl p-3 sm:p-4 border border-white/20 flex flex-col items-center justify-center flex-1 sm:w-36 shadow-lg">
-                                <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-white/20 flex items-center justify-center mb-1 sm:mb-2">
-                                    <Rocket className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
+                                <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-white/20 flex items-center justify-center mb-1 sm:mb-2 p-1.5 sm:p-2">
+                                    <img src="/target.webp" alt="Streak Aktif" width={40} height={40} className="w-full h-full object-contain" />
                                 </div>
                                 <h3 className="text-xl sm:text-2xl font-bold text-white leading-none">{animatedDailyStreak} <span className="text-xs sm:text-sm font-medium text-white/70 ml-0.5">hari</span></h3>
                                 <span className="text-[9px] sm:text-[10px] text-white/80 uppercase tracking-wider font-semibold mt-1">Streak Aktif</span>
