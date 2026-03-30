@@ -774,9 +774,9 @@ export default function PreTestPage() {
                 </div>
             </section>
 
-            <footer className="bg-white dark:bg-gray-800 p-4 text-center text-gray-600 dark:text-gray-400 text-sm mt-8 shadow-inner font-poppins">
+            {/* <footer className="bg-white dark:bg-gray-800 p-4 text-center text-gray-600 dark:text-gray-400 text-sm mt-8 shadow-inner font-poppins">
                 <p>&copy; 2025 KELAS. All rights reserved.</p>
-            </footer>
+            </footer> */}
         </div>
     );
 }
