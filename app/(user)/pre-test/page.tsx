@@ -5,7 +5,7 @@ import Link from 'next/link';
 import Breadcrumb from '@/components/Breadcrumb';
 import hljs from 'highlight.js';
 import 'highlight.js/styles/github-dark.css';
-import { Info, X, LayoutGrid } from 'lucide-react';
+import { Info, X, LayoutGrid, Clock } from 'lucide-react';
 import { authFetch } from "@/lib/authFetch";
 import { useAlert } from "@/context/AlertContext";
 
@@ -589,19 +589,6 @@ export default function PreTestPage() {
                 { name: "Pre-test", href: "#" }
             ]} />
 
-            <header className="flex items-center justify-between gap-4 font-poppins mt-6">
-                <div className="flex items-center gap-2">
-                
-                    <img src="/logo1.webp" width={256} height={256} className="h-10 w-auto" alt="Logo" />
-                    <h1 className="text-lg font-bold text-slate-800 dark:text-slate-200">Tes Awal</h1>
-                </div>
-                <div className="flex gap-2 sm:gap-3 items-center justify-center text-slate-500 dark:text-slate-400 text-xs sm:text-sm bg-slate-100 dark:bg-gray-800 px-2 sm:px-3 py-1.5 rounded-lg border border-slate-200 dark:border-gray-700">
-                    <span className="hidden sm:inline">Soal: </span><span>{idx + 1}/{total}</span>
-                    <span className="text-slate-300">|</span>
-                    <span>Waktu: <span>{`${String(Math.floor(timeLeft / 60)).padStart(2, '0')}:${String(timeLeft % 60).padStart(2, '0')}`}</span></span>
-                </div>
-            </header>
-
             <section className="bg-gradient-to-r from-indigo-500 to-blue-600 rounded-xl p-4 mt-6 shadow-md text-white flex items-center gap-4">
                 <img src="/test.webp" width={256} height={256} className="h-24 w-24" alt="pre test" />
                 <div>
@@ -614,6 +601,17 @@ export default function PreTestPage() {
                 <div className="flex flex-col lg:flex-row gap-8">
                     {/* Area Soal (Kiri di Desktop) */}
                     <div className="flex-1 order-2 lg:order-1">
+                        {/* Header Soal & Timer */}
+                        <div className="flex justify-between items-center mb-6 bg-slate-50 dark:bg-gray-700/30 p-3 sm:p-4 rounded-xl border border-slate-200 dark:border-gray-700">
+                            <div className="font-semibold text-slate-700 dark:text-slate-300 text-sm sm:text-base">
+                                Soal <span className="text-blue-600 dark:text-blue-400">{idx + 1}</span> dari {total}
+                            </div>
+                            <div className={`flex items-center gap-2 text-sm sm:text-base font-bold px-3 py-1.5 rounded-lg border shadow-sm transition-colors ${timeLeft <= 60 ? 'bg-red-50 text-red-600 border-red-200 dark:bg-red-900/20 dark:text-red-400 dark:border-red-800 animate-pulse' : 'bg-white text-slate-700 border-slate-200 dark:bg-gray-800 dark:text-slate-300 dark:border-gray-600'}`}>
+                                <Clock size={18} className={timeLeft <= 60 ? 'text-red-500' : 'text-blue-500'} />
+                                <span className="tracking-wider">{`${String(Math.floor(timeLeft / 60)).padStart(2, '0')}:${String(timeLeft % 60).padStart(2, '0')}`}</span>
+                            </div>
+                        </div>
+
                         <div id="questionArea" ref={questionAreaRef}>
                             {currentQuestion && (
                                 <div className="py-0 lg:py-2">
