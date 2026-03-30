@@ -300,6 +300,9 @@ const ProfileContent = () => {
     const tab = searchParams.get("tab");
     if (tab && ["info", "password", "settings"].includes(tab)) {
       setActiveTab(tab);
+      setTimeout(() => {
+        document.getElementById("profile-settings")?.scrollIntoView({ behavior: "smooth", block: "start" });
+      }, 300);
     }
   }, [searchParams]);
 
