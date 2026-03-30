@@ -1306,8 +1306,8 @@ export default function ModulDetailPage() {
                 
                 <div className="bg-white dark:bg-gray-800 rounded-xl shadow-2xl w-full max-w-6xl max-h-[90vh] flex flex-col overflow-hidden topic-test-modal">
                     {/* Header */}
-                    <header className="p-3 sm:p-4 border-b border-gray-200 dark:border-gray-700 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 sm:gap-0 bg-white dark:bg-gray-800 shrink-0">
-                        <div className="flex items-center gap-2 sm:gap-3 w-full sm:w-auto">
+                    <header className="relative p-3 sm:p-4 border-b border-gray-200 dark:border-gray-700 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 sm:gap-0 bg-white dark:bg-gray-800 shrink-0">
+                        <div className="flex items-center gap-2 sm:gap-3 w-full sm:w-auto pr-8 sm:pr-0">
                             {!testResult && (
                                 <button
                                     onClick={() => setShowMobileNav(!showMobileNav)}
@@ -1321,11 +1321,28 @@ export default function ModulDetailPage() {
                                 <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 truncate">Modul: {modul.title}</p>
                             </div>
                         </div>
-                        <div className="flex gap-3 items-center text-xs sm:text-sm bg-slate-100 dark:bg-gray-700 px-3 py-1.5 rounded-lg w-full sm:w-auto justify-between sm:justify-center">
+                        <div className="flex gap-3 items-center text-xs sm:text-sm bg-slate-100 dark:bg-gray-700 px-3 py-1.5 rounded-lg w-full sm:w-auto justify-between sm:justify-center sm:mr-10">
                             <span>Soal: {totalQuestions}</span>
                             <span className="text-slate-300">|</span>
                             <span>Waktu: {`${String(Math.floor(testTimeLeft / 60)).padStart(2, '0')}:${String(testTimeLeft % 60).padStart(2, '0')}`}</span>
                         </div>
+
+                        {/* Tombol Close X */}
+                        <button
+                            onClick={() => {
+                                if (testResult) {
+                                    setActiveTest(null);
+                                    fetchModulData();
+                                } else {
+                                    persistProgress();
+                                    setActiveTest(null);
+                                }
+                            }}
+                            className="absolute top-3 right-3 sm:top-4 sm:right-4 p-1.5 text-gray-400 hover:text-red-500 dark:text-gray-500 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-full transition-all z-10"
+                            title="Tutup"
+                        >
+                            <X size={24} />
+                        </button>
                     </header>
 
                     {/* Body */}
@@ -1654,16 +1671,7 @@ export default function ModulDetailPage() {
                         ) : (
                             // --- Tombol saat pengerjaan ---
                             <>
-                                <div className="flex justify-between items-center">
-                                    <button
-                                        onClick={() => {
-                                            persistProgress(); // Pastikan progress terakhir tersimpan sebelum menutup
-                                            setActiveTest(null);
-                                        }}
-                                        className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 hover:underline"
-                                    >
-                                        Tutup & Simpan Progress
-                                    </button>
+                                <div className="flex justify-end items-center">
                                     <div className="flex gap-2">
                                         <button
                                             onClick={() => setTestIdx(i => Math.max(0, i - 1))}
