@@ -715,12 +715,7 @@ export default function PreTestPage() {
                             <div
                                 id="progBar"
                                 className="h-full rounded-full bg-gradient-to-r from-blue-500 to-sky-500 transition-all duration-500 ease-out"
-                                style={{
-                                    width: `${((idx + 1) / total) * 100}%`,
-                                    backgroundImage: 'linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.15) 50%, rgba(255, 2_55, 255, 0.15) 75%, transparent 75%, transparent)',
-                                    backgroundSize: '40px 40px',
-                                    animation: 'progress-bar-stripes 1s linear infinite'
-                                }}></div>
+                             ></div>
                         </div>
                         <div className="text-sm text-slate-500 dark:text-slate-400 mt-2">Pertanyaan ke <span>{idx + 1}</span> dari <span>{total}</span></div>
                     </div>
@@ -774,9 +769,6 @@ export default function PreTestPage() {
                 </div>
             </section>
 
-            {/* <footer className="bg-white dark:bg-gray-800 p-4 text-center text-gray-600 dark:text-gray-400 text-sm mt-8 shadow-inner font-poppins">
-                <p>&copy; 2025 KELAS. All rights reserved.</p>
-            </footer> */}
         </div>
     );
 }
