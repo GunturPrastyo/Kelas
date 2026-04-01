@@ -1,11 +1,12 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Link from "next/link";
+import Link from "next/link"; // Import the Link component
 import { useRouter } from "next/navigation";
 import ModulCard from "@/components/ModulCard"; 
 import { Button } from "@/components/ui/button"; 
-import { Edit, PlusCircle, List, LayoutGrid, Info, Shield, Zap, Trophy, CheckCircle2 } from "lucide-react"; 
+import ModuleFormModal from "@/components/ModuleFormModal"; // Import the new modal
+import { Edit, PlusCircle, List, LayoutGrid, Info, Shield, Zap, Trophy, CheckCircle2, Loader2 } from "lucide-react"; 
 import { authFetch } from "@/lib/authFetch";
 import ModulOrder from "@/components/ModulOrder"; 
 import FeatureManager from "@/components/FeatureManager";
@@ -19,6 +20,7 @@ interface Modul {
   overview: string;
   slug: string;
   order: number;
+ 
 }
 
 export default function ModulPage() {
@@ -29,6 +31,8 @@ export default function ModulPage() {
   const [hasPreTest, setHasPreTest] = useState<boolean | null>(null);
   const [view, setView] = useState<"grid" | "order">("grid");
   const [availableFeatures, setAvailableFeatures] = useState<Feature[]>([]);
+  const [isModuleFormModalOpen, setIsModuleFormModalOpen] = useState(false);
+  const [currentModuleData, setCurrentModuleData] = useState<Modul | null>(null); // For editing
 
   useEffect(() => {
     setLoading(true);
@@ -103,6 +107,46 @@ export default function ModulPage() {
     }
   };
 
+  const handleOpenAddModuleModal = () => {
+    setCurrentModuleData(null); // Clear data for new module
+    setIsModuleFormModalOpen(true);
+  };
+
+  const handleOpenEditModuleModal = (modul: Modul) => {
+    setCurrentModuleData(modul); // Set data for editing
+    setIsModuleFormModalOpen(true);
+  };
+
+  const handleModuleFormSubmit = async (formData: FormData, isEditing: boolean, moduleId?: string) => {
+    try {
+      let response;
+      if (isEditing && moduleId) {
+        response = await authFetch(`${process.env.NEXT_PUBLIC_API_URL}/api/modul/${moduleId}`, {
+          method: 'PUT',
+          body: formData,
+        });
+      } else {
+        response = await authFetch(`${process.env.NEXT_PUBLIC_API_URL}/api/modul`, {
+          method: 'POST',
+          body: formData,
+        });
+      }
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Gagal menyimpan modul.');
+      }
+
+      // Re-fetch modules to update the list
+      router.refresh(); // This will trigger a re-fetch of data on the server side if using RSC, or re-run useEffect if client-side.
+      // For client-side state, we might need to manually update or re-call the initial fetch.
+      // For simplicity, let's re-call the initial fetch logic.
+      window.location.reload(); // A simple way to re-fetch all data and update UI
+    } catch (error) {
+      throw error; // Re-throw to be caught by the modal's submit handler
+    }
+  };
+
   if (loading) return <div className="text-center p-10">Memuat data modul...</div>;
 
   if (error) {
@@ -140,13 +184,13 @@ export default function ModulPage() {
               <List size={20} />
             </button>
           </div>
-          <Link
-            href="/admin/modul/tambah-modul"
+          <Button
+            onClick={handleOpenAddModuleModal}
             className="bg-blue-700 text-white px-4 py-2 rounded-lg hover:bg-blue-800 flex items-center gap-2"
           >
             <PlusCircle size={18} />
             <span className="hidden sm:inline">Tambah Modul</span>
-          </Link>
+          </Button>
         </div>
       </div>
 
@@ -280,9 +324,10 @@ export default function ModulPage() {
           {[...modules]
             .sort((a, b) => a.order - b.order)
             .map((modul) => (
-            <ModulCard
+            <ModulCard // Pass the edit handler
               key={modul._id}
               modul={modul}
+              onEdit={handleOpenEditModuleModal}
               onDelete={handleDeleteModul}
             />
           ))}
@@ -295,6 +340,13 @@ export default function ModulPage() {
           <ModulOrder />
         </div>
       )}
+
+      <ModuleFormModal
+        isOpen={isModuleFormModalOpen}
+        onClose={() => setIsModuleFormModalOpen(false)}
+        initialData={currentModuleData}
+        onSubmit={handleModuleFormSubmit}
+      />
     </div>
   );
 }
