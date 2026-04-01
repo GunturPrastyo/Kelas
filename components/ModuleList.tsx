@@ -187,7 +187,7 @@ export default function ModuleList({ title, allModules, filter, loading = false 
                         backdrop-blur-sm
                     `}>
                   <img
-                    src={`${process.env.NEXT_PUBLIC_API_URL}/uploads/${modul.icon}`}
+                    src={modul.icon?.startsWith('http') ? modul.icon : `${process.env.NEXT_PUBLIC_API_URL}/uploads/${modul.icon}`}
                     alt={modul.title}
                     className="w-7 h-7 object-contain"
                   />

@@ -101,7 +101,7 @@ export default function ModulCard({ modul, onDelete }: Props) {
             <div className="w-12 h-12 flex-shrink-0 flex items-center justify-center bg-blue-100 dark:bg-blue-900 rounded-lg overflow-hidden">
               {modul.icon ? (
                 <img
-                  src={`${process.env.NEXT_PUBLIC_API_URL}/uploads/${modul.icon}`} // Path ini sudah benar jika server menyajikan folder 'public'
+                  src={modul.icon?.startsWith('http') ? modul.icon : `${process.env.NEXT_PUBLIC_API_URL}/uploads/${modul.icon}`}
                   alt={modul.title}
                   className="w-full h-full object-cover"
                 />
