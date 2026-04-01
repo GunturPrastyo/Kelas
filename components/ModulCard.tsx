@@ -73,14 +73,7 @@ export default function ModulCard({ modul, onDelete, onEdit }: Props) {
           >
             <Pencil size={16} />
           </Link>
-          <Link
-            href={`/admin/modul/${modul.slug}/tambah-topik?modulId=${modul._id}`}
-            title="Tambah Topik"
-            onClick={(e) => e.stopPropagation()}
-            className="p-2 rounded-lg text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-700"
-          >
-            <PlusCircle size={16} />
-          </Link>
+      
           {onDelete && (
             <button
               title="Hapus Modul"
