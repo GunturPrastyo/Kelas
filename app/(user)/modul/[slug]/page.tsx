@@ -1770,11 +1770,11 @@ export default function ModulDetailPage() {
                
                 {/* Ikon Background untuk Mobile */}
                 <div className="absolute inset-0 z-0 md:hidden flex items-center justify-end overflow-hidden opacity-20 pointer-events-none">
-                    <img src={`${process.env.NEXT_PUBLIC_API_URL}/uploads/${modul.icon}`} alt="" className="w-56 h-56 object-contain translate-x-1/4" />
+                    <img src={modul.icon?.startsWith('http') ? modul.icon : `${process.env.NEXT_PUBLIC_API_URL}/uploads/${modul.icon}`} alt="" className="w-56 h-56 object-contain translate-x-1/4" />
                 </div>
 
                 {/* Ikon untuk desktop (di kiri) */}
-                <img src={`${process.env.NEXT_PUBLIC_API_URL}/uploads/${modul.icon}`} alt={modul.title} className="relative z-10 hidden md:block h-20 w-20 rounded-lg object-cover bg-white/20 p-1 shrink-0" />
+                <img src={modul.icon?.startsWith('http') ? modul.icon : `${process.env.NEXT_PUBLIC_API_URL}/uploads/${modul.icon}`} alt={modul.title} className="relative z-10 hidden md:block h-20 w-20 rounded-lg object-cover bg-white/20 p-1 shrink-0" />
 
                 <div className="relative z-10 flex-1 text-left w-full"> {/* Wrapper untuk teks dan ikon mobile */}
                     <span className="text-xs font-semibold uppercase tracking-wider text-blue-200">{modul.category}</span>
