@@ -1,165 +1,216 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Loader2, Save, X, UploadCloud } from "lucide-react";
-import { authFetch } from "@/lib/authFetch";
+import { Loader2, Save, X } from "lucide-react";
 
 interface Module {
-    _id?: string; // Optional for new modules
-    title: string;
-    category: string;
-    overview: string;
-    icon?: string; // URL of the icon
-    order?: number;
+  _id?: string;
+  title: string;
+  slug?: string;
+  category: string;
+  overview: string;
+  icon?: string;
+  order?: number;
 }
 
 interface ModuleFormModalProps {
-    isOpen: boolean;
-    onClose: () => void;
-    initialData?: Module | null; // Data for editing existing module
-    onSubmit: (data: FormData, isEditing: boolean, moduleId?: string) => Promise<void>;
+  isOpen: boolean;
+  onClose: () => void;
+  initialData?: Module | null;
+  onSubmit: (
+    data: FormData,
+    isEditing: boolean,
+    moduleId?: string
+  ) => Promise<void>;
 }
 
-export default function ModuleFormModal({ isOpen, onClose, initialData, onSubmit }: ModuleFormModalProps) {
-    const [title, setTitle] = useState(initialData?.title || "");
-    const [category, setCategory] = useState(initialData?.category || "mudah");
-    const [overview, setOverview] = useState(initialData?.overview || "");
-    const [iconFile, setIconFile] = useState<File | null>(null);
-    const [existingIcon, setExistingIcon] = useState(initialData?.icon || "");
-    const [loading, setLoading] = useState(false);
+export default function ModuleFormModal({
+  isOpen,
+  onClose,
+  initialData,
+  onSubmit,
+}: ModuleFormModalProps) {
+  const [title, setTitle] = useState("");
+  const [slug, setSlug] = useState("");
+  const [category, setCategory] = useState("mudah");
+  const [overview, setOverview] = useState("");
+  const [iconFile, setIconFile] = useState<File | null>(null);
+  const [existingIcon, setExistingIcon] = useState("");
+  const [loading, setLoading] = useState(false);
 
-    useEffect(() => {
-        if (isOpen) {
-            setTitle(initialData?.title || "");
-            setCategory(initialData?.category || "mudah");
-            setOverview(initialData?.overview || "");
-            setExistingIcon(initialData?.icon || "");
-            setIconFile(null); // Reset file input
-        }
-    }, [isOpen, initialData]);
+  // 🔥 Reset + isi data saat buka modal
+  useEffect(() => {
+    if (isOpen) {
+      setTitle(initialData?.title || "");
+      setSlug(initialData?.slug || "");
+      setCategory(initialData?.category || "mudah");
+      setOverview(initialData?.overview || "");
+      setExistingIcon(initialData?.icon || "");
+      setIconFile(null);
+    }
+  }, [isOpen, initialData]);
 
-    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        if (e.target.files && e.target.files[0]) {
-            setIconFile(e.target.files[0]);
-            setExistingIcon(""); // Clear existing icon if new file is selected
-        }
-    };
+  // 🔥 AUTO GENERATE SLUG
+  useEffect(() => {
+    // kalau edit & slug sudah ada → jangan overwrite
+    if (initialData?._id) return;
 
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
-        setLoading(true);
+    const generatedSlug = title
+      .toLowerCase()
+      .trim()
+      .replace(/\s+/g, "-")
+      .replace(/[^\w-]+/g, "");
 
-        const formData = new FormData();
-        formData.append("title", title);
-        formData.append("category", category);
-        formData.append("overview", overview);
-        if (iconFile) {
-            formData.append("icon", iconFile);
-        } else if (existingIcon) {
-            // If no new file but there was an existing icon, keep it
-            formData.append("iconUrl", existingIcon);
-        }
+    setSlug(generatedSlug);
+  }, [title, initialData]);
 
-        try {
-            await onSubmit(formData, !!initialData?._id, initialData?._id);
-            onClose();
-        } catch (error) {
-            console.error("Failed to submit module form:", error);
-            alert("Gagal menyimpan modul. Silakan coba lagi.");
-        } finally {
-            setLoading(false);
-        }
-    };
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      setIconFile(e.target.files[0]);
+      setExistingIcon("");
+    }
+  };
 
-    if (!isOpen) return null;
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
 
-    return (
-        <div className="fixed inset-0 bg-transparent bg-opacity-60 backdrop-blur-sm z-50 flex justify-center items-center p-4">
-            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl w-full max-w-md max-h-[90vh] flex flex-col">
-                <div className="flex justify-between items-center p-4 border-b dark:border-gray-700 flex-shrink-0">
-                    <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
-                        {initialData?._id ? "Edit Modul" : "Tambah Modul Baru"}
-                    </h2>
-                    <button onClick={onClose} className="text-gray-500 hover:text-gray-800 dark:hover:text-gray-300">
-                        <X size={24} />
-                    </button>
-                </div>
+    const formData = new FormData();
+    formData.append("title", title);
+    formData.append("slug", slug); // 🔥 FIX UTAMA
+    formData.append("category", category);
+    formData.append("overview", overview);
 
-                <form onSubmit={handleSubmit} className="p-6 overflow-y-auto space-y-4">
-                    <div>
-                        <label htmlFor="title" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Judul Modul</label>
-                        <Input
-                            id="title"
-                            type="text"
-                            value={title}
-                            onChange={(e) => setTitle(e.target.value)}
-                            placeholder="Judul Modul"
-                            required
-                        />
-                    </div>
+    if (iconFile) {
+      formData.append("icon", iconFile);
+    } else if (existingIcon) {
+      formData.append("iconUrl", existingIcon);
+    }
 
-                    <div>
-                        <label htmlFor="category" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Kategori</label>
-                        <select
-                            id="category"
-                            value={category}
-                            onChange={(e) => setCategory(e.target.value)}
-                            className="w-full p-2.5 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
-                            required
-                        >
-                            <option value="mudah">Mudah</option>
-                            <option value="sedang">Sedang</option>
-                            <option value="sulit">Sulit</option>
-                        </select>
-                    </div>
+    try {
+      await onSubmit(
+        formData,
+        !!initialData?._id,
+        initialData?._id
+      );
+      onClose();
+    } catch (error) {
+      console.error("Failed to submit module form:", error);
+      alert("Gagal menyimpan modul. Silakan coba lagi.");
+    } finally {
+      setLoading(false);
+    }
+  };
 
-                    <div>
-                        <label htmlFor="overview" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Overview</label>
-                        <Textarea
-                            id="overview"
-                            value={overview}
-                            onChange={(e) => setOverview(e.target.value)}
-                            placeholder="Ringkasan singkat modul"
-                            rows={3}
-                            required
-                        />
-                    </div>
+  if (!isOpen) return null;
 
-                    <div>
-                        <label htmlFor="icon" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Ikon Modul</label>
-                        <Input
-                            id="icon"
-                            type="file"
-                            accept="image/*"
-                            onChange={handleFileChange}
-                            className="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 dark:text-gray-400 focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400"
-                        />
-                        {existingIcon && !iconFile && (
-                            <div className="mt-2 flex items-center gap-2">
-                                <img src={existingIcon.startsWith('http') ? existingIcon : `${process.env.NEXT_PUBLIC_API_URL}/uploads/${existingIcon}`} alt="Current Icon" className="w-16 h-16 object-contain rounded-md border dark:border-gray-700 p-1" />
-                                <span className="text-sm text-gray-500 dark:text-gray-400">Ikon saat ini</span>
-                            </div>
-                        )}
-                        {iconFile && (
-                            <div className="mt-2 flex items-center gap-2">
-                                <img src={URL.createObjectURL(iconFile)} alt="New Icon Preview" className="w-16 h-16 object-contain rounded-md border dark:border-gray-700 p-1" />
-                                <span className="text-sm text-gray-500 dark:text-gray-400">Pratinjau ikon baru</span>
-                            </div>
-                        )}
-                    </div>
+  return (
+    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex justify-center items-center p-4">
+      <div className="bg-white dark:bg-gray-800 rounded-xl shadow-xl w-full max-w-md max-h-[90vh] flex flex-col">
 
-                    <div className="flex justify-end gap-3 pt-4">
-                        <Button type="button" variant="outline" onClick={onClose}>Batal</Button>
-                        <Button type="submit" disabled={loading}>
-                            {loading ? <Loader2 className="animate-spin mr-2" size={16} /> : <Save size={16} className="mr-2" />}
-                            {initialData?._id ? "Simpan Perubahan" : "Tambah Modul"}
-                        </Button>
-                    </div>
-                </form>
-            </div>
+        {/* HEADER */}
+        <div className="flex justify-between items-center p-4 border-b dark:border-gray-700">
+          <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
+            {initialData?._id ? "Edit Modul" : "Tambah Modul"}
+          </h2>
+          <button onClick={onClose}>
+            <X />
+          </button>
         </div>
-    );
+
+        {/* FORM */}
+        <form onSubmit={handleSubmit} className="p-5 space-y-4 overflow-y-auto">
+
+          {/* TITLE */}
+          <div>
+            <label className="text-sm">Judul Modul</label>
+            <Input
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              required
+              autoFocus
+            />
+          </div>
+
+          {/* SLUG */}
+          <div>
+            <label className="text-sm">Slug</label>
+            <Input value={slug} readOnly />
+          </div>
+
+          {/* CATEGORY */}
+          <div>
+            <label className="text-sm">Kategori</label>
+            <select
+              value={category}
+              onChange={(e) => setCategory(e.target.value)}
+              className="w-full p-2 rounded border dark:bg-gray-700"
+            >
+              <option value="mudah">Mudah</option>
+              <option value="sedang">Sedang</option>
+              <option value="sulit">Sulit</option>
+            </select>
+          </div>
+
+          {/* OVERVIEW */}
+          <div>
+            <label className="text-sm">Overview</label>
+            <Textarea
+              value={overview}
+              onChange={(e) => setOverview(e.target.value)}
+              required
+            />
+          </div>
+
+          {/* ICON */}
+          <div>
+            <label className="text-sm">Ikon</label>
+            <Input type="file" accept="image/*" onChange={handleFileChange} />
+
+            {/* Preview lama */}
+            {existingIcon && !iconFile && (
+              <img
+                src={
+                  existingIcon.startsWith("http")
+                    ? existingIcon
+                    : `${process.env.NEXT_PUBLIC_API_URL}/uploads/${existingIcon}`
+                }
+                className="w-16 mt-2"
+              />
+            )}
+
+            {/* Preview baru */}
+            {iconFile && (
+              <img
+                src={URL.createObjectURL(iconFile)}
+                className="w-16 mt-2"
+              />
+            )}
+          </div>
+
+          {/* ACTION */}
+          <div className="flex justify-end gap-2 pt-3">
+            <Button type="button" variant="outline" onClick={onClose}>
+              Batal
+            </Button>
+
+            <Button type="submit" disabled={loading}>
+              {loading ? (
+                <Loader2 className="animate-spin w-4 h-4" />
+              ) : (
+                <>
+                  <Save className="w-4 h-4 mr-1" />
+                  Simpan
+                </>
+              )}
+            </Button>
+          </div>
+
+        </form>
+      </div>
+    </div>
+  );
 }
