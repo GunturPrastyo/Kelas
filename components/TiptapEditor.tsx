@@ -227,8 +227,8 @@ const MenuBar = ({ editor }: { editor: Editor | null }) => {
         // Prompt untuk keterangan gambar
         const caption = window.prompt("Masukkan keterangan gambar (opsional):");
 
-        // URL dari backend adalah path relatif, kita perlu menggabungkannya dengan base URL API
-        const fullImageUrl = `${process.env.NEXT_PUBLIC_API_URL}${imageUrl}`;
+        // Cek apakah URL sudah absolute (Vercel Blob) atau masih relatif
+        const fullImageUrl = imageUrl.startsWith('http') ? imageUrl : `${process.env.NEXT_PUBLIC_API_URL}${imageUrl}`;
         editor?.chain().focus().setImage({ src: fullImageUrl, caption } as any).run();
       } catch (error) {
         console.error(error);

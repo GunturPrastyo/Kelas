@@ -61,7 +61,7 @@ export const TiptapMenuBar = ({ editor }: { editor: Editor | null }) => {
 
                 const data = await res.json();
                 // Backend mengirimkan { imageUrl: '...' }, jadi kita ambil dari sana
-                const fullImageUrl = `${process.env.NEXT_PUBLIC_API_URL}${data.imageUrl}`;
+                const fullImageUrl = data.imageUrl.startsWith('http') ? data.imageUrl : `${process.env.NEXT_PUBLIC_API_URL}${data.imageUrl}`;
                 editor.chain().focus().setImage({ src: fullImageUrl }).run();
             } catch (error) {
                 console.error("Error uploading image:", error);

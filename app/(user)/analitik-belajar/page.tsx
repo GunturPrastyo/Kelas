@@ -1350,7 +1350,7 @@ export default function AnalitikBelajarPage() {
                 >
                   <div className="flex items-center gap-4 w-full sm:w-auto">
                     <img
-                      src={`${process.env.NEXT_PUBLIC_API_URL}/uploads/${recommendations.repeatModule.moduleIcon}`}
+                      src={recommendations.repeatModule.moduleIcon.startsWith('http') ? recommendations.repeatModule.moduleIcon : `${process.env.NEXT_PUBLIC_API_URL}/uploads/${recommendations.repeatModule.moduleIcon}`}
                       className="w-16 h-16 rounded-lg object-contain bg-white/30 dark:bg-gray-700/40 p-1 flex-shrink-0"
                       alt="gambar modul"
                     />
@@ -1436,7 +1436,7 @@ export default function AnalitikBelajarPage() {
                 >
                   <div className="flex items-center gap-4 w-full sm:w-auto">
                     <img
-                      src={`${process.env.NEXT_PUBLIC_API_URL}/uploads/${recommendations.continueToModule.moduleIcon}`}
+                      src={recommendations.continueToModule.moduleIcon.startsWith('http') ? recommendations.continueToModule.moduleIcon : `${process.env.NEXT_PUBLIC_API_URL}/uploads/${recommendations.continueToModule.moduleIcon}`}
                       className="w-16 h-16 rounded-lg object-contain bg-white/30 dark:bg-gray-700/40 p-1 flex-shrink-0"
                       alt="gambar modul"
                     />
