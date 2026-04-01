@@ -17,13 +17,14 @@ interface Props {
     category: string;
     icon?: string;
   };
-  onDelete?: (id: string) => void; // Jadikan opsional jika tidak selalu ada
+  onDelete: (id: string) => void;
+  onEdit: (modul: any) => void; // Add onEdit prop
 }
 
-export default function ModulCard({ modul, onDelete }: Props) {
+export default function ModulCard({ modul, onDelete, onEdit }: Props) {
   const [hasPostTest, setHasPostTest] = useState<boolean | null>(null);
   const [isFeatureModalOpen, setIsFeatureModalOpen] = useState(false);
-  const router = useRouter();
+  const router = useRouter(); // Keep router for internal navigation (e.g., to topics)
 
   useEffect(() => {
     const checkPostTest = async () => {
@@ -38,14 +39,10 @@ export default function ModulCard({ modul, onDelete }: Props) {
     checkPostTest();
   }, [modul._id]);
 
-  const handleCardClick = () => {
-    // Cek apakah event target adalah bagian dari tombol aksi
-    // Ini adalah cara sederhana, idealnya event click pada tombol aksi
-    // harus menghentikan propagasi (e.stopPropagation())
-    // yang sudah dilakukan.
-    // Navigasi hanya terjadi jika card itu sendiri yang diklik.
-     router.push(`/admin/modul/${modul.slug}`);
-  };
+  // No longer need handleCardClick to navigate to edit page,
+  // as edit will be handled by modal.
+  // Card click will now navigate to the module's topic list.
+  const handleCardClick = () => router.push(`/admin/modul/${modul.slug}`);
 
   return (
     <Fragment>
@@ -69,10 +66,10 @@ export default function ModulCard({ modul, onDelete }: Props) {
             <Target size={16} />
           </button>
           <Link
-            href={`/admin/modul/edit-modul?slug=${modul.slug}`}
+            href="#" // Change to # as edit is now modal-based
             title="Edit Modul"
             className="p-2 rounded-lg text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-700"
-            onClick={(e) => e.stopPropagation()}
+            onClick={(e) => { e.stopPropagation(); onEdit(modul); }} // Trigger onEdit prop
           >
             <Pencil size={16} />
           </Link>
