@@ -716,8 +716,19 @@ export default function AnalitikBelajarPage() {
             background-image: url("${patternDark}");
         }
       `}</style>
+        {/* Header Analitik Belajar */}
+        <section className="bg-gradient-to-r from-blue-500 to-indigo-600 dark:from-blue-500/20 dark:to-indigo-600/20 rounded-lg p-4 mb-6 shadow-md text-white flex items-center gap-4">
+          <LayoutDashboard className="h-12 w-12 sm:h-16 sm:w-16" />
+          <div>
+            <h2 className="text-base sm:text-lg font-bold">Analitik Belajar</h2>
+            <p className="text-sm opacity-90">Pantau perkembangan belajarmu dan dapatkan rekomendasi personal.</p>
+          </div>
+        </section>
+
       {/* TOPIK YANG PERLU DIPERKUAT */}
       <section id="weak-topics-section" className="relative overflow-hidden custom-pattern-bg p-6 rounded-2xl shadow-md border border-slate-200 dark:border-slate-800 border-b-[6px] border-l-2 border-b-slate-200 border-l-slate-200 dark:border-b-slate-700 dark:border-l-slate-700">
+      
+
         {/* Dekorasi Latar Belakang: Watermark Icon */}
         <div className="absolute -top-12 -right-12 opacity-[0.04] pointer-events-none select-none">
           <AlertTriangle className="w-64 h-64 text-yellow-600 dark:text-yellow-400 transform rotate-12" />
