@@ -51,6 +51,9 @@ export default function PreTestPage() {
     const { showAlert } = useAlert();
     const total = questions.length;
 
+    // Calculate progress percentage
+    const progressPercentage = total > 0 ? ((idx + 1) / total) * 100 : 0;
+
     // --- Notification Helper ---
     const createNotification = useCallback(async (message: string, link: string) => {
         if (!user) return;
@@ -181,7 +184,7 @@ export default function PreTestPage() {
                 // Muat progress yang belum selesai dari localStorage jika ada
                 const stateKey = `pretest_state_${user._id}`;
                 const progressRaw = localStorage.getItem(stateKey);
-                
+
                 let initialTimeLeft = duration;
                 let initialStartTime = Date.now();
 
@@ -199,7 +202,7 @@ export default function PreTestPage() {
                         initialStartTime = Date.now() - (timeSpent * 1000);
                     }
                 }
-                
+
                 setTimeLeft(initialTimeLeft);
                 setStartTime(initialStartTime);
 
@@ -414,7 +417,7 @@ export default function PreTestPage() {
                     { name: "Dashboard", href: "/dashboard" },
                     { name: "Hasil Pre-test", href: "#" }
                 ]} />
-              
+
 
                 <section className="bg-gradient-to-r from-indigo-500 to-blue-600 rounded-xl p-4 mt-6 shadow-md text-white flex items-center gap-4">
                     <img src="/test.webp" width={256} height={256} className="h-24 w-24" alt="pre test" />
@@ -473,12 +476,12 @@ export default function PreTestPage() {
                             </div>
                         </div>
                     </div>
-                 
+
                     <div className="mt-6 flex gap-2">
                         <button onClick={handleRetake} className="bg-transparent text-blue-600 dark:text-blue-400 border border-blue-500/20 dark:border-blue-400/20 px-3.5 py-2.5 rounded-lg cursor-pointer hover:bg-blue-50 dark:hover:bg-blue-900/20 transition text-sm sm:text-base">Ulangi Tes Awal</button>
                         <Link href="/modul" className="bg-blue-600 hover:bg-blue-700 text-white border-none px-3.5 py-2.5 rounded-lg cursor-pointer text-sm sm:text-base">Lihat Rekomendasi Modul</Link>
                     </div>
-                   
+
                 </section>
                 <footer className="bg-white dark:bg-gray-800 p-4 text-center text-gray-600 dark:text-gray-400 text-sm mt-8 shadow-md font-poppins">
                     <p>&copy; 2025 KELAS. All rights reserved.</p>
@@ -583,7 +586,7 @@ export default function PreTestPage() {
 
     return (
         <div className="max-w-full mx-auto p-2 font-sans mt-22">
-        
+
             <Breadcrumb paths={[
                 { name: "Dashboard", href: "/dashboard" },
                 { name: "Pre-test", href: "#" }
@@ -715,7 +718,8 @@ export default function PreTestPage() {
                             <div
                                 id="progBar"
                                 className="h-full rounded-full bg-gradient-to-r from-blue-500 to-sky-500 transition-all duration-500 ease-out"
-                             ></div>
+                                style={{ width: `${progressPercentage}%` }}
+                            ></div>
                         </div>
                         <div className="text-sm text-slate-500 dark:text-slate-400 mt-2">Pertanyaan ke <span>{idx + 1}</span> dari <span>{total}</span></div>
                     </div>
@@ -753,8 +757,8 @@ export default function PreTestPage() {
                                             onClick={() => setIdx(index)}
                                             className={`h-10 w-full rounded-lg text-sm font-semibold transition-all flex items-center justify-center relative
                                                 ${isCurrent ? 'ring-2 ring-offset-2 ring-blue-500 dark:ring-offset-gray-800 z-10' : ''}
-                                                ${isAnswered 
-                                                    ? 'bg-blue-600 text-white hover:bg-blue-700 shadow-md' 
+                                                ${isAnswered
+                                                    ? 'bg-blue-600 text-white hover:bg-blue-700 shadow-md'
                                                     : 'bg-white text-gray-600 dark:bg-gray-800 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700 border border-gray-200 dark:border-gray-600 shadow-sm'}
                                             `}
                                             title={`Soal ${index + 1}${isAnswered ? ' (Terjawab)' : ''}`}
