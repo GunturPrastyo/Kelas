@@ -25,11 +25,9 @@ function AdminPagesContent({ children }: { children: React.ReactNode }) {
         ></div>
       )}
 
-      <div
+       <div
         id="main-content"
-        className={`flex-1 flex flex-col min-w-0 transition-all duration-300 ease-in-out overflow-hidden pb-16 md:pb-0 ${
-          isSidebarCollapsed ? "md:pl-20" : "md:pl-48"
-        }`}
+        className={`flex-1 flex flex-col min-w-0 transition-all duration-300 ease-in-out overflow-hidden pb-16 md:pb-0`}
       >
         <Navbar />
         <main

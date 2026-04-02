@@ -1333,7 +1333,7 @@ export default function AnalitikBelajarPage() {
         <div className="relative z-10">
           <div className="flex items-center justify-between mb-2">
             <h3 className="text-md sm:text-lg font-bold tracking-wide flex items-center gap-2">
-              <Sparkles className="w-6 h-6 text-purple-400 " />
+             
               Rekomendasi Belajar
             </h3>
             {/* <span className="text-xs sm:text-sm bg-blue-200/60 dark:bg-gray-700/50 px-3 py-1 rounded-full text-gray-700 dark:text-gray-300">

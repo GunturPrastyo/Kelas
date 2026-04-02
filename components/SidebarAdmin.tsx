@@ -71,7 +71,7 @@ export default function SidebarAdmin() {
       id="sidebar-admin"
       className={`fixed z-50 transition-all duration-300 ease-in-out bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700
         bottom-0 left-0 w-full h-16 border-t flex flex-row items-center justify-around px-2 pb-[env(safe-area-inset-bottom)]
-        md:top-0 md:h-screen md:border-t-0 md:border-r md:flex-col md:justify-start md:px-0 md:pb-0 md:w-64
+        md:top-0 md:h-screen md:border-t-0 md:border-r md:flex-col md:justify-start md:px-0 md:pb-0 md:w-48
         ${isSidebarCollapsed ? 'md:-translate-x-full' : 'md:translate-x-0'}`}
     >
       {/* Sidebar Header (Desktop) */}

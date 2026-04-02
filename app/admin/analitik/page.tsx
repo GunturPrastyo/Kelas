@@ -1055,7 +1055,7 @@ export default function AdminAnalyticsPage() {
     }
 
     return (
-        <div className="max-w-7xl mx-auto font-poppins mt-22">
+        <div className="max-w-full mx-auto font-poppins mt-22">
            
             {/* SECTION 1: INSIGHT GLOBAL */}
             <h2 className="text-xl font-bold mb-4 text-gray-700 dark:text-gray-300">Ringkasan Analitik</h2>

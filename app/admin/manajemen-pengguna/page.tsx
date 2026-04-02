@@ -394,9 +394,9 @@ export default function ManajemenPenggunaPage() {
     };
 
     return (
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 font-poppins">
+        <div className="max-w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 font-poppins">
            
-                <script src="https://cdn.tailwindcss.com"></script>
+               
             
 
             {/* Notifikasi */}
@@ -409,8 +409,8 @@ export default function ManajemenPenggunaPage() {
 
             <header className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4 mt-16">
                 <div>
-                    <h1 className="text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-600 dark:from-blue-400 dark:to-indigo-400 flex items-center gap-3">
-                        <Users className="text-blue-600 dark:text-blue-400" size={32} />
+                    <h1 className="text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-slate-600 to-gray-600 dark:from-slate-400 dark:to-gray-400 flex items-center gap-3">
+                        <Users className="text-gray-600 dark:text-gray-400" size={32} />
                         Manajemen Pengguna
                     </h1>
                     <p className="text-gray-500 dark:text-gray-400 mt-2 text-sm font-medium">Kelola data siswa, guru, dan administrator dalam satu tempat.</p>
