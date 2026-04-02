@@ -9,6 +9,7 @@ import {
   Sparkles,
   Menu,
   Home,
+  Award,
   X,
   ChevronFirst,
   ChevronRight,
@@ -18,23 +19,17 @@ import {
   Moon,
   Sun,
   ArrowUp,
-  Compass,
   Laptop,
-  Award,
   Users,
   Instagram,
   Youtube,
   Mail,
   MapPin,
   Quote,
-  Code,
   Database,
-  Layout,
   Server,
   Smartphone,
   Globe,
-  BarChart2,
-  Bot
 } from 'lucide-react';
 import { useState, useEffect, useRef } from 'react';
 import { useTheme } from 'next-themes';
@@ -114,40 +109,40 @@ const testimonials = [
 // Data Dummy Fitur
 const features = [
   {
-    icon: <Compass className="w-8 h-8 md:w-10 md:h-10 text-blue-600 dark:text-blue-400" strokeWidth={1.5} />,
+    icon: "/target.webp",
     title: "Jalur Belajar Personal",
     desc: "Sistem cerdas kami menyesuaikan tingkat kesulitan materi berdasarkan hasil Tes Awal. Belajar mulai dari Dasar, Menengah, atau Lanjut sesuai kemampuanmu.",
-    image: "/progress.webp"
+    image: "/pre-tes.webp"
   },
   {
-    icon: <Layout className="w-8 h-8 md:w-10 md:h-10 text-purple-600 dark:text-purple-400" strokeWidth={1.5} />,
+    icon: "/modules.png",
     title: "Mode Belajar Fleksibel",
     desc: "Pilih gaya belajarmu sendiri. Tersedia materi dalam bentuk teks interaktif, video pembelajaran, hingga sesi praktik langsung untuk pengalaman yang optimal.",
     image: "/book.webp"
   },
   {
-    icon: <BarChart2 className="w-8 h-8 md:w-10 md:h-10 text-emerald-500 dark:text-emerald-400" strokeWidth={1.5} />,
+    icon: "/analitik.png",
     title: "Analisis Pembelajaran",
     desc: "Pantau perkembanganmu secara terperinci. Dapatkan laporan akurasi, kecepatan, fokus, serta rekomendasi untuk topik yang masih menjadi kelemahanmu.",
     image: "/analisis.webp"
   },
   {
-    icon: <Code className="w-8 h-8 md:w-10 md:h-10 text-indigo-500 dark:text-indigo-400" strokeWidth={1.5} />,
+    icon: "/coding.webp",
     title: "Live Code Playground",
     desc: "Terapkan teori langsung ke praktik. Tulis, jalankan, dan lihat hasil kode HTML maupun JavaScript secara real-time di dalam browser tanpa aplikasi tambahan.",
-    image: "/score.webp"
+    image: "/post-test.webp"
   },
   {
-    icon: <Bot className="w-8 h-8 md:w-10 md:h-10 text-sky-500 dark:text-sky-400" strokeWidth={1.5} />,
+    icon: "/robot.png",
     title: "Tutor AI 'Kak Gem'",
     desc: "Buntu saat belajar? Tanyakan saja pada Kak Gem, asisten AI cerdas yang siap membantumu memahami materi dan memecahkan masalah koding kapan saja.",
-    image: "/thunder.png"
+    image: "/robot.png"
   },
   {
-    icon: <Award className="w-8 h-8 md:w-10 md:h-10 text-amber-500 dark:text-amber-400" strokeWidth={1.5} />,
+    icon: "/progress1.webp",
     title: "Gamifikasi & Sertifikat",
     desc: "Jaga motivasi belajar dengan sistem streak harian, raih skor terbaik di setiap post-test, dan dapatkan sertifikat resmi setelah menyelesaikan modul.",
-    image: "/target.webp"
+    image: "/post-test-akhir.webp"
   }
 ];
 
@@ -574,11 +569,11 @@ export default function LandingPage() {
         </div>
 
         <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex flex-col lg:flex-row items-center lg:items-start gap-12 lg:gap-16">
+          <div className="flex flex-col lg:flex-row items-center lg:items-start gap-4 lg:gap-12">
             
             {/* LEFT COLUMN: SLIDER (order-2 on mobile, order-1 on lg) */}
             <div className="w-full lg:w-7/12 order-2 lg:order-1">
-              <div className="relative h-[520px] sm:h-[480px] overflow-hidden">
+              <div className="relative h-[450px] sm:h-[420px] overflow-hidden">
                 {features.map((feature, idx) => (
                   <motion.div
                     key={idx}
@@ -592,13 +587,12 @@ export default function LandingPage() {
                     }}
                     transition={{ type: 'spring', stiffness: 300, damping: 30 }}
                   >
-                    <div className="h-full bg-white dark:bg-gray-800 rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.08)] dark:shadow-[0_8px_30px_rgb(0,0,0,0.15)] border border-slate-100 dark:border-gray-700 flex flex-col group relative overflow-hidden">
-                      
+                    <div className="h-96 bg-white dark:bg-gray-800 rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.08)] dark:shadow-[0_8px_30px_rgb(0,0,0,0.15)] border border-slate-100 dark:border-gray-700 flex flex-col group relative overflow-hidden">
                       {/* Card Content */}
-                      <div className="p-8 pb-28 relative z-10 flex-1 flex flex-col sm:flex-row items-start sm:items-center gap-6">
-                        <div className="flex-1 relative z-10">
-                          <div className="w-16 h-16 rounded-2xl bg-slate-50 dark:bg-gray-700/50 flex items-center justify-center mb-6 group-hover:scale-110 group-hover:rotate-3 transition-transform duration-300">
-                            {feature.icon}
+                      <div className="p-8 pb-20 relative z-10 flex-1 flex flex-col sm:flex-row items-start sm:items-center gap-6">
+                        <div className="flex-1 relative z-10 w-full">
+                          <div className="w-16 h-16 rounded-2xl bg-slate-50 dark:bg-gray-700/50 flex items-center justify-center mb-6 group-hover:scale-110 group-hover:rotate-3 transition-transform duration-300 p-2">
+                            <img src={feature.icon} alt={feature.title} className="w-full h-full object-contain" />
                           </div>
                           <h3 className="text-xl font-bold text-slate-800 dark:text-gray-100 mb-3 font-[family-name:var(--font-gagalin)] tracking-wide group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
                             {feature.title}
@@ -614,27 +608,25 @@ export default function LandingPage() {
                         </div>
                       </div>
 
-                      {/* Overlay Navigation (Inside Card) */}
-                      <div className="absolute bottom-0 left-0 w-full px-8 py-5 flex items-center justify-between z-20 bg-slate-50/90 dark:bg-gray-900/90 backdrop-blur-sm border-t border-slate-100 dark:border-gray-700">
-                        <div className="flex items-center gap-2.5">
-                          {features.map((_, dotIdx) => (
-                            <button
-                              key={dotIdx}
-                              onClick={() => setActiveFeature(dotIdx)}
-                              className={`h-2.5 rounded-full transition-all duration-500 ease-out ${activeFeature === dotIdx ? 'w-8 bg-blue-600 dark:bg-blue-500' : 'w-2.5 bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 dark:hover:bg-slate-600'}`}
-                              aria-label={`Go to feature ${dotIdx + 1}`}
-                            />
-                          ))}
-                        </div>
-                        <div className="flex items-center gap-3">
-                          <button onClick={handlePrevFeature} className="p-2.5 sm:p-3 rounded-full bg-white dark:bg-gray-800 border border-slate-200 dark:border-gray-700 shadow-sm hover:shadow-md hover:bg-slate-50 dark:hover:bg-gray-700 transition-all text-slate-600 dark:text-slate-300">
-                            <ChevronLeft className="w-5 h-5" />
-                          </button>
-                          <button onClick={handleNextFeature} className="p-2.5 sm:p-3 rounded-full bg-white dark:bg-gray-800 border border-slate-200 dark:border-gray-700 shadow-sm hover:shadow-md hover:bg-slate-50 dark:hover:bg-gray-700 transition-all text-slate-600 dark:text-slate-300">
-                            <ChevronRight className="w-5 h-5" />
-                          </button>
-                        </div>
+                      {/* Navigation Dots */}
+                      <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-20 flex items-center gap-2.5">
+                        {features.map((_, dotIdx) => (
+                          <button
+                            key={dotIdx}
+                            onClick={() => setActiveFeature(dotIdx)}
+                            className={`h-2.5 rounded-full transition-all duration-500 ease-out ${activeFeature === dotIdx ? 'w-8 bg-blue-600 dark:bg-blue-500' : 'w-2.5 bg-slate-300 dark:bg-slate-700 hover:bg-slate-400 dark:hover:bg-slate-600'}`}
+                            aria-label={`Go to feature ${dotIdx + 1}`}
+                          />
+                        ))}
                       </div>
+
+                      {/* Prev/Next Buttons */}
+                      <button onClick={handlePrevFeature} className="absolute left-4 top-1/2 -translate-y-1/2 z-20 p-2.5 sm:p-3 rounded-full bg-white/50 dark:bg-gray-900/50 border border-slate-200 dark:border-gray-700 shadow-md hover:shadow-lg hover:bg-white dark:hover:bg-gray-800 transition-all text-slate-600 dark:text-slate-300 opacity-0 group-hover:opacity-100 translate-x-4 group-hover:translate-x-0">
+                        <ChevronLeft className="w-5 h-5" />
+                      </button>
+                      <button onClick={handleNextFeature} className="absolute right-4 top-1/2 -translate-y-1/2 z-20 p-2.5 sm:p-3 rounded-full bg-white/50 dark:bg-gray-900/50 border border-slate-200 dark:border-gray-700 shadow-md hover:shadow-lg hover:bg-white dark:hover:bg-gray-800 transition-all text-slate-600 dark:text-slate-300 opacity-0 group-hover:opacity-100 -translate-x-4 group-hover:translate-x-0">
+                        <ChevronRight className="w-5 h-5" />
+                      </button>
 
                     </div>
                   </motion.div>
