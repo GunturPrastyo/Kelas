@@ -1,9 +1,9 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, Fragment } from "react";
 import { authFetch } from "@/lib/authFetch";
 import { useRouter } from "next/navigation";
-import { Award, TrendingUp, TrendingDown, LayoutDashboard, Activity, BarChartHorizontal, AlertTriangle, Users, Target, Play, Rocket, Sparkles, Flame, Crown } from "lucide-react";
+import { Award, TrendingUp, BookOpen, TrendingDown, LayoutDashboard, Activity, BarChartHorizontal, AlertTriangle, Users, Target, Play, Rocket, Sparkles, Flame, Crown } from "lucide-react";
 import { Chart, registerables } from "chart.js";
 import { ChevronDown, ChevronRight } from "lucide-react";
 import { driver } from "driver.js";
@@ -95,7 +95,8 @@ interface LeaderboardUser {
   _id: string;
   name: string;
   dailyStreak: number;
-  avatar?: string;
+  avatar?: string; 
+  totalCompletedTopics?: number; // Menambahkan field baru untuk total topik yang diselesaikan
 }
 
 // Opsi untuk useInView, termasuk properti kustom `triggerOnce`
@@ -263,14 +264,14 @@ export default function AnalitikBelajarPage() {
 
         }
 
-        const progressData = await checkResponse(progressRes, 'progress');
+        const progressData = (await checkResponse(progressRes, 'progress')) || [];
         const analyticsData = await checkResponse(analyticsRes, 'analytics');
         const weeklyActivityData = await checkResponse(weeklyActivityRes, 'weekly activity');
         const classWeeklyActivityData = await checkResponse(classWeeklyActivityRes, 'class weekly activity');
         const competencyProfileData = await checkResponse(competencyProfileRes, 'competency profile');
         const comparisonData = await checkResponse(comparisonRes, 'comparison');
         const recommendationsData: RecommendationData | null = await checkResponse(recommendationsRes, 'recommendations');
-        const weakTopicsData = await checkResponse(weakTopicsRes, 'weak topics');
+        const weakTopicsData = (await checkResponse(weakTopicsRes, 'weak topics')) || [];
         const leaderboardDataRes = await checkResponse(leaderboardRes, 'leaderboard');
 
         const completedModules = progressData.filter((m: ModulProgress) => m.progress === 100).length;
@@ -281,8 +282,8 @@ export default function AnalitikBelajarPage() {
         const studyMinutes = Math.floor((totalSeconds % 3600) / 60);
         const dailyStreak = analyticsData.dailyStreak || 0;
 
-        const comparisonUserScoresMap = new Map(comparisonData.labels.map((label: string, index: number) => [label, comparisonData.userScores[index]]));
-        const comparisonClassAveragesMap = new Map(comparisonData.labels.map((label: string, index: number) => [label, comparisonData.classAverages[index]]));
+        const comparisonUserScoresMap = new Map(comparisonData?.labels.map((label: string, index: number) => [label, comparisonData.userScores[index]]) || []);
+        const comparisonClassAveragesMap = new Map(comparisonData?.labels.map((label: string, index: number) => [label, comparisonData.classAverages[index]]) || []);
 
         // Buat ulang data perbandingan berdasarkan semua modul
         const allModuleTitles = progressData.map((modul: ModulProgress) => modul.title);
@@ -325,7 +326,7 @@ export default function AnalitikBelajarPage() {
         // Tambahkan modulSlug ke setiap topik yang lemah
         const enrichedWeakTopics = weakTopicsData.map((topic: any) => {
           const moduleForTopic = progressData.find((modul: any) =>
-            modul.topics.some((t: any) => t.title === topic.topicTitle)
+            modul.topics && modul.topics.some((t: any) => t.title === topic.topicTitle)
           );
           return { ...topic, modulSlug: moduleForTopic?.slug };
         }).filter((t: WeakTopicData) => t.status !== "Sudah bagus" && t.modulSlug);
@@ -1159,7 +1160,7 @@ export default function AnalitikBelajarPage() {
             <p className="text-sm text-gray-500 dark:text-gray-400 mb-8 ml-1">Peringkat konsistensi belajarmu dibandingkan temanmu.</p>
             
             {leaderboardData.length >= 3 ? (
-            <div className="flex justify-center items-end gap-2 mb-2">
+            <div className="flex justify-center items-end gap-4 mb-2">
               {/* Rank 2 */}
               <div className="flex flex-col items-center">
                 <div className="w-10 h-10 rounded-full bg-gray-100 border-2 border-gray-300 flex items-center justify-center relative shadow-sm">
@@ -1172,12 +1173,14 @@ export default function AnalitikBelajarPage() {
                   className="relative mt-1 cursor-pointer"
                   onClick={() => setActiveTooltip(activeTooltip === leaderboardData[1]._id ? null : leaderboardData[1]._id)}
                 >
-                  <div className="text-[10px] font-bold text-gray-700 dark:text-gray-300 truncate max-w-[60px] text-center">
-                    {leaderboardData[1].name}
+                  <div className="text-[10px] font-bold text-gray-700 dark:text-gray-300 truncate max-w-[60px] text-center leading-tight">
+                    {leaderboardData[1].name} 
                   </div>
                   {activeTooltip === leaderboardData[1]._id && (
+                    // Tooltip for Rank 2
                     <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 bg-gray-900 text-white text-[10px] rounded shadow-lg z-50 whitespace-nowrap">
-                      {leaderboardData[1].name}
+                      {leaderboardData[1].name} <br />
+                      {leaderboardData[1].totalCompletedTopics !== undefined ? `${leaderboardData[1].totalCompletedTopics} Topik Selesai` : ''}
                       <div className="absolute top-full left-1/2 transform -translate-x-1/2 border-4 border-transparent border-t-gray-900"></div>
                     </div>
                   )}
@@ -1197,12 +1200,14 @@ export default function AnalitikBelajarPage() {
                   className="relative mt-1 cursor-pointer"
                   onClick={() => setActiveTooltip(activeTooltip === leaderboardData[0]._id ? null : leaderboardData[0]._id)}
                 >
-                  <div className="text-xs font-bold text-gray-800 dark:text-white truncate max-w-[70px] text-center">
-                    {leaderboardData[0].name}
+                  <div className="text-xs font-bold text-gray-800 dark:text-white truncate max-w-[70px] text-center leading-tight">
+                    {leaderboardData[0].name} 
                   </div>
                   {activeTooltip === leaderboardData[0]._id && (
+                    // Tooltip for Rank 1
                     <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 bg-gray-900 text-white text-[10px] rounded shadow-lg z-50 whitespace-nowrap">
-                      {leaderboardData[0].name}
+                      {leaderboardData[0].name} <br />
+                      {leaderboardData[0].totalCompletedTopics !== undefined ? `${leaderboardData[0].totalCompletedTopics} Topik Selesai` : ''}
                       <div className="absolute top-full left-1/2 transform -translate-x-1/2 border-4 border-transparent border-t-gray-900"></div>
                     </div>
                   )}
@@ -1222,12 +1227,14 @@ export default function AnalitikBelajarPage() {
                   className="relative mt-1 cursor-pointer"
                   onClick={() => setActiveTooltip(activeTooltip === leaderboardData[2]._id ? null : leaderboardData[2]._id)}
                 >
-                  <div className="text-[10px] font-bold text-gray-700 dark:text-gray-300 truncate max-w-[60px] text-center">
-                    {leaderboardData[2].name}
+                  <div className="text-[10px] font-bold text-gray-700 dark:text-gray-300 truncate max-w-[60px] text-center leading-tight">
+                    {leaderboardData[2].name} 
                   </div>
                   {activeTooltip === leaderboardData[2]._id && (
+                    // Tooltip for Rank 3
                     <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 bg-gray-900 text-white text-[10px] rounded shadow-lg z-50 whitespace-nowrap">
-                      {leaderboardData[2].name}
+                      {leaderboardData[2].name} <br />
+                      {leaderboardData[2].totalCompletedTopics !== undefined ? `${leaderboardData[2].totalCompletedTopics} Topik Selesai` : ''}
                       <div className="absolute top-full left-1/2 transform -translate-x-1/2 border-4 border-transparent border-t-gray-900"></div>
                     </div>
                   )}
@@ -1244,7 +1251,7 @@ export default function AnalitikBelajarPage() {
           <div className="overflow-hidden relative bg-white dark:bg-gray-800 flex-grow">
             <div className="absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-white dark:from-gray-800 to-transparent pointer-events-none z-10" />
             <div className="overflow-y-auto h-full p-3 space-y-2 custom-scrollbar">
-              {leaderboardData.slice(3).map((u, index) => (
+              {leaderboardData.slice(3, 10).map((u, index) => (
                 <div key={u._id} className="flex items-center justify-between p-2 rounded-lg hover:bg-slate-50 dark:hover:bg-gray-700/50 transition-colors">
                   <div className="flex items-center gap-3">
                     <span className="text-xs font-bold text-gray-400 w-4 text-center">{index + 4}</span>
@@ -1259,20 +1266,27 @@ export default function AnalitikBelajarPage() {
                       className="relative cursor-pointer"
                       onClick={() => setActiveTooltip(activeTooltip === u._id ? null : u._id)}
                     >
-                      <div className="text-xs font-medium text-gray-700 dark:text-gray-300 truncate max-w-[100px]">
-                        {u.name}
+                      <div className="text-xs font-medium text-gray-700 dark:text-gray-300 truncate max-w-[100px] leading-tight">
+                        {u.name} 
                       </div>
                       {activeTooltip === u._id && (
+                        // Tooltip for Ranks 4+
                         <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 bg-gray-900 text-white text-[10px] rounded shadow-lg z-50 whitespace-nowrap">
-                          {u.name}
+                          {u.name} <br />
+                          {u.totalCompletedTopics !== undefined ? `${u.totalCompletedTopics} Topik Selesai` : ''}
                           <div className="absolute top-full left-1/2 transform -translate-x-1/2 border-4 border-transparent border-t-gray-900"></div>
                         </div>
                       )}
                     </div>
                   </div>
-                  <span className="text-xs font-bold text-orange-500">{u.dailyStreak}🔥</span>
+                  <div className="flex items-center gap-4 text-xs text-right">
+                    <span className="text-gray-500 dark:text-gray-400 whitespace-nowrap w-16 text-center flex items-center justify-center gap-1">
+                      <BookOpen className="w-3 h-3" /> {u.totalCompletedTopics} topik
+                    </span>
+                    <span className="font-bold text-orange-500 w-10 text-left">{u.dailyStreak}🔥</span>
+                  </div>
                 </div>
-              ))}
+              ))} 
               {leaderboardData.length === 0 && (
                   <div className="text-center py-10 text-gray-400 text-sm">Belum ada data leaderboard.</div>
               )}
