@@ -868,9 +868,9 @@ export default function LandingPage() {
               </div>
 
               {/* Desktop: Vertical Carousel */}
-              <div className="hidden md:flex relative h-[450px] sm:h-[550px] items-center justify-center perspective-1000 w-full">
+              <div className="hidden md:flex relative h-[450px] sm:h-[550px] lg:h-[600px] items-center justify-center perspective-1000 w-full">
               <motion.div 
-                className="relative w-full max-w-xs sm:max-w-sm h-full flex items-center justify-center touch-pan-x"
+                className="relative w-full max-w-xs sm:max-w-sm md:max-w-md h-full flex items-center justify-center touch-pan-x"
                 onPanEnd={(e, info) => {
                   const swipeDistance = info.offset.y;
                   if (swipeDistance < -50) {
@@ -1051,42 +1051,43 @@ export default function LandingPage() {
       {/* --- TESTIMONIALS SECTION --- */}
       <section className="pt-6 sm:pt-0 pb-0 bg-white dark:bg-gray-900 relative overflow-hidden">
         <div className="z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center max-w-3xl mx-auto mb-12">
-            <motion.h2
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5 }}
-              className="text-3xl md:text-4xl font-medium text-slate-900 dark:text-white mb-4 font-[family-name:var(--font-gagalin)]"
-            >
-              Apa Kata Mereka?
-            </motion.h2>
-            <p className="text-lg text-slate-600 dark:text-slate-400">
-              Ribuan siswa dari berbagai jurusan telah merasakan dampak positif belajar di KELAS.
-            </p>
-          </div>
+          <div className="flex flex-col lg:flex-row items-center gap-8 lg:gap-12">
+            {/* Left Column: Title & Desc */}
+            <div className="w-full lg:w-1/3 text-center lg:text-left mb-8 lg:mb-0">
+              <motion.h2
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.5 }}
+                className="text-3xl md:text-4xl font-medium text-slate-900 dark:text-white mb-4 font-[family-name:var(--font-gagalin)]"
+              >
+                Apa Kata Mereka?
+              </motion.h2>
+              <p className="text-lg text-slate-600 dark:text-slate-400">
+                Ribuan siswa dari berbagai jurusan telah merasakan dampak positif belajar di KELAS.
+              </p>
+            </div>
 
-          {/* Infinite Scroll Container */}
-          <div className="relative w-full overflow-hidden">
+            {/* Right Column: Infinite Scroll Container */}
+            <div className="relative w-full lg:w-2/3 overflow-hidden">
 
-            {/* Desktop View (Horizontal Scroll) */}
-            <div className="hidden md:flex relative w-full overflow-hidden">
+            {/* Desktop View (Vertical Scroll) */}
+            <div className="hidden md:flex relative w-full h-[500px] overflow-hidden justify-center px-4 lg:px-8">
               {/* Gradient Masks */}
-              <div className="absolute left-0 top-0 bottom-0 w-20 bg-gradient-to-r from-white dark:from-gray-900 to-transparent z-20"></div>
-              <div className="absolute right-0 top-0 bottom-0 w-20 bg-gradient-to-l from-white dark:from-gray-900 to-transparent z-20"></div>
+              <div className="absolute top-0 left-0 right-0 h-20 bg-gradient-to-b from-white dark:from-gray-900 to-transparent z-20"></div>
+              <div className="absolute bottom-0 left-0 right-0 h-20 bg-gradient-to-t from-white dark:from-gray-900 to-transparent z-20"></div>
 
               <motion.div
-                className="flex gap-8"
-                animate={{ x: ["0%", "-50%"] }}
+                className="flex flex-col gap-8 w-full max-w-2xl"
+                animate={{ y: ["0%", "-50%"] }}
                 transition={{
                   repeat: Infinity,
                   ease: "linear",
                   duration: 30
                 }}
-                style={{ width: "max-content" }}
               >
                 {[...testimonials, ...testimonials].map((item, idx) => (
-                  <div key={`desktop-${idx}`} className="w-[400px] bg-slate-50 dark:bg-gray-800 p-8 rounded-2xl border border-slate-100 dark:border-gray-700 shadow-sm hover:shadow-md transition-shadow">
+                  <div key={`desktop-${idx}`} className="w-full bg-slate-50 dark:bg-gray-800 p-8 rounded-2xl border border-slate-100 dark:border-gray-700 shadow-sm hover:shadow-md transition-shadow">
                     <Quote className="text-blue-100 dark:text-blue-900/30 w-10 h-10 mb-4 rotate-180" />
                     <p className="text-slate-600 dark:text-slate-300 mb-6 italic text-sm leading-relaxed min-h-[80px]">"{item.content}"</p>
                     <div className="flex items-center gap-4">
@@ -1143,6 +1144,7 @@ export default function LandingPage() {
               </motion.div>
             </div>
 
+          </div>
           </div>
         </div>
         <div className="relative w-full pointer-events-none z-0 mt-10">
