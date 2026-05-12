@@ -587,47 +587,53 @@ export default function LandingPage() {
                     }}
                     transition={{ type: 'spring', stiffness: 300, damping: 30 }}
                   >
-                    <div className="h-96 bg-white dark:bg-gray-800 rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.08)] dark:shadow-[0_8px_30px_rgb(0,0,0,0.15)] border border-slate-100 dark:border-gray-700 flex flex-col group relative overflow-hidden">
-                      {/* Card Content */}
-                      <div className="p-8 pb-20 relative z-10 flex-1 flex flex-col sm:flex-row items-start sm:items-center gap-6">
-                        <div className="flex-1 relative z-10 w-full">
-                          <div className="w-16 h-16 rounded-2xl bg-slate-50 dark:bg-gray-700/50 flex items-center justify-center mb-6 group-hover:scale-110 group-hover:rotate-3 transition-transform duration-300 p-2">
-                            <img src={feature.icon} alt={feature.title} className="w-full h-full object-contain" />
+                    <div className="relative w-full h-96 group sm:w-[95%] sm:ml-4 mt-2">
+                      {/* Tumpukan Card di belakang (kiri bawah) */}
+                      <div className="absolute inset-0 bg-blue-500 dark:bg-gray-800/40 rounded-3xl transform -translate-x-3 translate-y-3 -rotate-2 z-0 border border-blue-100/50 dark:border-gray-700/50 transition-transform duration-500 group-hover:-translate-x-5 group-hover:translate-y-5 group-hover:-rotate-3"></div>
+                      <div className="absolute inset-0 bg-sky-500 dark:bg-gray-800/60 rounded-3xl transform -translate-x-1.5 translate-y-1.5 -rotate-1 z-0 border border-indigo-50/50 dark:border-gray-700/80 transition-transform duration-500 group-hover:-translate-x-2.5 group-hover:translate-y-2.5 group-hover:-rotate-1"></div>
+
+                      {/* Card Utama */}
+                      <div className="absolute inset-0 bg-white dark:bg-gray-800 rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.08)] dark:shadow-[0_8px_30px_rgb(0,0,0,0.15)] border border-slate-100 dark:border-gray-700 flex flex-col overflow-hidden z-10 transition-transform duration-500 group-hover:-translate-y-1 group-hover:translate-x-1">
+                        {/* Card Content */}
+                        <div className="p-8 pb-20 relative z-10 flex-1 flex flex-col sm:flex-row items-start sm:items-center gap-6">
+                          <div className="flex-1 relative z-10 w-full">
+                            <div className="w-16 h-16 rounded-2xl bg-slate-50 dark:bg-gray-700/50 flex items-center justify-center mb-6 group-hover:scale-110 group-hover:rotate-3 transition-transform duration-300 p-2">
+                              <img src={feature.icon} alt={feature.title} className="w-full h-full object-contain" />
+                            </div>
+                            <h3 className="text-xl font-bold text-slate-800 dark:text-gray-100 mb-3 font-[family-name:var(--font-gagalin)] tracking-wide group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+                              {feature.title}
+                            </h3>
+                            <p className="text-slate-600 dark:text-slate-400 text-sm leading-relaxed">
+                              {feature.desc}
+                            </p>
                           </div>
-                          <h3 className="text-xl font-bold text-slate-800 dark:text-gray-100 mb-3 font-[family-name:var(--font-gagalin)] tracking-wide group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
-                            {feature.title}
-                          </h3>
-                          <p className="text-slate-600 dark:text-slate-400 text-sm leading-relaxed">
-                            {feature.desc}
-                          </p>
+
+                          {/* Illustration */}
+                          <div className="absolute right-[-20px] bottom-24 sm:static sm:right-auto sm:bottom-auto w-40 h-40 sm:w-48 sm:h-48 opacity-20 sm:opacity-90 group-hover:scale-110 sm:group-hover:-translate-x-2 sm:group-hover:-translate-y-2 transition-all duration-500 pointer-events-none z-0 drop-shadow-xl flex-shrink-0">
+                            <img src={feature.image} alt={feature.title} className="w-full h-full object-contain" />
+                          </div>
                         </div>
 
-                        {/* Illustration */}
-                        <div className="absolute right-[-20px] bottom-24 sm:static sm:right-auto sm:bottom-auto w-40 h-40 sm:w-48 sm:h-48 opacity-20 sm:opacity-90 group-hover:scale-110 sm:group-hover:-translate-x-2 sm:group-hover:-translate-y-2 transition-all duration-500 pointer-events-none z-0 drop-shadow-xl flex-shrink-0">
-                          <img src={feature.image} alt={feature.title} className="w-full h-full object-contain" />
+                        {/* Navigation Dots */}
+                        <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-20 flex items-center gap-2.5">
+                          {features.map((_, dotIdx) => (
+                            <button
+                              key={dotIdx}
+                              onClick={() => setActiveFeature(dotIdx)}
+                              className={`h-2.5 rounded-full transition-all duration-500 ease-out ${activeFeature === dotIdx ? 'w-8 bg-blue-600 dark:bg-blue-500' : 'w-2.5 bg-slate-300 dark:bg-slate-700 hover:bg-slate-400 dark:hover:bg-slate-600'}`}
+                              aria-label={`Go to feature ${dotIdx + 1}`}
+                            />
+                          ))}
                         </div>
-                      </div>
-
-                      {/* Navigation Dots */}
-                      <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-20 flex items-center gap-2.5">
-                        {features.map((_, dotIdx) => (
-                          <button
-                            key={dotIdx}
-                            onClick={() => setActiveFeature(dotIdx)}
-                            className={`h-2.5 rounded-full transition-all duration-500 ease-out ${activeFeature === dotIdx ? 'w-8 bg-blue-600 dark:bg-blue-500' : 'w-2.5 bg-slate-300 dark:bg-slate-700 hover:bg-slate-400 dark:hover:bg-slate-600'}`}
-                            aria-label={`Go to feature ${dotIdx + 1}`}
-                          />
-                        ))}
                       </div>
 
                       {/* Prev/Next Buttons */}
-                      <button onClick={handlePrevFeature} className="absolute left-4 top-1/2 -translate-y-1/2 z-20 p-2.5 sm:p-3 rounded-full bg-white/50 dark:bg-gray-900/50 border border-slate-200 dark:border-gray-700 shadow-md hover:shadow-lg hover:bg-white dark:hover:bg-gray-800 transition-all text-slate-600 dark:text-slate-300 opacity-0 group-hover:opacity-100 translate-x-4 group-hover:translate-x-0">
+                      <button onClick={handlePrevFeature} className="absolute left-2 sm:left-4 top-1/2 -translate-y-1/2 z-20 p-2.5 sm:p-3 rounded-full bg-white/50 dark:bg-gray-900/50 border border-slate-200 dark:border-gray-700 shadow-md hover:shadow-lg hover:bg-white dark:hover:bg-gray-800 transition-all text-slate-600 dark:text-slate-300 opacity-0 group-hover:opacity-100 translate-x-4 group-hover:translate-x-0">
                         <ChevronLeft className="w-5 h-5" />
                       </button>
-                      <button onClick={handleNextFeature} className="absolute right-4 top-1/2 -translate-y-1/2 z-20 p-2.5 sm:p-3 rounded-full bg-white/50 dark:bg-gray-900/50 border border-slate-200 dark:border-gray-700 shadow-md hover:shadow-lg hover:bg-white dark:hover:bg-gray-800 transition-all text-slate-600 dark:text-slate-300 opacity-0 group-hover:opacity-100 -translate-x-4 group-hover:translate-x-0">
+                      <button onClick={handleNextFeature} className="absolute right-2 sm:right-4 top-1/2 -translate-y-1/2 z-20 p-2.5 sm:p-3 rounded-full bg-white/50 dark:bg-gray-900/50 border border-slate-200 dark:border-gray-700 shadow-md hover:shadow-lg hover:bg-white dark:hover:bg-gray-800 transition-all text-slate-600 dark:text-slate-300 opacity-0 group-hover:opacity-100 -translate-x-4 group-hover:translate-x-0">
                         <ChevronRight className="w-5 h-5" />
                       </button>
-
                     </div>
                   </motion.div>
                 ))}
