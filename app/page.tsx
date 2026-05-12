@@ -325,6 +325,16 @@ export default function LandingPage() {
   return (
     <div className="min-h-screen bg-white dark:bg-gray-900 font-sans text-slate-800 dark:text-slate-200 selection:bg-blue-100 dark:selection:bg-blue-900 overflow-x-hidden">
 
+      <style jsx global>{`
+        .hide-scrollbar-on-mobile::-webkit-scrollbar {
+            display: none;
+        }
+        .hide-scrollbar-on-mobile {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    `}</style>
+
       {/* --- NAVBAR --- */}
       <nav className="fixed top-0 w-full z-50 bg-white/80 dark:bg-gray-900/80 backdrop-blur-md border-b border-slate-200 dark:border-gray-800">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -833,8 +843,32 @@ export default function LandingPage() {
       <section id="mentor" className="relative pt-8 sm:pt-0 pb-16 sm:pb-24 bg-sky-300 dark:bg-sky-700 overflow-hidden">
         <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col-reverse md:flex-row items-center gap-6 lg:gap-20">
-            {/* Left Column: Vertical Carousel */}
-            <div className="w-full md:w-1/2 relative mt-4 sm:mt-0 h-[450px] sm:h-[550px] flex items-center justify-center perspective-1000">
+            {/* Left Column: Carousel */}
+            <div className="w-full md:w-1/2 relative mt-4 sm:mt-0">
+              {/* Mobile: Horizontal Scroll */}
+              <div className="md:hidden w-full overflow-x-auto pb-4 -mx-4 px-4 hide-scrollbar-on-mobile">
+                <div className="flex gap-4">
+                  {mentors.map((mentor, idx) => (
+                    <div key={`mobile-mentor-${idx}`} className="w-64 sm:w-72 flex-shrink-0 rounded-2xl overflow-hidden shadow-lg cursor-pointer" onClick={() => setSelectedMentor(mentor)}>
+                      <div className="aspect-[4/5] w-full relative group bg-white dark:bg-gray-800">
+                        <img
+                          src={mentor.image}
+                          alt={mentor.name}
+                          className="w-full h-full object-cover"
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-t from-slate-900/80 via-slate-900/30 to-transparent"></div>
+                        <div className="absolute bottom-0 left-0 p-4 text-white w-full">
+                          <p className="text-blue-300 text-[10px] font-bold uppercase tracking-wider">{mentor.role}</p>
+                          <h3 className="text-lg font-bold">{mentor.name}</h3>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Desktop: Vertical Carousel */}
+              <div className="hidden md:flex relative h-[450px] sm:h-[550px] items-center justify-center perspective-1000 w-full">
               <motion.div 
                 className="relative w-full max-w-xs sm:max-w-sm h-full flex items-center justify-center touch-pan-x"
                 onPanEnd={(e, info) => {
@@ -892,6 +926,7 @@ export default function LandingPage() {
                   )
                 })}
               </motion.div>
+              </div>
             </div>
 
             {/* Right Column: Text Content */}
