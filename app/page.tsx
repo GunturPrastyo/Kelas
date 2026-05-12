@@ -1205,40 +1205,40 @@ export default function LandingPage() {
                 </div>
 
                 {/* Mockup Phone Positioned Absolute */}
-                <div className="absolute bottom-[-30px] right-[-30px] sm:right-[-10px] transform rotate-[-12deg] group-hover:rotate-[-5deg] group-hover:translate-y-[-10px] transition-all duration-500 ease-out opacity-30 sm:opacity-100 z-0 pointer-events-none">
-                  <div className="relative border-slate-800 dark:border-slate-700 bg-slate-800 border-[8px] rounded-[2rem] h-[260px] w-[130px] shadow-2xl overflow-hidden">
+                <div className="absolute bottom-[-40px] right-[-40px] sm:bottom-[-50px] sm:right-[-20px] md:right-[10px] lg:bottom-[-60px] lg:right-[20px] transform rotate-[-12deg] group-hover:rotate-[-6deg] group-hover:translate-y-[-12px] transition-all duration-500 ease-out opacity-30 sm:opacity-100 z-0 pointer-events-none">
+                  <div className="relative border-slate-800 dark:border-slate-700 bg-slate-800 border-[8px] rounded-[2.5rem] h-[300px] w-[150px] sm:h-[340px] sm:w-[170px] lg:h-[400px] lg:w-[200px] shadow-2xl overflow-hidden">
                     <div className="absolute top-0 left-1/2 transform -translate-x-1/2 w-1/2 h-[6px] bg-slate-800 rounded-b-md z-20"></div>
                     {/* Screen Content */}
-                    <div className="w-full h-full bg-slate-50 dark:bg-slate-900 p-2.5 flex flex-col gap-3">
+                    <div className="w-full h-full bg-slate-50 dark:bg-slate-900 p-3 lg:p-4 flex flex-col gap-3 lg:gap-4">
                       {/* Header Skeleton */}
                       <div className="flex justify-between items-center mt-2">
-                        <div className="w-6 h-6 bg-blue-500 rounded-full opacity-80 shadow-sm"></div>
-                        <div className="w-4 h-4 bg-slate-200 dark:bg-slate-700 rounded-full"></div>
+                        <div className="w-6 h-6 lg:w-8 lg:h-8 bg-blue-500 rounded-full opacity-80 shadow-sm"></div>
+                        <div className="w-4 h-4 lg:w-5 lg:h-5 bg-slate-200 dark:bg-slate-700 rounded-full"></div>
                       </div>
                       
                       {/* Progress Card Skeleton */}
-                      <div className="w-full h-16 bg-white dark:bg-slate-800 rounded-xl shadow-sm p-2 flex flex-col justify-center gap-1.5 border border-slate-100 dark:border-slate-700">
-                         <div className="w-2/3 h-2 bg-slate-200 dark:bg-slate-600 rounded"></div>
-                         <div className="w-full h-1.5 bg-blue-100 dark:bg-blue-900/50 rounded-full overflow-hidden mt-1">
+                      <div className="w-full h-16 lg:h-20 bg-white dark:bg-slate-800 rounded-xl shadow-sm p-2.5 lg:p-3 flex flex-col justify-center gap-2 border border-slate-100 dark:border-slate-700">
+                         <div className="w-2/3 h-2 lg:h-2.5 bg-slate-200 dark:bg-slate-600 rounded"></div>
+                         <div className="w-full h-1.5 lg:h-2 bg-blue-100 dark:bg-blue-900/50 rounded-full overflow-hidden mt-1">
                             <div className="w-3/4 h-full bg-blue-500 rounded-full"></div>
                          </div>
                       </div>
 
                       {/* Small Grid */}
-                      <div className="grid grid-cols-2 gap-2">
-                        <div className="h-12 bg-blue-50 dark:bg-blue-900/20 rounded-xl border border-blue-100 dark:border-blue-800/30"></div>
-                        <div className="h-12 bg-purple-50 dark:bg-purple-900/20 rounded-xl border border-purple-100 dark:border-purple-800/30"></div>
+                      <div className="grid grid-cols-2 gap-2 lg:gap-3">
+                        <div className="h-12 lg:h-16 bg-blue-50 dark:bg-blue-900/20 rounded-xl border border-blue-100 dark:border-blue-800/30"></div>
+                        <div className="h-12 lg:h-16 bg-purple-50 dark:bg-purple-900/20 rounded-xl border border-purple-100 dark:border-purple-800/30"></div>
                       </div>
                       
                       {/* List */}
-                      <div className="space-y-2 mt-1">
-                        <div className="w-full h-8 bg-white dark:bg-slate-800 rounded-lg shadow-sm border border-slate-100 dark:border-slate-700 flex items-center p-1.5 gap-2">
-                            <div className="w-5 h-5 bg-green-100 dark:bg-green-900/50 rounded flex-shrink-0"></div>
-                            <div className="w-1/2 h-1.5 bg-slate-200 dark:bg-slate-600 rounded"></div>
+                      <div className="space-y-2 lg:space-y-3 mt-1 lg:mt-2">
+                        <div className="w-full h-8 lg:h-10 bg-white dark:bg-slate-800 rounded-lg shadow-sm border border-slate-100 dark:border-slate-700 flex items-center p-1.5 lg:p-2 gap-2 lg:gap-3">
+                            <div className="w-5 h-5 lg:w-6 lg:h-6 bg-green-100 dark:bg-green-900/50 rounded flex-shrink-0"></div>
+                            <div className="w-1/2 h-1.5 lg:h-2 bg-slate-200 dark:bg-slate-600 rounded"></div>
                         </div>
-                        <div className="w-full h-8 bg-white dark:bg-slate-800 rounded-lg shadow-sm border border-slate-100 dark:border-slate-700 flex items-center p-1.5 gap-2">
-                            <div className="w-5 h-5 bg-amber-100 dark:bg-amber-900/50 rounded flex-shrink-0"></div>
-                            <div className="w-2/3 h-1.5 bg-slate-200 dark:bg-slate-600 rounded"></div>
+                        <div className="w-full h-8 lg:h-10 bg-white dark:bg-slate-800 rounded-lg shadow-sm border border-slate-100 dark:border-slate-700 flex items-center p-1.5 lg:p-2 gap-2 lg:gap-3">
+                            <div className="w-5 h-5 lg:w-6 lg:h-6 bg-amber-100 dark:bg-amber-900/50 rounded flex-shrink-0"></div>
+                            <div className="w-2/3 h-1.5 lg:h-2 bg-slate-200 dark:bg-slate-600 rounded"></div>
                         </div>
                       </div>
                     </div>
