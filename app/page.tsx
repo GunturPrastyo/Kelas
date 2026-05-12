@@ -557,7 +557,7 @@ export default function LandingPage() {
       </section>
 
       {/* --- FEATURES SECTION --- */}
-      <section id="fitur" className="relative py-24 bg-slate-50 dark:bg-gray-900 overflow-hidden">
+      <section id="fitur" className="relative pt-24 pb-36 lg:pb-48 bg-slate-50 dark:bg-gray-900 overflow-hidden">
 
         {/* Top Wave Decoration */}
         <div className="absolute top-0 left-0 w-full pointer-events-none z-0">
@@ -661,7 +661,7 @@ export default function LandingPage() {
                   Kenapa Memilih <br/><span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-500">KELAS?</span>
                 </h2>
                 <p className="text-lg text-slate-600 dark:text-slate-400 leading-relaxed mb-8">
-                  Kami menggabungkan teknologi modern dan metode pedagogi terbaik untuk menciptakan pengalaman belajar yang tidak hanya efektif, tapi juga menyenangkan dan terpersonalisasi untuk setiap siswa.
+                 Kami memadukan teknologi dan pedagogi modern untuk menciptakan ruang belajar yang efektif, seru, dan personal bagi setiap siswa.
                 </p>
                 
                 <div className="space-y-4">
@@ -687,7 +687,7 @@ export default function LandingPage() {
 
         {/* Bottom Wave Decoration */}
         <div className="absolute bottom-0 left-0 w-full pointer-events-none z-0 ">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 400 900 200" className="w-full h-40 md:h-60" preserveAspectRatio="none">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 400 900 200" className="w-full h-32 md:h-48" preserveAspectRatio="none">
             <path d="M0 431L21.5 439.3C43 447.7 86 464.3 128.8 470.2C171.7 476 214.3 471 257.2 470.3C300 469.7 343 473.3 385.8 466.2C428.7 459 471.3 441 514.2 442.3C557 443.7 600 464.3 642.8 475.8C685.7 487.3 728.3 489.7 771.2 482.2C814 474.7 857 457.3 878.5 448.7L900 440L900 601L878.5 601C857 601 814 601 771.2 601C728.3 601 685.7 601 642.8 601C600 601 557 601 514.2 601C471.3 601 428.7 601 385.8 601C343 601 300 601 257.2 601C214.3 601 171.7 601 128.8 601C86 601 43 601 21.5 601L0 601Z" className="fill-sky-100 dark:fill-sky-900" />
             <path d="M0 530L21.5 530.2C43 530.3 86 530.7 128.8 529.8C171.7 529 214.3 527 257.2 519.7C300 512.3 343 499.7 385.8 497.8C428.7 496 471.3 505 514.2 503.2C557 501.3 600 488.7 642.8 487.8C685.7 487 728.3 498 771.2 501C814 504 857 499 878.5 496.5L900 494L900 601L878.5 601C857 601 814 601 771.2 601C728.3 601 685.7 601 642.8 601C600 601 557 601 514.2 601C471.3 601 428.7 601 385.8 601C343 601 300 601 257.2 601C214.3 601 171.7 601 128.8 601C86 601 43 601 21.5 601L0 601Z" className="fill-sky-200 dark:fill-sky-800" />
             <path d="M0 549L21.5 546.5C43 544 86 539 128.8 534C171.7 529 214.3 524 257.2 529.5C300 535 343 551 385.8 558.3C428.7 565.7 471.3 564.3 514.2 563.8C557 563.3 600 563.7 642.8 554.8C685.7 546 728.3 528 771.2 519.8C814 511.7 857 513.3 878.5 514.2L900 515L900 601L878.5 601C857 601 814 601 771.2 601C728.3 601 685.7 601 642.8 601C600 601 557 601 514.2 601C471.3 601 428.7 601 385.8 601C343 601 300 601 257.2 601C214.3 601 171.7 601 128.8 601C86 601 43 601 21.5 601L0 601Z" className="fill-sky-300 dark:fill-sky-700" />
