@@ -624,63 +624,47 @@ export default function DashboardPage() {
                   Analitik Belajar
                 </h2>
               </div>
-              <div className="grid grid-cols-1 sm:grid-cols-5 gap-6 text-left sm:text-center">
-                {/* Wrapper untuk 2 kartu atas */}
-                <div className="sm:col-span-2 grid grid-cols-2 gap-4 text-center">
-                  {/* Modul Selesai */}
-                  <div className="relative overflow-hidden group border border-slate-200 dark:border-slate-800 border-l-[2px] border-b-[6px] border-b-blue-500 border-l-blue-500 dark:border-b-gray-600 dark:border-l-gray-600 p-3 lg:p-4 rounded-xl bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-700 dark:to-gray-800 shadow-md hover:shadow-lg transition">
-                    <BookOpen className="absolute -bottom-2 -right-2 w-16 h-16 text-blue-500 opacity-[0.1] group-hover:scale-110 group-hover:opacity-20 transition-all duration-500 -rotate-12 pointer-events-none" />
-                    <div className="relative z-10 flex flex-col items-center gap-2">
-                      <div className="bg-blue-600 rounded-full w-8 h-8 lg:w-10 lg:h-10 flex items-center justify-center">
-                        <img src="/book.webp" width={256} height={256} className="w-full h-full object-contain p-1" alt="" />
-                      </div>
-                      <p className="text-xl lg:text-2xl font-bold text-blue-700 dark:text-blue-400">
-                        {animatedCompletedModules ?? 0} <span className="text-sm lg:text-xl text-gray-500 dark:text-gray-400">/ {modules.length}</span>
-                      </p>
-                      <p className="text-xs lg:text-sm font-semibold text-gray-600 dark:text-gray-300">Modul Selesai</p>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 text-left sm:text-center">
+                {/* Modul Selesai */}
+                <div className="relative overflow-hidden group border border-slate-200 dark:border-slate-800 border-l-[2px] border-b-[6px] border-b-blue-500 border-l-blue-500 dark:border-b-gray-600 dark:border-l-gray-600 p-3 lg:p-4 rounded-xl bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-700 dark:to-gray-800 shadow-md hover:shadow-lg transition text-center">
+                  <BookOpen className="absolute -bottom-2 -right-2 w-16 h-16 text-blue-500 opacity-[0.1] group-hover:scale-110 group-hover:opacity-20 transition-all duration-500 -rotate-12 pointer-events-none" />
+                  <div className="relative z-10 flex flex-col items-center gap-2">
+                    <div className="bg-blue-600 rounded-full w-8 h-8 lg:w-10 lg:h-10 flex items-center justify-center">
+                      <img src="/book.webp" width={256} height={256} className="w-full h-full object-contain p-1" alt="" />
                     </div>
+                    <p className="text-xl lg:text-2xl font-bold text-blue-700 dark:text-blue-400">
+                      {animatedCompletedModules ?? 0} <span className="text-sm lg:text-xl text-gray-500 dark:text-gray-400">/ {modules.length}</span>
+                    </p>
+                    <p className="text-xs lg:text-sm font-semibold text-gray-600 dark:text-gray-300">Modul Selesai</p>
                   </div>
-                  {/* Rata-rata Skor */}
-                  <div className="relative overflow-hidden group border border-slate-200 dark:border-slate-800 border-l-[2px] border-l-blue-500 border-b-[6px] border-b-blue-500 dark:border-l-gray-600 dark:border-b-gray-600 p-3 sm:lg:p-4 rounded-xl bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-700 dark:to-gray-800 shadow-md hover:shadow-lg transition">
-                    <Star className="absolute -bottom-2 -right-2 w-16 h-16 text-blue-500 opacity-[0.1] group-hover:scale-110 group-hover:opacity-20 transition-all duration-500 -rotate-12 pointer-events-none" />
-                    <div className="relative z-10 flex flex-col items-center gap-2">
-                      <div className="bg-blue-600 rounded-full w-8 h-8 lg:w-10 lg:h-10 flex items-center justify-center">
-                        <img src="/score.webp" width={256} height={256} className="w-full h-full object-contain p-1" alt="" />
-                      </div>
-                      <p className="text-xl lg:text-2xl font-bold text-blue-700 dark:text-blue-400">{loading ? '...' : `${animatedAverageScore ?? 0}%`}</p>
-                      <p className="text-xs lg:text-sm font-semibold text-gray-600 dark:text-gray-300">Rata-rata Skor</p>
+                </div>
+                {/* Rata-rata Skor */}
+                <div className="relative overflow-hidden group border border-slate-200 dark:border-slate-800 border-l-[2px] border-l-blue-500 border-b-[6px] border-b-blue-500 dark:border-l-gray-600 dark:border-b-gray-600 p-3 lg:p-4 rounded-xl bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-700 dark:to-gray-800 shadow-md hover:shadow-lg transition text-center">
+                  <Star className="absolute -bottom-2 -right-2 w-16 h-16 text-blue-500 opacity-[0.1] group-hover:scale-110 group-hover:opacity-20 transition-all duration-500 -rotate-12 pointer-events-none" />
+                  <div className="relative z-10 flex flex-col items-center gap-2">
+                    <div className="bg-blue-600 rounded-full w-8 h-8 lg:w-10 lg:h-10 flex items-center justify-center">
+                      <img src="/score.webp" width={256} height={256} className="w-full h-full object-contain p-1" alt="" />
                     </div>
+                    <p className="text-xl lg:text-2xl font-bold text-blue-700 dark:text-blue-400">{loading ? '...' : `${animatedAverageScore ?? 0}%`}</p>
+                    <p className="text-xs lg:text-sm font-semibold text-gray-600 dark:text-gray-300">Rata-rata Skor</p>
                   </div>
                 </div>
 
                 {/* Topik Terlemah */}
                 <Link
                   href={analytics.weakestTopic ? `/modul/${analytics.weakestTopic.modulSlug}#${analytics.weakestTopic.topicId}` : "#"}
-                  className={`relative overflow-hidden border border-slate-200 dark:border-slate-800 border-l-[2px] border-b-[6px] border-l-blue-500 border-b-blue-500 dark:border-l-gray-600 sm:col-span-3 max-w-full p-4 sm:p-5 rounded-xl bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-700 dark:to-gray-800 shadow-md transition ${analytics.weakestTopic ? "hover:shadow-lg cursor-pointer group" : "cursor-default"}`}
+                  className={`relative overflow-hidden border border-slate-200 dark:border-slate-800 border-l-[2px] border-b-[6px] border-l-blue-500 border-b-blue-500 dark:border-l-gray-600 sm:col-span-2 lg:col-span-1 max-w-full p-3 lg:p-4 rounded-xl bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-700 dark:to-gray-800 shadow-md transition text-center ${analytics.weakestTopic ? "hover:shadow-lg cursor-pointer group" : "cursor-default"}`}
                 >
-                  <AlertTriangle className="absolute -bottom-3 -right-3 w-24 h-24 text-blue-500 opacity-[0.1] group-hover:scale-110 group-hover:opacity-20 transition-all duration-500 -rotate-12 pointer-events-none" />
+                  <AlertTriangle className="absolute -bottom-2 -right-2 w-16 h-16 text-blue-500 opacity-[0.1] group-hover:scale-110 group-hover:opacity-20 transition-all duration-500 -rotate-12 pointer-events-none" />
                   
-                  <div className="relative z-10 flex flex-row items-center justify-between gap-4 h-full text-left">
-                    <div className="flex items-center gap-3 sm:gap-4 flex-1 min-w-0">
-                      <div className="bg-blue-600 rounded-full w-8 h-8 sm:w-12 sm:h-12 flex items-center justify-center flex-shrink-0 shadow-sm">
-                      <img src="/thunder.png" width={128} height={128} className="w-8 h-8 object-contain p-1" alt="Topik Terlemah" />
+                  <div className="relative z-10 flex flex-col items-center gap-2">
+                    <div className="bg-blue-600 rounded-full w-8 h-8 lg:w-10 lg:h-10 flex items-center justify-center">
+                      <img src="/thunder.png" width={256} height={256} className="w-full h-full object-contain p-1" alt="Topik Terlemah" />
                     </div>
-                      <div className="min-w-0 flex-1">
-                        <p className="text-xs sm:text-sm font-semibold text-gray-600 dark:text-gray-300 mb-0.5 sm:mb-1">Topik Terlemah</p>
-                      <p
-                          className="font-bold text-blue-800 dark:text-blue-300 text-sm sm:text-base lg:text-md leading-tight line-clamp-2"
-                        title={analytics.weakestTopic?.title || 'Belum ada'}
-                      >
-                        {analytics.weakestTopic?.title || 'Belum ada'}
-                      </p>
-                      </div>
-                    </div>
-
-                    {analytics.weakestTopic && (
-                      <div className="flex-shrink-0 flex items-center justify-center w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-blue-500 group-hover:bg-blue-600 transition-colors text-white shadow-md">
-                        <Play className="w-4 h-4 sm:w-5 sm:h-5 ml-0.5 fill-current" />
-                      </div>
-                    )}
+                    <p className="text-base lg:text-lg font-bold text-blue-700 dark:text-blue-400 line-clamp-1" title={analytics.weakestTopic?.title || 'Belum ada'}>
+                      {analytics.weakestTopic?.title || 'Belum ada'}
+                    </p>
+                    <p className="text-xs lg:text-sm font-semibold text-gray-600 dark:text-gray-300">Topik Terlemah</p>
                   </div>
                 </Link>
               </div>
