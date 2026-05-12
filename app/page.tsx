@@ -471,10 +471,7 @@ export default function LandingPage() {
           {/* Text Content */}
           <div className="flex-1 w-full text-left space-y-6">
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-50 dark:bg-blue-900/30 border border-blue-100 dark:border-blue-800 text-blue-600 dark:text-blue-300 text-sm sm:text-base font-bold tracking-wide font-[family-name:var(--font-kalam)]">
-              <span className="relative flex h-2 w-2">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
-                <span className="relative inline-flex rounded-full h-2 w-2 bg-blue-500"></span>
-              </span>
+           
               {displayedBadgeText}
             </div>
             <motion.h1
@@ -589,8 +586,7 @@ export default function LandingPage() {
                   >
                     <div className="relative w-full h-96 group sm:w-[95%] sm:ml-4 mt-2">
                       {/* Tumpukan Card di belakang (kiri bawah) */}
-                      <div className="absolute inset-0 bg-blue-500 dark:bg-gray-800/40 rounded-3xl transform -translate-x-3 translate-y-3 -rotate-2 z-0 border border-blue-100/50 dark:border-gray-700/50 transition-transform duration-500 group-hover:-translate-x-5 group-hover:translate-y-5 group-hover:-rotate-3"></div>
-                      <div className="absolute inset-0 bg-sky-500 dark:bg-gray-800/60 rounded-3xl transform -translate-x-1.5 translate-y-1.5 -rotate-1 z-0 border border-indigo-50/50 dark:border-gray-700/80 transition-transform duration-500 group-hover:-translate-x-2.5 group-hover:translate-y-2.5 group-hover:-rotate-1"></div>
+                      <div className="absolute inset-0 bg-sky-500 dark:bg-gray-800/60 rounded-3xl transform -translate-x-3 translate-y-3 z-0 border border-indigo-50/50 dark:border-gray-700/80 transition-transform duration-500 group-hover:-translate-x-4 group-hover:translate-y-4"></div>
 
                       {/* Card Utama */}
                       <div className="absolute inset-0 bg-white dark:bg-gray-800 rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.08)] dark:shadow-[0_8px_30px_rgb(0,0,0,0.15)] border border-slate-100 dark:border-gray-700 flex flex-col overflow-hidden z-10 transition-transform duration-500 group-hover:-translate-y-1 group-hover:translate-x-1">
@@ -1127,7 +1123,7 @@ export default function LandingPage() {
           <div className="grid lg:grid-cols-2 gap-6 lg:gap-8 items-stretch">
 
             {/* CTA Card */}
-            <div className="bg-blue-600 dark:bg-blue-800 rounded-2xl p-8 md:p-12 text-left md:text-center text-white relative overflow-hidden shadow-xl shadow-blue-900/20 h-full flex flex-col justify-center w-full">
+            <div className="bg-blue-600 dark:bg-blue-800 rounded-2xl p-8 md:p-12 text-left md:text-center text-white relative overflow-hidden min-h-[450px] md:min-h-[500px] lg:min-h-[550px] flex flex-col justify-center w-full">
               {/* Decorative Circles */}
               <div className="absolute top-0 left-0 w-64 h-64 bg-white opacity-10 rounded-full -translate-x-1/2 -translate-y-1/2 blur-2xl"></div>
               <div className="absolute bottom-0 right-0 w-64 h-64 bg-indigo-900 opacity-20 rounded-full translate-x-1/2 translate-y-1/2 blur-2xl"></div>
@@ -1154,7 +1150,7 @@ export default function LandingPage() {
 
             {/* Mobile App Card */}
             <div className="w-full h-full flex">
-              <div className="group relative bg-white dark:bg-gray-800 p-8 md:p-10 rounded-2xl border border-white/50 dark:border-gray-700 shadow-xl w-full overflow-hidden h-full flex flex-col justify-center">
+              <div className="group relative bg-white dark:bg-gray-800 p-8 md:p-10 rounded-2xl border border-white/50 dark:border-gray-700 w-full overflow-hidden h-full min-h-[450px] md:min-h-[500px] lg:min-h-[550px] flex flex-col justify-center">
                 <div className="relative z-10 w-full sm:w-2/3 lg:w-3/4 xl:w-2/3">
                   <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 text-base font-bold tracking-wider mb-4 border border-blue-100 dark:border-blue-800 font-[family-name:var(--font-kalam)]">
                   
