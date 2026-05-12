@@ -470,7 +470,7 @@ export default function LandingPage() {
         <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col lg:flex-row items-center gap-12">
           {/* Text Content */}
           <div className="flex-1 w-full text-left space-y-6">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-50 dark:bg-blue-900/30 border border-blue-100 dark:border-blue-800 text-blue-600 dark:text-blue-300 text-xs font-semibold uppercase tracking-wide">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-50 dark:bg-blue-900/30 border border-blue-100 dark:border-blue-800 text-blue-600 dark:text-blue-300 text-sm sm:text-base font-bold tracking-wide font-[family-name:var(--font-kalam)]">
               <span className="relative flex h-2 w-2">
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
                 <span className="relative inline-flex rounded-full h-2 w-2 bg-blue-500"></span>
@@ -648,7 +648,7 @@ export default function LandingPage() {
                 viewport={{ once: true }}
                 transition={{ duration: 0.5 }}
               >
-                <div className="inline-flex items-center gap-2 px-3 rounded-full bg-blue-50 dark:bg-blue-900/30 border border-blue-100 dark:border-blue-800 text-blue-600 dark:text-blue-400 text-xs font-bold uppercase tracking-wider mb-6">
+                <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-blue-50 dark:bg-blue-900/30 border border-blue-100 dark:border-blue-800 text-blue-600 dark:text-blue-400 text-base font-bold tracking-wider mb-6 font-[family-name:var(--font-kalam)]">
                   Keunggulan Kami
                 </div>
                 <h2 className="text-3xl md:text-5xl text-slate-900 dark:text-white mb-6 font-[family-name:var(--font-gagalin)] leading-tight">
@@ -707,7 +707,7 @@ export default function LandingPage() {
                 viewport={{ once: true }}
                 transition={{ duration: 0.5 }}
               >
-                <span className="text-blue-600 dark:text-blue-400 font-bold tracking-wider uppercase text-sm mb-2 block">
+                <span className="text-blue-600 dark:text-blue-400 font-bold tracking-wider text-lg mb-2 block font-[family-name:var(--font-kalam)]">
                   Modul Pembelajaran
                 </span>
                 <h2 className="text-3xl md:text-5xl text-slate-900 dark:text-white mb-6 font-[family-name:var(--font-gagalin)] leading-tight">
@@ -906,7 +906,7 @@ export default function LandingPage() {
                 viewport={{ once: true }}
                 transition={{ duration: 0.5 }}
               >
-                <span className="text-blue-800 dark:text-blue-300 font-bold tracking-wider uppercase text-sm mb-2 block">
+                <span className="text-blue-800 dark:text-blue-300 font-bold tracking-wider text-lg mb-2 block font-[family-name:var(--font-kalam)]">
                   Tutor Berpengalaman
                 </span>
                 <h2 className="text-3xl md:text-5xl text-slate-900 dark:text-white mb-4 font-[family-name:var(--font-gagalin)] leading-tight">
@@ -1156,7 +1156,7 @@ export default function LandingPage() {
             <div className="w-full h-full flex">
               <div className="group relative bg-white dark:bg-gray-800 p-8 md:p-10 rounded-2xl border border-white/50 dark:border-gray-700 shadow-xl w-full overflow-hidden h-full flex flex-col justify-center">
                 <div className="relative z-10 w-full sm:w-2/3 lg:w-3/4 xl:w-2/3">
-                  <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 text-xs font-bold uppercase tracking-wider mb-4 border border-blue-100 dark:border-blue-800">
+                  <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 text-base font-bold tracking-wider mb-4 border border-blue-100 dark:border-blue-800 font-[family-name:var(--font-kalam)]">
                   
                     <span>Segera Hadir</span>
                   </div>

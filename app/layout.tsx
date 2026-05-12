@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono, Poppins } from "next/font/google";
+import { Geist, Geist_Mono, Poppins, Kalam } from "next/font/google";
 import localFont from "next/font/local";
 import "./globals.css";
 import { ThemeProvider } from "./providers";
@@ -27,6 +27,12 @@ const gagalin = localFont({
   src: "./fonts/Gagalin-Regular.ttf",
   variable: "--font-gagalin",
   display: "swap",
+});
+
+const kalam = Kalam({
+  subsets: ["latin"],
+  weight: ["300", "400", "700"],
+  variable: "--font-kalam",
 });
 
 export const metadata: Metadata = {
@@ -78,7 +84,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html
       lang="id"
       suppressHydrationWarning
-      className={`${poppins.variable} ${gagalin.variable} bg-gray-50 dark:bg-gray-900 scroll-smooth`}
+      className={`${poppins.variable} ${gagalin.variable} ${kalam.variable} bg-gray-50 dark:bg-gray-900 scroll-smooth`}
     >
 
       <body suppressHydrationWarning className="font-poppins text-gray-900 dark:text-gray-100">
