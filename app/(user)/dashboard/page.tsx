@@ -624,7 +624,7 @@ export default function DashboardPage() {
                   Analitik Belajar
                 </h2>
               </div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 text-left sm:text-center">
+            <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 text-left sm:text-center">
                 {/* Modul Selesai */}
                 <div className="relative overflow-hidden group border border-slate-200 dark:border-slate-800 border-l-[2px] border-b-[6px] border-b-blue-500 border-l-blue-500 dark:border-b-gray-600 dark:border-l-gray-600 p-3 lg:p-4 rounded-xl bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-700 dark:to-gray-800 shadow-md hover:shadow-lg transition text-center">
                   <BookOpen className="absolute -bottom-2 -right-2 w-16 h-16 text-blue-500 opacity-[0.1] group-hover:scale-110 group-hover:opacity-20 transition-all duration-500 -rotate-12 pointer-events-none" />
@@ -653,7 +653,7 @@ export default function DashboardPage() {
                 {/* Topik Terlemah */}
                 <Link
                   href={analytics.weakestTopic ? `/modul/${analytics.weakestTopic.modulSlug}#${analytics.weakestTopic.topicId}` : "#"}
-                  className={`relative overflow-hidden border border-slate-200 dark:border-slate-800 border-l-[2px] border-b-[6px] border-l-blue-500 border-b-blue-500 dark:border-l-gray-600 sm:col-span-2 lg:col-span-1 max-w-full p-3 lg:p-4 rounded-xl bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-700 dark:to-gray-800 shadow-md transition text-center ${analytics.weakestTopic ? "hover:shadow-lg cursor-pointer group" : "cursor-default"}`}
+                className={`relative overflow-hidden border border-slate-200 dark:border-slate-800 border-l-[2px] border-b-[6px] border-l-blue-500 border-b-blue-500 dark:border-l-gray-600 col-span-2 lg:col-span-1 max-w-full p-3 lg:p-4 rounded-xl bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-700 dark:to-gray-800 shadow-md transition text-center ${analytics.weakestTopic ? "hover:shadow-lg cursor-pointer group" : "cursor-default"}`}
                 >
                   <AlertTriangle className="absolute -bottom-2 -right-2 w-16 h-16 text-blue-500 opacity-[0.1] group-hover:scale-110 group-hover:opacity-20 transition-all duration-500 -rotate-12 pointer-events-none" />
                   
