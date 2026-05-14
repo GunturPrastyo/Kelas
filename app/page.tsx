@@ -595,21 +595,18 @@ export default function LandingPage() {
                     transition={{ type: 'spring', stiffness: 300, damping: 30 }}
                   >
                     <div className="relative w-full h-96 group sm:w-[95%] sm:ml-4 mt-2">
-                      {/* Tumpukan Card di belakang (kiri bawah) */}
-                      <div className="absolute inset-0 bg-sky-500 dark:bg-gray-800/60 rounded-3xl transform -translate-x-3 translate-y-3 z-0 border border-indigo-50/50 dark:border-gray-700/80 transition-transform duration-500 group-hover:-translate-x-4 group-hover:translate-y-4"></div>
+                      {/* Tumpukan Card di belakang (kanan bawah) */}
+                      <div className="absolute inset-0 bg-sky-300 dark:bg-gray-800/60 rounded-lg transform translate-x-3 translate-y-3 z-0 border border-indigo-50/50 dark:border-gray-700/80 transition-transform duration-500 group-hover:translate-x-4 group-hover:translate-y-4"></div>
 
                       {/* Card Utama */}
-                      <div className="absolute inset-0 bg-white dark:bg-gray-800 rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.08)] dark:shadow-[0_8px_30px_rgb(0,0,0,0.15)] border border-slate-100 dark:border-gray-700 flex flex-col overflow-hidden z-10 transition-transform duration-500 group-hover:-translate-y-1 group-hover:translate-x-1">
+                      <div className="absolute inset-0 bg-white dark:bg-gray-800 rounded-xl shadow-[0_8px_30px_rgb(0,0,0,0.08)] dark:shadow-[0_8px_30px_rgb(0,0,0,0.15)] border border-slate-100 dark:border-gray-700 flex flex-col overflow-hidden z-10 transition-transform duration-500 group-hover:-translate-y-1 group-hover:-translate-x-1">
                         {/* Card Content */}
                         <div className="p-8 pb-20 relative z-10 flex-1 flex flex-col sm:flex-row items-start sm:items-center gap-6">
                           <div className="flex-1 relative z-10 w-full">
-                            <div className="w-16 h-16 rounded-2xl bg-slate-50 dark:bg-gray-700/50 flex items-center justify-center mb-6 group-hover:scale-110 group-hover:rotate-3 transition-transform duration-300 p-2">
-                              <img src={feature.icon} alt={feature.title} className="w-full h-full object-contain" />
-                            </div>
-                            <h3 className="text-xl font-bold text-slate-800 dark:text-gray-100 mb-3 font-[family-name:var(--font-gagalin)] tracking-wide group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+                            <h3 className="text-2xl font-bold text-slate-800 dark:text-gray-100 mb-3 font-[family-name:var(--font-gagalin)] tracking-wide group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
                               {feature.title}
                             </h3>
-                            <p className="text-slate-600 dark:text-slate-400 text-sm leading-relaxed">
+                            <p className="text-slate-600 dark:text-slate-400 text-base leading-relaxed">
                               {feature.desc}
                             </p>
                           </div>
