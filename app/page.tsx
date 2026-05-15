@@ -366,9 +366,9 @@ export default function LandingPage() {
 
       {/* --- NAVBAR --- */}
       <nav id="navbar" className={`fixed top-0 left-0 right-0 z-[100] px-4 md:px-8 h-[68px] flex items-center justify-between transition-all duration-300 ${isScrolled ? 'bg-white/95 dark:bg-gray-900/95 shadow-[0_4px_24px_rgba(0,0,0,0.06)]' : 'bg-white/80 dark:bg-gray-900/80'} backdrop-blur-[20px] saturate-[180%] border-b border-slate-200/70 dark:border-gray-800`}>
-        <Link href="#" className="flex items-center gap-2.5 text-[1.4rem] font-extrabold text-slate-900 dark:text-white no-underline font-[family-name:var(--font-gagalin)] tracking-wide">
-          <div className="w-8 h-8 bg-gradient-to-br from-blue-600 to-indigo-500 rounded-[10px] grid place-items-center text-white text-[0.85rem] font-extrabold font-[family-name:var(--font-poppins)]">K</div>
-          KELAS
+        <Link href="#" className="px-0 sm:px-24">
+          <img src="/logo.webp" alt="KELAS Logo" className="h-8 w-auto" />
+     
         </Link>
         <div className="hidden md:flex items-center gap-1">
           <Link href="#fitur" className="text-slate-600 dark:text-slate-300 text-[0.9rem] font-medium px-4 py-2 rounded-full transition-all duration-200 hover:text-blue-600 hover:bg-blue-100 dark:hover:bg-blue-900/30">Fitur</Link>
@@ -376,17 +376,11 @@ export default function LandingPage() {
           <Link href="#mentor" className="text-slate-600 dark:text-slate-300 text-[0.9rem] font-medium px-4 py-2 rounded-full transition-all duration-200 hover:text-blue-600 hover:bg-blue-100 dark:hover:bg-blue-900/30">Mentor</Link>
         </div>
         <div className="hidden md:flex items-center gap-3">
-          <button onClick={() => setTheme(resolvedTheme === 'dark' ? 'light' : 'dark')} className="p-2 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors text-slate-600 dark:text-slate-300">
-            {mounted && resolvedTheme === 'dark' ? <Moon size={20} /> : <Sun size={20} />}
-          </button>
           <Link href="/login" className="px-5 py-2 rounded-full border-none bg-transparent text-slate-700 dark:text-slate-300 text-[0.9rem] font-medium cursor-pointer transition-all duration-200 hover:bg-slate-100 dark:hover:bg-slate-800 no-underline">Masuk</Link>
-          <Link href="/register" className="px-6 py-[0.55rem] rounded-full border-none bg-blue-600 text-white text-[0.9rem] font-semibold cursor-pointer transition-all duration-250 no-underline shadow-[0_4px_14px_rgba(37,99,235,0.35)] hover:bg-blue-700 hover:-translate-y-[1px] hover:shadow-[0_8px_20px_rgba(37,99,235,0.4)]">Daftar Gratis →</Link>
+          <Link href="/register" className="px-6 py-[0.55rem] rounded-full border-none bg-blue-600 text-white text-[0.9rem] font-semibold cursor-pointer transition-all duration-250 no-underline shadow-[0_4px_14px_rgba(37,99,235,0.35)] hover:bg-blue-700 hover:-translate-y-[1px] hover:shadow-[0_8px_20px_rgba(37,99,235,0.4)]">Daftar Gratis</Link>
         </div>
         {/* Mobile Menu Button */}
         <div className="md:hidden flex items-center">
-          <button onClick={() => setTheme(resolvedTheme === 'dark' ? 'light' : 'dark')} className="p-2 mr-1 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors text-slate-600 dark:text-slate-300">
-            {mounted && resolvedTheme === 'dark' ? <Moon size={20} /> : <Sun size={20} />}
-          </button>
           <button onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)} className="p-2 rounded-md text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
             {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
           </button>
@@ -422,8 +416,8 @@ export default function LandingPage() {
         <div className="relative z-10 max-w-[1280px] mx-auto w-full grid grid-cols-1 lg:grid-cols-2 gap-10 md:gap-16 items-center mt-10 md:mt-0">
           {/* Left: Text */}
           <div className="text-center md:text-left">
-            <div className="inline-flex items-center justify-center md:justify-start gap-2 py-1.5 pr-4 pl-2 bg-gradient-to-br from-blue-600/10 to-indigo-500/10 border border-blue-600/20 rounded-full text-[0.82rem] font-semibold text-blue-600 dark:text-blue-400 mb-6 w-fit mx-auto md:mx-0 font-[family-name:var(--font-kalam)]">
-              <div className="w-5 h-5 bg-blue-600 rounded-full grid place-items-center relative after:content-['✦'] after:text-white after:text-[0.6rem]"></div>
+            <div className="inline-flex items-center justify-center md:justify-start gap-2 py-1.5 pr-4 pl-2 bg-gradient-to-br from-blue-600/10 to-indigo-500/10 border border-blue-600/20 rounded-full font-semibold text-blue-600 dark:text-blue-400 mb-6 w-fit mx-auto md:mx-0 font-[family-name:var(--font-kalam)] font-lg">
+              
               {displayedBadgeText}
             </div>
             <h1 className="text-[clamp(2.6rem,5vw,4rem)] font-extrabold leading-[1.08] text-slate-900 dark:text-white mb-6 tracking-[-0.03em] font-[family-name:var(--font-gagalin)]">
@@ -537,7 +531,7 @@ export default function LandingPage() {
         <div className="max-w-[1280px] mx-auto">
           <div className="grid grid-cols-1 lg:grid-cols-[1fr_1.4fr] gap-10 md:gap-20 items-start">
             <div className="lg:sticky lg:top-[120px]">
-              <div className="inline-flex items-center gap-2 text-[0.8rem] font-bold tracking-[0.08em] uppercase text-blue-600 bg-blue-100 dark:bg-blue-900/30 px-3.5 py-1.5 rounded-full mb-5 font-[family-name:var(--font-kalam)] before:content-['●'] before:text-[0.55rem]">
+              <div className="inline-flex items-center gap-2 font-lg font-bold tracking-[0.08em] text-blue-600 bg-blue-100 dark:bg-blue-900/30 px-3.5 py-1.5 rounded-full mb-5 font-[family-name:var(--font-kalam)] ">
                 Keunggulan Kami
               </div>
               <h2 className="font-[family-name:var(--font-gagalin)] text-[clamp(2rem,4vw,3rem)] font-extrabold text-slate-900 dark:text-white leading-[1.1] tracking-[-0.02em] mb-4">
@@ -1133,15 +1127,26 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* Scroll To Top Button */}
-      <button
-        onClick={scrollToTop}
-        className={`fixed bottom-8 right-8 p-3 rounded-full bg-blue-600 text-white shadow-lg transition-all duration-300 z-50 hover:bg-blue-700 hover:scale-110 ${showScrollTop ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10 pointer-events-none'
-          }`}
-        aria-label="Scroll to top"
-      >
-        <ArrowUp className="w-6 h-6" />
-      </button>
+      {/* Floating Action Buttons */}
+      <div className="fixed bottom-8 right-8 z-50 flex flex-col gap-3">
+        {/* Dark Mode Toggle */}
+        <button
+          onClick={() => setTheme(resolvedTheme === 'dark' ? 'light' : 'dark')}
+          className="p-3 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 shadow-lg transition-all duration-300 hover:scale-110 flex items-center justify-center border border-slate-200 dark:border-slate-700"
+          aria-label="Toggle dark mode"
+        >
+          {mounted && resolvedTheme === 'dark' ? <Sun className="w-6 h-6" /> : <Moon className="w-6 h-6" />}
+        </button>
+
+        {/* Scroll To Top Button */}
+        <button
+          onClick={scrollToTop}
+          className={`p-3 rounded-full bg-blue-600 text-white shadow-lg transition-all duration-300 hover:bg-blue-700 hover:scale-110 ${showScrollTop ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10 pointer-events-none'}`}
+          aria-label="Scroll to top"
+        >
+          <ArrowUp className="w-6 h-6" />
+        </button>
+      </div>
 
       <div className="relative w-full pointer-events-none z-0 -mb-1 bg-white dark:bg-gray-900">
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 200" className="w-full h-16 sm:h-24 block" preserveAspectRatio="none">
