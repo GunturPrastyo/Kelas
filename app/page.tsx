@@ -294,7 +294,7 @@ export default function LandingPage() {
       setIsScrolled(window.scrollY > 20);
       setShowScrollTop(window.scrollY > 400);
 
-      const sections = ["fitur", "modul", "mentor", "mulai"];
+      const sections = ["fitur", "modul", "mentor", "CTA"];
       let current = "";
 
       for (const section of sections) {
@@ -375,7 +375,7 @@ export default function LandingPage() {
           <Link href="#fitur" className="text-slate-600 dark:text-slate-300 text-[0.9rem] font-medium px-4 py-2 rounded-full transition-all duration-200 hover:text-blue-600 hover:bg-blue-100 dark:hover:bg-blue-900/30">Fitur</Link>
           <Link href="#modul" className="text-slate-600 dark:text-slate-300 text-[0.9rem] font-medium px-4 py-2 rounded-full transition-all duration-200 hover:text-blue-600 hover:bg-blue-100 dark:hover:bg-blue-900/30">Modul</Link>
           <Link href="#mentor" className="text-slate-600 dark:text-slate-300 text-[0.9rem] font-medium px-4 py-2 rounded-full transition-all duration-200 hover:text-blue-600 hover:bg-blue-100 dark:hover:bg-blue-900/30">Mentor</Link>
-          <Link href="#mulai" className="text-slate-600 dark:text-slate-300 text-[0.9rem] font-medium px-4 py-2 rounded-full transition-all duration-200 hover:text-blue-600 hover:bg-blue-100 dark:hover:bg-blue-900/30">Mulai</Link>
+          <Link href="#CTA" className="text-slate-600 dark:text-slate-300 text-[0.9rem] font-medium px-4 py-2 rounded-full transition-all duration-200 hover:text-blue-600 hover:bg-blue-100 dark:hover:bg-blue-900/30">CTA</Link>
         </div>
         <div className="hidden md:flex items-center gap-3">
           <Link href="/login" className="px-5 py-2 rounded-full border-none bg-transparent text-slate-700 dark:text-slate-300 text-[0.9rem] font-medium cursor-pointer transition-all duration-200 hover:bg-slate-100 dark:hover:bg-slate-800 no-underline">Masuk</Link>
@@ -399,7 +399,7 @@ export default function LandingPage() {
             <Link href="#fitur" onClick={() => setIsMobileMenuOpen(false)} className={`block px-4 py-3 rounded-xl text-base font-medium transition-all ${activeSection === 'fitur' ? 'text-blue-600 dark:text-blue-400 bg-slate-50 dark:bg-gray-800' : 'text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-gray-800 hover:text-blue-600 dark:hover:text-blue-400'}`}>Fitur</Link>
             <Link href="#modul" onClick={() => setIsMobileMenuOpen(false)} className={`block px-4 py-3 rounded-xl text-base font-medium transition-all ${activeSection === 'modul' ? 'text-blue-600 dark:text-blue-400 bg-slate-50 dark:bg-gray-800' : 'text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-gray-800 hover:text-blue-600 dark:hover:text-blue-400'}`}>Modul</Link>
             <Link href="#mentor" onClick={() => setIsMobileMenuOpen(false)} className={`block px-4 py-3 rounded-xl text-base font-medium transition-all ${activeSection === 'mentor' ? 'text-blue-600 dark:text-blue-400 bg-slate-50 dark:bg-gray-800' : 'text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-gray-800 hover:text-blue-600 dark:hover:text-blue-400'}`}>Mentor</Link>
-            <Link href="#mulai" onClick={() => setIsMobileMenuOpen(false)} className={`block px-4 py-3 rounded-xl text-base font-medium transition-all ${activeSection === 'mulai' ? 'text-blue-600 dark:text-blue-400 bg-slate-50 dark:bg-gray-800' : 'text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-gray-800 hover:text-blue-600 dark:hover:text-blue-400'}`}>Mulai</Link>
+            <Link href="#CTA" onClick={() => setIsMobileMenuOpen(false)} className={`block px-4 py-3 rounded-xl text-base font-medium transition-all ${activeSection === 'CTA' ? 'text-blue-600 dark:text-blue-400 bg-slate-50 dark:bg-gray-800' : 'text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-gray-800 hover:text-blue-600 dark:hover:text-blue-400'}`}>CTA</Link>
             <div className="pt-4 mt-2 border-t border-slate-100 dark:border-gray-800 flex">
               <Link href="/login" className="flex-1 flex items-center justify-center px-4 py-3 rounded-l-xl text-sm font-bold text-slate-700 dark:text-slate-200 bg-slate-100 dark:bg-gray-800 hover:bg-slate-200 dark:hover:bg-gray-700 transition-all">Masuk</Link>
               <Link href="/register" className="flex-1 flex items-center justify-center px-4 py-3 rounded-r-xl text-sm font-bold text-white bg-blue-600 hover:bg-blue-700 shadow-[0_4px_14px_rgba(37,99,235,0.35)] transition-all">Daftar</Link>
@@ -952,7 +952,7 @@ export default function LandingPage() {
       )}
 
       {/* --- TESTIMONIALS SECTION --- */}
-      <section className="py-16 md:py-24 bg-white dark:bg-gray-900 relative overflow-hidden border-t border-slate-200 dark:border-gray-800">
+      <section id="CTA" className="py-16 md:py-24 bg-white dark:bg-gray-900 relative overflow-hidden border-t border-slate-200 dark:border-gray-800">
         <div className="z-10 max-w-full mx-auto px-4 md:px-16 lg:px-12">
           <div className="text-center mb-12 md:mb-16">
             <div className="text-blue-600 dark:text-blue-400 font-bold tracking-wider text-lg mb-2 block font-[family-name:var(--font-kalam)]">
