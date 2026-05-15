@@ -420,13 +420,13 @@ export default function LandingPage() {
               
               {displayedBadgeText}
             </div>
-            <h1 className="text-3xl md:text-5xl text-slate-900 font-semibold dark:text-white mb-6 font-[family-name:var(--font-gagalin)] leading-tight">
+            <h1 className="text-3xl md:text-5xl text-slate-900 font-medium dark:text-white mb-6 font-[family-name:var(--font-gagalin)] leading-tight">
               Belajar Lebih Efektif dengan <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-500 to-indigo-500">Kurikulum Personal</span>
             </h1>
             <p className="text-[1.1rem] text-slate-600 dark:text-slate-400 max-w-[500px] mx-auto md:mx-0 mb-10 font-normal leading-[1.7]">
               KELAS membantu kamu menemukan jalur belajar yang tepat sesuai kemampuanmu. Ikuti pre-tes, dapatkan rekomendasi, dan tingkatkan skillmu hari ini.
             </p>
-            <div className="flex items-center justify-center md:justify-start gap-4 mb-12 flex-wrap">
+            <div className="flex justify-start gap-4 mb-12 flex-wrap">
               <Link href="/register" className="group inline-flex items-center gap-2 py-[0.85rem] px-8 rounded-full bg-blue-600 text-white text-[1rem] font-semibold no-underline shadow-[0_8px_28px_rgba(37,99,235,0.35),0_2px_8px_rgba(37,99,235,0.2)] transition-all duration-300 relative overflow-hidden hover:-translate-y-[2px] hover:shadow-[0_16px_40px_rgba(37,99,235,0.45)] before:absolute before:inset-0 before:bg-gradient-to-br before:from-white/15 before:to-transparent before:rounded-full">
                 Mulai Belajar Gratis
               </Link>
@@ -442,7 +442,7 @@ export default function LandingPage() {
                 <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=4" alt="u4" className="w-9 h-9 rounded-full border-2 border-white dark:border-gray-900 -ml-2 first:ml-0 bg-slate-200 dark:bg-slate-700" />
               </div>
               <div className="text-[0.88rem] text-slate-600 dark:text-slate-400">
-                {displayedText1}<strong className="text-blue-600 dark:text-blue-400 font-bold">{count.toLocaleString('id-ID')}+</strong>{displayedText2}
+                {displayedText1}<strong className="text-blue-600 dark:text-blue-400 font-bold"></strong>{displayedText2}
               </div>
             </div>
           </div>
@@ -534,7 +534,7 @@ export default function LandingPage() {
               <div className="text-blue-600 dark:text-blue-400 font-bold tracking-wider text-lg mb-2 block font-[family-name:var(--font-kalam)]">
                 Keunggulan Kami
               </div>
-              <h2 className="text-3xl md:text-5xl text-slate-900 font-semibold dark:text-white mb-6 font-[family-name:var(--font-gagalin)] leading-tight">
+              <h2 className="text-3xl md:text-5xl text-slate-900 font-medium dark:text-white mb-6 font-[family-name:var(--font-gagalin)] leading-tight">
                 Kenapa Memilih<br/><span className="text-blue-600 dark:text-blue-400">KELAS?</span>
               </h2>
               <p className="text-[1.05rem] text-slate-600 dark:text-slate-400 leading-[1.7] max-w-[520px]">
@@ -599,7 +599,7 @@ export default function LandingPage() {
       </section>
 
       {/* --- MODULES SECTION --- */}
-      <section id="modul" className="py-16 md:py-24 bg-white dark:bg-gray-900 relative overflow-hidden">
+      <section id="modul" className="py-16 md:py-24 bg-white dark:bg-gray-900 relative overflow-hidden border-t border-slate-200 dark:border-gray-800">
         <div className="max-w-full mx-auto px-4 md:px-16 lg:px-12 relative z-10">
           <div className="flex flex-col lg:flex-row-reverse items-center gap-12 lg:gap-20">
 
@@ -614,7 +614,7 @@ export default function LandingPage() {
                 <span className="text-blue-600 dark:text-blue-400 font-bold tracking-wider text-lg mb-2 block font-[family-name:var(--font-kalam)]">
                   Modul Pembelajaran
                 </span>
-                <h2 className="text-3xl md:text-5xl text-slate-900 font-semibold dark:text-white mb-6 font-[family-name:var(--font-gagalin)] leading-tight">
+                <h2 className="text-3xl md:text-5xl text-slate-900 font-medium dark:text-white mb-6 font-[family-name:var(--font-gagalin)] leading-tight">
                   Jelajahi Materi <br /> <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-purple-600">Pilihan Terbaik</span>
                 </h2>
               </motion.div>
@@ -737,8 +737,8 @@ export default function LandingPage() {
       </section>
 
       {/* --- MENTOR SECTION --- */}
-      <section id="mentor" className="relative pt-8 sm:pt-0 pb-16 sm:pb-24 bg-sky-300 dark:bg-sky-700 overflow-hidden">
-        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <section id="mentor" className="relative pt-8 py-16 md:py-24 bg-slate-900 dark:bg-slate-950 overflow-hidden">
+        <div className="relative z-10 max-w-full mx-auto px-4 md:px-16 lg:px-12 ">
           <div className="flex flex-col-reverse md:flex-row items-center gap-6 lg:gap-20">
             {/* Left Column: Carousel */}
             <div className="w-full md:w-1/2 relative mt-4 sm:mt-0">
@@ -834,11 +834,11 @@ export default function LandingPage() {
                 viewport={{ once: true }}
                 transition={{ duration: 0.5 }}
               >
-                <span className="text-blue-800 dark:text-blue-300 font-bold tracking-wider text-lg mb-2 block font-[family-name:var(--font-kalam)]">
+                <span className="text-blue-400 font-bold tracking-wider text-lg mb-2 block font-[family-name:var(--font-kalam)]">
                   Tutor Berpengalaman
                 </span>
-                <h2 className="text-3xl md:text-5xl text-slate-900 dark:text-white mb-4 font-[family-name:var(--font-gagalin)] leading-tight">
-                  Belajar Langsung dari <br /> <span className="text-blue-700 dark:text-blue-400">Ahlinya</span>
+                <h2 className="text-3xl md:text-5xl font-medium text-white mb-4 font-[family-name:var(--font-gagalin)] leading-tight">
+                  Belajar Langsung dari <br /> <span className="text-blue-500">Ahlinya</span>
                 </h2>
               </motion.div>
 
@@ -847,7 +847,7 @@ export default function LandingPage() {
                 whileInView={{ opacity: 1, x: 0 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.5, delay: 0.2 }}
-                className="text-slate-700 dark:text-blue-100 text-lg font-medium leading-relaxed max-w-lg"
+                className="text-slate-300 text-lg font-medium leading-relaxed max-w-lg"
               >
                 Dapatkan wawasan berharga dari praktisi industri dan akademisi berpengalaman yang siap membimbing perjalanan karirmu.
               </motion.p>
@@ -860,8 +860,8 @@ export default function LandingPage() {
                     onClick={() => setActiveMentorIdx(idx)}
                     className={`rounded-full transition-all duration-300 ${
                       activeMentorIdx === idx
-                        ? "w-8 h-2.5 bg-blue-600 dark:bg-blue-400"
-                        : "w-2.5 h-2.5 bg-blue-600/30 dark:bg-blue-400/30 hover:bg-blue-600/50 dark:hover:bg-blue-400/50"
+                        ? "w-8 h-2.5 bg-blue-500"
+                        : "w-2.5 h-2.5 bg-blue-500/30 hover:bg-blue-500/50"
                     }`}
                     aria-label={`Go to mentor ${idx + 1}`}
                   />
