@@ -950,102 +950,62 @@ export default function LandingPage() {
       )}
 
       {/* --- TESTIMONIALS SECTION --- */}
-      <section className="pt-6 sm:pt-0 pb-0 bg-white dark:bg-gray-900 relative overflow-hidden">
+      <section className="py-16 md:py-24 bg-white dark:bg-gray-900 relative overflow-hidden border-t border-slate-200 dark:border-gray-800">
         <div className="z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex flex-col lg:flex-row items-center gap-8 lg:gap-12">
-            {/* Left Column: Title & Desc */}
-            <div className="w-full lg:w-1/3 text-center lg:text-left mb-8 lg:mb-0">
-              <motion.h2
+          <div className="text-center mb-12 md:mb-16">
+            <div className="text-blue-600 dark:text-blue-400 font-bold tracking-wider text-lg mb-2 block font-[family-name:var(--font-kalam)]">
+              Kata Mereka
+            </div>
+            <motion.h2
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5 }}
+              className="text-3xl md:text-5xl font-medium text-slate-900 dark:text-white mb-6 font-[family-name:var(--font-gagalin)] leading-tight"
+            >
+              Apa Kata Mereka?
+            </motion.h2>
+            <motion.p
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5, delay: 0.1 }}
+              className="text-lg text-slate-600 dark:text-slate-400 max-w-2xl mx-auto"
+            >
+              Ribuan siswa dari berbagai jurusan telah merasakan dampak positif belajar bersama KELAS.
+            </motion.p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-8">
+            {testimonials.map((item, idx) => (
+              <motion.div
+                key={`testimonial-${idx}`}
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                transition={{ duration: 0.5 }}
-                className="text-3xl md:text-4xl font-medium text-slate-900 dark:text-white mb-4 font-[family-name:var(--font-gagalin)]"
+                transition={{ duration: 0.5, delay: idx * 0.1 }}
+                className="w-full bg-slate-50 dark:bg-gray-800 p-8 rounded-2xl border border-slate-100 dark:border-gray-700 shadow-sm hover:shadow-md transition-shadow relative"
               >
-                Apa Kata Mereka?
-              </motion.h2>
-              <p className="text-lg text-slate-600 dark:text-slate-400">
-                Ribuan siswa dari berbagai jurusan telah merasakan dampak positif belajar di KELAS.
-              </p>
-            </div>
-
-            {/* Right Column: Infinite Scroll Container */}
-            <div className="relative w-full lg:w-2/3 overflow-hidden">
-
-            {/* Desktop View (Vertical Scroll) */}
-            <div className="hidden md:flex relative w-full h-[500px] overflow-hidden justify-center px-4 lg:px-8">
-              {/* Gradient Masks */}
-              <div className="absolute top-0 left-0 right-0 h-20 bg-gradient-to-b from-white dark:from-gray-900 to-transparent z-20"></div>
-              <div className="absolute bottom-0 left-0 right-0 h-20 bg-gradient-to-t from-white dark:from-gray-900 to-transparent z-20"></div>
-
-              <motion.div
-                className="flex flex-col gap-8 w-full max-w-2xl"
-                animate={{ y: ["0%", "-50%"] }}
-                transition={{
-                  repeat: Infinity,
-                  ease: "linear",
-                  duration: 30
-                }}
-              >
-                {[...testimonials, ...testimonials].map((item, idx) => (
-                  <div key={`desktop-${idx}`} className="w-full bg-slate-50 dark:bg-gray-800 p-8 rounded-2xl border border-slate-100 dark:border-gray-700 shadow-sm hover:shadow-md transition-shadow">
-                    <Quote className="text-blue-100 dark:text-blue-900/30 w-10 h-10 mb-4 rotate-180" />
-                    <p className="text-slate-600 dark:text-slate-300 mb-6 italic text-sm leading-relaxed min-h-[80px]">"{item.content}"</p>
-                    <div className="flex items-center gap-4">
-                      <img src={item.avatar} alt={item.name} className="w-12 h-12 rounded-full bg-gray-200" />
-                      <div>
-                        <h4 className="font-bold text-slate-900 dark:text-white">{item.name}</h4>
-                        <p className="text-xs text-slate-500 dark:text-slate-400">{item.role}</p>
-                      </div>
-                    </div>
+                <div className="flex justify-between items-start mb-4">
+                  <div className="flex text-yellow-400">
+                    <Star className="w-5 h-5 fill-current" />
+                    <Star className="w-5 h-5 fill-current" />
+                    <Star className="w-5 h-5 fill-current" />
+                    <Star className="w-5 h-5 fill-current" />
+                    <Star className="w-5 h-5 fill-current" />
                   </div>
-                ))}
-              </motion.div>
-            </div>
-
-            {/* Mobile View (Vertical Scroll with Timeline) */}
-            <div className="md:hidden relative h-[500px] overflow-hidden">
-              {/* Gradient Masks */}
-              <div className="absolute top-0 left-0 right-0 h-20 bg-gradient-to-b from-white dark:from-gray-900 to-transparent z-20"></div>
-              <div className="absolute bottom-0 left-0 right-0 h-20 bg-gradient-to-t from-white dark:from-gray-900 to-transparent z-20"></div>
-
-              <motion.div
-                className="flex flex-col"
-                animate={{ y: ["0%", "-50%"] }}
-                transition={{
-                  repeat: Infinity,
-                  ease: "linear",
-                  duration: 30
-                }}
-              >
-                {[...testimonials, ...testimonials].map((item, idx) => (
-                  <div key={`mobile-${idx}`} className="flex gap-4 pb-8 relative px-4">
-                    {/* Timeline Line */}
-                    <div className="absolute left-[35px] top-0 bottom-0 w-0.5 bg-slate-200 dark:bg-slate-700"></div>
-
-                    {/* Timeline Dot */}
-                    <div className="relative z-10 shrink-0 w-10 h-10 flex items-start justify-center pt-1">
-                      <div className="w-4 h-4 rounded-full bg-blue-500 border-4 border-white dark:border-gray-900 shadow-sm"></div>
-                    </div>
-
-                    {/* Card */}
-                    <div className="flex-1 bg-slate-50 dark:bg-gray-800 p-6 rounded-2xl border border-slate-100 dark:border-gray-700 shadow-sm">
-                      <Quote className="text-blue-100 dark:text-blue-900/30 w-8 h-8 mb-3 rotate-180" />
-                      <p className="text-slate-600 dark:text-slate-300 mb-4 italic text-sm">"{item.content}"</p>
-                      <div className="flex items-center gap-3">
-                        <img src={item.avatar} alt={item.name} className="w-10 h-10 rounded-full bg-gray-200" />
-                        <div>
-                          <h4 className="font-bold text-sm text-slate-900 dark:text-white">{item.name}</h4>
-                          <p className="text-[10px] text-slate-500 dark:text-slate-400">{item.role}</p>
-                        </div>
-                      </div>
-                    </div>
+                  <Quote className="text-blue-100 dark:text-blue-900/30 w-10 h-10 rotate-180" />
+                </div>
+                <p className="text-slate-600 dark:text-slate-300 mb-6 italic text-sm leading-relaxed min-h-[80px]">"{item.content}"</p>
+                <div className="flex items-center gap-4">
+                  <img src={item.avatar} alt={item.name} className="w-12 h-12 rounded-full bg-gray-200" />
+                  <div>
+                    <h4 className="font-bold text-slate-900 dark:text-white">{item.name}</h4>
+                    <p className="text-xs text-slate-500 dark:text-slate-400">{item.role}</p>
                   </div>
-                ))}
+                </div>
               </motion.div>
-            </div>
-
-          </div>
+            ))}
           </div>
         </div>
       </section>
@@ -1054,7 +1014,7 @@ export default function LandingPage() {
       <section id="mulai" className="py-16 md:py-24 bg-slate-900 dark:bg-slate-950 relative overflow-hidden">
         <div className="absolute inset-0 bg-blue-600/10 dark:bg-blue-900/10 blur-3xl rounded-full w-1/2 h-1/2 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"></div>
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-center">
-          <div className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full bg-blue-600/20 text-blue-300 text-sm font-bold tracking-wider mb-6 border border-blue-500/30">
+          <div className="text-blue-400 font-bold tracking-wider text-lg mb-2 block font-[family-name:var(--font-kalam)]">
             Mulai Sekarang
           </div>
           <motion.h2
@@ -1071,7 +1031,7 @@ export default function LandingPage() {
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
             <Link href="/register" className="group inline-flex items-center justify-center gap-2 bg-blue-600 text-white px-8 py-3.5 rounded-full font-bold hover:bg-blue-700 transition shadow-[0_4px_14px_rgba(37,99,235,0.35)] w-full sm:w-auto">
-              Daftar Gratis Sekarang <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+              Daftar Gratis Sekarang 
             </Link>
             <a href="#fitur" className="inline-flex items-center justify-center bg-slate-800 text-white px-8 py-3.5 rounded-full font-bold hover:bg-slate-700 transition border border-slate-700 w-full sm:w-auto">
               Pelajari Lebih Lanjut
