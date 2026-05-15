@@ -406,21 +406,21 @@ export default function LandingPage() {
       )}
 
       {/* --- HERO --- */}
-      <section className="min-h-screen pt-[100px] px-4 md:px-8 pb-10 flex items-center relative overflow-hidden" id="home">
+      <section className="min-h-screen pt-[100px] pb-10 flex items-center relative overflow-hidden" id="home">
         <div className="absolute inset-0 pointer-events-none z-0">
           <div className="absolute inset-0 bg-[linear-gradient(rgba(99,102,241,0.04)_1px,transparent_1px),linear-gradient(90deg,rgba(99,102,241,0.04)_1px,transparent_1px)] bg-[size:60px_60px] [mask-image:radial-gradient(ellipse_at_60%_40%,black_30%,transparent_70%)]"></div>
           <div className="absolute top-[-10%] right-[-5%] w-[650px] h-[650px] bg-[radial-gradient(circle_at_40%_40%,rgba(99,102,241,0.12)_0%,rgba(37,99,235,0.08)_40%,transparent_70%)] rounded-full animate-float"></div>
           <div className="absolute bottom-[10%] left-[-5%] w-[500px] h-[500px] bg-[radial-gradient(circle,rgba(14,165,233,0.10)_0%,transparent_70%)] rounded-full animate-float-reverse"></div>
         </div>
 
-        <div className="relative z-10 max-w-[1280px] mx-auto w-full grid grid-cols-1 lg:grid-cols-2 gap-10 md:gap-16 items-center mt-10 md:mt-0">
+        <div className="relative z-10 max-w-full mx-auto px-4 md:px-16 lg:px-12 w-full grid grid-cols-1 lg:grid-cols-2 gap-10 md:gap-16 items-center mt-10 md:mt-0">
           {/* Left: Text */}
-          <div className="text-center md:text-left">
-            <div className="inline-flex items-center justify-center md:justify-start gap-2 py-1.5 pr-4 pl-2 bg-gradient-to-br from-blue-600/10 to-indigo-500/10 border border-blue-600/20 rounded-full font-semibold text-blue-600 dark:text-blue-400 mb-6 w-fit mx-auto md:mx-0 font-[family-name:var(--font-kalam)] font-lg">
+          <div className="text-left">
+            <div className="text-blue-600 dark:text-blue-400 font-bold tracking-wider text-lg mb-2 block font-[family-name:var(--font-kalam)]">
               
               {displayedBadgeText}
             </div>
-            <h1 className="text-[clamp(2.6rem,5vw,4rem)] font-extrabold leading-[1.08] text-slate-900 dark:text-white mb-6 tracking-[-0.03em] font-[family-name:var(--font-gagalin)]">
+            <h1 className="text-3xl md:text-5xl text-slate-900 font-semibold dark:text-white mb-6 font-[family-name:var(--font-gagalin)] leading-tight">
               Belajar Lebih Efektif dengan <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-500 to-indigo-500">Kurikulum Personal</span>
             </h1>
             <p className="text-[1.1rem] text-slate-600 dark:text-slate-400 max-w-[500px] mx-auto md:mx-0 mb-10 font-normal leading-[1.7]">
@@ -527,14 +527,14 @@ export default function LandingPage() {
       </div>
 
       {/* --- FEATURES SECTION --- */}
-      <section className="bg-slate-50 dark:bg-gray-900 py-16 md:py-28 px-4 md:px-8" id="fitur">
-        <div className="max-w-[1280px] mx-auto">
+      <section className="bg-slate-50 dark:bg-gray-900 py-16" id="fitur">
+        <div className="max-w-full mx-auto px-4 md:px-16 lg:px-12">
           <div className="grid grid-cols-1 lg:grid-cols-[1fr_1.4fr] gap-10 md:gap-20 items-start">
             <div className="lg:sticky lg:top-[120px]">
-              <div className="inline-flex items-center gap-2 font-lg font-bold tracking-[0.08em] text-blue-600 bg-blue-100 dark:bg-blue-900/30 px-3.5 py-1.5 rounded-full mb-5 font-[family-name:var(--font-kalam)] ">
+              <div className="text-blue-600 dark:text-blue-400 font-bold tracking-wider text-lg mb-2 block font-[family-name:var(--font-kalam)]">
                 Keunggulan Kami
               </div>
-              <h2 className="font-[family-name:var(--font-gagalin)] text-[clamp(2rem,4vw,3rem)] font-extrabold text-slate-900 dark:text-white leading-[1.1] tracking-[-0.02em] mb-4">
+              <h2 className="text-3xl md:text-5xl text-slate-900 font-semibold dark:text-white mb-6 font-[family-name:var(--font-gagalin)] leading-tight">
                 Kenapa Memilih<br/><span className="text-blue-600 dark:text-blue-400">KELAS?</span>
               </h2>
               <p className="text-[1.05rem] text-slate-600 dark:text-slate-400 leading-[1.7] max-w-[520px]">
@@ -600,8 +600,7 @@ export default function LandingPage() {
 
       {/* --- MODULES SECTION --- */}
       <section id="modul" className="py-16 md:py-24 bg-white dark:bg-gray-900 relative overflow-hidden">
-      <section id="modul" className="py-16 md:py-24 bg-sky-300 dark:bg-sky-800 relative overflow-hidden">
-        <div className="max-w-7xl mx-auto px-4 sm:px-16 lg:px-24 relative z-10">
+        <div className="max-w-full mx-auto px-4 md:px-16 lg:px-12 relative z-10">
           <div className="flex flex-col lg:flex-row items-center gap-12 lg:gap-20">
 
             {/* Left Column: Text Content */}
@@ -613,12 +612,10 @@ export default function LandingPage() {
                 transition={{ duration: 0.5 }}
               >
                 <span className="text-blue-600 dark:text-blue-400 font-bold tracking-wider text-lg mb-2 block font-[family-name:var(--font-kalam)]">
-                <span className="text-blue-800 dark:text-blue-300 font-bold tracking-wider text-lg mb-2 block font-[family-name:var(--font-kalam)]">
                   Modul Pembelajaran
                 </span>
-                <h2 className="text-3xl md:text-5xl text-slate-900 dark:text-white mb-6 font-[family-name:var(--font-gagalin)] leading-tight">
+                <h2 className="text-3xl md:text-5xl text-slate-900 font-semibold dark:text-white mb-6 font-[family-name:var(--font-gagalin)] leading-tight">
                   Jelajahi Materi <br /> <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-purple-600">Pilihan Terbaik</span>
-                  Jelajahi Materi <br /> <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-700 to-purple-700 dark:from-blue-400 dark:to-purple-400">Pilihan Terbaik</span>
                 </h2>
               </motion.div>
 
@@ -628,7 +625,6 @@ export default function LandingPage() {
                 viewport={{ once: true }}
                 transition={{ duration: 0.5, delay: 0.2 }}
                 className="text-lg text-slate-600 dark:text-slate-400 max-w-lg leading-relaxed"
-                className="text-lg text-slate-800 dark:text-blue-100 max-w-lg leading-relaxed"
               >
                 Kurikulum dirancang khusus oleh praktisi industri untuk mempersiapkanmu menghadapi dunia kerja. Pilih jalur yang sesuai dengan minatmu dan mulai belajar sekarang.
               </motion.p>
@@ -714,8 +710,6 @@ export default function LandingPage() {
 
               <div className="absolute bottom-0 left-0 w-full h-40 bg-gradient-to-t from-white via-white/90 to-transparent dark:from-gray-900 dark:via-gray-900/90 z-20 flex items-end justify-center pb-8 rounded-b-[2.5rem]">
                 <Link href="/login" className="text-base font-bold text-blue-600 dark:text-blue-400 hover:underline transition-all">
-            <div className="absolute bottom-0 left-0 w-full h-40 bg-gradient-to-t from-sky-300 via-sky-300/90 to-transparent dark:from-sky-800 dark:via-sky-800/90 z-20 flex items-end justify-center pb-8 rounded-b-[2.5rem]">
-              <Link href="/login" className="text-base font-bold text-blue-700 dark:text-blue-300 hover:underline transition-all">
                   Lihat Semua Modul
                 </Link>
               </div>
