@@ -457,7 +457,7 @@ export default function LandingPage() {
                 <div className="w-[44px] h-[44px] rounded-[14px] overflow-hidden flex-shrink-0">
                   <img src="/js.png" alt="JS" className="w-full h-full object-cover" />
                 </div>
-                <div className="px-3 py-1 bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400 rounded-full text-[0.72rem] font-semibold">▶ Sedang Belajar</div>
+                <div className="px-3 py-1 bg-green-200 dark:bg-green-900/60 text-green-800 dark:text-green-300 rounded-full text-[0.72rem] font-semibold">▶ Sedang Belajar</div>
               </div>
               <div className="font-[family-name:var(--font-gagalin)] text-[1rem] font-bold text-slate-900 dark:text-white mb-2 tracking-wide">JavaScript Fundamental</div>
               <div className="flex justify-between text-[0.78rem] text-slate-600 dark:text-slate-400 mb-2">
@@ -484,21 +484,21 @@ export default function LandingPage() {
             </div>
 
             <div className="absolute bg-white dark:bg-gray-800 rounded-[16px] py-[0.85rem] px-[1.1rem] shadow-[0_12px_40px_rgba(0,0,0,0.1),0_2px_8px_rgba(0,0,0,0.06)] dark:shadow-none border border-slate-200/80 dark:border-gray-700 flex items-center gap-3 text-[0.82rem] font-semibold whitespace-nowrap top-0 left-[-20px] animate-card-float-1">
-              <div className="w-[36px] h-[36px] rounded-[10px] grid place-items-center text-[1.1rem] shrink-0 bg-blue-100 dark:bg-blue-900/30">🎯</div>
+              <div className="w-[36px] h-[36px] rounded-[10px] grid place-items-center text-[1.1rem] shrink-0 bg-blue-200 dark:bg-blue-900/60">🎯</div>
               <div>
                 <div className="text-slate-900 dark:text-white">Pre-Tes Selesai!</div>
                 <div className="text-[0.72rem] text-slate-400 font-normal">Jalur belajar sudah siap</div>
               </div>
             </div>
             <div className="absolute bg-white dark:bg-gray-800 rounded-[16px] py-[0.85rem] px-[1.1rem] shadow-[0_12px_40px_rgba(0,0,0,0.1),0_2px_8px_rgba(0,0,0,0.06)] dark:shadow-none border border-slate-200/80 dark:border-gray-700 flex items-center gap-3 text-[0.82rem] font-semibold whitespace-nowrap bottom-[120px] left-0 animate-card-float-2">
-              <div className="w-[36px] h-[36px] rounded-[10px] grid place-items-center text-[1.1rem] shrink-0 bg-yellow-100 dark:bg-yellow-900/30">🏆</div>
+              <div className="w-[36px] h-[36px] rounded-[10px] grid place-items-center text-[1.1rem] shrink-0 bg-yellow-200 dark:bg-yellow-900/60">🏆</div>
               <div>
                 <div className="text-slate-900 dark:text-white">Sertifikat Diraih</div>
                 <div className="text-[0.72rem] text-slate-400 font-normal">HTML & CSS Basic</div>
               </div>
             </div>
             <div className="absolute bg-white dark:bg-gray-800 rounded-[16px] py-[0.85rem] px-[1.1rem] shadow-[0_12px_40px_rgba(0,0,0,0.1),0_2px_8px_rgba(0,0,0,0.06)] dark:shadow-none border border-slate-200/80 dark:border-gray-700 flex items-center gap-3 text-[0.82rem] font-semibold whitespace-nowrap bottom-[60px] right-[20px] animate-card-float-3">
-              <div className="w-[36px] h-[36px] rounded-[10px] grid place-items-center text-[1.1rem] shrink-0 bg-green-100 dark:bg-green-900/30">🤖</div>
+              <div className="w-[36px] h-[36px] rounded-[10px] grid place-items-center text-[1.1rem] shrink-0 bg-green-200 dark:bg-green-900/60">🤖</div>
               <div className="text-slate-900 dark:text-white">Kak Gem siap membantu</div>
             </div>
           </div>
@@ -583,7 +583,7 @@ export default function LandingPage() {
                   return (
                     <div key={i} className={`bg-white dark:bg-gray-800 rounded-[24px] p-7 border border-slate-200 dark:border-gray-700 flex items-start gap-5 transition-all duration-300 cursor-pointer relative overflow-hidden group hover:border-blue-600/30 hover:shadow-[0_8px_32px_rgba(37,99,235,0.1)] hover:translate-x-[6px] mx-2 ${originalIndex === activeFeature ? 'border-blue-600/30 shadow-[0_8px_32px_rgba(37,99,235,0.1)] translate-x-[6px]' : ''}`} onMouseEnter={() => setActiveFeature(originalIndex)}>
                       <div className={`absolute left-0 top-0 bottom-0 w-[3px] bg-gradient-to-b from-blue-600 to-indigo-500 origin-top transition-transform duration-300 rounded-r-[2px] ${originalIndex === activeFeature ? 'scale-y-100' : 'scale-y-0 group-hover:scale-y-100'}`}></div>
-                      <div className="w-[50px] h-[50px] rounded-[14px] flex items-center justify-center shrink-0 bg-blue-100 dark:bg-blue-900/30">
+                      <div className="w-[50px] h-[50px] rounded-[14px] flex items-center justify-center shrink-0 bg-blue-200 dark:bg-blue-900/50">
                         <img src={feat.icon} alt={feat.title} className="w-8 h-8 object-contain" />
                       </div>
                       <div>
@@ -705,9 +705,9 @@ export default function LandingPage() {
                               className="w-6 h-6 object-contain"
                             />
                           </div>
-                          <span className={`px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wide ${modul.category.toLowerCase() === 'mudah' ? 'bg-amber-100 text-amber-800 dark:bg-amber-900/40 dark:text-amber-300' :
-                            modul.category.toLowerCase() === 'sedang' ? 'bg-blue-100 text-blue-800 dark:bg-blue-900/40 dark:text-blue-300' :
-                              'bg-green-100 text-green-800 dark:bg-green-900/40 dark:text-green-300'
+                          <span className={`px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wide ${modul.category.toLowerCase() === 'mudah' ? 'bg-amber-200 text-amber-900 dark:bg-amber-900/60 dark:text-amber-300' :
+                            modul.category.toLowerCase() === 'sedang' ? 'bg-blue-200 text-blue-900 dark:bg-blue-900/60 dark:text-blue-300' :
+                              'bg-green-200 text-green-900 dark:bg-green-900/60 dark:text-green-300'
                             }`}>
                             {modul.category}
                           </span>
@@ -1085,7 +1085,7 @@ export default function LandingPage() {
             <div className="w-full h-full flex">
               <div className="group relative bg-white dark:bg-gray-800 p-8 md:p-10 rounded-2xl border border-white/50 dark:border-gray-700 w-full overflow-hidden h-full min-h-[450px] md:min-h-[500px] lg:min-h-[550px] flex flex-col justify-center">
                 <div className="relative z-10 w-full sm:w-2/3 lg:w-3/4 xl:w-2/3">
-                  <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 text-base font-bold tracking-wider mb-4 border border-blue-100 dark:border-blue-800 font-[family-name:var(--font-kalam)]">
+                  <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-blue-200 dark:bg-blue-900/50 text-blue-800 dark:text-blue-300 text-base font-bold tracking-wider mb-4 border border-blue-300 dark:border-blue-800 font-[family-name:var(--font-kalam)]">
                   
                     <span>Segera Hadir</span>
                   </div>
