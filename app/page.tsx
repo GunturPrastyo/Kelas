@@ -325,7 +325,7 @@ export default function LandingPage() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-white dark:bg-gray-900 font-sans text-slate-800 dark:text-slate-200 selection:bg-blue-100 dark:selection:bg-blue-900 overflow-x-hidden">
+    <div className="min-h-screen max-w-[100vw] bg-white dark:bg-gray-900 font-sans text-slate-800 dark:text-slate-200 selection:bg-blue-100 dark:selection:bg-blue-900 overflow-x-hidden">
 
       {/* Noise Texture Overlay */}
       <div className="fixed inset-0 pointer-events-none z-[9999] opacity-40 mix-blend-overlay" style={{ backgroundImage: "url(\"data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E\")" }}></div>
@@ -352,6 +352,9 @@ export default function LandingPage() {
         .animate-card-float-3 { animation: cardFloat 6s ease-in-out infinite 2s; }
       `}</style>
       <style jsx global>{`
+        html {
+            scroll-behavior: smooth;
+        }
         .hide-scrollbar-on-mobile::-webkit-scrollbar {
             display: none;
         }
@@ -432,10 +435,9 @@ export default function LandingPage() {
             <div className="flex items-center justify-center md:justify-start gap-4 mb-12 flex-wrap">
               <Link href="/register" className="group inline-flex items-center gap-2 py-[0.85rem] px-8 rounded-full bg-blue-600 text-white text-[1rem] font-semibold no-underline shadow-[0_8px_28px_rgba(37,99,235,0.35),0_2px_8px_rgba(37,99,235,0.2)] transition-all duration-300 relative overflow-hidden hover:-translate-y-[2px] hover:shadow-[0_16px_40px_rgba(37,99,235,0.45)] before:absolute before:inset-0 before:bg-gradient-to-br before:from-white/15 before:to-transparent before:rounded-full">
                 Mulai Belajar Gratis
-                <span className="transition-transform duration-200 group-hover:translate-x-1">→</span>
               </Link>
               <a href="#fitur" className="py-[0.85rem] px-6 text-[1rem] rounded-full border-[1.5px] border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 font-medium no-underline transition-all duration-200 hover:bg-slate-50 dark:hover:bg-slate-800">
-                Lihat Fitur ↓
+                Lihat Fitur
               </a>
             </div>
             <div className="flex items-center justify-center md:justify-start gap-3">
@@ -457,7 +459,9 @@ export default function LandingPage() {
 
             <div className="absolute top-[40px] right-0 w-[340px] bg-white dark:bg-gray-800 rounded-[24px] p-6 shadow-[0_20px_60px_-10px_rgba(37,99,235,0.12),0_4px_20px_-4px_rgba(0,0,0,0.08)] border border-slate-200 dark:border-gray-700 animate-card-float">
               <div className="flex items-center justify-between mb-5">
-                <div className="w-[44px] h-[44px] bg-gradient-to-br from-blue-600 to-indigo-500 rounded-[14px] grid place-items-center text-white font-bold text-[1.1rem] font-[family-name:var(--font-gagalin)] tracking-widest">JS</div>
+                <div className="w-[44px] h-[44px] rounded-[14px] overflow-hidden flex-shrink-0">
+                  <img src="/js.png" alt="JS" className="w-full h-full object-cover" />
+                </div>
                 <div className="px-3 py-1 bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400 rounded-full text-[0.72rem] font-semibold">▶ Sedang Belajar</div>
               </div>
               <div className="font-[family-name:var(--font-gagalin)] text-[1rem] font-bold text-slate-900 dark:text-white mb-2 tracking-wide">JavaScript Fundamental</div>
@@ -558,17 +562,12 @@ export default function LandingPage() {
               </div>
             </div>
             <div className="grid gap-5">
-              {[
-                { icon: '🎯', title: 'Jalur Belajar Personal', desc: 'Sistem cerdas menyesuaikan tingkat kesulitan berdasarkan hasil Pre-Tes. Mulai dari Dasar, Menengah, atau Lanjut sesuai kemampuanmu.' },
-                { icon: '📱', title: 'Mode Belajar Fleksibel', desc: 'Pilih gaya belajarmu sendiri — teks interaktif, video, atau sesi praktik langsung untuk pengalaman yang optimal.' },
-                { icon: '📊', title: 'Analisis Pembelajaran', desc: 'Pantau perkembanganmu secara terperinci. Dapatkan laporan akurasi, kecepatan, dan rekomendasi topik yang perlu diperkuat.' },
-                { icon: '💻', title: 'Live Code Playground', desc: 'Tulis, jalankan, dan lihat hasil kode HTML & JavaScript secara real-time langsung di browser tanpa aplikasi tambahan.' },
-                { icon: '🤖', title: 'Tutor AI "Kak Gem"', desc: 'Buntu saat belajar? Tanya Kak Gem — asisten AI cerdas yang siap membantu memahami materi dan memecahkan masalah coding kapan saja.' },
-                { icon: '🏆', title: 'Gamifikasi & Sertifikat', desc: 'Streak harian, skor terbaik di post-test, dan sertifikat resmi setelah menyelesaikan modul menjaga motivasi belajarmu.' }
-              ].map((feat, i) => (
+              {features.map((feat, i) => (
                 <div key={i} className={`bg-white dark:bg-gray-800 rounded-[24px] p-7 border border-slate-200 dark:border-gray-700 flex items-start gap-5 transition-all duration-300 cursor-pointer relative overflow-hidden group hover:border-blue-600/30 hover:shadow-[0_8px_32px_rgba(37,99,235,0.1)] hover:translate-x-[6px] ${i === activeFeature ? 'border-blue-600/30 shadow-[0_8px_32px_rgba(37,99,235,0.1)] translate-x-[6px]' : ''}`} onMouseEnter={() => setActiveFeature(i)}>
                   <div className={`absolute left-0 top-0 bottom-0 w-[3px] bg-gradient-to-b from-blue-600 to-indigo-500 origin-top transition-transform duration-300 rounded-r-[2px] ${i === activeFeature ? 'scale-y-100' : 'scale-y-0 group-hover:scale-y-100'}`}></div>
-                  <div className="w-[50px] h-[50px] rounded-[14px] grid place-items-center shrink-0 text-[1.4rem] bg-blue-100 dark:bg-blue-900/30">{feat.icon}</div>
+                  <div className="w-[50px] h-[50px] rounded-[14px] flex items-center justify-center shrink-0 bg-blue-100 dark:bg-blue-900/30">
+                    <img src={feat.icon} alt={feat.title} className="w-8 h-8 object-contain" />
+                  </div>
                   <div>
                     <div className="font-[family-name:var(--font-gagalin)] tracking-wide text-[1rem] font-bold text-slate-900 dark:text-white mb-1">{feat.title}</div>
                     <div className="text-[0.88rem] text-slate-600 dark:text-slate-400 leading-[1.6]">{feat.desc}</div>
@@ -708,7 +707,7 @@ export default function LandingPage() {
             {/* Left Column: Carousel */}
             <div className="w-full md:w-1/2 relative mt-4 sm:mt-0">
               {/* Mobile: Horizontal Scroll */}
-              <div className="md:hidden w-full overflow-x-auto pb-4 -mx-4 px-4 hide-scrollbar-on-mobile">
+              <div className="md:hidden w-full overflow-x-auto pb-4 hide-scrollbar-on-mobile">
                 <div className="flex gap-4">
                   {mentors.map((mentor, idx) => (
                     <div key={`mobile-mentor-${idx}`} className="w-64 sm:w-72 flex-shrink-0 rounded-2xl overflow-hidden shadow-lg cursor-pointer" onClick={() => setSelectedMentor(mentor)}>
