@@ -427,11 +427,11 @@ export default function LandingPage() {
             <p className="text-[1.1rem] text-slate-600 dark:text-slate-400 max-w-[500px] mx-auto md:mx-0 mb-10 font-normal leading-[1.7]">
               KELAS membantu kamu menemukan jalur belajar yang tepat sesuai kemampuanmu. Ikuti pre-tes, dapatkan rekomendasi, dan tingkatkan skillmu hari ini.
             </p>
-            <div className="flex justify-start gap-4 mb-12 flex-wrap">
-              <Link href="/register" className="group inline-flex items-center gap-2 py-[0.85rem] px-8 rounded-full bg-blue-600 text-white text-[1rem] font-semibold no-underline shadow-[0_8px_28px_rgba(37,99,235,0.35),0_2px_8px_rgba(37,99,235,0.2)] transition-all duration-300 relative overflow-hidden hover:-translate-y-[2px] hover:shadow-[0_16px_40px_rgba(37,99,235,0.45)] before:absolute before:inset-0 before:bg-gradient-to-br before:from-white/15 before:to-transparent before:rounded-full">
+            <div className="flex justify-start gap-2 sm:gap-4 mb-12 w-full">
+              <Link href="/register" className="group inline-flex items-center justify-center gap-2 py-3 px-4 sm:py-[0.85rem] sm:px-8 rounded-full bg-blue-600 text-white text-sm sm:text-[1rem] font-semibold no-underline shadow-[0_8px_28px_rgba(37,99,235,0.35),0_2px_8px_rgba(37,99,235,0.2)] transition-all duration-300 relative overflow-hidden hover:-translate-y-[2px] hover:shadow-[0_16px_40px_rgba(37,99,235,0.45)] before:absolute before:inset-0 before:bg-gradient-to-br before:from-white/15 before:to-transparent before:rounded-full whitespace-nowrap flex-1 sm:flex-none">
                 Mulai Belajar Gratis
               </Link>
-              <a href="#fitur" className="py-[0.85rem] px-6 text-[1rem] rounded-full border-[1.5px] border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 font-medium no-underline transition-all duration-200 hover:bg-slate-50 dark:hover:bg-slate-800">
+              <a href="#fitur" className="inline-flex justify-center items-center py-3 px-4 sm:py-[0.85rem] sm:px-6 text-sm sm:text-[1rem] rounded-full border-[1.5px] border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 font-medium no-underline transition-all duration-200 hover:bg-slate-50 dark:hover:bg-slate-800 whitespace-nowrap flex-1 sm:flex-none">
                 Lihat Fitur
               </a>
             </div>
