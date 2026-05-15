@@ -365,8 +365,8 @@ export default function LandingPage() {
     `}</style>
 
       {/* --- NAVBAR --- */}
-      <nav id="navbar" className={`fixed top-0 left-0 right-0 z-[100] px-4 md:px-8 h-[68px] flex items-center justify-between transition-all duration-300 ${isScrolled ? 'bg-white/95 dark:bg-gray-900/95 shadow-[0_4px_24px_rgba(0,0,0,0.06)]' : 'bg-white/80 dark:bg-gray-900/80'} backdrop-blur-[20px] saturate-[180%] border-b border-slate-200/70 dark:border-gray-800`}>
-        <Link href="#" className="px-0 sm:px-24">
+      <nav id="navbar" className={`fixed top-0 left-0 right-0 z-[100] px-4 md:px-8 h-[60px] lg:h-[68px] flex items-center justify-between transition-all duration-300 ${isScrolled ? 'bg-white/95 dark:bg-gray-900/95 shadow-[0_4px_24px_rgba(0,0,0,0.06)]' : 'bg-white/80 dark:bg-gray-900/80'} backdrop-blur-[20px] saturate-[180%] border-b border-slate-200/70 dark:border-gray-800`}>
+        <Link href="#" className="px-0">
           <img src="/logo.webp" alt="KELAS Logo" className="h-8 w-auto" />
      
         </Link>
@@ -391,7 +391,7 @@ export default function LandingPage() {
         <motion.div
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
-          className="md:hidden fixed top-[68px] z-[90] left-0 w-full bg-white/95 dark:bg-gray-900/95 backdrop-blur-xl border-b border-slate-200 dark:border-gray-800 shadow-2xl"
+          className="md:hidden fixed top-[60px] z-[90] left-0 w-full bg-white/95 dark:bg-gray-900/95 backdrop-blur-xl border-b border-slate-200 dark:border-gray-800 shadow-2xl"
         >
           <div className="px-4 py-6 space-y-2">
             <Link href="#fitur" onClick={() => setIsMobileMenuOpen(false)} className={`block px-4 py-3 rounded-xl text-base font-medium transition-all ${activeSection === 'fitur' ? 'text-blue-600 dark:text-blue-400 bg-slate-50 dark:bg-gray-800' : 'text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-gray-800 hover:text-blue-600 dark:hover:text-blue-400'}`}>Fitur</Link>
@@ -406,7 +406,7 @@ export default function LandingPage() {
       )}
 
       {/* --- HERO --- */}
-      <section className="min-h-screen pt-[100px] pb-10 flex items-center relative overflow-hidden" id="home">
+      <section className="min-h-screen md:min-h-[60vh] lg:min-h-screen pt-[100px] md:pt-[120px] lg:pt-[100px] pb-10 flex items-center relative overflow-hidden" id="home">
         <div className="absolute inset-0 pointer-events-none z-0">
           <div className="absolute inset-0 bg-[linear-gradient(rgba(99,102,241,0.04)_1px,transparent_1px),linear-gradient(90deg,rgba(99,102,241,0.04)_1px,transparent_1px)] bg-[size:60px_60px] [mask-image:radial-gradient(ellipse_at_60%_40%,black_30%,transparent_70%)]"></div>
           <div className="absolute top-[-10%] right-[-5%] w-[650px] h-[650px] bg-[radial-gradient(circle_at_40%_40%,rgba(99,102,241,0.12)_0%,rgba(37,99,235,0.08)_40%,transparent_70%)] rounded-full animate-float"></div>
