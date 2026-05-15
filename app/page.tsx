@@ -540,18 +540,30 @@ export default function LandingPage() {
               <p className="text-[1.05rem] text-slate-600 dark:text-slate-400 leading-[1.7] max-w-[520px]">
                 Kami memadukan teknologi AI dan pedagogi modern untuk menciptakan ruang belajar yang efektif, seru, dan personal bagi setiap siswa.
               </p>
-              <div className="mt-8 flex flex-col gap-3">
-                <div className="flex items-center gap-2.5 text-[0.95rem] font-medium text-slate-700 dark:text-slate-300 before:content-[''] before:w-[22px] before:h-[22px] before:bg-green-100 before:rounded-full before:shrink-0 before:bg-[url('data:image/svg+xml,%3Csvg_viewBox=%220_0_20_20%22_xmlns=%22http://www.w3.org/2000/svg%22%3E%3Cpath_fill=%22%2316a34a%22_d=%22M16.7_5.3a1_1_0_010_1.4l-7_7a1_1_0_01-1.4_0l-3-3a1_1_0_111.4-1.4L9_11.6l6.3-6.3a1_1_0_011.4_0z%22/%3E%3C/svg%3E')] before:bg-no-repeat before:bg-center before:bg-[size:14px]">
-                  Materi interaktif & terstruktur berbasis kurikulum
+              <div className="mt-8 flex flex-col gap-4">
+                <div className="flex items-start gap-3 text-[0.95rem] font-medium text-slate-700 dark:text-slate-300">
+                  <div className="w-[22px] h-[22px] flex items-center justify-center bg-green-100 dark:bg-green-900/30 rounded-full shrink-0 text-green-600 dark:text-green-400 mt-0.5">
+                    <CheckCircle2 size={14} />
+                  </div>
+                  <span>Materi interaktif & terstruktur berbasis kurikulum</span>
                 </div>
-                <div className="flex items-center gap-2.5 text-[0.95rem] font-medium text-slate-700 dark:text-slate-300 before:content-[''] before:w-[22px] before:h-[22px] before:bg-green-100 before:rounded-full before:shrink-0 before:bg-[url('data:image/svg+xml,%3Csvg_viewBox=%220_0_20_20%22_xmlns=%22http://www.w3.org/2000/svg%22%3E%3Cpath_fill=%22%2316a34a%22_d=%22M16.7_5.3a1_1_0_010_1.4l-7_7a1_1_0_01-1.4_0l-3-3a1_1_0_111.4-1.4L9_11.6l6.3-6.3a1_1_0_011.4_0z%22/%3E%3C/svg%3E')] before:bg-no-repeat before:bg-center before:bg-[size:14px]">
-                  Fokus pada praktik langsung dengan Live Code
+                <div className="flex items-start gap-3 text-[0.95rem] font-medium text-slate-700 dark:text-slate-300">
+                  <div className="w-[22px] h-[22px] flex items-center justify-center bg-green-100 dark:bg-green-900/30 rounded-full shrink-0 text-green-600 dark:text-green-400 mt-0.5">
+                    <CheckCircle2 size={14} />
+                  </div>
+                  <span>Fokus pada praktik langsung dengan Live Code</span>
                 </div>
-                <div className="flex items-center gap-2.5 text-[0.95rem] font-medium text-slate-700 dark:text-slate-300 before:content-[''] before:w-[22px] before:h-[22px] before:bg-green-100 before:rounded-full before:shrink-0 before:bg-[url('data:image/svg+xml,%3Csvg_viewBox=%220_0_20_20%22_xmlns=%22http://www.w3.org/2000/svg%22%3E%3Cpath_fill=%22%2316a34a%22_d=%22M16.7_5.3a1_1_0_010_1.4l-7_7a1_1_0_01-1.4_0l-3-3a1_1_0_111.4-1.4L9_11.6l6.3-6.3a1_1_0_011.4_0z%22/%3E%3C/svg%3E')] before:bg-no-repeat before:bg-center before:bg-[size:14px]">
-                  AI Tutor 24/7 siap membantu kapan saja
+                <div className="flex items-start gap-3 text-[0.95rem] font-medium text-slate-700 dark:text-slate-300">
+                  <div className="w-[22px] h-[22px] flex items-center justify-center bg-green-100 dark:bg-green-900/30 rounded-full shrink-0 text-green-600 dark:text-green-400 mt-0.5">
+                    <CheckCircle2 size={14} />
+                  </div>
+                  <span>AI Tutor 24/7 siap membantu kapan saja</span>
                 </div>
-                <div className="flex items-center gap-2.5 text-[0.95rem] font-medium text-slate-700 dark:text-slate-300 before:content-[''] before:w-[22px] before:h-[22px] before:bg-green-100 before:rounded-full before:shrink-0 before:bg-[url('data:image/svg+xml,%3Csvg_viewBox=%220_0_20_20%22_xmlns=%22http://www.w3.org/2000/svg%22%3E%3Cpath_fill=%22%2316a34a%22_d=%22M16.7_5.3a1_1_0_010_1.4l-7_7a1_1_0_01-1.4_0l-3-3a1_1_0_111.4-1.4L9_11.6l6.3-6.3a1_1_0_011.4_0z%22/%3E%3C/svg%3E')] before:bg-no-repeat before:bg-center before:bg-[size:14px]">
-                  Sertifikat resmi setelah menyelesaikan modul
+                <div className="flex items-start gap-3 text-[0.95rem] font-medium text-slate-700 dark:text-slate-300">
+                  <div className="w-[22px] h-[22px] flex items-center justify-center bg-green-100 dark:bg-green-900/30 rounded-full shrink-0 text-green-600 dark:text-green-400 mt-0.5">
+                    <CheckCircle2 size={14} />
+                  </div>
+                  <span>Sertifikat resmi setelah menyelesaikan modul</span>
                 </div>
               </div>
             </div>
@@ -588,6 +600,7 @@ export default function LandingPage() {
 
       {/* --- MODULES SECTION --- */}
       <section id="modul" className="py-16 md:py-24 bg-white dark:bg-gray-900 relative overflow-hidden">
+      <section id="modul" className="py-16 md:py-24 bg-sky-300 dark:bg-sky-800 relative overflow-hidden">
         <div className="max-w-7xl mx-auto px-4 sm:px-16 lg:px-24 relative z-10">
           <div className="flex flex-col lg:flex-row items-center gap-12 lg:gap-20">
 
@@ -600,10 +613,12 @@ export default function LandingPage() {
                 transition={{ duration: 0.5 }}
               >
                 <span className="text-blue-600 dark:text-blue-400 font-bold tracking-wider text-lg mb-2 block font-[family-name:var(--font-kalam)]">
+                <span className="text-blue-800 dark:text-blue-300 font-bold tracking-wider text-lg mb-2 block font-[family-name:var(--font-kalam)]">
                   Modul Pembelajaran
                 </span>
                 <h2 className="text-3xl md:text-5xl text-slate-900 dark:text-white mb-6 font-[family-name:var(--font-gagalin)] leading-tight">
                   Jelajahi Materi <br /> <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-purple-600">Pilihan Terbaik</span>
+                  Jelajahi Materi <br /> <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-700 to-purple-700 dark:from-blue-400 dark:to-purple-400">Pilihan Terbaik</span>
                 </h2>
               </motion.div>
 
@@ -613,6 +628,7 @@ export default function LandingPage() {
                 viewport={{ once: true }}
                 transition={{ duration: 0.5, delay: 0.2 }}
                 className="text-lg text-slate-600 dark:text-slate-400 max-w-lg leading-relaxed"
+                className="text-lg text-slate-800 dark:text-blue-100 max-w-lg leading-relaxed"
               >
                 Kurikulum dirancang khusus oleh praktisi industri untuk mempersiapkanmu menghadapi dunia kerja. Pilih jalur yang sesuai dengan minatmu dan mulai belajar sekarang.
               </motion.p>
@@ -698,6 +714,8 @@ export default function LandingPage() {
 
               <div className="absolute bottom-0 left-0 w-full h-40 bg-gradient-to-t from-white via-white/90 to-transparent dark:from-gray-900 dark:via-gray-900/90 z-20 flex items-end justify-center pb-8 rounded-b-[2.5rem]">
                 <Link href="/login" className="text-base font-bold text-blue-600 dark:text-blue-400 hover:underline transition-all">
+            <div className="absolute bottom-0 left-0 w-full h-40 bg-gradient-to-t from-sky-300 via-sky-300/90 to-transparent dark:from-sky-800 dark:via-sky-800/90 z-20 flex items-end justify-center pb-8 rounded-b-[2.5rem]">
+              <Link href="/login" className="text-base font-bold text-blue-700 dark:text-blue-300 hover:underline transition-all">
                   Lihat Semua Modul
                 </Link>
               </div>
