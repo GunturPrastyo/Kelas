@@ -34,7 +34,7 @@ import {
 } from 'lucide-react';
 import { useState, useEffect, useRef } from 'react';
 import { useTheme } from 'next-themes';
-import { motion } from 'framer-motion';
+import { motion, useInView, animate } from 'framer-motion';
 
 // Data Dummy untuk Mentor
 const mentors = [
@@ -154,6 +154,34 @@ interface Module {
   overview: string;
   category: string;
   icon: string;
+}
+
+function StatItem({ value, suffix = "", prefix = "", isFloat = false, title }: { value: number, suffix?: string, prefix?: string, isFloat?: boolean, title: string }) {
+  const ref = useRef<HTMLDivElement>(null);
+  const isInView = useInView(ref, { once: true, margin: "0px" });
+  const [displayValue, setDisplayValue] = useState("0");
+
+  useEffect(() => {
+    if (isInView) {
+      const controls = animate(0, value, {
+        duration: 2.5,
+        ease: "easeOut",
+        onUpdate(v) {
+          setDisplayValue(isFloat ? v.toFixed(1) : Math.floor(v).toString());
+        }
+      });
+      return controls.stop;
+    }
+  }, [isInView, value, isFloat]);
+
+  return (
+    <div className="text-center p-4 border-r border-white/10 last:border-0 max-md:border-b max-md:even:border-r-0 max-md:[&:nth-last-child(-n+2)]:border-b-0">
+      <div ref={ref} className="font-[family-name:var(--font-gagalin)] text-[2.4rem] font-extrabold bg-clip-text text-transparent bg-gradient-to-br from-white to-white/70 leading-none">
+        {prefix}{displayValue}{suffix}
+      </div>
+      <div className="text-[0.85rem] text-white/45 mt-1 font-normal">{title}</div>
+    </div>
+  );
 }
 
 export default function LandingPage() {
@@ -510,22 +538,10 @@ export default function LandingPage() {
       {/* --- STATS BANNER --- */}
       <div className="bg-slate-900 dark:bg-slate-950 py-10 px-4 md:px-8">
         <div className="max-w-[1280px] mx-auto grid grid-cols-2 md:grid-cols-4 gap-4">
-          <div className="text-center p-4 border-r border-white/10 last:border-0 max-md:border-b max-md:even:border-r-0 max-md:[&:nth-last-child(-n+2)]:border-b-0">
-            <div className="font-[family-name:var(--font-gagalin)] text-[2.4rem] font-extrabold bg-clip-text text-transparent bg-gradient-to-br from-white to-white/70 leading-none">10K+</div>
-            <div className="text-[0.85rem] text-white/45 mt-1 font-normal">Pelajar Aktif</div>
-          </div>
-          <div className="text-center p-4 border-r border-white/10 last:border-0 max-md:border-b max-md:even:border-r-0 max-md:[&:nth-last-child(-n+2)]:border-b-0">
-            <div className="font-[family-name:var(--font-gagalin)] text-[2.4rem] font-extrabold bg-clip-text text-transparent bg-gradient-to-br from-white to-white/70 leading-none">50+</div>
-            <div className="text-[0.85rem] text-white/45 mt-1 font-normal">Modul Pembelajaran</div>
-          </div>
-          <div className="text-center p-4 border-r border-white/10 last:border-0 max-md:border-b max-md:even:border-r-0 max-md:[&:nth-last-child(-n+2)]:border-b-0">
-            <div className="font-[family-name:var(--font-gagalin)] text-[2.4rem] font-extrabold bg-clip-text text-transparent bg-gradient-to-br from-white to-white/70 leading-none">4.9★</div>
-            <div className="text-[0.85rem] text-white/45 mt-1 font-normal">Rating Platform</div>
-          </div>
-          <div className="text-center p-4 border-r border-white/10 last:border-0 max-md:border-b max-md:even:border-r-0 max-md:[&:nth-last-child(-n+2)]:border-b-0">
-            <div className="font-[family-name:var(--font-gagalin)] text-[2.4rem] font-extrabold bg-clip-text text-transparent bg-gradient-to-br from-white to-white/70 leading-none">98%</div>
-            <div className="text-[0.85rem] text-white/45 mt-1 font-normal">Tingkat Kepuasan</div>
-          </div>
+          <StatItem value={10} suffix="K+" title="Pelajar Aktif" />
+          <StatItem value={50} suffix="+" title="Modul Pembelajaran" />
+          <StatItem value={4.9} isFloat={true} suffix="★" title="Rating Platform" />
+          <StatItem value={98} suffix="%" title="Tingkat Kepuasan" />
         </div>
       </div>
 
