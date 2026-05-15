@@ -951,7 +951,7 @@ export default function LandingPage() {
 
       {/* --- TESTIMONIALS SECTION --- */}
       <section className="py-16 md:py-24 bg-white dark:bg-gray-900 relative overflow-hidden border-t border-slate-200 dark:border-gray-800">
-        <div className="z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="z-10 max-w-full mx-auto px-4 md:px-16 lg:px-12">
           <div className="text-center mb-12 md:mb-16">
             <div className="text-blue-600 dark:text-blue-400 font-bold tracking-wider text-lg mb-2 block font-[family-name:var(--font-kalam)]">
               Kata Mereka
@@ -1013,7 +1013,7 @@ export default function LandingPage() {
       {/* --- CTA SECTION --- */}
       <section id="mulai" className="py-16 md:py-24 bg-slate-900 dark:bg-slate-950 relative overflow-hidden">
         <div className="absolute inset-0 bg-blue-600/10 dark:bg-blue-900/10 blur-3xl rounded-full w-1/2 h-1/2 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"></div>
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-center">
+        <div className="max-w-full mx-auto px-4 md:px-16 lg:px-12 relative z-10 text-center">
           <div className="text-blue-400 font-bold tracking-wider text-lg mb-2 block font-[family-name:var(--font-kalam)]">
             Mulai Sekarang
           </div>
@@ -1063,42 +1063,45 @@ export default function LandingPage() {
 
       {/* --- FOOTER --- */}
       <footer className="bg-white dark:bg-gray-900 border-t border-slate-200 border-t-white dark:border-gray-800 dark:border-t-gray-900 pt-16 pb-6">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 md:grid-cols-12 gap-8 lg:gap-12 mb-12">
-            <div className="md:col-span-5 lg:col-span-4">
+        <div className="max-w-full mx-auto px-4 md:px-16 lg:px-12">
+          <div className="grid grid-cols-1 md:grid-cols-12 gap-8 lg:gap-8 mb-12">
+            <div className="md:col-span-4 lg:col-span-4">
               <div className="flex items-center gap-2 mb-4">
                 <img src="/logo.webp" alt="KELAS Icon" className="h-8 w-auto" />
-
               </div>
-              <p className="text-slate-500 dark:text-slate-400 text-sm leading-relaxed text-left mb-6">
+              <p className="text-slate-500 dark:text-slate-400 text-sm leading-relaxed text-left max-w-sm">
                 Platform e-learning adaptif yang membantu kamu belajar lebih cepat dan efektif dengan kurikulum yang dipersonalisasi.
               </p>
-              <div>
-                <h4 className="font-bold text-slate-900 dark:text-white mb-4">Belajar Kapan Saja, Di Mana Saja</h4>
-                <div className="flex flex-col sm:flex-row gap-3">
-                    <button className="flex items-center gap-3 bg-slate-900 dark:bg-slate-700 text-white px-4 py-2 rounded-xl hover:opacity-90 transition-opacity w-fit justify-center shadow-md cursor-default border border-transparent">
-                      <svg className="w-6 h-6 fill-current flex-shrink-0" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M3.609 1.814L13.792 12 3.61 22.186c-.185-.182-.29-.413-.309-.65V2.47c.01-.24.115-.47.309-.656zM15.3 13.51l3.484-3.485L5.753.896c.365.176.67.45.875.79l8.672 11.824zm1.425 1.425L7.996 23.64c-.37.33-.8.47-1.22.42l9.95-10.556zM4.777 22.825l10.55-10.55-10.55-10.55v21.1z" />
-                      </svg>
-                      <div className="text-left">
-                        <div className="text-[10px] uppercase font-medium leading-none opacity-80">Google Play</div>
-                        <div className="text-sm font-bold leading-none mt-1">Coming Soon</div>
-                      </div>
-                    </button>
-                    <button className="flex items-center gap-3 bg-slate-900 dark:bg-slate-700 text-white px-4 py-2 rounded-xl hover:opacity-90 transition-opacity w-fit justify-center shadow-md cursor-default border border-transparent">
-                      <svg className="w-6 h-6 fill-current flex-shrink-0" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.48 2.43-2.45 4.13-2.48 1.28-.03 2.5.87 3.29.87.94 0 2.25-1.09 3.93-.99 1.42.09 2.48.51 3.28 1.68-2.65 1.69-2.2 6.04 1.1 7.07-1.09 2.18-2.36 3.72-2.73 4.21zM13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.53-2.95 1.46-.15-1.17.32-2.35 1.05-3.15z" />
-                      </svg>
-                      <div className="text-left">
-                        <div className="text-[10px] uppercase font-medium leading-none opacity-80">App Store</div>
-                        <div className="text-sm font-bold leading-none mt-1">Coming Soon</div>
-                      </div>
-                    </button>
-                </div>
+            </div>
+
+            <div className="md:col-span-4 lg:col-span-4">
+              <h4 className="font-bold text-slate-900 dark:text-white mb-4">Belajar Kapan Saja, Di Mana Saja</h4>
+              <p className="text-slate-500 dark:text-slate-400 text-sm leading-relaxed text-left max-w-sm mb-4">
+                Unduh aplikasi KELAS untuk pengalaman belajar yang lebih mulus di perangkat mobile Anda.
+              </p>
+              <div className="flex flex-col sm:flex-row md:flex-col xl:flex-row gap-3">
+                <button className="flex items-center gap-3 bg-slate-900 dark:bg-slate-700 text-white px-4 py-2.5 rounded-xl hover:opacity-90 transition-opacity w-full sm:w-fit md:w-full xl:w-fit justify-center shadow-md cursor-default border border-transparent">
+                  <svg className="w-6 h-6 fill-current flex-shrink-0" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M3.609 1.814L13.792 12 3.61 22.186c-.185-.182-.29-.413-.309-.65V2.47c.01-.24.115-.47.309-.656zM15.3 13.51l3.484-3.485L5.753.896c.365.176.67.45.875.79l8.672 11.824zm1.425 1.425L7.996 23.64c-.37.33-.8.47-1.22.42l9.95-10.556zM4.777 22.825l10.55-10.55-10.55-10.55v21.1z" />
+                  </svg>
+                  <div className="text-left">
+                    <div className="text-[10px] uppercase font-medium leading-none opacity-80">Google Play</div>
+                    <div className="text-sm font-bold leading-none mt-1">Coming Soon</div>
+                  </div>
+                </button>
+                <button className="flex items-center gap-3 bg-slate-900 dark:bg-slate-700 text-white px-4 py-2.5 rounded-xl hover:opacity-90 transition-opacity w-full sm:w-fit md:w-full xl:w-fit justify-center shadow-md cursor-default border border-transparent">
+                  <svg className="w-6 h-6 fill-current flex-shrink-0" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.48 2.43-2.45 4.13-2.48 1.28-.03 2.5.87 3.29.87.94 0 2.25-1.09 3.93-.99 1.42.09 2.48.51 3.28 1.68-2.65 1.69-2.2 6.04 1.1 7.07-1.09 2.18-2.36 3.72-2.73 4.21zM13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.53-2.95 1.46-.15-1.17.32-2.35 1.05-3.15z" />
+                  </svg>
+                  <div className="text-left">
+                    <div className="text-[10px] uppercase font-medium leading-none opacity-80">App Store</div>
+                    <div className="text-sm font-bold leading-none mt-1">Coming Soon</div>
+                  </div>
+                </button>
               </div>
             </div>
 
-            <div className="md:col-span-7 lg:col-span-8 flex flex-col sm:flex-row justify-start md:justify-end gap-8 sm:gap-16 lg:gap-24 w-full">
+            <div className="md:col-span-4 lg:col-span-4 flex flex-col sm:flex-row justify-start gap-8 sm:gap-12 w-full">
               <div>
                 <h4 className="font-bold text-slate-900 dark:text-white mb-4">Hubungi Kami</h4>
                 <ul className="space-y-3 text-sm text-slate-500 dark:text-slate-400">
