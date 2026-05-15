@@ -654,8 +654,8 @@ export default function LandingPage() {
             {/* Right Column: Scrolling Cards */}
             <div className="w-full lg:w-1/2 relative">
               {/* Decoration Background */}
-              <div className="absolute inset-0 bg-gradient-to-br from-blue-100 to-purple-100 dark:from-blue-900/20 dark:to-purple-900/20 rounded-[3rem] -rotate-6 scale-105 z-0 blur-2xl opacity-60"></div>
-              <div className="absolute inset-0 bg-white/30 dark:bg-gray-800/30 rounded-[2.5rem] rotate-3 scale-[1.02] z-0 border border-slate-300/50 dark:border-gray-700/50 backdrop-blur-sm"></div>
+              <div className="absolute inset-0 bg-gradient-to-br from-blue-100 to-purple-100 dark:from-blue-900/20 dark:to-purple-900/20 rounded-[3rem] scale-105 z-0 blur-2xl opacity-60"></div>
+              <div className="absolute inset-0 bg-white/30 dark:bg-gray-800/30 rounded-[2.5rem] scale-[1.02] z-0 border border-slate-300/50 dark:border-gray-700/50 backdrop-blur-sm"></div>
 
               {/* Scrolling Container */}
               <div
