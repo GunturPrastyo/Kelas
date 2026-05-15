@@ -169,6 +169,7 @@ export default function LandingPage() {
   const [selectedMentor, setSelectedMentor] = useState<typeof mentors[0] | null>(null);
   const [modules, setModules] = useState<Module[]>([]);
   const [loadingModules, setLoadingModules] = useState(true);
+  const [isScrolled, setIsScrolled] = useState(false);
 
   useEffect(() => {
     const fetchModules = async () => {
@@ -289,6 +290,7 @@ export default function LandingPage() {
   };
   useEffect(() => {
     const handleScroll = () => {
+      setIsScrolled(window.scrollY > 20);
       setShowScrollTop(window.scrollY > 400);
 
       const sections = ["fitur", "modul", "mentor", "mulai"];
@@ -325,6 +327,30 @@ export default function LandingPage() {
   return (
     <div className="min-h-screen bg-white dark:bg-gray-900 font-sans text-slate-800 dark:text-slate-200 selection:bg-blue-100 dark:selection:bg-blue-900 overflow-x-hidden">
 
+      {/* Noise Texture Overlay */}
+      <div className="fixed inset-0 pointer-events-none z-[9999] opacity-40 mix-blend-overlay" style={{ backgroundImage: "url(\"data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E\")" }}></div>
+
+      <style jsx>{`
+        @keyframes float {
+          0%, 100% { transform: translateY(0) scale(1); }
+          50% { transform: translateY(-30px) scale(1.04); }
+        }
+        @keyframes float-reverse {
+          0%, 100% { transform: translateY(0) scale(1); }
+          50% { transform: translateY(30px) scale(0.96); }
+        }
+        @keyframes cardFloat {
+          0%, 100% { transform: translateY(0) rotate(0deg); }
+          33% { transform: translateY(-12px) rotate(0.5deg); }
+          66% { transform: translateY(-6px) rotate(-0.3deg); }
+        }
+        .animate-float { animation: float 8s ease-in-out infinite; }
+        .animate-float-reverse { animation: float-reverse 10s ease-in-out infinite; }
+        .animate-card-float { animation: cardFloat 6s ease-in-out infinite; }
+        .animate-card-float-1 { animation: cardFloat 5s ease-in-out infinite 1s; }
+        .animate-card-float-2 { animation: cardFloat 7s ease-in-out infinite 0.5s; }
+        .animate-card-float-3 { animation: cardFloat 6s ease-in-out infinite 2s; }
+      `}</style>
       <style jsx global>{`
         .hide-scrollbar-on-mobile::-webkit-scrollbar {
             display: none;
@@ -336,369 +362,226 @@ export default function LandingPage() {
     `}</style>
 
       {/* --- NAVBAR --- */}
-      <nav className="fixed top-0 w-full z-50 bg-white/80 dark:bg-gray-900/80 backdrop-blur-md border-b border-slate-200 dark:border-gray-800">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
-            {/* Logo */}
-            <div className="flex-shrink-0 flex items-center gap-2 cursor-pointer">
-              {/* Menggunakan logo.webp sesuai request */}
-              <img src="/logo.webp" alt="KELAS Logo" className="h-8 w-auto" />
-            </div>
-
-            {/* Desktop Menu */}
-            <div className="hidden md:flex items-center space-x-2">
-              {['fitur', 'modul', 'mentor'].map((item) => (
-                <Link
-                  key={item}
-                  href={`#${item}`}
-                  className={`relative px-4 py-2 text-sm font-medium transition-colors ${activeSection === item
-                    ? 'text-blue-600 dark:text-white'
-                    : 'text-slate-600 dark:text-slate-300 hover:text-blue-600 dark:hover:text-white'
-                    }`}
-                >
-                  {item.charAt(0).toUpperCase() + item.slice(1)}
-                  {activeSection === item && (
-                    <motion.span
-                      layoutId="activeSection"
-                      className="absolute bottom-0 left-0 w-full h-1 bg-blue-600 dark:bg-white rounded-full"
-                      transition={{ type: "spring", stiffness: 300, damping: 30 }}
-                    />
-                  )}
-                </Link>
-              ))}
-              <div className="flex items-center gap-3 ml-4">
-                <button
-                  onClick={() => setTheme(resolvedTheme === 'dark' ? 'light' : 'dark')}
-                  className="p-2 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors text-slate-600 dark:text-slate-300"
-                  aria-label="Toggle Theme"
-                >
-                  {mounted && resolvedTheme === 'dark' ? (
-                    <Moon size={20} />
-                  ) : (
-                    <Sun size={20} />
-                  )}
-                </button>
-                <Link href="/login" className="text-sm font-semibold text-slate-600 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400">
-                  Masuk
-                </Link>
-                <Link href="/register" className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-full text-sm font-medium transition shadow-lg shadow-blue-500/30">
-                  Daftar Sekarang
-                </Link>
-              </div>
-            </div>
-
-            {/* Mobile Menu Button */}
-            <div className="md:hidden flex items-center">
-              <button
-                onClick={() => setTheme(resolvedTheme === 'dark' ? 'light' : 'dark')}
-                className="p-2 mr-1 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors text-slate-600 dark:text-slate-300"
-                aria-label="Toggle Theme"
-              >
-                {mounted && resolvedTheme === 'dark' ? (
-                  <Moon size={20} />
-                ) : (
-                  <Sun size={20} />
-                )}
-              </button>
-              <button
-                onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-                className="p-2 rounded-md text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
-              >
-                {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
-              </button>
-            </div>
-          </div>
+      <nav id="navbar" className={`fixed top-0 left-0 right-0 z-[100] px-4 md:px-8 h-[68px] flex items-center justify-between transition-all duration-300 ${isScrolled ? 'bg-white/95 dark:bg-gray-900/95 shadow-[0_4px_24px_rgba(0,0,0,0.06)]' : 'bg-white/80 dark:bg-gray-900/80'} backdrop-blur-[20px] saturate-[180%] border-b border-slate-200/70 dark:border-gray-800`}>
+        <Link href="#" className="flex items-center gap-2.5 text-[1.4rem] font-extrabold text-slate-900 dark:text-white no-underline font-[family-name:var(--font-gagalin)] tracking-wide">
+          <div className="w-8 h-8 bg-gradient-to-br from-blue-600 to-indigo-500 rounded-[10px] grid place-items-center text-white text-[0.85rem] font-extrabold font-[family-name:var(--font-poppins)]">K</div>
+          KELAS
+        </Link>
+        <div className="hidden md:flex items-center gap-1">
+          <Link href="#fitur" className="text-slate-600 dark:text-slate-300 text-[0.9rem] font-medium px-4 py-2 rounded-full transition-all duration-200 hover:text-blue-600 hover:bg-blue-100 dark:hover:bg-blue-900/30">Fitur</Link>
+          <Link href="#modul" className="text-slate-600 dark:text-slate-300 text-[0.9rem] font-medium px-4 py-2 rounded-full transition-all duration-200 hover:text-blue-600 hover:bg-blue-100 dark:hover:bg-blue-900/30">Modul</Link>
+          <Link href="#mentor" className="text-slate-600 dark:text-slate-300 text-[0.9rem] font-medium px-4 py-2 rounded-full transition-all duration-200 hover:text-blue-600 hover:bg-blue-100 dark:hover:bg-blue-900/30">Mentor</Link>
         </div>
-
-        {/* Mobile Menu Dropdown */}
-        {isMobileMenuOpen && (
-          <motion.div
-            initial={{ opacity: 0, y: -10 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="md:hidden absolute top-16 left-0 w-full bg-white/95 dark:bg-gray-900/95 backdrop-blur-xl border-b border-slate-200 dark:border-gray-800 shadow-2xl"
-          >
-            <div className="px-4 py-6 space-y-2">
-              <Link
-                href="#fitur"
-                className={`block px-4 py-3 rounded-xl text-base font-medium transition-all ${activeSection === 'fitur' ? 'text-blue-600 dark:text-blue-400 bg-slate-50 dark:bg-gray-800' : 'text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-gray-800 hover:text-blue-600 dark:hover:text-blue-400'}`}
-                onClick={() => setIsMobileMenuOpen(false)}
-              >
-                Fitur
-              </Link>
-              <Link
-                href="#modul"
-                className={`block px-4 py-3 rounded-xl text-base font-medium transition-all ${activeSection === 'modul' ? 'text-blue-600 dark:text-blue-400 bg-slate-50 dark:bg-gray-800' : 'text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-gray-800 hover:text-blue-600 dark:hover:text-blue-400'}`}
-                onClick={() => setIsMobileMenuOpen(false)}
-              >
-                Modul
-              </Link>
-              <Link
-                href="#mentor"
-                className={`block px-4 py-3 rounded-xl text-base font-medium transition-all ${activeSection === 'mentor' ? 'text-blue-600 dark:text-blue-400 bg-slate-50 dark:bg-gray-800' : 'text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-gray-800 hover:text-blue-600 dark:hover:text-blue-400'}`}
-                onClick={() => setIsMobileMenuOpen(false)}
-              >
-                Mentor
-              </Link>
-
-              <div className="pt-4 mt-2 border-t border-slate-100 dark:border-gray-800 flex">
-                <Link
-                  href="/login"
-                  className="flex-1 flex items-center justify-center px-4 py-3 rounded-l-xl text-sm font-bold text-slate-700 dark:text-slate-200 bg-slate-100 dark:bg-gray-800 hover:bg-slate-200 dark:hover:bg-gray-700 transition-all"
-                >
-                  Masuk
-                </Link>
-                <Link
-                  href="/register"
-                  className="flex-1 flex items-center justify-center px-4 py-3 rounded-r-xl text-sm font-bold text-white bg-blue-600 hover:bg-blue-700 shadow-lg shadow-blue-500/30 transition-all"
-                >
-                  Daftar
-                </Link>
-              </div>
-            </div>
-          </motion.div>
-        )}
+        <div className="hidden md:flex items-center gap-3">
+          <button onClick={() => setTheme(resolvedTheme === 'dark' ? 'light' : 'dark')} className="p-2 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors text-slate-600 dark:text-slate-300">
+            {mounted && resolvedTheme === 'dark' ? <Moon size={20} /> : <Sun size={20} />}
+          </button>
+          <Link href="/login" className="px-5 py-2 rounded-full border-none bg-transparent text-slate-700 dark:text-slate-300 text-[0.9rem] font-medium cursor-pointer transition-all duration-200 hover:bg-slate-100 dark:hover:bg-slate-800 no-underline">Masuk</Link>
+          <Link href="/register" className="px-6 py-[0.55rem] rounded-full border-none bg-blue-600 text-white text-[0.9rem] font-semibold cursor-pointer transition-all duration-250 no-underline shadow-[0_4px_14px_rgba(37,99,235,0.35)] hover:bg-blue-700 hover:-translate-y-[1px] hover:shadow-[0_8px_20px_rgba(37,99,235,0.4)]">Daftar Gratis →</Link>
+        </div>
+        {/* Mobile Menu Button */}
+        <div className="md:hidden flex items-center">
+          <button onClick={() => setTheme(resolvedTheme === 'dark' ? 'light' : 'dark')} className="p-2 mr-1 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors text-slate-600 dark:text-slate-300">
+            {mounted && resolvedTheme === 'dark' ? <Moon size={20} /> : <Sun size={20} />}
+          </button>
+          <button onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)} className="p-2 rounded-md text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
+            {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
+          </button>
+        </div>
       </nav>
 
-      {/* --- HERO SECTION --- */}
-      <section className="relative pt-32 pb-20 lg:pt-40 lg:pb-28 overflow-hidden">
-        {/* Background Decoration */}
-        <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        
-          {/* Blob 2 - Bottom Wave Divider */}
-          <div className="absolute bottom-0 left-0 w-full">
-            <svg className="w-full h-auto sm:h-60" viewBox="0 320 900 280" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
-              <path d="M0 351L21.5 362C43 373 86 395 128.8 395.2C171.7 395.3 214.3 373.7 257.2 367.8C300 362 343 372 385.8 376.5C428.7 381 471.3 380 514.2 380.7C557 381.3 600 383.7 642.8 392.2C685.7 400.7 728.3 415.3 771.2 411.8C814 408.3 857 386.7 878.5 375.8L900 365L900 601L878.5 601C857 601 814 601 771.2 601C728.3 601 685.7 601 642.8 601C600 601 557 601 514.2 601C471.3 601 428.7 601 385.8 601C343 601 300 601 257.2 601C214.3 601 171.7 601 128.8 601C86 601 43 601 21.5 601L0 601Z" className="fill-sky-50 dark:fill-slate-800/40" />
-              <path d="M0 462L21.5 463.2C43 464.3 86 466.7 128.8 459C171.7 451.3 214.3 433.7 257.2 424.7C300 415.7 343 415.3 385.8 415.5C428.7 415.7 471.3 416.3 514.2 427.2C557 438 600 459 642.8 466.3C685.7 473.7 728.3 467.3 771.2 463.2C814 459 857 457 878.5 456L900 455L900 601L878.5 601C857 601 814 601 771.2 601C728.3 601 685.7 601 642.8 601C600 601 557 601 514.2 601C471.3 601 428.7 601 385.8 601C343 601 300 601 257.2 601C214.3 601 171.7 601 128.8 601C86 601 43 601 21.5 601L0 601Z" className="fill-sky-100 dark:fill-slate-800/60" />
-              <path d="M0 455L21.5 454.5C43 454 86 453 128.8 456.3C171.7 459.7 214.3 467.3 257.2 473.3C300 479.3 343 483.7 385.8 488.2C428.7 492.7 471.3 497.3 514.2 489.7C557 482 600 462 642.8 463.2C685.7 464.3 728.3 486.7 771.2 487C814 487.3 857 465.7 878.5 454.8L900 444L900 601L878.5 601C857 601 814 601 771.2 601C728.3 601 685.7 601 642.8 601C600 601 557 601 514.2 601C471.3 601 428.7 601 385.8 601C343 601 300 601 257.2 601C214.3 601 171.7 601 128.8 601C86 601 43 601 21.5 601L0 601Z" className="fill-sky-200/60 dark:fill-sky-900/40" />
-              <path d="M0 535L21.5 532.7C43 530.3 86 525.7 128.8 520.5C171.7 515.3 214.3 509.7 257.2 505C300 500.3 343 496.7 385.8 502.5C428.7 508.3 471.3 523.7 514.2 524.2C557 524.7 600 510.3 642.8 506.5C685.7 502.7 728.3 509.3 771.2 512C814 514.7 857 513.3 878.5 512.7L900 512L900 601L878.5 601C857 601 814 601 771.2 601C728.3 601 685.7 601 642.8 601C600 601 557 601 514.2 601C471.3 601 428.7 601 385.8 601C343 601 300 601 257.2 601C214.3 601 171.7 601 128.8 601C86 601 43 601 21.5 601L0 601Z" className="fill-sky-200 dark:fill-sky-900/60" />
-              <path d="M0 569L21.5 563.8C43 558.7 86 548.3 128.8 542.3C171.7 536.3 214.3 534.7 257.2 534.3C300 534 343 535 385.8 534.7C428.7 534.3 471.3 532.7 514.2 536.8C557 541 600 551 642.8 554.2C685.7 557.3 728.3 553.7 771.2 554.2C814 554.7 857 559.3 878.5 561.7L900 564L900 601L878.5 601C857 601 814 601 771.2 601C728.3 601 685.7 601 642.8 601C600 601 557 601 514.2 601C471.3 601 428.7 601 385.8 601C343 601 300 601 257.2 601C214.3 601 171.7 601 128.8 601C86 601 43 601 21.5 601L0 601Z" className="fill-sky-300 dark:fill-sky-900" />
-            </svg>
+      {isMobileMenuOpen && (
+        <motion.div
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="md:hidden fixed top-[68px] z-[90] left-0 w-full bg-white/95 dark:bg-gray-900/95 backdrop-blur-xl border-b border-slate-200 dark:border-gray-800 shadow-2xl"
+        >
+          <div className="px-4 py-6 space-y-2">
+            <Link href="#fitur" onClick={() => setIsMobileMenuOpen(false)} className={`block px-4 py-3 rounded-xl text-base font-medium transition-all ${activeSection === 'fitur' ? 'text-blue-600 dark:text-blue-400 bg-slate-50 dark:bg-gray-800' : 'text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-gray-800 hover:text-blue-600 dark:hover:text-blue-400'}`}>Fitur</Link>
+            <Link href="#modul" onClick={() => setIsMobileMenuOpen(false)} className={`block px-4 py-3 rounded-xl text-base font-medium transition-all ${activeSection === 'modul' ? 'text-blue-600 dark:text-blue-400 bg-slate-50 dark:bg-gray-800' : 'text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-gray-800 hover:text-blue-600 dark:hover:text-blue-400'}`}>Modul</Link>
+            <Link href="#mentor" onClick={() => setIsMobileMenuOpen(false)} className={`block px-4 py-3 rounded-xl text-base font-medium transition-all ${activeSection === 'mentor' ? 'text-blue-600 dark:text-blue-400 bg-slate-50 dark:bg-gray-800' : 'text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-gray-800 hover:text-blue-600 dark:hover:text-blue-400'}`}>Mentor</Link>
+            <div className="pt-4 mt-2 border-t border-slate-100 dark:border-gray-800 flex">
+              <Link href="/login" className="flex-1 flex items-center justify-center px-4 py-3 rounded-l-xl text-sm font-bold text-slate-700 dark:text-slate-200 bg-slate-100 dark:bg-gray-800 hover:bg-slate-200 dark:hover:bg-gray-700 transition-all">Masuk</Link>
+              <Link href="/register" className="flex-1 flex items-center justify-center px-4 py-3 rounded-r-xl text-sm font-bold text-white bg-blue-600 hover:bg-blue-700 shadow-[0_4px_14px_rgba(37,99,235,0.35)] transition-all">Daftar</Link>
+            </div>
           </div>
+        </motion.div>
+      )}
 
+      {/* --- HERO --- */}
+      <section className="min-h-screen pt-[100px] px-4 md:px-8 pb-10 flex items-center relative overflow-hidden" id="home">
+        <div className="absolute inset-0 pointer-events-none z-0">
+          <div className="absolute inset-0 bg-[linear-gradient(rgba(99,102,241,0.04)_1px,transparent_1px),linear-gradient(90deg,rgba(99,102,241,0.04)_1px,transparent_1px)] bg-[size:60px_60px] [mask-image:radial-gradient(ellipse_at_60%_40%,black_30%,transparent_70%)]"></div>
+          <div className="absolute top-[-10%] right-[-5%] w-[650px] h-[650px] bg-[radial-gradient(circle_at_40%_40%,rgba(99,102,241,0.12)_0%,rgba(37,99,235,0.08)_40%,transparent_70%)] rounded-full animate-float"></div>
+          <div className="absolute bottom-[10%] left-[-5%] w-[500px] h-[500px] bg-[radial-gradient(circle,rgba(14,165,233,0.10)_0%,transparent_70%)] rounded-full animate-float-reverse"></div>
         </div>
 
-        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col lg:flex-row items-center gap-12">
-          {/* Text Content */}
-          <div className="flex-1 w-full text-left space-y-6">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-50 dark:bg-blue-900/30 border border-blue-100 dark:border-blue-800 text-blue-600 dark:text-blue-300 text-sm sm:text-base font-bold tracking-wide font-[family-name:var(--font-kalam)]">
-           
+        <div className="relative z-10 max-w-[1280px] mx-auto w-full grid grid-cols-1 lg:grid-cols-2 gap-10 md:gap-16 items-center mt-10 md:mt-0">
+          {/* Left: Text */}
+          <div className="text-center md:text-left">
+            <div className="inline-flex items-center justify-center md:justify-start gap-2 py-1.5 pr-4 pl-2 bg-gradient-to-br from-blue-600/10 to-indigo-500/10 border border-blue-600/20 rounded-full text-[0.82rem] font-semibold text-blue-600 dark:text-blue-400 mb-6 w-fit mx-auto md:mx-0 font-[family-name:var(--font-kalam)]">
+              <div className="w-5 h-5 bg-blue-600 rounded-full grid place-items-center relative after:content-['✦'] after:text-white after:text-[0.6rem]"></div>
               {displayedBadgeText}
             </div>
-            <motion.h1
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5 }}
-              className="text-4xl lg:text-6xl font-medium tracking-tight text-slate-900 dark:text-white leading-[1.1] font-[family-name:var(--font-gagalin)]"
-            >
+            <h1 className="text-[clamp(2.6rem,5vw,4rem)] font-extrabold leading-[1.08] text-slate-900 dark:text-white mb-6 tracking-[-0.03em] font-[family-name:var(--font-gagalin)]">
               Belajar Lebih Efektif dengan <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-500 to-indigo-500">Kurikulum Personal</span>
-            </motion.h1>
-
-
-            {/* Mobile Hero Image */}
-            <div className="hidden items-center justify-center w-full -mx-2 my-6">
-              <Image
-                src={mounted && resolvedTheme === 'dark' ? "/ilustrasi10.webp" : "/ilustrasi9.webp"}
-                alt="Ilustrasi Belajar Online"
-                width={500}
-                height={500}
-                className="w-full max-w-sm object-contain"
-                priority
-              />
-            </div>
-
-            <div className="flex flex-col md:flex-row lg:flex-col items-center gap-8 lg:gap-6">
-              <p className="text-lg text-slate-600 dark:text-slate-400 max-w-2xl text-left flex-1">
-                KELAS membantu kamu menemukan jalur belajar yang tepat sesuai kemampuanmu. Ikuti pre-tes, dapatkan rekomendasi, dan mulai tingkatkan skillmu hari ini.
-              </p>
-
-              {/* Tablet Image (Visible MD, Hidden LG) */}
-              <div className="hidden md:flex lg:hidden flex-1 items-center justify-center">
-                <Image
-                  src={mounted && resolvedTheme === 'dark' ? "/ilustrasi10.webp" : "/ilustrasi9.webp"}
-                  alt="Ilustrasi Belajar Online"
-                  width={400}
-                  height={400}
-                  className="w-full max-w-sm object-contain"
-                  priority
-                />
-              </div>
-            </div>
-
-            <div className="flex flex-row items-center justify-start gap-3 sm:gap-4 pt-2">
-              <Link href="/register" className="group relative inline-flex items-center justify-center px-4 sm:px-8 py-3 sm:py-3.5 text-sm sm:text-base font-bold text-white transition-all duration-200 bg-blue-600 rounded-full hover:bg-blue-700 hover:shadow-lg hover:shadow-blue-500/40 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-600">
-                Daftar Sekarang
-                <ChevronRight className="ml-1 sm:ml-2 w-4 h-4 sm:w-5 sm:h-5 group-hover:translate-x-1 transition-transform" />
+            </h1>
+            <p className="text-[1.1rem] text-slate-600 dark:text-slate-400 max-w-[500px] mx-auto md:mx-0 mb-10 font-normal leading-[1.7]">
+              KELAS membantu kamu menemukan jalur belajar yang tepat sesuai kemampuanmu. Ikuti pre-tes, dapatkan rekomendasi, dan tingkatkan skillmu hari ini.
+            </p>
+            <div className="flex items-center justify-center md:justify-start gap-4 mb-12 flex-wrap">
+              <Link href="/register" className="group inline-flex items-center gap-2 py-[0.85rem] px-8 rounded-full bg-blue-600 text-white text-[1rem] font-semibold no-underline shadow-[0_8px_28px_rgba(37,99,235,0.35),0_2px_8px_rgba(37,99,235,0.2)] transition-all duration-300 relative overflow-hidden hover:-translate-y-[2px] hover:shadow-[0_16px_40px_rgba(37,99,235,0.45)] before:absolute before:inset-0 before:bg-gradient-to-br before:from-white/15 before:to-transparent before:rounded-full">
+                Mulai Belajar Gratis
+                <span className="transition-transform duration-200 group-hover:translate-x-1">→</span>
               </Link>
+              <a href="#fitur" className="py-[0.85rem] px-6 text-[1rem] rounded-full border-[1.5px] border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 font-medium no-underline transition-all duration-200 hover:bg-slate-50 dark:hover:bg-slate-800">
+                Lihat Fitur ↓
+              </a>
             </div>
-            <div className="flex items-center justify-start gap-4 text-sm text-slate-900 dark:text-slate-300">
-              <div className="flex -space-x-2">
-                {[1, 2, 3, 4].map((i) => (
-                  <div key={i} className="w-8 h-8 rounded-full border-2 border-white dark:border-gray-900 bg-gray-200 overflow-hidden">
-                    <img src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${i}`} alt="User" />
-                  </div>
-                ))}
+            <div className="flex items-center justify-center md:justify-start gap-3">
+              <div className="flex">
+                <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=1" alt="u1" className="w-9 h-9 rounded-full border-2 border-white dark:border-gray-900 -ml-2 first:ml-0 bg-slate-200 dark:bg-slate-700" />
+                <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=2" alt="u2" className="w-9 h-9 rounded-full border-2 border-white dark:border-gray-900 -ml-2 first:ml-0 bg-slate-200 dark:bg-slate-700" />
+                <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=3" alt="u3" className="w-9 h-9 rounded-full border-2 border-white dark:border-gray-900 -ml-2 first:ml-0 bg-slate-200 dark:bg-slate-700" />
+                <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=4" alt="u4" className="w-9 h-9 rounded-full border-2 border-white dark:border-gray-900 -ml-2 first:ml-0 bg-slate-200 dark:bg-slate-700" />
               </div>
-              <p>{displayedText1}<span className="font-bold text-blue-600 dark:text-blue-400">{count.toLocaleString('en-US')}+</span>{displayedText2}</p>
+              <div className="text-[0.88rem] text-slate-600 dark:text-slate-400">
+                {displayedText1}<strong className="text-blue-600 dark:text-blue-400 font-bold">{count.toLocaleString('id-ID')}+</strong>{displayedText2}
+              </div>
             </div>
           </div>
 
-          {/* Hero Image / Illustration */}
-          <div className="hidden lg:flex flex-1 items-center justify-center">
-            <Image
-              src={mounted && resolvedTheme === 'dark' ? "/ilustrasi10.webp" : "/ilustrasi9.webp"}
-              alt="Ilustrasi Belajar Online"
-              width={500}
-              height={500}
-              className="w-full max-w-2xl lg:max-w-2xl object-contain"
-              priority
-            />
+          {/* Right: Visual */}
+          <div className="relative h-[560px] hidden lg:flex items-center justify-center">
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[420px] h-[420px] bg-gradient-to-br from-blue-600/5 to-indigo-500/10 border border-blue-600/10 rounded-full"></div>
+
+            <div className="absolute top-[40px] right-0 w-[340px] bg-white dark:bg-gray-800 rounded-[24px] p-6 shadow-[0_20px_60px_-10px_rgba(37,99,235,0.12),0_4px_20px_-4px_rgba(0,0,0,0.08)] border border-slate-200 dark:border-gray-700 animate-card-float">
+              <div className="flex items-center justify-between mb-5">
+                <div className="w-[44px] h-[44px] bg-gradient-to-br from-blue-600 to-indigo-500 rounded-[14px] grid place-items-center text-white font-bold text-[1.1rem] font-[family-name:var(--font-gagalin)] tracking-widest">JS</div>
+                <div className="px-3 py-1 bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400 rounded-full text-[0.72rem] font-semibold">▶ Sedang Belajar</div>
+              </div>
+              <div className="font-[family-name:var(--font-gagalin)] text-[1rem] font-bold text-slate-900 dark:text-white mb-2 tracking-wide">JavaScript Fundamental</div>
+              <div className="flex justify-between text-[0.78rem] text-slate-600 dark:text-slate-400 mb-2">
+                <span>Progress Modul</span>
+                <span>73%</span>
+              </div>
+              <div className="h-2 bg-slate-100 dark:bg-slate-700 rounded-full overflow-hidden mb-4">
+                <div className="h-full bg-gradient-to-r from-blue-600 to-indigo-500 rounded-full transition-[width] duration-1000 ease-out" style={{ width: '73%' }}></div>
+              </div>
+              <div className="grid grid-cols-3 gap-2">
+                <div className="bg-slate-50 dark:bg-slate-700/50 rounded-xl p-2 text-center">
+                  <div className="font-[family-name:var(--font-gagalin)] text-[1rem] font-bold text-slate-900 dark:text-white">12</div>
+                  <div className="text-[0.65rem] text-slate-400 font-medium">Modul</div>
+                </div>
+                <div className="bg-slate-50 dark:bg-slate-700/50 rounded-xl p-2 text-center">
+                  <div className="font-[family-name:var(--font-gagalin)] text-[1rem] font-bold text-slate-900 dark:text-white">4.8</div>
+                  <div className="text-[0.65rem] text-slate-400 font-medium">Rating</div>
+                </div>
+                <div className="bg-slate-50 dark:bg-slate-700/50 rounded-xl p-2 text-center">
+                  <div className="font-[family-name:var(--font-gagalin)] text-[1rem] font-bold text-slate-900 dark:text-white">🔥 5</div>
+                  <div className="text-[0.65rem] text-slate-400 font-medium">Streak</div>
+                </div>
+              </div>
+            </div>
+
+            <div className="absolute bg-white dark:bg-gray-800 rounded-[16px] py-[0.85rem] px-[1.1rem] shadow-[0_12px_40px_rgba(0,0,0,0.1),0_2px_8px_rgba(0,0,0,0.06)] dark:shadow-none border border-slate-200/80 dark:border-gray-700 flex items-center gap-3 text-[0.82rem] font-semibold whitespace-nowrap top-0 left-[-20px] animate-card-float-1">
+              <div className="w-[36px] h-[36px] rounded-[10px] grid place-items-center text-[1.1rem] shrink-0 bg-blue-100 dark:bg-blue-900/30">🎯</div>
+              <div>
+                <div className="text-slate-900 dark:text-white">Pre-Tes Selesai!</div>
+                <div className="text-[0.72rem] text-slate-400 font-normal">Jalur belajar sudah siap</div>
+              </div>
+            </div>
+            <div className="absolute bg-white dark:bg-gray-800 rounded-[16px] py-[0.85rem] px-[1.1rem] shadow-[0_12px_40px_rgba(0,0,0,0.1),0_2px_8px_rgba(0,0,0,0.06)] dark:shadow-none border border-slate-200/80 dark:border-gray-700 flex items-center gap-3 text-[0.82rem] font-semibold whitespace-nowrap bottom-[120px] left-0 animate-card-float-2">
+              <div className="w-[36px] h-[36px] rounded-[10px] grid place-items-center text-[1.1rem] shrink-0 bg-yellow-100 dark:bg-yellow-900/30">🏆</div>
+              <div>
+                <div className="text-slate-900 dark:text-white">Sertifikat Diraih</div>
+                <div className="text-[0.72rem] text-slate-400 font-normal">HTML & CSS Basic</div>
+              </div>
+            </div>
+            <div className="absolute bg-white dark:bg-gray-800 rounded-[16px] py-[0.85rem] px-[1.1rem] shadow-[0_12px_40px_rgba(0,0,0,0.1),0_2px_8px_rgba(0,0,0,0.06)] dark:shadow-none border border-slate-200/80 dark:border-gray-700 flex items-center gap-3 text-[0.82rem] font-semibold whitespace-nowrap bottom-[60px] right-[20px] animate-card-float-3">
+              <div className="w-[36px] h-[36px] rounded-[10px] grid place-items-center text-[1.1rem] shrink-0 bg-green-100 dark:bg-green-900/30">🤖</div>
+              <div className="text-slate-900 dark:text-white">Kak Gem siap membantu</div>
+            </div>
           </div>
         </div>
       </section>
 
-      {/* --- FEATURES SECTION --- */}
-      <section id="fitur" className="relative pt-24 pb-36 lg:pb-48 bg-slate-50 dark:bg-gray-900 overflow-hidden">
-
-        {/* Top Wave Decoration */}
-        <div className="absolute top-0 left-0 w-full pointer-events-none z-0">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 120" className="w-full h-12 md:h-20" preserveAspectRatio="none">
-            <path d="M0 69L37.5 69.5C75 70 150 71 225 80.8C300 90.7 375 109.3 450 109.2C525 109 600 90 675 85.7C750 81.3 825 91.7 862.5 96.8L900 102L900 0L862.5 0C825 0 750 0 675 0C600 0 525 0 450 0C375 0 300 0 225 0C150 0 75 0 37.5 0L0 0Z" className="fill-sky-300 dark:fill-sky-600" strokeLinecap="round" strokeLinejoin="miter" />
-          </svg>
-        </div>
-
-        {/* Decorative Background */}
-        <div className="absolute inset-0 pointer-events-none">
-          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-7xl h-full">
-            <div className="absolute top-20 left-10 w-72 h-72 bg-blue-200/20 dark:bg-blue-900/10 rounded-full blur-3xl mix-blend-multiply dark:mix-blend-screen"></div>
-            <div className="absolute top-40 right-10 w-72 h-72 bg-purple-200/20 dark:bg-purple-900/10 rounded-full blur-3xl mix-blend-multiply dark:mix-blend-screen"></div>
-            <div className="absolute -bottom-8 left-1/2 w-72 h-72 bg-indigo-200/20 dark:bg-indigo-900/10 rounded-full blur-3xl mix-blend-multiply dark:mix-blend-screen"></div>
+      {/* --- STATS BANNER --- */}
+      <div className="bg-slate-900 dark:bg-slate-950 py-10 px-4 md:px-8">
+        <div className="max-w-[1280px] mx-auto grid grid-cols-2 md:grid-cols-4 gap-4">
+          <div className="text-center p-4 border-r border-white/10 last:border-0 max-md:border-b max-md:even:border-r-0 max-md:[&:nth-last-child(-n+2)]:border-b-0">
+            <div className="font-[family-name:var(--font-gagalin)] text-[2.4rem] font-extrabold bg-clip-text text-transparent bg-gradient-to-br from-white to-white/70 leading-none">10K+</div>
+            <div className="text-[0.85rem] text-white/45 mt-1 font-normal">Pelajar Aktif</div>
+          </div>
+          <div className="text-center p-4 border-r border-white/10 last:border-0 max-md:border-b max-md:even:border-r-0 max-md:[&:nth-last-child(-n+2)]:border-b-0">
+            <div className="font-[family-name:var(--font-gagalin)] text-[2.4rem] font-extrabold bg-clip-text text-transparent bg-gradient-to-br from-white to-white/70 leading-none">50+</div>
+            <div className="text-[0.85rem] text-white/45 mt-1 font-normal">Modul Pembelajaran</div>
+          </div>
+          <div className="text-center p-4 border-r border-white/10 last:border-0 max-md:border-b max-md:even:border-r-0 max-md:[&:nth-last-child(-n+2)]:border-b-0">
+            <div className="font-[family-name:var(--font-gagalin)] text-[2.4rem] font-extrabold bg-clip-text text-transparent bg-gradient-to-br from-white to-white/70 leading-none">4.9★</div>
+            <div className="text-[0.85rem] text-white/45 mt-1 font-normal">Rating Platform</div>
+          </div>
+          <div className="text-center p-4 border-r border-white/10 last:border-0 max-md:border-b max-md:even:border-r-0 max-md:[&:nth-last-child(-n+2)]:border-b-0">
+            <div className="font-[family-name:var(--font-gagalin)] text-[2.4rem] font-extrabold bg-clip-text text-transparent bg-gradient-to-br from-white to-white/70 leading-none">98%</div>
+            <div className="text-[0.85rem] text-white/45 mt-1 font-normal">Tingkat Kepuasan</div>
           </div>
         </div>
+      </div>
 
-        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex flex-col lg:flex-row items-center lg:items-start gap-4 lg:gap-12">
-            
-            {/* LEFT COLUMN: SLIDER (order-2 on mobile, order-1 on lg) */}
-            <div className="w-full lg:w-7/12 order-2 lg:order-1">
-              <div className="relative h-[450px] sm:h-[420px] overflow-hidden">
-                {features.map((feature, idx) => (
-                  <motion.div
-                    key={idx}
-                    className="absolute top-0 left-0 w-full h-full p-2"
-                    initial={{ x: "100%", opacity: 0 }}
-                    animate={{
-                      x: `${(idx - activeFeature) * 100}%`,
-                      opacity: Math.abs(idx - activeFeature) < 2 ? 1 : 0,
-                      scale: idx === activeFeature ? 1 : 0.9,
-                      zIndex: features.length - Math.abs(idx - activeFeature),
-                    }}
-                    transition={{ type: 'spring', stiffness: 300, damping: 30 }}
-                  >
-                    <div className="relative w-full h-96 group sm:w-[95%] sm:ml-4 mt-2">
-                      {/* Tumpukan Card di belakang (kanan bawah) */}
-                      <div className="absolute inset-0 bg-sky-300 dark:bg-gray-800/60 rounded-lg transform translate-x-3 translate-y-3 z-0 border border-indigo-50/50 dark:border-gray-700/80 transition-transform duration-500 group-hover:translate-x-4 group-hover:translate-y-4"></div>
-
-                      {/* Card Utama */}
-                      <div className="absolute inset-0 bg-white dark:bg-gray-800 rounded-xl shadow-[0_8px_30px_rgb(0,0,0,0.08)] dark:shadow-[0_8px_30px_rgb(0,0,0,0.15)] border border-slate-100 dark:border-gray-700 flex flex-col overflow-hidden z-10 transition-transform duration-500 group-hover:-translate-y-1 group-hover:-translate-x-1">
-                        {/* Card Content */}
-                        <div className="p-8 pb-20 relative z-10 flex-1 flex flex-col sm:flex-row items-start sm:items-center gap-6">
-                          <div className="flex-1 relative z-10 w-full">
-                            <h3 className="text-2xl font-bold text-slate-800 dark:text-gray-100 mb-3 font-[family-name:var(--font-gagalin)] tracking-wide group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
-                              {feature.title}
-                            </h3>
-                            <p className="text-slate-600 dark:text-slate-400 text-base leading-relaxed">
-                              {feature.desc}
-                            </p>
-                          </div>
-
-                          {/* Illustration */}
-                          <div className="absolute right-[-20px] bottom-24 sm:static sm:right-auto sm:bottom-auto w-40 h-40 sm:w-48 sm:h-48 opacity-20 sm:opacity-90 group-hover:scale-110 sm:group-hover:-translate-x-2 sm:group-hover:-translate-y-2 transition-all duration-500 pointer-events-none z-0 drop-shadow-xl flex-shrink-0">
-                            <img src={feature.image} alt={feature.title} className="w-full h-full object-contain" />
-                          </div>
-                        </div>
-
-                        {/* Navigation Dots */}
-                        <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-20 flex items-center gap-2.5">
-                          {features.map((_, dotIdx) => (
-                            <button
-                              key={dotIdx}
-                              onClick={() => setActiveFeature(dotIdx)}
-                              className={`h-2.5 rounded-full transition-all duration-500 ease-out ${activeFeature === dotIdx ? 'w-8 bg-blue-600 dark:bg-blue-500' : 'w-2.5 bg-slate-300 dark:bg-slate-700 hover:bg-slate-400 dark:hover:bg-slate-600'}`}
-                              aria-label={`Go to feature ${dotIdx + 1}`}
-                            />
-                          ))}
-                        </div>
-                      </div>
-
-                      {/* Prev/Next Buttons */}
-                      <button onClick={handlePrevFeature} className="absolute left-2 sm:left-4 top-1/2 -translate-y-1/2 z-20 p-2.5 sm:p-3 rounded-full bg-white/50 dark:bg-gray-900/50 border border-slate-200 dark:border-gray-700 shadow-md hover:shadow-lg hover:bg-white dark:hover:bg-gray-800 transition-all text-slate-600 dark:text-slate-300 opacity-0 group-hover:opacity-100 translate-x-4 group-hover:translate-x-0">
-                        <ChevronLeft className="w-5 h-5" />
-                      </button>
-                      <button onClick={handleNextFeature} className="absolute right-2 sm:right-4 top-1/2 -translate-y-1/2 z-20 p-2.5 sm:p-3 rounded-full bg-white/50 dark:bg-gray-900/50 border border-slate-200 dark:border-gray-700 shadow-md hover:shadow-lg hover:bg-white dark:hover:bg-gray-800 transition-all text-slate-600 dark:text-slate-300 opacity-0 group-hover:opacity-100 -translate-x-4 group-hover:translate-x-0">
-                        <ChevronRight className="w-5 h-5" />
-                      </button>
-                    </div>
-                  </motion.div>
-                ))}
+      {/* --- FEATURES SECTION --- */}
+      <section className="bg-slate-50 dark:bg-gray-900 py-16 md:py-28 px-4 md:px-8" id="fitur">
+        <div className="max-w-[1280px] mx-auto">
+          <div className="grid grid-cols-1 lg:grid-cols-[1fr_1.4fr] gap-10 md:gap-20 items-start">
+            <div className="lg:sticky lg:top-[120px]">
+              <div className="inline-flex items-center gap-2 text-[0.8rem] font-bold tracking-[0.08em] uppercase text-blue-600 bg-blue-100 dark:bg-blue-900/30 px-3.5 py-1.5 rounded-full mb-5 font-[family-name:var(--font-kalam)] before:content-['●'] before:text-[0.55rem]">
+                Keunggulan Kami
+              </div>
+              <h2 className="font-[family-name:var(--font-gagalin)] text-[clamp(2rem,4vw,3rem)] font-extrabold text-slate-900 dark:text-white leading-[1.1] tracking-[-0.02em] mb-4">
+                Kenapa Memilih<br/><span className="text-blue-600 dark:text-blue-400">KELAS?</span>
+              </h2>
+              <p className="text-[1.05rem] text-slate-600 dark:text-slate-400 leading-[1.7] max-w-[520px]">
+                Kami memadukan teknologi AI dan pedagogi modern untuk menciptakan ruang belajar yang efektif, seru, dan personal bagi setiap siswa.
+              </p>
+              <div className="mt-8 flex flex-col gap-3">
+                <div className="flex items-center gap-2.5 text-[0.95rem] font-medium text-slate-700 dark:text-slate-300 before:content-[''] before:w-[22px] before:h-[22px] before:bg-green-100 before:rounded-full before:shrink-0 before:bg-[url('data:image/svg+xml,%3Csvg_viewBox=%220_0_20_20%22_xmlns=%22http://www.w3.org/2000/svg%22%3E%3Cpath_fill=%22%2316a34a%22_d=%22M16.7_5.3a1_1_0_010_1.4l-7_7a1_1_0_01-1.4_0l-3-3a1_1_0_111.4-1.4L9_11.6l6.3-6.3a1_1_0_011.4_0z%22/%3E%3C/svg%3E')] before:bg-no-repeat before:bg-center before:bg-[size:14px]">
+                  Materi interaktif & terstruktur berbasis kurikulum
+                </div>
+                <div className="flex items-center gap-2.5 text-[0.95rem] font-medium text-slate-700 dark:text-slate-300 before:content-[''] before:w-[22px] before:h-[22px] before:bg-green-100 before:rounded-full before:shrink-0 before:bg-[url('data:image/svg+xml,%3Csvg_viewBox=%220_0_20_20%22_xmlns=%22http://www.w3.org/2000/svg%22%3E%3Cpath_fill=%22%2316a34a%22_d=%22M16.7_5.3a1_1_0_010_1.4l-7_7a1_1_0_01-1.4_0l-3-3a1_1_0_111.4-1.4L9_11.6l6.3-6.3a1_1_0_011.4_0z%22/%3E%3C/svg%3E')] before:bg-no-repeat before:bg-center before:bg-[size:14px]">
+                  Fokus pada praktik langsung dengan Live Code
+                </div>
+                <div className="flex items-center gap-2.5 text-[0.95rem] font-medium text-slate-700 dark:text-slate-300 before:content-[''] before:w-[22px] before:h-[22px] before:bg-green-100 before:rounded-full before:shrink-0 before:bg-[url('data:image/svg+xml,%3Csvg_viewBox=%220_0_20_20%22_xmlns=%22http://www.w3.org/2000/svg%22%3E%3Cpath_fill=%22%2316a34a%22_d=%22M16.7_5.3a1_1_0_010_1.4l-7_7a1_1_0_01-1.4_0l-3-3a1_1_0_111.4-1.4L9_11.6l6.3-6.3a1_1_0_011.4_0z%22/%3E%3C/svg%3E')] before:bg-no-repeat before:bg-center before:bg-[size:14px]">
+                  AI Tutor 24/7 siap membantu kapan saja
+                </div>
+                <div className="flex items-center gap-2.5 text-[0.95rem] font-medium text-slate-700 dark:text-slate-300 before:content-[''] before:w-[22px] before:h-[22px] before:bg-green-100 before:rounded-full before:shrink-0 before:bg-[url('data:image/svg+xml,%3Csvg_viewBox=%220_0_20_20%22_xmlns=%22http://www.w3.org/2000/svg%22%3E%3Cpath_fill=%22%2316a34a%22_d=%22M16.7_5.3a1_1_0_010_1.4l-7_7a1_1_0_01-1.4_0l-3-3a1_1_0_111.4-1.4L9_11.6l6.3-6.3a1_1_0_011.4_0z%22/%3E%3C/svg%3E')] before:bg-no-repeat before:bg-center before:bg-[size:14px]">
+                  Sertifikat resmi setelah menyelesaikan modul
+                </div>
               </div>
             </div>
-
-            {/* RIGHT COLUMN: TEXT (order-1 on mobile, order-2 on lg) */}
-            <div className="w-full lg:w-5/12 order-1 lg:order-2 lg:sticky lg:top-32 pt-0">
-              <motion.div
-                initial={{ opacity: 0, x: 20 }}
-                whileInView={{ opacity: 1, x: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.5 }}
-              >
-                <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-blue-50 dark:bg-blue-900/30 border border-blue-100 dark:border-blue-800 text-blue-600 dark:text-blue-400 text-base font-bold tracking-wider mb-6 font-[family-name:var(--font-kalam)]">
-                  Keunggulan Kami
+            <div className="grid gap-5">
+              {[
+                { icon: '🎯', title: 'Jalur Belajar Personal', desc: 'Sistem cerdas menyesuaikan tingkat kesulitan berdasarkan hasil Pre-Tes. Mulai dari Dasar, Menengah, atau Lanjut sesuai kemampuanmu.' },
+                { icon: '📱', title: 'Mode Belajar Fleksibel', desc: 'Pilih gaya belajarmu sendiri — teks interaktif, video, atau sesi praktik langsung untuk pengalaman yang optimal.' },
+                { icon: '📊', title: 'Analisis Pembelajaran', desc: 'Pantau perkembanganmu secara terperinci. Dapatkan laporan akurasi, kecepatan, dan rekomendasi topik yang perlu diperkuat.' },
+                { icon: '💻', title: 'Live Code Playground', desc: 'Tulis, jalankan, dan lihat hasil kode HTML & JavaScript secara real-time langsung di browser tanpa aplikasi tambahan.' },
+                { icon: '🤖', title: 'Tutor AI "Kak Gem"', desc: 'Buntu saat belajar? Tanya Kak Gem — asisten AI cerdas yang siap membantu memahami materi dan memecahkan masalah coding kapan saja.' },
+                { icon: '🏆', title: 'Gamifikasi & Sertifikat', desc: 'Streak harian, skor terbaik di post-test, dan sertifikat resmi setelah menyelesaikan modul menjaga motivasi belajarmu.' }
+              ].map((feat, i) => (
+                <div key={i} className={`bg-white dark:bg-gray-800 rounded-[24px] p-7 border border-slate-200 dark:border-gray-700 flex items-start gap-5 transition-all duration-300 cursor-pointer relative overflow-hidden group hover:border-blue-600/30 hover:shadow-[0_8px_32px_rgba(37,99,235,0.1)] hover:translate-x-[6px] ${i === activeFeature ? 'border-blue-600/30 shadow-[0_8px_32px_rgba(37,99,235,0.1)] translate-x-[6px]' : ''}`} onMouseEnter={() => setActiveFeature(i)}>
+                  <div className={`absolute left-0 top-0 bottom-0 w-[3px] bg-gradient-to-b from-blue-600 to-indigo-500 origin-top transition-transform duration-300 rounded-r-[2px] ${i === activeFeature ? 'scale-y-100' : 'scale-y-0 group-hover:scale-y-100'}`}></div>
+                  <div className="w-[50px] h-[50px] rounded-[14px] grid place-items-center shrink-0 text-[1.4rem] bg-blue-100 dark:bg-blue-900/30">{feat.icon}</div>
+                  <div>
+                    <div className="font-[family-name:var(--font-gagalin)] tracking-wide text-[1rem] font-bold text-slate-900 dark:text-white mb-1">{feat.title}</div>
+                    <div className="text-[0.88rem] text-slate-600 dark:text-slate-400 leading-[1.6]">{feat.desc}</div>
+                  </div>
                 </div>
-                <h2 className="text-3xl md:text-5xl text-slate-900 dark:text-white mb-6 font-[family-name:var(--font-gagalin)] leading-tight">
-                  Kenapa Memilih <br/><span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-500">KELAS?</span>
-                </h2>
-                <p className="text-lg text-slate-600 dark:text-slate-400 leading-relaxed mb-8">
-                 Kami memadukan teknologi dan pedagogi modern untuk menciptakan ruang belajar yang efektif, seru, dan personal bagi setiap siswa.
-                </p>
-                
-                <div className="space-y-4">
-                  {[
-                    "Materi interaktif & terstruktur",
-                    "Fokus pada praktik langsung"
-                  ].map((item, i) => (
-                    <div key={i} className="flex items-center gap-3">
-                      <div className="w-6 h-6 rounded-full bg-green-100 dark:bg-green-900/30 flex items-center justify-center shrink-0">
-                        <CheckCircle2 className="w-4 h-4 text-green-600 dark:text-green-400" />
-                      </div>
-                      <span className="text-slate-700 dark:text-slate-300 font-medium">{item}</span>
-                    </div>
-                  ))}
-                </div>
-              </motion.div>
+              ))}
             </div>
-
           </div>
-        </div>
-
-
-
-        {/* Bottom Wave Decoration */}
-        <div className="absolute bottom-0 left-0 w-full pointer-events-none z-0 ">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 400 900 200" className="w-full h-32 md:h-48" preserveAspectRatio="none">
-            <path d="M0 431L21.5 439.3C43 447.7 86 464.3 128.8 470.2C171.7 476 214.3 471 257.2 470.3C300 469.7 343 473.3 385.8 466.2C428.7 459 471.3 441 514.2 442.3C557 443.7 600 464.3 642.8 475.8C685.7 487.3 728.3 489.7 771.2 482.2C814 474.7 857 457.3 878.5 448.7L900 440L900 601L878.5 601C857 601 814 601 771.2 601C728.3 601 685.7 601 642.8 601C600 601 557 601 514.2 601C471.3 601 428.7 601 385.8 601C343 601 300 601 257.2 601C214.3 601 171.7 601 128.8 601C86 601 43 601 21.5 601L0 601Z" className="fill-sky-100 dark:fill-sky-900" />
-            <path d="M0 530L21.5 530.2C43 530.3 86 530.7 128.8 529.8C171.7 529 214.3 527 257.2 519.7C300 512.3 343 499.7 385.8 497.8C428.7 496 471.3 505 514.2 503.2C557 501.3 600 488.7 642.8 487.8C685.7 487 728.3 498 771.2 501C814 504 857 499 878.5 496.5L900 494L900 601L878.5 601C857 601 814 601 771.2 601C728.3 601 685.7 601 642.8 601C600 601 557 601 514.2 601C471.3 601 428.7 601 385.8 601C343 601 300 601 257.2 601C214.3 601 171.7 601 128.8 601C86 601 43 601 21.5 601L0 601Z" className="fill-sky-200 dark:fill-sky-800" />
-            <path d="M0 549L21.5 546.5C43 544 86 539 128.8 534C171.7 529 214.3 524 257.2 529.5C300 535 343 551 385.8 558.3C428.7 565.7 471.3 564.3 514.2 563.8C557 563.3 600 563.7 642.8 554.8C685.7 546 728.3 528 771.2 519.8C814 511.7 857 513.3 878.5 514.2L900 515L900 601L878.5 601C857 601 814 601 771.2 601C728.3 601 685.7 601 642.8 601C600 601 557 601 514.2 601C471.3 601 428.7 601 385.8 601C343 601 300 601 257.2 601C214.3 601 171.7 601 128.8 601C86 601 43 601 21.5 601L0 601Z" className="fill-sky-300 dark:fill-sky-700" />
-          </svg>
         </div>
       </section>
 
       {/* --- MODULES SECTION --- */}
-      <section id="modul" className="py-24 bg-white dark:bg-gray-900 relative overflow-hidden">
-        <div className="absolute top-0 left-0 w-full pointer-events-none z-0">
-          <svg xmlns="http://www.w3.org/2000/svg" id="visual" viewBox="0 0 900 600" className="w-full h-24 sm:h-32 md:h-48 block" preserveAspectRatio="none">
-            <path d="M0 168L21.5 165.2C43 162.3 86 156.7 128.8 164.3C171.7 172 214.3 193 257.2 204.5C300 216 343 218 385.8 204.2C428.7 190.3 471.3 160.7 514.2 144.5C557 128.3 600 125.7 642.8 125.5C685.7 125.3 728.3 127.7 771.2 130.8C814 134 857 138 878.5 140L900 142L900 0L878.5 0C857 0 814 0 771.2 0C728.3 0 685.7 0 642.8 0C600 0 557 0 514.2 0C471.3 0 428.7 0 385.8 0C343 0 300 0 257.2 0C214.3 0 171.7 0 128.8 0C86 0 43 0 21.5 0L0 0Z" className="fill-sky-300 dark:fill-sky-700" strokeLinecap="round" strokeLinejoin="miter" />
-          </svg>
-        </div>
+      <section id="modul" className="py-16 md:py-24 bg-white dark:bg-gray-900 relative overflow-hidden">
         <div className="max-w-7xl mx-auto px-4 sm:px-16 lg:px-24 relative z-10">
           <div className="flex flex-col lg:flex-row items-center gap-12 lg:gap-20">
 
@@ -727,19 +610,6 @@ export default function LandingPage() {
               >
                 Kurikulum dirancang khusus oleh praktisi industri untuk mempersiapkanmu menghadapi dunia kerja. Pilih jalur yang sesuai dengan minatmu dan mulai belajar sekarang.
               </motion.p>
-
-              {/* Curved Arrow Decoration */}
-              <div className="hidden lg:block relative h-32 w-full max-w-xs mb-8 ml-10">
-                <svg className="absolute top-0 left-0 w-full h-full text-slate-300 dark:text-slate-600" viewBox="0 0 200 120" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  {/* Curved line */}
-                  <path d="M20 20 C 60 100, 140 80, 180 40" stroke="currentColor" strokeWidth="2" strokeDasharray="6 4" strokeLinecap="round" />
-                  {/* Arrow head */}
-                  <path d="M180 40 L 168 45 M 180 40 L 175 58" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                </svg>
-                <span className="absolute top-12 left-0 -rotate-6 text-sm font-handwriting text-blue-500 dark:text-blue-400 font-semibold bg-white dark:bg-gray-900 px-2 py-1 rounded shadow-sm border border-blue-100 dark:border-gray-700">
-                  Pilih modulmu di sini!
-                </span>
-              </div>
 
             </div>
 
@@ -828,11 +698,6 @@ export default function LandingPage() {
             </div>
 
           </div>
-        </div>
-        <div className="absolute bottom-0 left-0 w-full pointer-events-none z-0 translate-y-[1px]">
-          <svg xmlns="http://www.w3.org/2000/svg" id="visual" viewBox="0 0 900 600" className="w-full h-24 sm:h-32 md:h-48 block" preserveAspectRatio="none">
-            <path d="M0 484L21.5 478.2C43 472.3 86 460.7 128.8 443.7C171.7 426.7 214.3 404.3 257.2 414.7C300 425 343 468 385.8 483.5C428.7 499 471.3 487 514.2 470.7C557 454.3 600 433.7 642.8 419.8C685.7 406 728.3 399 771.2 394.3C814 389.7 857 387.3 878.5 386.2L900 385L900 601L878.5 601C857 601 814 601 771.2 601C728.3 601 685.7 601 642.8 601C600 601 557 601 514.2 601C471.3 601 428.7 601 385.8 601C343 601 300 601 257.2 601C214.3 601 171.7 601 128.8 601C86 601 43 601 21.5 601L0 601Z" className="fill-sky-300 dark:fill-sky-700" strokeLinecap="round" strokeLinejoin="miter" />
-          </svg>
         </div>
       </section>
 
@@ -969,13 +834,6 @@ export default function LandingPage() {
               </div>
             </div>
           </div>
-        </div>
-
-        {/* Bottom Transition */}
-        <div className="absolute bottom-0 left-0 w-full pointer-events-none translate-y-[1px]">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 120" className="w-full h-auto block">
-            <path fill="currentColor" className="text-white dark:text-gray-900" fillOpacity="1" d="M0,64L48,69.3C96,75,192,85,288,80C384,75,480,53,576,48C672,43,768,53,864,64C960,75,1056,85,1152,80C1248,75,1344,53,1392,42.7L1440,32L1440,120L1392,120C1344,120,1248,120,1152,120C1056,120,960,120,864,120C768,120,672,120,576,120C480,120,384,120,288,120C192,120,96,120,48,120L0,120Z"></path>
-          </svg>
         </div>
       </section>
 
@@ -1143,11 +1001,6 @@ export default function LandingPage() {
 
           </div>
           </div>
-        </div>
-        <div className="relative w-full pointer-events-none z-0 mt-10">
-          <svg xmlns="http://www.w3.org/2000/svg" id="visual" viewBox="0 400 900 200" className="w-full h-24 sm:h-32 block" preserveAspectRatio="none">
-            <path d="M0 430L21.5 422.2C43 414.3 86 398.7 128.8 402.7C171.7 406.7 214.3 430.3 257.2 444.2C300 458 343 462 385.8 463.3C428.7 464.7 471.3 463.3 514.2 452C557 440.7 600 419.3 642.8 424.5C685.7 429.7 728.3 461.3 771.2 468.5C814 475.7 857 458.3 878.5 449.7L900 441L900 601L878.5 601C857 601 814 601 771.2 601C728.3 601 685.7 601 642.8 601C600 601 557 601 514.2 601C471.3 601 428.7 601 385.8 601C343 601 300 601 257.2 601C214.3 601 171.7 601 128.8 601C86 601 43 601 21.5 601L0 601Z" className="fill-sky-300 dark:fill-sky-700" strokeLinecap="round" strokeLinejoin="miter" />
-          </svg>
         </div>
       </section>
 
