@@ -19,6 +19,7 @@ import {
   Moon,
   Sun,
   ArrowUp,
+  ArrowUpRight,
   Laptop,
   Users,
   Instagram,
@@ -739,14 +740,14 @@ export default function LandingPage() {
       {/* --- MENTOR SECTION --- */}
       <section id="mentor" className="relative pt-8 py-16 md:py-24 bg-slate-900 dark:bg-slate-950 overflow-hidden">
         <div className="relative z-10 max-w-full mx-auto px-4 md:px-16 lg:px-12 ">
-          <div className="flex flex-col-reverse md:flex-row items-center gap-6 lg:gap-20">
+          <div className="flex flex-col-reverse lg:flex-row items-center gap-8 lg:gap-20">
             {/* Left Column: Carousel */}
-            <div className="w-full md:w-1/2 relative mt-4 sm:mt-0">
-              {/* Mobile: Horizontal Scroll */}
-              <div className="md:hidden w-full overflow-x-auto pb-4 hide-scrollbar-on-mobile">
+            <div className="w-full lg:w-1/2 relative mt-4 sm:mt-0">
+              {/* Mobile & Tablet: Horizontal Scroll */}
+              <div className="lg:hidden w-full overflow-x-auto pb-4 hide-scrollbar-on-mobile">
                 <div className="flex gap-4">
                   {mentors.map((mentor, idx) => (
-                    <div key={`mobile-mentor-${idx}`} className="w-64 sm:w-72 flex-shrink-0 rounded-2xl overflow-hidden shadow-lg cursor-pointer" onClick={() => setSelectedMentor(mentor)}>
+                    <div key={`mobile-mentor-${idx}`} className="w-[280px] sm:w-[320px] md:w-[380px] flex-shrink-0 rounded-2xl overflow-hidden shadow-lg cursor-pointer" onClick={() => setSelectedMentor(mentor)}>
                       <div className="aspect-[4/5] w-full relative group bg-white dark:bg-gray-800">
                         <img
                           src={mentor.image}
@@ -754,9 +755,14 @@ export default function LandingPage() {
                           className="w-full h-full object-cover"
                         />
                         <div className="absolute inset-0 bg-gradient-to-t from-slate-900/80 via-slate-900/30 to-transparent"></div>
-                        <div className="absolute bottom-0 left-0 p-4 text-white w-full">
-                          <p className="text-blue-300 text-[10px] font-bold uppercase tracking-wider">{mentor.role}</p>
-                          <h3 className="text-lg font-bold">{mentor.name}</h3>
+                        <div className="absolute bottom-0 left-0 p-4 md:p-5 text-white w-full flex justify-between items-end">
+                          <div className="flex-1">
+                            <p className="text-blue-300 text-[10px] md:text-xs font-bold uppercase tracking-wider">{mentor.role}</p>
+                            <h3 className="text-lg md:text-2xl font-bold truncate pr-2">{mentor.name}</h3>
+                          </div>
+                          <div className="flex items-center gap-1 text-[10px] md:text-xs font-medium text-white bg-white/20 px-2.5 py-1 md:px-3 md:py-1.5 rounded-full backdrop-blur-md whitespace-nowrap mb-0.5">
+                            Lihat Bio <ArrowUpRight size={14} />
+                          </div>
                         </div>
                       </div>
                     </div>
@@ -765,7 +771,7 @@ export default function LandingPage() {
               </div>
 
               {/* Desktop: Vertical Carousel */}
-              <div className="hidden md:flex relative h-[450px] sm:h-[550px] lg:h-[600px] items-center justify-center perspective-1000 w-full">
+              <div className="hidden lg:flex relative h-[600px] items-center justify-center perspective-1000 w-full">
               <motion.div 
                 className="relative w-full max-w-xs sm:max-w-sm md:max-w-md h-full flex items-center justify-center touch-pan-x"
                 onPanEnd={(e, info) => {
@@ -813,8 +819,13 @@ export default function LandingPage() {
                         <div className="absolute bottom-0 left-0 p-6 text-white w-full transform translate-y-2 group-hover:translate-y-0 transition-transform duration-300">
                           <div className="w-12 h-1 bg-blue-500 mb-4 rounded-full"></div>
                           <p className="text-blue-300 text-xs font-bold uppercase tracking-wider mb-1">{mentor.role}</p>
-                          <h3 className="text-2xl font-bold mb-2">{mentor.name}</h3>
-                          <p className="text-sm text-gray-300 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-all duration-300 delay-100 h-auto md:h-0 md:group-hover:h-auto overflow-hidden text-left">
+                          <div className="flex justify-between items-center mb-2">
+                            <h3 className="text-2xl font-bold">{mentor.name}</h3>
+                            <div className="flex items-center gap-1 text-xs font-medium text-white bg-white/20 px-3 py-1.5 rounded-full backdrop-blur-md opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                              Lihat Bio <ArrowUpRight size={14} />
+                            </div>
+                          </div>
+                          <p className="text-sm text-gray-300 opacity-100 lg:opacity-0 lg:group-hover:opacity-100 transition-all duration-300 delay-100 h-auto lg:h-0 lg:group-hover:h-auto overflow-hidden text-left">
                             {mentor.desc}
                           </p>
                         </div>
@@ -827,7 +838,7 @@ export default function LandingPage() {
             </div>
 
             {/* Right Column: Text Content */}
-            <div className="w-full md:w-1/2 text-left relative z-20">
+            <div className="w-full lg:w-1/2 text-left relative z-20">
               <motion.div
                 initial={{ opacity: 0, x: 20 }}
                 whileInView={{ opacity: 1, x: 0 }}
@@ -853,7 +864,7 @@ export default function LandingPage() {
               </motion.p>
 
               {/* Dots Indicator */}
-              <div className="hidden md:flex gap-3 mt-8">
+              <div className="hidden lg:flex gap-3 mt-8">
                 {mentors.map((_, idx) => (
                   <button
                     key={idx}
