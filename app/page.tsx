@@ -601,12 +601,12 @@ export default function LandingPage() {
       {/* --- MODULES SECTION --- */}
       <section id="modul" className="py-16 md:py-24 bg-white dark:bg-gray-900 relative overflow-hidden">
         <div className="max-w-full mx-auto px-4 md:px-16 lg:px-12 relative z-10">
-          <div className="flex flex-col lg:flex-row items-center gap-12 lg:gap-20">
+          <div className="flex flex-col lg:flex-row-reverse items-center gap-12 lg:gap-20">
 
-            {/* Left Column: Text Content */}
+            {/* Right Column: Text Content */}
             <div className="w-full lg:w-1/2 text-left relative z-20">
               <motion.div
-                initial={{ opacity: 0, x: -20 }}
+                initial={{ opacity: 0, x: 20 }}
                 whileInView={{ opacity: 1, x: 0 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.5 }}
@@ -620,7 +620,7 @@ export default function LandingPage() {
               </motion.div>
 
               <motion.p
-                initial={{ opacity: 0, x: -20 }}
+                initial={{ opacity: 0, x: 20 }}
                 whileInView={{ opacity: 1, x: 0 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.5, delay: 0.2 }}
@@ -629,6 +629,23 @@ export default function LandingPage() {
                 Kurikulum dirancang khusus oleh praktisi industri untuk mempersiapkanmu menghadapi dunia kerja. Pilih jalur yang sesuai dengan minatmu dan mulai belajar sekarang.
               </motion.p>
 
+              <motion.div
+                initial={{ opacity: 0, scale: 0.8 }}
+                whileInView={{ opacity: 1, scale: 1 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.5, delay: 0.4 }}
+                className="hidden lg:block mt-12 relative h-32"
+              >
+                <div className="absolute -left-24 top-0">
+                  <span className="absolute top-0 left-28 font-[family-name:var(--font-kalam)] text-[1.75rem] font-bold text-blue-600 dark:text-blue-400 -rotate-12 whitespace-nowrap z-10 drop-shadow-sm">
+                    Pilih Modulmu!
+                  </span>
+                  <svg width="240" height="120" viewBox="0 0 240 120" fill="none" xmlns="http://www.w3.org/2000/svg" className="absolute top-8 left-0 text-blue-500/70 dark:text-blue-400/70">
+                    <path d="M220 20 C 160 20 120 100 20 70" stroke="currentColor" strokeWidth="4" strokeLinecap="round" fill="none" strokeDasharray="8 8" />
+                    <path d="M40 50 L 15 68 L 45 85" stroke="currentColor" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round" fill="none" />
+                  </svg>
+                </div>
+              </motion.div>
             </div>
 
             {/* Right Column: Scrolling Cards */}
