@@ -85,25 +85,25 @@ const testimonials = [
     name: "Rina Suryani",
     role: "Siswa SMK RPL",
     content: "Materi JavaScript dasarnya sangat lengkap! Dari variabel sampai DOM manipulation dijelaskan dengan sangat detail. Sangat membantu tugas sekolah saya.",
-    avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Rina"
+    avatar: "https://ui-avatars.com/api/?name=Rina+Suryani&background=random"
   },
   {
     name: "Dimas Anggara",
     role: "Mahasiswa Teknik Informatika",
     content: "Akhirnya paham konsep Asynchronous JavaScript dan Promise setelah belajar di sini. Studi kasus real-world nya bikin logika coding jadi lebih jalan.",
-    avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Dimas"
+    avatar: "https://ui-avatars.com/api/?name=Dimas+Anggara&background=random"
   },
   {
     name: "Budi Santoso",
     role: "Siswa SMK TKJ",
     content: "Meskipun jurusan TKJ, belajar Node.js dan REST API di sini sangat mudah dipahami. Sekarang saya bisa buat bot monitoring jaringan sederhana.",
-    avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Budi"
+    avatar: "https://ui-avatars.com/api/?name=Budi+Santoso&background=random"
   },
   {
     name: "Sarah Putri",
     role: "Mahasiswa Sistem Informasi",
     content: "Modul integrasi API-nya juara! Sangat membantu skripsi saya yang membahas tentang pengembangan sistem informasi berbasis web.",
-    avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Sarah"
+    avatar: "https://ui-avatars.com/api/?name=Sarah+Putri&background=random"
   }
 ];
 
@@ -467,10 +467,10 @@ export default function LandingPage() {
             </div>
             <div className="flex items-center justify-center md:justify-start gap-3">
               <div className="flex">
-                <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=1" alt="u1" className="w-9 h-9 rounded-full border-2 border-white dark:border-gray-900 -ml-2 first:ml-0 bg-slate-200 dark:bg-slate-700" />
-                <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=2" alt="u2" className="w-9 h-9 rounded-full border-2 border-white dark:border-gray-900 -ml-2 first:ml-0 bg-slate-200 dark:bg-slate-700" />
-                <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=3" alt="u3" className="w-9 h-9 rounded-full border-2 border-white dark:border-gray-900 -ml-2 first:ml-0 bg-slate-200 dark:bg-slate-700" />
-                <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=4" alt="u4" className="w-9 h-9 rounded-full border-2 border-white dark:border-gray-900 -ml-2 first:ml-0 bg-slate-200 dark:bg-slate-700" />
+                <img src="https://ui-avatars.com/api/?name=A&background=random" alt="u1" className="w-9 h-9 rounded-full border-2 border-white dark:border-gray-900 -ml-2 first:ml-0 bg-slate-200 dark:bg-slate-700" />
+                <img src="https://ui-avatars.com/api/?name=B&background=random" alt="u2" className="w-9 h-9 rounded-full border-2 border-white dark:border-gray-900 -ml-2 first:ml-0 bg-slate-200 dark:bg-slate-700" />
+                <img src="https://ui-avatars.com/api/?name=C&background=random" alt="u3" className="w-9 h-9 rounded-full border-2 border-white dark:border-gray-900 -ml-2 first:ml-0 bg-slate-200 dark:bg-slate-700" />
+                <img src="https://ui-avatars.com/api/?name=D&background=random" alt="u4" className="w-9 h-9 rounded-full border-2 border-white dark:border-gray-900 -ml-2 first:ml-0 bg-slate-200 dark:bg-slate-700" />
               </div>
               <div className="text-[0.88rem] text-slate-600 dark:text-slate-400">
                 {displayedText1}<strong className="text-blue-600 dark:text-blue-400 font-bold"></strong>{displayedText2}
