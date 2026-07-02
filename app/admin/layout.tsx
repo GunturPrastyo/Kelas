@@ -10,7 +10,7 @@ import AuthGuard from "@/components/AuthGuard";
 
 
 function AdminPagesContent({ children }: { children: React.ReactNode }) {
-  const { isSidebarCollapsed, isMobileDrawerOpen, toggleMobileDrawer } = useUI();
+  const { isSidebarCollapsed, isMobileDrawerOpen, toggleMobileDrawer, toggleSidebar } = useUI();
 
   return (
     <div className="font-poppins bg-gray-100 dark:bg-gray-900 text-gray-800 dark:text-gray-100 flex min-h-screen">
@@ -23,6 +23,15 @@ function AdminPagesContent({ children }: { children: React.ReactNode }) {
           onClick={toggleMobileDrawer}
           aria-hidden="true"
         ></div>
+      )}
+
+      {/* Backdrop for desktop sidebar */}
+      {!isSidebarCollapsed && (
+        <div
+          className="fixed inset-0 z-40 bg-black/50 md:block hidden"
+          onClick={toggleSidebar}
+          aria-hidden="true"
+        />
       )}
 
        <div

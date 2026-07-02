@@ -81,16 +81,6 @@ export default function SidebarAdmin() {
             <img src="/logo.webp" alt="KELAS Logo" className="h-8 w-auto transition-opacity duration-300" />
           )}
         </div>
-        <button
-          type="button"
-          className="p-2 text-gray-500 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:focus:ring-gray-600"
-          onClick={toggleSidebar}
-        >
-          <span className="sr-only">Close sidebar</span>
-          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
-          </svg>
-        </button>
       </div>
 
       {/* Navigasi Sidebar */}
