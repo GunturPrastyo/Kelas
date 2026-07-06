@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
+import { GripVertical } from 'lucide-react';
 import { authFetch } from '@/lib/authFetch';
 
 interface Topik {
@@ -76,24 +77,48 @@ const TopikOrder = ({ modulId }: TopikOrderProps) => {
     };
 
     if (loading) {
-        return <div>Memuat data...</div>;
+        return (
+            <div className="space-y-3 w-full">
+                {[...Array(3)].map((_, i) => (
+                    <div key={i} className="bg-gray-100 dark:bg-gray-800 p-4 rounded-lg h-14 animate-pulse"></div>
+                ))}
+            </div>
+        );
+    }
+
+    if (topiks.length === 0) {
+        return (
+            <div className="text-center py-10 px-4 border-2 border-dashed border-gray-300 dark:border-gray-700 rounded-lg w-full">
+                <p className="text-gray-500 dark:text-gray-400">Belum ada topik di modul ini.</p>
+            </div>
+        );
     }
 
     return (
         <DragDropContext onDragEnd={handleOnDragEnd}>
             <Droppable droppableId="topiks">
                 {(provided) => (
-                    <ul {...provided.droppableProps} ref={provided.innerRef} className="space-y-2">
+                    <ul {...provided.droppableProps} ref={provided.innerRef} className="space-y-3 w-full max-w-full">
                         {topiks.map((topik, index) => (
                             <Draggable key={topik._id} draggableId={topik._id} index={index}>
-                                {(provided) => (
+                                {(provided, snapshot) => (
                                     <li
                                         ref={provided.innerRef}
                                         {...provided.draggableProps}
                                         {...provided.dragHandleProps}
-                                        className="bg-white p-4 rounded-md shadow-sm border border-gray-200 dark:bg-gray-800 dark:border-gray-700 cursor-move"
+                                        className={`
+                                            flex items-center p-3 rounded-lg transition-all duration-200 border
+                                            ${snapshot.isDragging 
+                                                ? 'bg-blue-100 dark:bg-blue-900/50 shadow-lg ring-2 ring-blue-500 border-transparent' 
+                                                : 'bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700/50'
+                                            }
+                                        `}
                                     >
-                                        {topik.title}
+                                        <span className="text-gray-400 dark:text-gray-500 font-mono text-sm w-6 text-center">{index + 1}.</span>
+                                        <span className="font-medium text-gray-800 dark:text-gray-200 flex-grow ml-2">{topik.title}</span>
+                                        <div className="text-gray-400 dark:text-gray-500 cursor-grab active:cursor-grabbing">
+                                            <GripVertical size={20} />
+                                        </div>
                                     </li>
                                 )}
                             </Draggable>
