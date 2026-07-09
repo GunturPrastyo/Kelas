@@ -12,6 +12,7 @@ const adminNavLinks = [
   { href: "/admin/modul", label: "Modul", icon: "/modules.png", alt: "Modul Icon" },
   { href: "/admin/manajemen-pengguna", label: "Pengguna", icon: "/profile.png", alt: "Users Icon" },
   { href: "/admin/analitik", label: "Analitik", icon: "/analitik.png", alt: "Analitik Icon" },
+  { href: "/admin/pengaturan", label: "Pengaturan", icon: "/settings.png", alt: "Pengaturan Icon" },
   // { href: "/admin/profil", label: "Profil", icon: "/profile.png", alt: "Profil Icon" },
 ];
 
