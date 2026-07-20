@@ -96,18 +96,30 @@ export default function PengaturanPage() {
             });
 
             if (res.ok) {
-                const updatedData = await res.json();
-                showAlert({ title: "Berhasil", message: "Pengaturan website berhasil diperbarui." });
-                // Optionally update previews if backend returns new URLs
-                if (updatedData.logoUrl) {
-                    setLogoPreview(updatedData.logoUrl.startsWith('http') ? updatedData.logoUrl : `${process.env.NEXT_PUBLIC_API_URL}${updatedData.logoUrl}`);
-                }
-                if (updatedData.faviconUrl) {
-                    setFaviconPreview(updatedData.faviconUrl.startsWith('http') ? updatedData.faviconUrl : `${process.env.NEXT_PUBLIC_API_URL}${updatedData.faviconUrl}`);
+                const contentType = res.headers.get("content-type");
+                if (contentType && contentType.indexOf("application/json") !== -1) {
+                    const updatedData = await res.json();
+                    showAlert({ title: "Berhasil", message: "Pengaturan website berhasil diperbarui." });
+                    // Optionally update previews if backend returns new URLs
+                    if (updatedData.logoUrl) {
+                        setLogoPreview(updatedData.logoUrl.startsWith('http') ? updatedData.logoUrl : `${process.env.NEXT_PUBLIC_API_URL}${updatedData.logoUrl}`);
+                    }
+                    if (updatedData.faviconUrl) {
+                        setFaviconPreview(updatedData.faviconUrl.startsWith('http') ? updatedData.faviconUrl : `${process.env.NEXT_PUBLIC_API_URL}${updatedData.faviconUrl}`);
+                    }
+                } else {
+                     showAlert({ title: "Berhasil", message: "Pengaturan website berhasil diperbarui, namun respons tidak terduga." });
                 }
             } else {
-                const errorData = await res.json();
-                showAlert({ title: "Gagal", message: `Gagal menyimpan pengaturan: ${errorData.message}` });
+                const contentType = res.headers.get("content-type");
+                if (contentType && contentType.indexOf("application/json") !== -1) {
+                    const errorData = await res.json();
+                    showAlert({ title: "Gagal", message: `Gagal menyimpan pengaturan: ${errorData.message}` });
+                } else {
+                    const errorText = await res.text();
+                    showAlert({ title: "Gagal", message: `Gagal menyimpan pengaturan. Server memberikan respons tak terduga.` });
+                    console.error("Unexpected server response:", errorText);
+                }
             }
         } catch (error) {
             console.error("Error saving settings:", error);
