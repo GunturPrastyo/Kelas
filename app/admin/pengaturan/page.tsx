@@ -126,7 +126,7 @@ export default function PengaturanPage() {
                     showAlert({ title: "Gagal", message: `Gagal menyimpan pengaturan: ${errorData.message}` });
                 } else {
                     const errorText = await res.text();
-                    showAlert({ title: "Gagal", message: `Gagal menyimpan pengaturan. Server memberikan respons tak terduga.` });
+                    showAlert({ title: "Gagal", message: `Gagal menyimpan pengaturan. Kemungkinan sesi Anda telah berakhir, silakan login kembali.` });
                     console.error("Unexpected server response:", errorText);
                 }
             }
