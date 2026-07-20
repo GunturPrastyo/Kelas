@@ -32,17 +32,26 @@ export default function PengaturanPage() {
             setLoading(true);
             try {
                 const res = await authFetch(`${process.env.NEXT_PUBLIC_API_URL}/api/settings`);
+                const contentType = res.headers.get("content-type");
+
                 if (res.ok) {
-                    const data = await res.json();
-                    setSettings(data);
-                    if (data.logoUrl) {
-                        setLogoPreview(data.logoUrl.startsWith('http') ? data.logoUrl : `${process.env.NEXT_PUBLIC_API_URL}${data.logoUrl}`);
-                    }
-                    if (data.faviconUrl) {
-                        setFaviconPreview(data.faviconUrl.startsWith('http') ? data.faviconUrl : `${process.env.NEXT_PUBLIC_API_URL}${data.faviconUrl}`);
+                    if (contentType && contentType.indexOf("application/json") !== -1) {
+                        const data = await res.json();
+                        setSettings(data);
+                        if (data.logoUrl) {
+                            setLogoPreview(data.logoUrl.startsWith('http') ? data.logoUrl : `${process.env.NEXT_PUBLIC_API_URL}${data.logoUrl}`);
+                        }
+                        if (data.faviconUrl) {
+                            setFaviconPreview(data.faviconUrl.startsWith('http') ? data.faviconUrl : `${process.env.NEXT_PUBLIC_API_URL}${data.faviconUrl}`);
+                        }
+                    } else {
+                        showAlert({ title: "Gagal Memuat", message: "Menerima respons tak terduga dari server." });
+                        console.error("Unexpected response content-type:", await res.text());
                     }
                 } else {
-                    showAlert({ title: "Gagal Memuat", message: "Gagal memuat pengaturan website." });
+                    const errorText = await res.text();
+                    showAlert({ title: "Gagal Memuat", message: "Gagal memuat pengaturan. Kemungkinan sesi Anda telah berakhir." });
+                    console.error("Failed to fetch settings:", errorText);
                 }
             } catch (error) {
                 console.error("Error fetching settings:", error);
