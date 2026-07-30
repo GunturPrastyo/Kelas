@@ -1029,7 +1029,7 @@ export default function LandingPage() {
       </section>
 
       {/* --- CTA SECTION --- */}
-      <section id="mulai" className="py-16 md:py-24 bg-slate-900 dark:bg-slate-950 relative overflow-hidden">
+      <section id="mulai" className="py-24 md:py-46 px-2 md:px-0 bg-slate-900 dark:bg-slate-950 relative overflow-hidden">
         <div className="absolute inset-0 bg-blue-600/10 dark:bg-blue-900/10 blur-3xl rounded-full w-1/2 h-1/2 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"></div>
         <div className="max-w-full mx-auto px-4 md:px-16 lg:px-12 relative z-10 text-center">
           <div className="text-blue-400 font-bold tracking-wider text-lg mb-2 block font-[family-name:var(--font-kalam)]">
@@ -1040,14 +1040,14 @@ export default function LandingPage() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.5 }}
-            className="text-3xl md:text-5xl font-medium text-white mb-6 font-[family-name:var(--font-gagalin)] leading-tight"
+            className="text-2xl md:text-5xl font-medium text-white mb-6 font-[family-name:var(--font-gagalin)] leading-tight"
           >
             Siap Memulai Perjalanan Belajarmu?
           </motion.h2>
           <p className="text-slate-300 text-lg mb-10 max-w-2xl mx-auto">
             Jangan buang waktu mempelajari apa yang sudah kamu tahu. Ikuti tes awal dan dapatkan kurikulum yang dipersonalisasi khusus untukmu.
           </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center ">
             <Link href="/register" className="group inline-flex items-center justify-center gap-2 bg-blue-600 text-white px-8 py-3.5 rounded-full font-bold hover:bg-blue-700 transition shadow-[0_4px_14px_rgba(37,99,235,0.35)] w-full sm:w-auto">
               Daftar Gratis Sekarang 
             </Link>
