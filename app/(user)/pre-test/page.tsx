@@ -463,7 +463,7 @@ export default function PreTestPage() {
                                 {recommendedModules.length > 0 ? (
                                     recommendedModules.map(modul => (
                                         <Link href={`/modul/${modul.slug}`} key={modul._id} className="flex items-center gap-3 border border-slate-200 dark:border-gray-700 rounded-lg p-3 hover:bg-slate-50 dark:hover:bg-gray-700/50 transition">
-                                            <img src={`${process.env.NEXT_PUBLIC_API_URL}/uploads/${modul.icon}`} alt={modul.title} width={128} height={128} className="w-8 h-8 rounded" />
+                                            <img src={modul.icon?.startsWith('http') ? modul.icon : `${process.env.NEXT_PUBLIC_API_URL}/uploads/${modul.icon}`} alt={modul.title} width={128} height={128} className="w-8 h-8 rounded" />
                                             <div>
                                                 <p className="font-semibold text-sm text-slate-800 dark:text-slate-200">{modul.title}</p>
                                                 <p className="text-xs text-slate-500 dark:text-slate-400">Materi {level}</p>
