@@ -643,7 +643,7 @@ export default function LandingPage() {
                 whileInView={{ opacity: 1, x: 0 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.5, delay: 0.2 }}
-                className="text-lg text-slate-600 dark:text-slate-400 max-w-lg leading-relaxed"
+                className="text-md md:text-lg text-slate-600 dark:text-slate-400 max-w-lg leading-relaxed"
               >
                 Kurikulum dirancang khusus oleh praktisi industri untuk mempersiapkanmu menghadapi dunia kerja. Pilih jalur yang sesuai dengan minatmu dan mulai belajar sekarang.
               </motion.p>
@@ -876,7 +876,7 @@ export default function LandingPage() {
                 whileInView={{ opacity: 1, x: 0 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.5, delay: 0.2 }}
-                className="text-slate-300 text-lg font-medium leading-relaxed max-w-lg"
+                className="text-slate-300 text-md md:text-lg font-medium leading-relaxed max-w-lg"
               >
                 Dapatkan wawasan berharga dari praktisi industri dan akademisi berpengalaman yang siap membimbing perjalanan karirmu.
               </motion.p>
@@ -970,7 +970,7 @@ export default function LandingPage() {
       {/* --- TESTIMONIALS SECTION --- */}
       <section id="CTA" className="py-16 md:py-24 bg-white dark:bg-gray-900 relative overflow-hidden border-t border-slate-200 dark:border-gray-800">
         <div className="z-10 max-w-full mx-auto px-4 md:px-16 lg:px-12">
-          <div className="text-center mb-12 md:mb-16">
+          <div className="text-left mb-12 md:mb-16">
             <div className="text-blue-600 dark:text-blue-400 font-bold tracking-wider text-lg mb-2 block font-[family-name:var(--font-kalam)]">
               Kata Mereka
             </div>
@@ -1124,11 +1124,11 @@ export default function LandingPage() {
                 <h4 className="font-bold text-slate-900 dark:text-white mb-4">Hubungi Kami</h4>
                 <ul className="space-y-3 text-sm text-slate-500 dark:text-slate-400">
                   <li className="flex items-start gap-3">
-                    <Mail size={18} className="text-blue-600 mt-0.5 shrink-0" />
+                    <Mail size={18} className="text-gray-600 mt-0.5 shrink-0" />
                     <a href="mailto:kartinielearningapps@gmail.com" className="hover:text-blue-600 break-all">kartinielearningapps@gmail.com</a>
                   </li>
                   <li className="flex items-start gap-3">
-                    <MapPin size={18} className="text-blue-600 mt-0.5 shrink-0" />
+                    <MapPin size={18} className="text-gray-600 mt-0.5 shrink-0" />
                     <span>Semarang, Jawa Tengah, Indonesia</span>
                   </li>
                 </ul>
