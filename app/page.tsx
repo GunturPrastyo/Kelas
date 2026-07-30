@@ -451,10 +451,10 @@ export default function LandingPage() {
               
               {displayedBadgeText}
             </div>
-            <h1 className="text-3xl md:text-5xl text-slate-900 font-medium dark:text-white mb-6 font-[family-name:var(--font-gagalin)] leading-tight">
+            <h1 className="text-2xl md:text-5xl text-slate-900 font-medium dark:text-white mb-6 font-[family-name:var(--font-gagalin)] leading-tight">
               Belajar Lebih Efektif dengan <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-500 to-indigo-500">Kurikulum Personal</span>
             </h1>
-            <p className="text-[1.1rem] text-slate-600 dark:text-slate-400 max-w-[500px] mx-auto md:mx-0 mb-10 font-normal leading-[1.7]">
+            <p className="text-[0.9rem] md:text-[1.1rem] text-slate-600 dark:text-slate-400 max-w-[500px] mx-auto md:mx-0 mb-10 font-normal leading-[1.7]">
               KELAS membantu kamu menemukan jalur belajar yang tepat sesuai kemampuanmu. Ikuti pre-tes, dapatkan rekomendasi, dan tingkatkan skillmu hari ini.
             </p>
             <div className="flex justify-start gap-2 sm:gap-4 mb-12 w-full">
@@ -465,7 +465,7 @@ export default function LandingPage() {
                 Lihat Fitur
               </a>
             </div>
-            <div className="flex items-center justify-center md:justify-start gap-3">
+            <div className="flex items-center justify-center md:justify-start gap-6 md:gap-3">
               <div className="flex">
                 <img src="https://ui-avatars.com/api/?name=A&background=random" alt="u1" className="w-9 h-9 rounded-full border-2 border-white dark:border-gray-900 -ml-2 first:ml-0 bg-slate-200 dark:bg-slate-700" />
                 <img src="https://ui-avatars.com/api/?name=B&background=random" alt="u2" className="w-9 h-9 rounded-full border-2 border-white dark:border-gray-900 -ml-2 first:ml-0 bg-slate-200 dark:bg-slate-700" />
@@ -553,32 +553,32 @@ export default function LandingPage() {
               <div className="text-blue-600 dark:text-blue-400 font-bold tracking-wider text-lg mb-2 block font-[family-name:var(--font-kalam)]">
                 Keunggulan Kami
               </div>
-              <h2 className="text-3xl md:text-5xl text-slate-900 font-medium dark:text-white mb-6 font-[family-name:var(--font-gagalin)] leading-tight">
-                Kenapa Memilih<br/><span className="text-blue-600 dark:text-blue-400">KELAS?</span>
+              <h2 className="text-2xl md:text-5xl text-slate-900 font-medium dark:text-white mb-6 font-[family-name:var(--font-gagalin)] leading-tight">
+                Kenapa Memilih <span className="text-blue-600 dark:text-blue-400">KELAS?</span>
               </h2>
-              <p className="text-[1.05rem] text-slate-600 dark:text-slate-400 leading-[1.7] max-w-[520px]">
+              <p className="text-md md:text-[1.05rem] text-slate-600 dark:text-slate-400 leading-[1.7] max-w-[520px]">
                 Kami memadukan teknologi AI dan pedagogi modern untuk menciptakan ruang belajar yang efektif, seru, dan personal bagi setiap siswa.
               </p>
               <div className="mt-8 flex flex-col gap-4">
-                <div className="flex items-start gap-3 text-[0.95rem] font-medium text-slate-700 dark:text-slate-300">
+                <div className="flex items-start gap-3 text-[0.90rem] md:text-[0.95rem] font-medium text-slate-700 dark:text-slate-300">
                   <div className="w-[22px] h-[22px] flex items-center justify-center bg-green-100 dark:bg-green-900/30 rounded-full shrink-0 text-green-600 dark:text-green-400 mt-0.5">
                     <CheckCircle2 size={14} />
                   </div>
                   <span>Materi interaktif & terstruktur berbasis kurikulum</span>
                 </div>
-                <div className="flex items-start gap-3 text-[0.95rem] font-medium text-slate-700 dark:text-slate-300">
+                <div className="flex items-start gap-3 text-[0.90rem] md:text-[0.95rem] font-medium text-slate-700 dark:text-slate-300">
                   <div className="w-[22px] h-[22px] flex items-center justify-center bg-green-100 dark:bg-green-900/30 rounded-full shrink-0 text-green-600 dark:text-green-400 mt-0.5">
                     <CheckCircle2 size={14} />
                   </div>
                   <span>Fokus pada praktik langsung dengan Live Code</span>
                 </div>
-                <div className="flex items-start gap-3 text-[0.95rem] font-medium text-slate-700 dark:text-slate-300">
+                <div className="flex items-start gap-3 text-[0.90rem] md:text-[0.95rem] font-medium text-slate-700 dark:text-slate-300">
                   <div className="w-[22px] h-[22px] flex items-center justify-center bg-green-100 dark:bg-green-900/30 rounded-full shrink-0 text-green-600 dark:text-green-400 mt-0.5">
                     <CheckCircle2 size={14} />
                   </div>
                   <span>AI Tutor 24/7 siap membantu kapan saja</span>
                 </div>
-                <div className="flex items-start gap-3 text-[0.95rem] font-medium text-slate-700 dark:text-slate-300">
+                <div className="flex items-start gap-3 text-[0.90rem] md:text-[0.95rem] font-medium text-slate-700 dark:text-slate-300">
                   <div className="w-[22px] h-[22px] flex items-center justify-center bg-green-100 dark:bg-green-900/30 rounded-full shrink-0 text-green-600 dark:text-green-400 mt-0.5">
                     <CheckCircle2 size={14} />
                   </div>
@@ -633,8 +633,8 @@ export default function LandingPage() {
                 <span className="text-blue-600 dark:text-blue-400 font-bold tracking-wider text-lg mb-2 block font-[family-name:var(--font-kalam)]">
                   Modul Pembelajaran
                 </span>
-                <h2 className="text-3xl md:text-5xl text-slate-900 font-medium dark:text-white mb-6 font-[family-name:var(--font-gagalin)] leading-tight">
-                  Jelajahi Materi <br /> <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-purple-600">Pilihan Terbaik</span>
+                <h2 className="text-2xl md:text-5xl text-slate-900 font-medium dark:text-white mb-6 font-[family-name:var(--font-gagalin)] leading-tight">
+                  Jelajahi Materi <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-purple-600">Pilihan Terbaik</span>
                 </h2>
               </motion.div>
 
@@ -866,7 +866,7 @@ export default function LandingPage() {
                 <span className="text-blue-400 font-bold tracking-wider text-lg mb-2 block font-[family-name:var(--font-kalam)]">
                   Tutor Berpengalaman
                 </span>
-                <h2 className="text-3xl md:text-5xl font-medium text-white mb-4 font-[family-name:var(--font-gagalin)] leading-tight">
+                <h2 className="text-2xl md:text-5xl font-medium text-white mb-4 font-[family-name:var(--font-gagalin)] leading-tight">
                   Belajar Langsung dari <br /> <span className="text-blue-500">Ahlinya</span>
                 </h2>
               </motion.div>
@@ -970,7 +970,7 @@ export default function LandingPage() {
       {/* --- TESTIMONIALS SECTION --- */}
       <section id="CTA" className="py-16 md:py-24 bg-white dark:bg-gray-900 relative overflow-hidden border-t border-slate-200 dark:border-gray-800">
         <div className="z-10 max-w-full mx-auto px-4 md:px-16 lg:px-12">
-          <div className="text-left mb-12 md:mb-16">
+          <div className="flex flex-col items-start text-left md:items-center md:text-center mb-12 md:mb-16">
             <div className="text-blue-600 dark:text-blue-400 font-bold tracking-wider text-lg mb-2 block font-[family-name:var(--font-kalam)]">
               Kata Mereka
             </div>
@@ -1032,7 +1032,7 @@ export default function LandingPage() {
       <section id="mulai" className="py-24 md:py-46 px-2 md:px-0 bg-slate-900 dark:bg-slate-950 relative overflow-hidden">
         <div className="absolute inset-0 bg-blue-600/10 dark:bg-blue-900/10 blur-3xl rounded-full w-1/2 h-1/2 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"></div>
         <div className="max-w-full mx-auto px-4 md:px-16 lg:px-12 relative z-10 text-center">
-          <div className="text-blue-400 font-bold tracking-wider text-lg mb-2 block font-[family-name:var(--font-kalam)]">
+          <div className="text-blue-400 font-bold tracking-wider text-lg md:text-2xl mb-2 block font-[family-name:var(--font-kalam)]">
             Mulai Sekarang
           </div>
           <motion.h2
