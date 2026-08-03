@@ -441,12 +441,11 @@ export default function LandingPage() {
         <div className="absolute inset-0 pointer-events-none z-0">
           <div className="absolute inset-0 bg-[linear-gradient(rgba(99,102,241,0.04)_1px,transparent_1px),linear-gradient(90deg,rgba(99,102,241,0.04)_1px,transparent_1px)] bg-[size:60px_60px] [mask-image:radial-gradient(ellipse_at_60%_40%,black_30%,transparent_70%)]"></div>
           <div className="absolute top-[-10%] right-[-5%] w-[650px] h-[650px] bg-[radial-gradient(circle_at_40%_40%,rgba(99,102,241,0.12)_0%,rgba(37,99,235,0.08)_40%,transparent_70%)] rounded-full animate-float"></div>
-          <div className="absolute bottom-[10%] left-[-5%] w-[500px] h-[500px] bg-[radial-gradient(circle,rgba(14,165,233,0.10)_0%,transparent_70%)] rounded-full animate-float-reverse"></div>
         </div>
 
         <div className="relative z-10 max-w-full mx-auto px-4 md:px-16 lg:px-12 w-full grid grid-cols-1 lg:grid-cols-2 gap-10 md:gap-16 items-center mt-10 md:mt-0">
           {/* Left: Text */}
-          <div className="text-left">
+          <div className="text-left md:text-left">
             <div className="text-blue-600 dark:text-blue-400 font-bold tracking-wider text-lg mb-2 block font-[family-name:var(--font-kalam)]">
               
               {displayedBadgeText}
@@ -454,7 +453,7 @@ export default function LandingPage() {
             <h1 className="text-2xl md:text-5xl text-slate-900 font-medium dark:text-white mb-6 font-[family-name:var(--font-gagalin)] leading-tight">
               Belajar Lebih Efektif dengan <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-500 to-indigo-500">Kurikulum Personal</span>
             </h1>
-            <p className="text-[0.9rem] md:text-[1.1rem] text-slate-600 dark:text-slate-400 max-w-[500px] mx-auto md:mx-0 mb-10 font-normal leading-[1.7]">
+            <p className="text-[0.9rem] md:text-[1.1rem] text-slate-600 dark:text-slate-400 max-w-[500px] md:mx-0 mb-10 font-normal leading-[1.7]">
               KELAS membantu kamu menemukan jalur belajar yang tepat sesuai kemampuanmu. Ikuti pre-tes, dapatkan rekomendasi, dan tingkatkan skillmu hari ini.
             </p>
             <div className="flex justify-start gap-2 sm:gap-4 mb-12 w-full">
@@ -465,7 +464,7 @@ export default function LandingPage() {
                 Lihat Fitur
               </a>
             </div>
-            <div className="flex items-center justify-center md:justify-start gap-6 md:gap-3">
+            <div className="flex items-center justify-start gap-6 md:gap-3">
               <div className="flex">
                 <img src="https://ui-avatars.com/api/?name=A&background=random" alt="u1" className="w-9 h-9 rounded-full border-2 border-white dark:border-gray-900 -ml-2 first:ml-0 bg-slate-200 dark:bg-slate-700" />
                 <img src="https://ui-avatars.com/api/?name=B&background=random" alt="u2" className="w-9 h-9 rounded-full border-2 border-white dark:border-gray-900 -ml-2 first:ml-0 bg-slate-200 dark:bg-slate-700" />
@@ -605,7 +604,7 @@ export default function LandingPage() {
                         <img src={feat.icon} alt={feat.title} className="w-8 h-8 object-contain" />
                       </div>
                       <div>
-                        <div className="font-[family-name:var(--font-gagalin)] tracking-wide text-[1rem] font-bold text-slate-900 dark:text-white mb-1">{feat.title}</div>
+                        <div className=" text-[1rem] font-bold text-slate-900 dark:text-white mb-1">{feat.title}</div>
                         <div className="text-[0.88rem] text-slate-600 dark:text-slate-400 leading-[1.6]">{feat.desc}</div>
                       </div>
                     </div>
