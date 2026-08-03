@@ -176,10 +176,10 @@ function StatItem({ value, suffix = "", prefix = "", isFloat = false, title }: {
 
   return (
     <div className="text-center p-4 border-r border-white/10 last:border-0 max-md:border-b max-md:even:border-r-0 max-md:[&:nth-last-child(-n+2)]:border-b-0">
-      <div ref={ref} className="font-[family-name:var(--font-gagalin)] text-[2.4rem] font-extrabold bg-clip-text text-transparent bg-gradient-to-br from-white to-white/70 leading-none">
+      <div ref={ref} className=" text-[2.4rem] font-extrabold bg-clip-text text-transparent bg-gradient-to-br from-white to-white/70 leading-none">
         {prefix}{displayValue}{suffix}
       </div>
-      <div className="text-[0.85rem] text-white/45 mt-1 font-normal">{title}</div>
+      <div className="text-[0.85rem] text-slate-400 mt-1 font-normal">{title}</div>
     </div>
   );
 }
@@ -489,7 +489,7 @@ export default function LandingPage() {
                 </div>
                 <div className="px-3 py-1 bg-green-200 dark:bg-green-900/60 text-green-800 dark:text-green-300 rounded-full text-[0.72rem] font-semibold">▶ Sedang Belajar</div>
               </div>
-              <div className="font-[family-name:var(--font-gagalin)] text-[1rem] font-bold text-slate-900 dark:text-white mb-2 tracking-wide">JavaScript Fundamental</div>
+              <div className=" text-[1rem] font-bold text-slate-900 dark:text-white mb-2 tracking-wide">JavaScript Fundamental</div>
               <div className="flex justify-between text-[0.78rem] text-slate-600 dark:text-slate-400 mb-2">
                 <span>Progress Modul</span>
                 <span>73%</span>
@@ -499,16 +499,16 @@ export default function LandingPage() {
               </div>
               <div className="grid grid-cols-3 gap-2">
                 <div className="bg-slate-50 dark:bg-slate-700/50 rounded-xl p-2 text-center">
-                  <div className="font-[family-name:var(--font-gagalin)] text-[1rem] font-bold text-slate-900 dark:text-white">12</div>
-                  <div className="text-[0.65rem] text-slate-400 font-medium">Modul</div>
+                  <div className="text-[1rem] font-bold text-slate-900 dark:text-white">12</div>
+                  <div className="text-[0.65rem] text-slate-500 dark:text-slate-300 font-medium">Modul</div>
                 </div>
                 <div className="bg-slate-50 dark:bg-slate-700/50 rounded-xl p-2 text-center">
-                  <div className="font-[family-name:var(--font-gagalin)] text-[1rem] font-bold text-slate-900 dark:text-white">4.8</div>
-                  <div className="text-[0.65rem] text-slate-400 font-medium">Rating</div>
+                  <div className="text-[1rem] font-bold text-slate-900 dark:text-white">4.8</div>
+                  <div className="text-[0.65rem] text-slate-500 dark:text-slate-300 font-medium">Rating</div>
                 </div>
                 <div className="bg-slate-50 dark:bg-slate-700/50 rounded-xl p-2 text-center">
-                  <div className="font-[family-name:var(--font-gagalin)] text-[1rem] font-bold text-slate-900 dark:text-white">🔥 5</div>
-                  <div className="text-[0.65rem] text-slate-400 font-medium">Streak</div>
+                  <div className="text-[1rem] font-bold text-slate-900 dark:text-white">🔥 5</div>
+                  <div className="text-[0.65rem] text-slate-500 dark:text-slate-300 font-medium">Streak</div>
                 </div>
               </div>
             </div>
@@ -517,14 +517,14 @@ export default function LandingPage() {
               <div className="w-[36px] h-[36px] rounded-[10px] grid place-items-center text-[1.1rem] shrink-0 bg-blue-200 dark:bg-blue-900/60">🎯</div>
               <div>
                 <div className="text-slate-900 dark:text-white">Pre-Tes Selesai!</div>
-                <div className="text-[0.72rem] text-slate-400 font-normal">Jalur belajar sudah siap</div>
+                <div className="text-[0.72rem] text-slate-500 dark:text-slate-400 font-normal">Jalur belajar sudah siap</div>
               </div>
             </div>
             <div className="absolute bg-white dark:bg-gray-800 rounded-[16px] py-[0.85rem] px-[1.1rem] shadow-[0_12px_40px_rgba(0,0,0,0.1),0_2px_8px_rgba(0,0,0,0.06)] dark:shadow-none border border-slate-200/80 dark:border-gray-700 flex items-center gap-3 text-[0.82rem] font-semibold whitespace-nowrap bottom-[120px] left-0 animate-card-float-2">
               <div className="w-[36px] h-[36px] rounded-[10px] grid place-items-center text-[1.1rem] shrink-0 bg-yellow-200 dark:bg-yellow-900/60">🏆</div>
               <div>
                 <div className="text-slate-900 dark:text-white">Sertifikat Diraih</div>
-                <div className="text-[0.72rem] text-slate-400 font-normal">HTML & CSS Basic</div>
+                <div className="text-[0.72rem] text-slate-500 dark:text-slate-400 font-normal">HTML & CSS Basic</div>
               </div>
             </div>
             <div className="absolute bg-white dark:bg-gray-800 rounded-[16px] py-[0.85rem] px-[1.1rem] shadow-[0_12px_40px_rgba(0,0,0,0.1),0_2px_8px_rgba(0,0,0,0.06)] dark:shadow-none border border-slate-200/80 dark:border-gray-700 flex items-center gap-3 text-[0.82rem] font-semibold whitespace-nowrap bottom-[60px] right-[20px] animate-card-float-3">
