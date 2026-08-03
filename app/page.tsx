@@ -881,18 +881,22 @@ export default function LandingPage() {
               </motion.p>
 
               {/* Dots Indicator */}
-              <div className="hidden lg:flex gap-3 mt-8">
+              <div className="hidden lg:flex gap-2 mt-8">
                 {mentors.map((_, idx) => (
                   <button
                     key={idx}
                     onClick={() => setActiveMentorIdx(idx)}
-                    className={`rounded-full transition-all duration-300 ${
-                      activeMentorIdx === idx
-                        ? "w-8 h-2.5 bg-blue-500"
-                        : "w-2.5 h-2.5 bg-blue-500/30 hover:bg-blue-500/50"
-                    }`}
+                    className="group rounded-full p-2 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-900"
                     aria-label={`Go to mentor ${idx + 1}`}
-                  />
+                  >
+                    <div
+                      className={`rounded-full transition-all duration-300 ${
+                        activeMentorIdx === idx
+                          ? "w-6 h-2 bg-blue-500"
+                          : "w-2 h-2 bg-blue-500/30 group-hover:bg-blue-500/50"
+                      }`}
+                    />
+                  </button>
                 ))}
               </div>
             </div>
