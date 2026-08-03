@@ -411,7 +411,7 @@ export default function LandingPage() {
         </div>
         {/* Mobile Menu Button */}
         <div className="md:hidden flex items-center">
-          <button onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)} className="p-2 rounded-md text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
+          <button onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)} className="p-2 rounded-md text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors" aria-label={isMobileMenuOpen ? "Tutup menu" : "Buka menu"}>
             {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
           </button>
         </div>
@@ -914,7 +914,7 @@ export default function LandingPage() {
             className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl max-w-2xl w-full overflow-hidden relative"
             onClick={(e) => e.stopPropagation()}
           >
-            <button onClick={() => setSelectedMentor(null)} className="absolute top-4 right-4 p-2 bg-gray-100 dark:bg-gray-700 rounded-full hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors z-10">
+            <button onClick={() => setSelectedMentor(null)} className="absolute top-4 right-4 p-2 bg-gray-100 dark:bg-gray-700 rounded-full hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors z-10" aria-label="Tutup modal">
               <X size={20} />
             </button>
 
@@ -1021,7 +1021,7 @@ export default function LandingPage() {
                 <div className="flex items-center gap-4">
                   <img src={item.avatar} alt={item.name} className="w-12 h-12 rounded-full bg-gray-200" />
                   <div>
-                    <h4 className="font-bold text-slate-900 dark:text-white">{item.name}</h4>
+                    <h3 className="font-bold text-slate-900 dark:text-white text-base">{item.name}</h3>
                     <p className="text-xs text-slate-500 dark:text-slate-400">{item.role}</p>
                   </div>
                 </div>
@@ -1096,7 +1096,7 @@ export default function LandingPage() {
             </div>
 
             <div className="md:col-span-4 lg:col-span-4">
-              <h4 className="font-bold text-slate-900 dark:text-white mb-4">Belajar Kapan Saja, Di Mana Saja</h4>
+              <h3 className="font-bold text-slate-900 dark:text-white mb-4 text-lg">Belajar Kapan Saja, Di Mana Saja</h3>
               <p className="text-slate-500 dark:text-slate-400 text-sm leading-relaxed text-left max-w-sm mb-4">
                 Unduh aplikasi KELAS untuk pengalaman belajar yang lebih mulus di perangkat mobile Anda.
               </p>
@@ -1124,7 +1124,7 @@ export default function LandingPage() {
 
             <div className="md:col-span-4 lg:col-span-4 flex flex-col sm:flex-row justify-start gap-8 sm:gap-12 w-full">
               <div>
-                <h4 className="font-bold text-slate-900 dark:text-white mb-4">Hubungi Kami</h4>
+                <h3 className="font-bold text-slate-900 dark:text-white mb-4 text-lg">Hubungi Kami</h3>
                 <ul className="space-y-3 text-sm text-slate-500 dark:text-slate-400">
                   <li className="flex items-start gap-3">
                     <Mail size={18} className="text-gray-600 mt-0.5 shrink-0" />
@@ -1136,8 +1136,8 @@ export default function LandingPage() {
                   </li>
                 </ul>
               </div>
-              <div className="shrink-0">
-                <h4 className="font-bold text-slate-900 dark:text-white mb-4">Sosial Media</h4>
+              <div>
+                <h3 className="font-bold text-slate-900 dark:text-white mb-4 text-lg">Sosial Media</h3>
                 <div className="flex flex-col gap-3">
                   <Link href="https://youtube.com/@kartinielearning" target="_blank" className="group flex items-center gap-3 text-sm text-slate-500 dark:text-slate-400 hover:text-red-600 transition-colors">
                     <div className="p-2 bg-slate-100 dark:bg-gray-800 rounded-full group-hover:bg-red-50 dark:group-hover:bg-red-900/30 transition-colors">

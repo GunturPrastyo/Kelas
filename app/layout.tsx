@@ -116,10 +116,12 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             }),
           }}
         />
-        <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
-          <GlobalStreakAlert />
-          {children}
-        </ThemeProvider>
+        <main>
+          <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
+            <GlobalStreakAlert />
+            {children}
+          </ThemeProvider>
+        </main>
       </body>
     </html>
   );
