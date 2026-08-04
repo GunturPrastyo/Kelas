@@ -113,7 +113,7 @@ export default function ModuleList({ title, allModules, filter, loading = false 
   if (!loading && modules.length === 0) return null;
 
   return (
-    <section className="bg-gradient-to-br from-indigo-200 via-blue-200 to-sky-300 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 pl-7 pr-4 pt-7 p-3   rounded-2xl shadow-xl border border-slate-200 dark:border-slate-800 border-b-[6px] border-l-2 border-b-slate-200 border-l-slate-200 dark:border-b-slate-700 dark:border-l-slate-700 backdrop-blur-xl transition-all">
+    <section className="bg-white dark:bg-gradient-to-br dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 pl-7 pr-4 pt-7 p-3   rounded-2xl shadow-xl border border-slate-200 dark:border-slate-800 border-b-[6px] border-l-2 border-b-slate-200 border-l-slate-200 dark:border-b-slate-700 dark:border-l-slate-700 backdrop-blur-xl transition-all">
       {/* Header */}
       <div className="flex justify-between items-center mb-6">
         <h2 className="text-xl font-bold text-gray-800 dark:text-gray-100 flex items-center gap-2">
@@ -169,7 +169,7 @@ export default function ModuleList({ title, allModules, filter, loading = false 
               group relative flex flex-col justify-between
               w-full h-[240px]
               overflow-hidden 
-              border border-slate-200 dark:border-slate-600 border-b-[5px] border-b-blue-500 border-l-[2px] border-l-blue-500 dark:border-l-gray-600  dark:border-b-gray-600 rounded-xl bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-700 dark:to-gray-800
+              border border-slate-200 dark:border-slate-600 border-b-[5px] border-b-blue-500 border-l-[2px] border-l-blue-500 dark:border-l-gray-600  dark:border-b-gray-600 rounded-xl bg-gray-50 dark:bg-gradient-to-br dark:from-gray-700 dark:to-gray-800
               shadow-sm hover:shadow-xl hover:-translate-y-1
               transition-all duration-300 snap-start
               ${effectiveStatus === "Terkunci" ? "grayscale opacity-70 cursor-not-allowed" : ""}

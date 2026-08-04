@@ -400,12 +400,12 @@ export default function DashboardPage() {
         {/* Progres Belajar */}
         <div
           ref={progressCardRef}
-          className="bg-gradient-to-br from-blue-100 to-blue-200 dark:from-gray-900 dark:to-gray-800 p-4 sm:p-5 rounded-xl shadow flex items-center justify-between overflow-hidden border border-slate-200 dark:border-slate-800 border-b-[6px] border-l-2 border-b-slate-200 border-l-slate-200 dark:border-b-slate-700 dark:border-l-slate-700"
+          className="bg-white dark:bg-gradient-to-br dark:from-gray-900 dark:to-gray-800 p-4 sm:p-5 rounded-xl shadow flex items-center justify-between overflow-hidden border border-slate-200 dark:border-slate-800 border-b-[6px] border-l-2 border-b-slate-200 border-l-slate-200 dark:border-b-slate-700 dark:border-l-slate-700"
         >
           {/* Konten Teks */}
           <div className="flex flex-col justify-center flex-1 min-w-0">
             <div className="flex items-center gap-3 mb-3">
-              <div className="bg-blue-600 rounded-lg w-10 h-10 flex items-center justify-center">
+              <div className="bg-blue-500 rounded-lg w-10 h-10 flex items-center justify-center">
                 <img src="/progress1.webp" width={128} height={128} className="w-full h-full object-contain p-1" alt="" />
               </div>
               <h2 className="text-lg font-bold text-gray-900 dark:text-white">Progres Belajar</h2>
@@ -442,7 +442,7 @@ export default function DashboardPage() {
         {/* Jam Belajar */}
         <div
           ref={studyTimeCardRef}
-          className="bg-gradient-to-br from-blue-100 to-blue-200 dark:from-gray-900 dark:to-gray-800 p-4 sm:p-5 rounded-xl shadow flex items-center justify-between overflow-hidden border border-slate-200 dark:border-slate-800 border-b-[6px] border-l-2 border-b-slate-200 border-l-slate-200 dark:border-b-slate-700 dark:border-l-slate-700"
+          className="bg-white dark:bg-gradient-to-br dark:from-gray-900 dark:to-gray-800 p-4 sm:p-5 rounded-xl shadow flex items-center justify-between overflow-hidden border border-slate-200 dark:border-slate-800 border-b-[6px] border-l-2 border-b-slate-200 border-l-slate-200 dark:border-b-slate-700 dark:border-l-slate-700"
         >
           
           <div className="flex flex-col justify-center flex-1 min-w-0">
@@ -452,7 +452,7 @@ export default function DashboardPage() {
               </div>
               <h2 className="text-lg font-bold text-gray-900 dark:text-white">Jam Belajar</h2>
             </div>
-            <p className="text-xl sm:text-3xl font-bold text-blue-700 dark:text-blue-400">{animatedHours} Jam {animatedMinutes} Mnt</p>
+            <p className="text-xl sm:text-2xl font-bold text-blue-700 dark:text-blue-400">{animatedHours} Jam {animatedMinutes} Mnt</p>
             <p className="text-xs text-gray-600 dark:text-gray-300">
               Total waktu belajar hingga saat ini
             </p>
@@ -470,12 +470,8 @@ export default function DashboardPage() {
         </div>
 
         {/* Rekomendasi */}
-        <div id="recommendation-card" className="relative bg-gradient-to-br from-blue-100 to-blue-200 dark:from-gray-900 dark:to-gray-800 p-4 sm:p-5 rounded-xl shadow flex items-center justify-between md:col-span-2 lg:col-span-1 overflow-hidden border border-slate-200 dark:border-slate-800 border-b-[6px] border-l-2 border-b-slate-200 border-l-slate-200 dark:border-b-slate-700 dark:border-l-slate-700">
-          {/* Decorative Bubbles */}
-          {/* <div className="absolute buttom-0 right-0 w-32 h-32 bg-gradient-to-br from-green-400/80 to-transparent dark:from-green-800/20 rounded-tl-[100px] -ml-64 -mb-32 transition-transform duration-500 group-hover:scale-110" /> */}
-          <div className="absolute -top-12 -right-12 w-32 h-32 bg-blue-200 dark:bg-gray-900/20 rounded-full blur-2xl pointer-events-none"></div>
-          <div className="absolute -bottom-12 -left-12 w-32 h-32 bg-blue-200 dark:bg-gray-900/20 rounded-full blur-2xl pointer-events-none"></div>
-
+        <div id="recommendation-card" className="relative bg-white dark:bg-gradient-to-br dark:from-gray-900 dark:to-gray-800 p-4 sm:p-5 rounded-xl shadow flex items-center justify-between md:col-span-2 lg:col-span-1 overflow-hidden border border-slate-200 dark:border-slate-800 border-b-[6px] border-l-2 border-b-slate-200 border-l-slate-200 dark:border-b-slate-700 dark:border-l-slate-700">
+         
           <div className="relative z-10 flex flex-col justify-center flex-1 min-w-0">
             <div className="flex items-center gap-3 mb-3">
               <div className="bg-blue-600 rounded-lg w-10 h-10 flex items-center justify-center">
@@ -520,8 +516,7 @@ export default function DashboardPage() {
             ) : (
               <div className="relative overflow-hidden p-4 border border-slate-200 dark:border-slate-600 border-b-[5px] border-b-blue-500 border-l-[2px] border-l-blue-500 dark:border-l-gray-600  dark:border-b-gray-600  rounded-xl bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-700 dark:to-gray-800 text-center shadow-sm">
                 {/* Background Icon Watermark */}
-                <Target className="absolute -bottom-4 -right-4 w-24 h-24 text-blue-500/10 dark:text-gray-400/10 rotate-12 pointer-events-none" />
-                
+               
                 <div className="relative z-10">
                   {!hasTakenPreTest || overallProgress === 0 ? (
                     <>
@@ -564,7 +559,7 @@ export default function DashboardPage() {
       <section className="grid grid-cols-1 lg:grid-cols-5 gap-6">
 
         {/* Pre-Test */}
-        <div id="pre-test-card" className="lg:col-span-2 bg-gradient-to-br from-blue-100 to-blue-200 dark:from-gray-900 dark:to-gray-800 p-4 sm:p-5 rounded-xl shadow flex items-center justify-between gap-4 border border-slate-200 dark:border-slate-800 border-b-[6px] border-l-2 border-b-slate-200 border-l-slate-200 dark:border-b-slate-700 dark:border-l-slate-700">
+        <div id="pre-test-card" className="lg:col-span-2 bg-white dark:bg-gradient-to-br  dark:from-gray-900 dark:to-gray-800 p-4 sm:p-5 rounded-xl shadow flex items-center justify-between gap-4 border border-slate-200 dark:border-slate-800 border-b-[6px] border-l-2 border-b-slate-200 border-l-slate-200 dark:border-b-slate-700 dark:border-l-slate-700">
           {/* Kiri: teks dan tombol */}
           <div className="flex-1">
             <div className="flex items-center gap-3 mb-2">
@@ -614,7 +609,7 @@ export default function DashboardPage() {
           return (
             <div
               ref={analyticsCardRef}
-              className="lg:col-span-3 max-w-full bg-gradient-to-br from-blue-100 to-blue-200 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 p-6 rounded-xl shadow border border-slate-200 dark:border-slate-800 border-b-[6px] border-l-2 border-b-slate-200 border-l-slate-200 dark:border-b-slate-700 dark:border-l-slate-700"
+              className="lg:col-span-3 max-w-full bg-white dark:bg-gradient-to-br dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 p-6 rounded-xl shadow border border-slate-200 dark:border-slate-800 border-b-[6px] border-l-2 border-b-slate-200 border-l-slate-200 dark:border-b-slate-700 dark:border-l-slate-700"
             >
               <div className="flex items-center gap-3 mb-6">
                 <div className="bg-blue-600 rounded-3xl w-10 h-10 flex items-center justify-center">
