@@ -373,8 +373,59 @@ export default function PreTestPage() {
 
     if (loading && !result) {
         return (
-            <div className="flex justify-center items-center min-h-screen">
-                <p className="text-gray-600 dark:text-gray-200">Memuat soal pre-test...</p>
+            <div className="max-w-full mx-auto p-2 font-sans mt-22 animate-pulse">
+                {/* Skeleton Breadcrumb */}
+                <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-48 mb-6 mt-6"></div>
+    
+                {/* Skeleton Header */}
+                <div className="bg-gray-200 dark:bg-gray-700 rounded-xl p-4 mt-6 h-32 flex items-center gap-4">
+                    <div className="h-24 w-24 bg-gray-300 dark:bg-gray-600 rounded-lg"></div>
+                    <div className="space-y-2 flex-1">
+                        <div className="h-5 bg-gray-300 dark:bg-gray-600 rounded w-1/2"></div>
+                        <div className="h-4 bg-gray-300 dark:bg-gray-600 rounded w-3/4"></div>
+                    </div>
+                </div>
+    
+                {/* Skeleton Main Content */}
+                <section className="bg-white dark:bg-gray-800 rounded-xl p-6 mt-6 shadow-lg">
+                    <div className="flex flex-col lg:flex-row gap-8">
+                        {/* Skeleton Soal Area */}
+                        <div className="flex-1 order-2 lg:order-1">
+                            <div className="flex justify-between items-center mb-6 bg-slate-100 dark:bg-gray-700/30 p-4 rounded-xl">
+                                <div className="h-6 bg-gray-200 dark:bg-gray-700 rounded w-1/4"></div>
+                                <div className="h-10 bg-gray-200 dark:bg-gray-700 rounded-lg w-24"></div>
+                            </div>
+                            <div className="space-y-4">
+                                <div className="h-6 bg-gray-200 dark:bg-gray-700 rounded w-3/4"></div>
+                                <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-full"></div>
+                                <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-5/6"></div>
+                            </div>
+                            <div className="flex flex-col gap-3 mt-6">
+                                <div className="h-16 bg-gray-100 dark:bg-gray-700/50 rounded-lg"></div>
+                                <div className="h-16 bg-gray-100 dark:bg-gray-700/50 rounded-lg"></div>
+                                <div className="h-16 bg-gray-100 dark:bg-gray-700/50 rounded-lg"></div>
+                                <div className="h-16 bg-gray-100 dark:bg-gray-700/50 rounded-lg"></div>
+                            </div>
+                            <div className="flex justify-between items-center mt-8">
+                                <div className="h-12 w-32 bg-gray-200 dark:bg-gray-700 rounded-lg"></div>
+                                <div className="h-12 w-32 bg-gray-200 dark:bg-gray-700 rounded-lg"></div>
+                            </div>
+                            <div className="h-2.5 bg-gray-200 dark:bg-gray-700 rounded-full mt-6"></div>
+                        </div>
+    
+                        {/* Skeleton Navigasi Soal */}
+                        <div className="lg:w-80 flex-shrink-0 order-1 lg:order-2">
+                            <div className="p-5 bg-slate-50 dark:bg-gray-900/40 rounded-xl">
+                                <div className="h-6 bg-gray-200 dark:bg-gray-700 rounded w-1/2 mb-4"></div>
+                                <div className="grid grid-cols-5 sm:grid-cols-8 md:grid-cols-10 lg:grid-cols-4 gap-2">
+                                    {Array.from({ length: 20 }).map((_, i) => (
+                                        <div key={i} className="h-10 w-full bg-gray-200 dark:bg-gray-700 rounded-lg"></div>
+                                    ))}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
             </div>
         );
     }
