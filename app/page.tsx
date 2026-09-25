@@ -407,7 +407,7 @@ export default function LandingPage() {
         </div>
         <div className="hidden md:flex items-center gap-3">
           <Link href="/login" className="px-5 py-2 rounded-full border-none bg-transparent text-slate-700 dark:text-slate-300 text-[0.9rem] font-medium cursor-pointer transition-all duration-200 hover:bg-slate-100 dark:hover:bg-slate-800 no-underline">Masuk</Link>
-          <Link href="/register" className="px-6 py-[0.55rem] rounded-full border-none bg-blue-600 text-white text-[0.9rem] font-semibold cursor-pointer transition-all duration-250 no-underline shadow-[0_4px_14px_rgba(37,99,235,0.35)] hover:bg-blue-700 hover:-translate-y-[1px] hover:shadow-[0_8px_20px_rgba(37,99,235,0.4)]">Daftar Gratis</Link>
+          <Link href="/register" className="px-6 py-[0.55rem] rounded-full border-none bg-blue-600 text-white text-[0.9rem] font-semibold cursor-pointer transition-all duration-250 no-underline  hover:bg-blue-700 hover:-translate-y-[1px] ">Daftar Gratis</Link>
         </div>
         {/* Mobile Menu Button */}
         <div className="md:hidden flex items-center">
@@ -438,10 +438,7 @@ export default function LandingPage() {
 
       {/* --- HERO --- */}
       <section className="min-h-screen md:min-h-[60vh] lg:min-h-screen pt-[100px] md:pt-[120px] lg:pt-[100px] pb-10 flex items-center relative overflow-hidden" id="home">
-        <div className="absolute inset-0 pointer-events-none z-0">
-          <div className="absolute inset-0 bg-[linear-gradient(rgba(99,102,241,0.04)_1px,transparent_1px),linear-gradient(90deg,rgba(99,102,241,0.04)_1px,transparent_1px)] bg-[size:60px_60px] [mask-image:radial-gradient(ellipse_at_60%_40%,black_30%,transparent_70%)]"></div>
-          <div className="absolute top-[-10%] right-[-5%] w-[650px] h-[650px] bg-[radial-gradient(circle_at_40%_40%,rgba(99,102,241,0.12)_0%,rgba(37,99,235,0.08)_40%,transparent_70%)] rounded-full animate-float"></div>
-        </div>
+      
 
         <div className="relative z-10 max-w-full mx-auto px-4 md:px-16 lg:px-12 w-full grid grid-cols-1 lg:grid-cols-2 gap-10 md:gap-16 items-center mt-10 md:mt-0">
           {/* Left: Text */}
