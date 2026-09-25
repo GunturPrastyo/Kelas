@@ -655,140 +655,139 @@ export default function LandingPage() {
       </div>
     </section>
 
-      {/* --- MODULES SECTION --- */}
-      <section id="modul" className="py-16 md:py-24 bg-white dark:bg-gray-900 relative overflow-hidden border-t border-slate-200 dark:border-gray-800">
-        <div className="max-w-8xl mx-auto px-4 md:px-16 lg:px-12 relative z-10">
-          <div className="flex flex-col lg:flex-row-reverse items-center gap-12 lg:gap-52">
+   {/* --- MODULES SECTION --- */}
+    <section id="modul" className="py-16 md:py-24 bg-white dark:bg-gray-900 relative overflow-hidden border-t border-slate-200 dark:border-gray-800">
+      <div className="max-w-8xl mx-auto px-4 md:px-16 lg:px-12 relative z-10">
+        {/* Gap disesuaikan agar layout lebih seimbang */}
+        <div className="flex flex-col lg:flex-row-reverse items-center gap-12 lg:gap-16">
 
-            {/* Right Column: Text Content */}
-            <div className="w-full lg:w-1/2 text-left relative z-20">
-              <motion.div
-                initial={{ opacity: 0, x: 20 }}
-                whileInView={{ opacity: 1, x: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.5 }}
-              >
-                <span className="text-blue-600 dark:text-blue-400 font-bold tracking-wider text-lg mb-2 block font-[family-name:var(--font-kalam)]">
-                  Modul Pembelajaran
+          {/* Right Column: Text Content (Diperkecil ke 42%) */}
+          <div className="w-full lg:w-[42%] text-left relative z-20">
+            <motion.div
+              initial={{ opacity: 0, x: 20 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5 }}
+            >
+              <span className="text-blue-600 dark:text-blue-400 font-bold tracking-wider text-lg mb-2 block font-[family-name:var(--font-kalam)]">
+                Modul Pembelajaran
+              </span>
+              <h2 className="text-2xl md:text-5xl text-slate-900 font-medium dark:text-white mb-6 font-[family-name:var(--font-gagalin)] leading-tight">
+                Jelajahi Materi <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-purple-600">Pilihan Terbaik</span>
+              </h2>
+            </motion.div>
+
+            <motion.p
+              initial={{ opacity: 0, x: 20 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5, delay: 0.2 }}
+              className="text-md md:text-lg text-slate-600 dark:text-slate-400 max-w-lg leading-relaxed"
+            >
+              Kurikulum dirancang khusus oleh praktisi industri untuk mempersiapkanmu menghadapi dunia kerja. Pilih jalur yang sesuai dengan minatmu dan mulai belajar sekarang.
+            </motion.p>
+
+            <motion.div
+              initial={{ opacity: 0, scale: 0.8 }}
+              whileInView={{ opacity: 1, scale: 1 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5, delay: 0.4 }}
+              className="hidden lg:block mt-12 relative h-32"
+            >
+              <div className="absolute -left-12 top-0">
+                <span className="absolute top-0 left-28 font-[family-name:var(--font-kalam)] text-[1.75rem] font-bold text-blue-600 dark:text-blue-400 -rotate-12 whitespace-nowrap z-10 drop-shadow-sm">
+                  Pilih Modulmu!
                 </span>
-                <h2 className="text-2xl md:text-5xl text-slate-900 font-medium dark:text-white mb-6 font-[family-name:var(--font-gagalin)] leading-tight">
-                  Jelajahi Materi <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-purple-600">Pilihan Terbaik</span>
-                </h2>
-              </motion.div>
-
-              <motion.p
-                initial={{ opacity: 0, x: 20 }}
-                whileInView={{ opacity: 1, x: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.5, delay: 0.2 }}
-                className="text-md md:text-lg text-slate-600 dark:text-slate-400 max-w-lg leading-relaxed"
-              >
-                Kurikulum dirancang khusus oleh praktisi industri untuk mempersiapkanmu menghadapi dunia kerja. Pilih jalur yang sesuai dengan minatmu dan mulai belajar sekarang.
-              </motion.p>
-
-              <motion.div
-                initial={{ opacity: 0, scale: 0.8 }}
-                whileInView={{ opacity: 1, scale: 1 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.5, delay: 0.4 }}
-                className="hidden lg:block mt-12 relative h-32"
-              >
-                <div className="absolute -left-24 top-0">
-                  <span className="absolute top-0 left-28 font-[family-name:var(--font-kalam)] text-[1.75rem] font-bold text-blue-600 dark:text-blue-400 -rotate-12 whitespace-nowrap z-10 drop-shadow-sm">
-                    Pilih Modulmu!
-                  </span>
-                  <svg width="240" height="120" viewBox="0 0 240 120" fill="none" xmlns="http://www.w3.org/2000/svg" className="absolute top-8 left-0 text-blue-500/70 dark:text-blue-400/70">
-                    <path d="M220 20 C 160 20 120 100 20 70" stroke="currentColor" strokeWidth="4" strokeLinecap="round" fill="none" strokeDasharray="8 8" />
-                    <path d="M40 50 L 15 68 L 45 85" stroke="currentColor" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round" fill="none" />
-                  </svg>
-                </div>
-              </motion.div>
-            </div>
-
-            {/* Right Column: Scrolling Cards */}
-            <div className="w-full lg:w-1/2 relative">
-              {/* Decoration Background */}
-              <div className="absolute inset-0 bg-gradient-to-br from-blue-100 to-purple-100 dark:from-blue-900/20 dark:to-purple-900/20 rounded-[3rem] scale-105 z-0 blur-2xl opacity-60"></div>
-              <div className="absolute inset-0 bg-white/30 dark:bg-gray-800/30 rounded-[2.5rem] scale-[1.02] z-0 border border-slate-300/50 dark:border-gray-700/50 backdrop-blur-sm"></div>
-
-              {/* Scrolling Container */}
-              <div
-                className="relative z-10 h-[600px] overflow-hidden rounded-lg p-6"
-                style={{ maskImage: 'linear-gradient(to bottom, transparent, black 10%, black 90%, transparent)', WebkitMaskImage: 'linear-gradient(to bottom, transparent, black 10%, black 90%, transparent)' }}
-              >
-                {loadingModules ? (
-                  <div className="flex flex-col gap-5 animate-pulse">
-                    {[1, 2, 3].map((i) => (
-                      <div
-                        key={i}
-                        className="bg-white dark:bg-gray-800 rounded-2xl p-6 border border-slate-100 dark:border-gray-700 shadow-sm mx-2 relative overflow-hidden"
-                      >
-                        <div className="flex justify-between items-start mb-4 relative z-10">
-                          <div className="w-12 h-12 bg-slate-200 dark:bg-gray-700 rounded-xl"></div>
-                          <div className="w-16 h-6 bg-slate-200 dark:bg-gray-700 rounded-full"></div>
-                        </div>
-                        <div className="h-6 w-3/4 bg-slate-200 dark:bg-gray-700 rounded-md mb-3 relative z-10"></div>
-                        <div className="h-4 w-full bg-slate-200 dark:bg-gray-700 rounded-md mb-2 relative z-10"></div>
-                        <div className="h-4 w-5/6 bg-slate-200 dark:bg-gray-700 rounded-md mb-4 relative z-10"></div>
-                      </div>
-                    ))}
-                  </div>
-                ) : (
-                  <motion.div
-                    className="flex flex-col gap-5"
-                    animate={{ y: ["0%", "-50%"] }}
-                    transition={{
-                      repeat: Infinity,
-                      ease: "linear",
-                      duration: modules.length > 0 ? modules.length * 5 : 40
-                    }}
-                  >
-                    {/* Render modules twice for infinite loop */}
-                    {[...modules, ...modules].map((modul, idx) => (
-                      <div
-                        key={`scroll-card-${modul._id}-${idx}`}
-                        className="bg-white dark:bg-gray-800 rounded-xl p-6 border border-slate-100 dark:border-gray-700 shadow-sm hover:shadow-lg transition-all group mx-2 relative overflow-hidden"
-                      >
-
-                        <div className="flex justify-between items-start mb-4 relative z-10">
-                          <div className="p-3 bg-slate-50 dark:bg-gray-700/50 rounded-xl group-hover:scale-110 transition-transform duration-300 shadow-sm">
-                            <img
-                              src={modul.icon?.startsWith('http') ? modul.icon : `${process.env.NEXT_PUBLIC_API_URL}/uploads/${modul.icon}`}
-                              alt={modul.title}
-                              className="w-6 h-6 object-contain"
-                            />
-                          </div>
-                          <span className={`px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wide ${modul.category.toLowerCase() === 'mudah' ? 'bg-amber-200 text-amber-900 dark:bg-amber-900/60 dark:text-amber-300' :
-                            modul.category.toLowerCase() === 'sedang' ? 'bg-blue-200 text-blue-900 dark:bg-blue-900/60 dark:text-blue-300' :
-                              'bg-green-200 text-green-900 dark:bg-green-900/60 dark:text-green-300'
-                            }`}>
-                            {modul.category}
-                          </span>
-                        </div>
-
-                        <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-2 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors relative z-10">
-                          {modul.title}
-                        </h3>
-
-                        <p className="text-slate-600 dark:text-slate-400 text-sm mb-4 line-clamp-2 relative z-10">
-                          {modul.overview}
-                        </p>
-                      </div>
-                    ))}
-                  </motion.div>
-                )}
+                <svg width="240" height="120" viewBox="0 0 240 120" fill="none" xmlns="http://www.w3.org/2000/svg" className="absolute top-8 left-0 text-blue-500/70 dark:text-blue-400/70">
+                  <path d="M220 20 C 160 20 120 100 20 70" stroke="currentColor" strokeWidth="4" strokeLinecap="round" fill="none" strokeDasharray="8 8" />
+                  <path d="M40 50 L 15 68 L 45 85" stroke="currentColor" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round" fill="none" />
+                </svg>
               </div>
-
-              <div className="absolute bottom-0 left-0 w-full h-40 bg-gradient-to-t from-white via-white/90 to-transparent dark:from-gray-900 dark:via-gray-900/90 z-20 flex items-end justify-center pb-8 rounded-b-[2.5rem]">
-                <Link href="/login" className="text-base font-bold text-blue-600 dark:text-blue-400 hover:underline transition-all">
-                  Lihat Semua Modul
-                </Link>
-              </div>
-            </div>
-
+            </motion.div>
           </div>
+
+          {/* Left Column: Scrolling Cards (Diperlebar ke 58%) */}
+          <div className="w-full lg:w-[50%] relative">
+          
+           
+            {/* Scrolling Container */}
+            <div
+              className="relative z-10 h-[600px] overflow-hidden rounded-lg p-6"
+              style={{ maskImage: 'linear-gradient(to bottom, transparent, black 10%, black 90%, transparent)', WebkitMaskImage: 'linear-gradient(to bottom, transparent, black 10%, black 90%, transparent)' }}
+            >
+              {loadingModules ? (
+                <div className="flex flex-col gap-5 animate-pulse">
+                  {[1, 2, 3].map((i) => (
+                    <div
+                      key={i}
+                      className="bg-white dark:bg-gray-800 rounded-2xl p-6 border border-slate-100 dark:border-gray-700 shadow-sm mx-2 relative overflow-hidden"
+                    >
+                      <div className="flex justify-between items-start mb-4 relative z-10">
+                        <div className="w-12 h-12 bg-slate-200 dark:bg-gray-700 rounded-xl"></div>
+                        <div className="w-16 h-6 bg-slate-200 dark:bg-gray-700 rounded-full"></div>
+                      </div>
+                      <div className="h-6 w-3/4 bg-slate-200 dark:bg-gray-700 rounded-md mb-3 relative z-10"></div>
+                      <div className="h-4 w-full bg-slate-200 dark:bg-gray-700 rounded-md mb-2 relative z-10"></div>
+                      <div className="h-4 w-5/6 bg-slate-200 dark:bg-gray-700 rounded-md mb-4 relative z-10"></div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <motion.div
+                  className="flex flex-col gap-5"
+                  animate={{ y: ["0%", "-50%"] }}
+                  transition={{
+                    repeat: Infinity,
+                    ease: "linear",
+                    duration: modules.length > 0 ? modules.length * 5 : 40
+                  }}
+                >
+                  {/* Render modules twice for infinite loop */}
+                  {[...modules, ...modules].map((modul, idx) => (
+                    <div
+                      key={`scroll-card-${modul._id}-${idx}`}
+                      className="bg-white dark:bg-gray-800 rounded-xl p-6 border border-slate-100 dark:border-gray-700 shadow-sm hover:shadow-lg transition-all group mx-2 relative overflow-hidden"
+                    >
+
+                      <div className="flex justify-between items-start mb-4 relative z-10">
+                        <div className="p-3 bg-slate-50 dark:bg-gray-700/50 rounded-xl group-hover:scale-110 transition-transform duration-300 shadow-sm">
+                          <img
+                            src={modul.icon?.startsWith('http') ? modul.icon : `${process.env.NEXT_PUBLIC_API_URL}/uploads/${modul.icon}`}
+                            alt={modul.title}
+                            className="w-6 h-6 object-contain"
+                          />
+                        </div>
+                        <span className={`px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wide ${modul.category.toLowerCase() === 'mudah' ? 'bg-amber-200 text-amber-900 dark:bg-amber-900/60 dark:text-amber-300' :
+                          modul.category.toLowerCase() === 'sedang' ? 'bg-blue-200 text-blue-900 dark:bg-blue-900/60 dark:text-blue-300' :
+                            'bg-green-200 text-green-900 dark:bg-green-900/60 dark:text-green-300'
+                          }`}>
+                          {modul.category}
+                        </span>
+                      </div>
+
+                      <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-2 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors relative z-10">
+                        {modul.title}
+                      </h3>
+
+                      <p className="text-slate-600 dark:text-slate-400 text-sm mb-4 line-clamp-2 relative z-10">
+                        {modul.overview}
+                      </p>
+                    </div>
+                  ))}
+                </motion.div>
+              )}
+            </div>
+
+            <div className="absolute bottom-0 left-0 w-full h-40 bg-gradient-to-t from-white via-white/90 to-transparent dark:from-gray-900 dark:via-gray-900/90 z-20 flex items-end justify-center pb-8 rounded-b-[2.5rem]">
+              <Link href="/login" className="text-base font-bold text-blue-600 dark:text-blue-400 hover:underline transition-all">
+                Lihat Semua Modul
+              </Link>
+            </div>
+          </div>
+
         </div>
-      </section>
+      </div>
+    </section>
 
     {/* --- MENTOR SECTION --- */}
       <section id="mentor" className="relative pt-12 py-16 md:py-24 bg-slate-900 dark:bg-slate-950 overflow-hidden">
