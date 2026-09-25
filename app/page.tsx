@@ -190,7 +190,7 @@ export default function LandingPage() {
   const [displayedText1, setDisplayedText1] = useState("");
   const [displayedText2, setDisplayedText2] = useState("");
   const [displayedBadgeText, setDisplayedBadgeText] = useState("");
-  const [count, setCount] = useState(0);  const [activeFeature, setActiveFeature] = useState(0);
+  const [count, setCount] = useState(0); const [activeFeature, setActiveFeature] = useState(0);
   const [activeMentorIdx, setActiveMentorIdx] = useState(0);
   const { theme, setTheme, resolvedTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
@@ -397,7 +397,7 @@ export default function LandingPage() {
       <nav id="navbar" className={`fixed top-0 left-0 right-0 z-[100] px-4 md:px-16 lg:px-12 h-[60px] lg:h-[68px] flex items-center justify-between transition-all duration-300 ${isScrolled ? 'bg-white/95 dark:bg-gray-900/95 shadow-[0_4px_24px_rgba(0,0,0,0.06)]' : 'bg-white/80 dark:bg-gray-900/80'} backdrop-blur-[20px] saturate-[180%] border-b border-slate-200/70 dark:border-gray-800 `}>
         <Link href="#" className="px-0">
           <img src="/logo.webp" alt="KELAS Logo" className="h-8 w-auto" />
-     
+
         </Link>
         <div className="hidden md:flex items-center gap-1">
           <Link href="#fitur" className="text-slate-600 dark:text-slate-300 text-[0.9rem] font-medium px-4 py-2 rounded-full transition-all duration-200 hover:text-blue-600 hover:bg-blue-100 dark:hover:bg-blue-900/30">Fitur</Link>
@@ -457,7 +457,7 @@ export default function LandingPage() {
               KELAS membantu kamu menemukan jalur belajar yang tepat sesuai kemampuanmu. Ikuti pre-tes, dapatkan rekomendasi, dan tingkatkan skillmu hari ini.
             </p>
             <div className="flex justify-start gap-2 sm:gap-4 mb-12 w-full">
-              <Link href="/register" className="group inline-flex items-center justify-center gap-2 py-3 px-4 sm:py-[0.85rem] sm:px-8 rounded-full bg-blue-600 text-white text-sm sm:text-[1rem] font-semibold no-underline shadow-[0_8px_28px_rgba(37,99,235,0.35),0_2px_8px_rgba(37,99,235,0.2)] transition-all duration-300 relative overflow-hidden hover:-translate-y-[2px] hover:shadow-[0_16px_40px_rgba(37,99,235,0.45)] before:absolute before:inset-0 before:bg-gradient-to-br before:from-white/15 before:to-transparent before:rounded-full whitespace-nowrap flex-1 sm:flex-none">
+              <Link href="/register" className="group inline-flex items-center justify-center gap-2 py-3 px-4 sm:py-[0.85rem] sm:px-8 rounded-full bg-blue-600 text-white text-sm sm:text-[1rem] font-semibold no-underline transition-all duration-300 relative overflow-hidden hover:-translate-y-[2px] hover:shadow-[0_16px_40px_rgba(37,99,235,0.45)] before:absolute before:inset-0 before:bg-gradient-to-br before:from-white/15 before:to-transparent before:rounded-full whitespace-nowrap flex-1 sm:flex-none">
                 Mulai Belajar Gratis
               </Link>
               <a href="#fitur" className="inline-flex justify-center items-center py-3 px-4 sm:py-[0.85rem] sm:px-6 text-sm sm:text-[1rem] rounded-full border-[1.5px] border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 font-medium no-underline transition-all duration-200 hover:bg-slate-50 dark:hover:bg-slate-800 whitespace-nowrap flex-1 sm:flex-none">
@@ -544,82 +544,124 @@ export default function LandingPage() {
         </div>
       </div>
 
-      {/* --- FEATURES SECTION --- */}
-      <section className="bg-slate-50 dark:bg-gray-900 py-16" id="fitur">
-        <div className="max-w-full mx-auto px-4 md:px-16 lg:px-12">
-          <div className="grid grid-cols-1 lg:grid-cols-[1fr_1.4fr] gap-10 md:gap-20 items-start">
-            <div className="lg:sticky lg:top-[120px]">
-              <div className="text-blue-600 dark:text-blue-400 font-bold tracking-wider text-lg mb-2 block font-[family-name:var(--font-kalam)]">
-                Keunggulan Kami
-              </div>
-              <h2 className="text-2xl md:text-5xl text-slate-900 font-medium dark:text-white mb-6 font-[family-name:var(--font-gagalin)] leading-tight">
-                Kenapa Memilih <span className="text-blue-600 dark:text-blue-400">KELAS?</span>
-              </h2>
-              <p className="text-md md:text-[1.05rem] text-slate-600 dark:text-slate-400 leading-[1.7] max-w-[520px]">
-                Kami memadukan teknologi AI dan pedagogi modern untuk menciptakan ruang belajar yang efektif, seru, dan personal bagi setiap siswa.
-              </p>
-              <div className="mt-8 flex flex-col gap-4">
-                <div className="flex items-start gap-3 text-[0.90rem] md:text-[0.95rem] font-medium text-slate-700 dark:text-slate-300">
-                  <div className="w-[22px] h-[22px] flex items-center justify-center bg-green-100 dark:bg-green-900/30 rounded-full shrink-0 text-green-600 dark:text-green-400 mt-0.5">
-                    <CheckCircle2 size={14} />
-                  </div>
-                  <span>Materi interaktif & terstruktur berbasis kurikulum</span>
-                </div>
-                <div className="flex items-start gap-3 text-[0.90rem] md:text-[0.95rem] font-medium text-slate-700 dark:text-slate-300">
-                  <div className="w-[22px] h-[22px] flex items-center justify-center bg-green-100 dark:bg-green-900/30 rounded-full shrink-0 text-green-600 dark:text-green-400 mt-0.5">
-                    <CheckCircle2 size={14} />
-                  </div>
-                  <span>Fokus pada praktik langsung dengan Live Code</span>
-                </div>
-                <div className="flex items-start gap-3 text-[0.90rem] md:text-[0.95rem] font-medium text-slate-700 dark:text-slate-300">
-                  <div className="w-[22px] h-[22px] flex items-center justify-center bg-green-100 dark:bg-green-900/30 rounded-full shrink-0 text-green-600 dark:text-green-400 mt-0.5">
-                    <CheckCircle2 size={14} />
-                  </div>
-                  <span>AI Tutor 24/7 siap membantu kapan saja</span>
-                </div>
-                <div className="flex items-start gap-3 text-[0.90rem] md:text-[0.95rem] font-medium text-slate-700 dark:text-slate-300">
-                  <div className="w-[22px] h-[22px] flex items-center justify-center bg-green-100 dark:bg-green-900/30 rounded-full shrink-0 text-green-600 dark:text-green-400 mt-0.5">
-                    <CheckCircle2 size={14} />
-                  </div>
-                  <span>Sertifikat resmi setelah menyelesaikan modul</span>
-                </div>
-              </div>
+{/* --- FITUR / BENTO GRID SECTION --- */}
+    <section id="fitur" className="py-16 md:py-24 bg-slate-50 dark:bg-gray-950 border-t border-slate-200 dark:border-gray-800">
+      <div className="max-w-full mx-auto px-6 md:px-16 lg:px-12">
+        
+        {/* Header Section (Rata Kiri, Badge Diperbesar, & Deskripsi Section) */}
+        <div className="text-left mb-10 md:mb-14">
+          <span className="text-blue-600 dark:text-blue-400 font-bold tracking-wider text-xl md:text-2xl mb-2 block font-[family-name:var(--font-kalam)]">
+            Fitur Unggulan
+          </span>
+          <h2 className="text-2xl md:text-5xl font-medium text-slate-900 dark:text-white font-[family-name:var(--font-gagalin)] leading-tight mb-4">
+            Pengalaman Belajar <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-purple-600">Terbaik</span>
+          </h2>
+          <p className="text-md md:text-lg text-slate-600 dark:text-slate-400 max-w-xl leading-relaxed">
+            Nikmati berbagai fitur interaktif dan canggih yang dirancang khusus untuk mempercepat pemahaman serta memaksimalkan proses belajarmu.
+          </p>
+        </div>
+
+        {/* Bento Grid (Grid 12 Kolom dengan Rasio 7:5) */}
+        <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
+          
+          {/* Card 1: Jalur Belajar Personal */}
+          <div className="md:col-span-7 bg-white dark:bg-gray-900 p-6 md:p-8 rounded-lg border border-slate-200/80 dark:border-gray-800 shadow-sm hover:shadow-md transition-all flex flex-col sm:flex-row items-start sm:items-center gap-5">
+            <div className="p-3.5 bg-red-100 dark:bg-red-900/30 rounded-xl flex-shrink-0">
+              <span className="text-3xl">🎯</span>
             </div>
-            <div className="relative h-[480px] md:h-[500px] overflow-hidden" style={{ maskImage: 'linear-gradient(to bottom, transparent, black 5%, black 95%, transparent)', WebkitMaskImage: 'linear-gradient(to bottom, transparent, black 5%, black 95%, transparent)' }}>
-              <motion.div
-                className="flex flex-col gap-5 py-2"
-                animate={{ y: ["0%", "-50%"] }}
-                transition={{
-                  repeat: Infinity,
-                  ease: "linear",
-                  duration: 25
-                }}
-              >
-                {[...features, ...features].map((feat, i) => {
-                  const originalIndex = i % features.length;
-                  return (
-                    <div key={i} className={`bg-white dark:bg-gray-800 rounded-[24px] p-7 border border-slate-200 dark:border-gray-700 flex items-start gap-5 transition-all duration-300 cursor-pointer relative overflow-hidden group hover:border-blue-600/30 hover:shadow-[0_8px_32px_rgba(37,99,235,0.1)] hover:translate-x-[6px] mx-2 ${originalIndex === activeFeature ? 'border-blue-600/30 shadow-[0_8px_32px_rgba(37,99,235,0.1)] translate-x-[6px]' : ''}`} onMouseEnter={() => setActiveFeature(originalIndex)}>
-                      <div className={`absolute left-0 top-0 bottom-0 w-[3px] bg-gradient-to-b from-blue-600 to-indigo-500 origin-top transition-transform duration-300 rounded-r-[2px] ${originalIndex === activeFeature ? 'scale-y-100' : 'scale-y-0 group-hover:scale-y-100'}`}></div>
-                      <div className="w-[50px] h-[50px] rounded-[14px] flex items-center justify-center shrink-0 bg-blue-200 dark:bg-blue-900/50">
-                        <img src={feat.icon} alt={feat.title} className="w-8 h-8 object-contain" />
-                      </div>
-                      <div>
-                        <div className=" text-[1rem] font-bold text-slate-900 dark:text-white mb-1">{feat.title}</div>
-                        <div className="text-[0.88rem] text-slate-600 dark:text-slate-400 leading-[1.6]">{feat.desc}</div>
-                      </div>
-                    </div>
-                  );
-                })}
-              </motion.div>
+            <div>
+              <h3 className="text-lg md:text-xl font-bold text-slate-900 dark:text-white mb-2">
+                Jalur Belajar Personal
+              </h3>
+              <p className="text-slate-600 dark:text-slate-400 text-sm leading-relaxed">
+                Sistem cerdas kami menyesuaikan tingkat kesulitan materi berdasarkan hasil Tes Awal. Belajar mulai dari Dasar, Menengah, atau Lanjut sesuai kemampuanmu.
+              </p>
             </div>
           </div>
+
+          {/* Card 2: Mode Belajar Fleksibel */}
+          <div className="md:col-span-5 bg-white dark:bg-gray-900 p-6 md:p-8 rounded-lg border border-slate-200/80 dark:border-gray-800 shadow-sm hover:shadow-md transition-all flex flex-col items-start gap-4">
+            <div className="p-3 bg-blue-100 dark:bg-blue-900/30 rounded-xl">
+              <span className="text-2xl">📅</span>
+            </div>
+            <div>
+              <h3 className="text-lg md:text-xl font-bold text-slate-900 dark:text-white mb-2">
+                Mode Belajar Fleksibel
+              </h3>
+              <p className="text-slate-600 dark:text-slate-400 text-sm leading-relaxed">
+                Pilih gaya belajarmu sendiri. Tersedia materi dalam bentuk teks interaktif, video pembelajaran, hingga sesi praktik langsung untuk pengalaman yang optimal.
+              </p>
+            </div>
+          </div>
+
+          {/* Card 3: Analisis Pembelajaran */}
+          <div className="md:col-span-5 bg-white dark:bg-gray-900 p-6 md:p-8 rounded-lg border border-slate-200/80 dark:border-gray-800 shadow-sm hover:shadow-md transition-all flex flex-col items-start gap-4">
+            <div className="p-3 bg-indigo-100 dark:bg-indigo-900/30 rounded-xl">
+              <span className="text-2xl">📊</span>
+            </div>
+            <div>
+              <h3 className="text-lg md:text-xl font-bold text-slate-900 dark:text-white mb-2">
+                Analisis Pembelajaran
+              </h3>
+              <p className="text-slate-600 dark:text-slate-400 text-sm leading-relaxed">
+                Pantau perkembanganmu secara terperinci. Dapatkan laporan akurasi, kecepatan, fokus, serta rekomendasi untuk topik yang masih menjadi kelemahanmu.
+              </p>
+            </div>
+          </div>
+
+          {/* Card 4: Live Code Playground */}
+          <div className="md:col-span-7 bg-white dark:bg-gray-900 p-6 md:p-8 rounded-lg border border-slate-200/80 dark:border-gray-800 shadow-sm hover:shadow-md transition-all flex flex-col sm:flex-row items-start sm:items-center gap-5">
+            <div className="p-3.5 bg-sky-100 dark:bg-sky-900/30 rounded-xl flex-shrink-0">
+              <span className="text-3xl">💻</span>
+            </div>
+            <div>
+              <h3 className="text-lg md:text-xl font-bold text-slate-900 dark:text-white mb-2">
+                Live Code Playground
+              </h3>
+              <p className="text-slate-600 dark:text-slate-400 text-sm leading-relaxed">
+                Terapkan teori langsung ke praktik. Tulis, jalankan, dan lihat hasil kode HTML maupun JavaScript secara real-time di dalam browser tanpa aplikasi tambahan.
+              </p>
+            </div>
+          </div>
+
+          {/* Card 5: Tutor AI 'Kak Gem' */}
+          <div className="md:col-span-7 bg-white dark:bg-gray-900 p-6 md:p-8 rounded-lg border border-slate-200/80 dark:border-gray-800 shadow-sm hover:shadow-md transition-all flex flex-col sm:flex-row items-start sm:items-center gap-5">
+            <div className="p-3.5 bg-purple-100 dark:bg-purple-900/30 rounded-xl flex-shrink-0">
+              <span className="text-3xl">🤖</span>
+            </div>
+            <div>
+              <h3 className="text-lg md:text-xl font-bold text-slate-900 dark:text-white mb-2">
+                Tutor AI 'Kak Gem'
+              </h3>
+              <p className="text-slate-600 dark:text-slate-400 text-sm leading-relaxed">
+                Asisten AI pribadi yang siap menjawab pertanyaanmu 24/7, memberikan petunjuk saat kesulitan, dan membantu memahami konsep pemrograman dengan mudah.
+              </p>
+            </div>
+          </div>
+
+          {/* Card 6: Gamifikasi & Sertifikat */}
+          <div className="md:col-span-5 bg-white dark:bg-gray-900 p-6 md:p-8 rounded-lg border border-slate-200/80 dark:border-gray-800 shadow-sm hover:shadow-md transition-all flex flex-col items-start gap-4">
+            <div className="p-3 bg-amber-100 dark:bg-amber-900/30 rounded-xl">
+              <span className="text-2xl">🏆</span>
+            </div>
+            <div>
+              <h3 className="text-lg md:text-xl font-bold text-slate-900 dark:text-white mb-2">
+                Gamifikasi & Sertifikat
+              </h3>
+              <p className="text-slate-600 dark:text-slate-400 text-sm leading-relaxed">
+                Dapatkan XP, lencana pencapaian, serta sertifikat kelulusan resmi yang dapat kamu tampilkan di portofolio atau LinkedIn.
+              </p>
+            </div>
+          </div>
+
         </div>
-      </section>
+      </div>
+    </section>
 
       {/* --- MODULES SECTION --- */}
       <section id="modul" className="py-16 md:py-24 bg-white dark:bg-gray-900 relative overflow-hidden border-t border-slate-200 dark:border-gray-800">
-        <div className="max-w-full mx-auto px-4 md:px-16 lg:px-12 relative z-10">
-          <div className="flex flex-col lg:flex-row-reverse items-center gap-12 lg:gap-20">
+        <div className="max-w-8xl mx-auto px-4 md:px-16 lg:px-12 relative z-10">
+          <div className="flex flex-col lg:flex-row-reverse items-center gap-12 lg:gap-52">
 
             {/* Right Column: Text Content */}
             <div className="w-full lg:w-1/2 text-left relative z-20">
@@ -674,7 +716,7 @@ export default function LandingPage() {
 
               {/* Scrolling Container */}
               <div
-                className="relative z-10 h-[600px] overflow-hidden rounded-3xl p-4"
+                className="relative z-10 h-[600px] overflow-hidden rounded-lg p-6"
                 style={{ maskImage: 'linear-gradient(to bottom, transparent, black 10%, black 90%, transparent)', WebkitMaskImage: 'linear-gradient(to bottom, transparent, black 10%, black 90%, transparent)' }}
               >
                 {loadingModules ? (
@@ -708,11 +750,8 @@ export default function LandingPage() {
                     {[...modules, ...modules].map((modul, idx) => (
                       <div
                         key={`scroll-card-${modul._id}-${idx}`}
-                        className="bg-white dark:bg-gray-800 rounded-2xl p-6 border border-slate-100 dark:border-gray-700 shadow-sm hover:shadow-lg transition-all group mx-2 relative overflow-hidden"
+                        className="bg-white dark:bg-gray-800 rounded-xl p-6 border border-slate-100 dark:border-gray-700 shadow-sm hover:shadow-lg transition-all group mx-2 relative overflow-hidden"
                       >
-                        {/* Decorative Stacked Bubbles */}
-                        <div className="absolute -top-12 -left-10 w-32 h-32 bg-blue-50 dark:bg-blue-900/20 rounded-full group-hover:scale-110 transition-transform duration-500 ease-out"></div>
-                        <div className="absolute top-4 -left-6 w-20 h-20 bg-blue-100 dark:bg-blue-800/30 rounded-full group-hover:scale-110 transition-transform duration-500 ease-out delay-75"></div>
 
                         <div className="flex justify-between items-start mb-4 relative z-10">
                           <div className="p-3 bg-slate-50 dark:bg-gray-700/50 rounded-xl group-hover:scale-110 transition-transform duration-300 shadow-sm">
@@ -754,11 +793,58 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* --- MENTOR SECTION --- */}
-      <section id="mentor" className="relative pt-8 py-16 md:py-24 bg-slate-900 dark:bg-slate-950 overflow-hidden">
-        <div className="relative z-10 max-w-full mx-auto px-4 md:px-16 lg:px-12 ">
-          <div className="flex flex-col-reverse lg:flex-row items-center gap-8 lg:gap-20">
-            {/* Left Column: Carousel */}
+    {/* --- MENTOR SECTION --- */}
+      <section id="mentor" className="relative pt-12 py-16 md:py-24 bg-slate-900 dark:bg-slate-950 overflow-hidden">
+        <div className="relative z-10 max-w-8xl mx-auto px-4 md:px-16 lg:px-12 ">
+          <div className="flex flex-col lg:flex-row items-center gap-8 lg:gap-8">
+
+            {/* Left Column: Text Content */}
+            <div className="w-full lg:w-1/2 text-left relative z-20">
+              <motion.div
+                initial={{ opacity: 0, x: -20 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.5 }}
+              >
+                <span className="text-blue-400 font-bold tracking-wider text-lg mb-2 block font-[family-name:var(--font-kalam)]">
+                  Tutor Berpengalaman
+                </span>
+                <h2 className="text-2xl md:text-5xl font-medium text-white mb-4 font-[family-name:var(--font-gagalin)] leading-tight">
+                  Belajar Langsung dari <br /> <span className="text-blue-500">Ahlinya</span>
+                </h2>
+              </motion.div>
+
+              <motion.p
+                initial={{ opacity: 0, x: -20 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.5, delay: 0.2 }}
+                className="text-slate-300 text-md md:text-lg font-medium leading-relaxed max-w-lg"
+              >
+                Dapatkan wawasan berharga dari praktisi industri dan akademisi berpengalaman yang siap membimbing perjalanan karirmu.
+              </motion.p>
+
+              {/* Dots Indicator */}
+              <div className="hidden lg:flex gap-2 mt-8">
+                {mentors.map((_, idx) => (
+                  <button
+                    key={idx}
+                    onClick={() => setActiveMentorIdx(idx)}
+                    className="group rounded-full p-2 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-900"
+                    aria-label={`Go to mentor ${idx + 1}`}
+                  >
+                    <div
+                      className={`rounded-full transition-all duration-300 ${activeMentorIdx === idx
+                          ? "w-6 h-2 bg-blue-500"
+                          : "w-2 h-2 bg-blue-500/30 group-hover:bg-blue-500/50"
+                        }`}
+                    />
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Right Column: Carousel */}
             <div className="w-full lg:w-1/2 relative mt-4 sm:mt-0">
               {/* Mobile & Tablet: Horizontal Scroll */}
               <div className="lg:hidden w-full overflow-x-auto pb-4 hide-scrollbar-on-mobile">
@@ -789,117 +875,71 @@ export default function LandingPage() {
 
               {/* Desktop: Vertical Carousel */}
               <div className="hidden lg:flex relative h-[600px] items-center justify-center perspective-1000 w-full">
-              <motion.div 
-                className="relative w-full max-w-xs sm:max-w-sm md:max-w-md h-full flex items-center justify-center touch-pan-x"
-                onPanEnd={(e, info) => {
-                  const swipeDistance = info.offset.y;
-                  if (swipeDistance < -50) {
-                    setActiveMentorIdx((prev) => (prev + 1) % mentors.length);
-                  } else if (swipeDistance > 50) {
-                    setActiveMentorIdx((prev) => (prev - 1 + mentors.length) % mentors.length);
-                  }
-                }}
-              >
-                {mentors.map((mentor, idx) => {
-                  const position = (idx - activeMentorIdx + mentors.length) % mentors.length;
-                  
-                  let animateProps = {};
-                  if (position === 0) { // Active
-                    animateProps = { y: 0, scale: 1, zIndex: 30, opacity: 1, boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.25)" };
-                  } else if (position === 1) { // Next (below)
-                    animateProps = { y: 60, scale: 0.9, zIndex: 20, opacity: 0.4, boxShadow: "0 0px 0px rgba(0,0,0,0)" };
-                  } else if (position === mentors.length - 1) { // Prev (above)
-                    animateProps = { y: -60, scale: 0.9, zIndex: 20, opacity: 0.4, boxShadow: "0 0px 0px rgba(0,0,0,0)" };
-                  } else { // Hidden
-                    animateProps = { y: 0, scale: 0.6, zIndex: 10, opacity: 0, boxShadow: "0 0px 0px rgba(0,0,0,0)" };
-                  }
-                  
-                  return (
-                    <motion.div
-                      key={idx}
-                      animate={animateProps}
-                      transition={{ type: "spring", stiffness: 200, damping: 25 }}
-                      className="absolute w-full rounded-2xl overflow-hidden cursor-pointer bg-white dark:bg-gray-800"
-                      onClick={() => {
-                        if (position === 0) setSelectedMentor(mentor);
-                        else setActiveMentorIdx(idx);
-                      }}
-                    >
-                      <div className="aspect-[4/5] w-full relative group">
-                        <img
-                          src={mentor.image}
-                          alt={mentor.name}
-                          className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-                        />
-                        <div className="absolute inset-0 bg-gradient-to-t from-slate-900/90 via-slate-900/40 to-transparent opacity-80 group-hover:opacity-90 transition-opacity"></div>
+                <motion.div
+                  className="relative w-full max-w-xs sm:max-w-sm md:max-w-md h-full flex items-center justify-center touch-pan-x"
+                  onPanEnd={(e, info) => {
+                    const swipeDistance = info.offset.y;
+                    if (swipeDistance < -50) {
+                      setActiveMentorIdx((prev) => (prev + 1) % mentors.length);
+                    } else if (swipeDistance > 50) {
+                      setActiveMentorIdx((prev) => (prev - 1 + mentors.length) % mentors.length);
+                    }
+                  }}
+                >
+                  {mentors.map((mentor, idx) => {
+                    const position = (idx - activeMentorIdx + mentors.length) % mentors.length;
 
-                        <div className="absolute bottom-0 left-0 p-6 text-white w-full transform translate-y-2 group-hover:translate-y-0 transition-transform duration-300">
-                          <div className="w-12 h-1 bg-blue-500 mb-4 rounded-full"></div>
-                          <p className="text-blue-300 text-xs font-bold uppercase tracking-wider mb-1">{mentor.role}</p>
-                          <div className="flex justify-between items-center mb-2">
-                            <h3 className="text-2xl font-bold">{mentor.name}</h3>
-                            <div className="flex items-center gap-1 text-xs font-medium text-white bg-white/20 px-3 py-1.5 rounded-full backdrop-blur-md opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                              Lihat Bio <ArrowUpRight size={14} />
+                    let animateProps = {};
+                    if (position === 0) { // Active
+                      animateProps = { y: 0, scale: 1, zIndex: 30, opacity: 1, boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.25)" };
+                    } else if (position === 1) { // Next (below)
+                      animateProps = { y: 60, scale: 0.9, zIndex: 20, opacity: 0.4, boxShadow: "0 0px 0px rgba(0,0,0,0)" };
+                    } else if (position === mentors.length - 1) { // Prev (above)
+                      animateProps = { y: -60, scale: 0.9, zIndex: 20, opacity: 0.4, boxShadow: "0 0px 0px rgba(0,0,0,0)" };
+                    } else { // Hidden
+                      animateProps = { y: 0, scale: 0.6, zIndex: 10, opacity: 0, boxShadow: "0 0px 0px rgba(0,0,0,0)" };
+                    }
+
+                    return (
+                      <motion.div
+                        key={idx}
+                        animate={animateProps}
+                        transition={{ type: "spring", stiffness: 200, damping: 25 }}
+                        className="absolute w-full rounded-xl overflow-hidden cursor-pointer bg-white dark:bg-gray-800"
+                        onClick={() => {
+                          if (position === 0) setSelectedMentor(mentor);
+                          else setActiveMentorIdx(idx);
+                        }}
+                      >
+                        <div className="aspect-[6/7] w-full relative group">
+                          <img
+                            src={mentor.image}
+                            alt={mentor.name}
+                            className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                          />
+                          <div className="absolute inset-0 bg-gradient-to-t from-slate-900/90 via-slate-900/40 to-transparent opacity-80 group-hover:opacity-90 transition-opacity"></div>
+
+                          <div className="absolute bottom-0 left-0 p-6 text-white w-full transform translate-y-2 group-hover:translate-y-0 transition-transform duration-300">
+                            <div className="w-12 h-1 bg-blue-500 mb-4 rounded-full"></div>
+                            <p className="text-blue-300 text-xs font-bold uppercase tracking-wider mb-1">{mentor.role}</p>
+                            <div className="flex justify-between items-center mb-2">
+                              <h3 className="text-2xl font-bold">{mentor.name}</h3>
+                              <div className="flex items-center gap-1 text-xs font-medium text-white bg-white/20 px-3 py-1.5 rounded-full backdrop-blur-md opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                                Lihat Bio <ArrowUpRight size={14} />
+                              </div>
                             </div>
+                            <p className="text-sm text-gray-300 opacity-100 lg:opacity-0 lg:group-hover:opacity-100 transition-all duration-300 delay-100 h-auto lg:h-0 lg:group-hover:h-auto overflow-hidden text-left">
+                              {mentor.desc}
+                            </p>
                           </div>
-                          <p className="text-sm text-gray-300 opacity-100 lg:opacity-0 lg:group-hover:opacity-100 transition-all duration-300 delay-100 h-auto lg:h-0 lg:group-hover:h-auto overflow-hidden text-left">
-                            {mentor.desc}
-                          </p>
                         </div>
-                      </div>
-                    </motion.div>
-                  )
-                })}
-              </motion.div>
+                      </motion.div>
+                    )
+                  })}
+                </motion.div>
               </div>
             </div>
 
-            {/* Right Column: Text Content */}
-            <div className="w-full lg:w-1/2 text-left relative z-20">
-              <motion.div
-                initial={{ opacity: 0, x: 20 }}
-                whileInView={{ opacity: 1, x: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.5 }}
-              >
-                <span className="text-blue-400 font-bold tracking-wider text-lg mb-2 block font-[family-name:var(--font-kalam)]">
-                  Tutor Berpengalaman
-                </span>
-                <h2 className="text-2xl md:text-5xl font-medium text-white mb-4 font-[family-name:var(--font-gagalin)] leading-tight">
-                  Belajar Langsung dari <br /> <span className="text-blue-500">Ahlinya</span>
-                </h2>
-              </motion.div>
-
-              <motion.p
-                initial={{ opacity: 0, x: 20 }}
-                whileInView={{ opacity: 1, x: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.5, delay: 0.2 }}
-                className="text-slate-300 text-md md:text-lg font-medium leading-relaxed max-w-lg"
-              >
-                Dapatkan wawasan berharga dari praktisi industri dan akademisi berpengalaman yang siap membimbing perjalanan karirmu.
-              </motion.p>
-
-              {/* Dots Indicator */}
-              <div className="hidden lg:flex gap-2 mt-8">
-                {mentors.map((_, idx) => (
-                  <button
-                    key={idx}
-                    onClick={() => setActiveMentorIdx(idx)}
-                    className="group rounded-full p-2 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-900"
-                    aria-label={`Go to mentor ${idx + 1}`}
-                  >
-                    <div
-                      className={`rounded-full transition-all duration-300 ${
-                        activeMentorIdx === idx
-                          ? "w-6 h-2 bg-blue-500"
-                          : "w-2 h-2 bg-blue-500/30 group-hover:bg-blue-500/50"
-                      }`}
-                    />
-                  </button>
-                ))}
-              </div>
-            </div>
           </div>
         </div>
       </section>
@@ -974,7 +1014,7 @@ export default function LandingPage() {
       <section id="CTA" className="py-16 md:py-24 bg-white dark:bg-gray-900 relative overflow-hidden border-t border-slate-200 dark:border-gray-800">
         <div className="z-10 max-w-full mx-auto px-4 md:px-16 lg:px-12">
           <div className="flex flex-col items-start text-left md:items-center md:text-center mb-12 md:mb-16">
-            
+
             <motion.h2
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
@@ -1033,7 +1073,7 @@ export default function LandingPage() {
       <section id="mulai" className="py-24 md:py-46 px-2 md:px-0 bg-slate-900 dark:bg-slate-950 relative overflow-hidden">
 
         <div className="max-w-full mx-auto px-4 md:px-16 lg:px-12 relative z-10 text-center">
-         
+
           <motion.h2
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -1048,7 +1088,7 @@ export default function LandingPage() {
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center ">
             <Link href="/register" className="group inline-flex items-center justify-center gap-2 bg-blue-600 text-white px-8 py-3.5 rounded-full font-bold hover:bg-blue-700 transition w-full sm:w-auto">
-              Daftar Gratis Sekarang 
+              Daftar Gratis Sekarang
             </Link>
             <a href="#fitur" className="inline-flex items-center justify-center bg-slate-800 text-white px-8 py-3.5 rounded-full font-bold hover:bg-slate-700 transition border border-slate-700 w-full sm:w-auto">
               Pelajari Lebih Lanjut
