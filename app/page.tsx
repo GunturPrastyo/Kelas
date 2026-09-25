@@ -547,7 +547,7 @@ export default function LandingPage() {
         
         {/* Header Section (Rata Kiri, Badge Diperbesar, & Deskripsi Section) */}
         <div className="text-left mb-10 md:mb-14">
-          <span className="text-blue-600 dark:text-blue-400 font-bold tracking-wider text-xl md:text-2xl mb-2 block font-[family-name:var(--font-kalam)]">
+          <span className="text-blue-600 dark:text-blue-400 font-bold tracking-wider text-lg md:text-xl mb-2 block font-[family-name:var(--font-kalam)]">
             Fitur Unggulan
           </span>
           <h2 className="text-2xl md:text-5xl font-medium text-slate-900 dark:text-white font-[family-name:var(--font-gagalin)] leading-tight mb-4">
@@ -669,7 +669,7 @@ export default function LandingPage() {
               viewport={{ once: true }}
               transition={{ duration: 0.5 }}
             >
-              <span className="text-blue-600 dark:text-blue-400 font-bold tracking-wider text-lg mb-2 block font-[family-name:var(--font-kalam)]">
+              <span className="text-blue-600 dark:text-blue-400 font-bold tracking-wider text-lg md:text-xl mb-2 block font-[family-name:var(--font-kalam)]">
                 Modul Pembelajaran
               </span>
               <h2 className="text-2xl md:text-5xl text-slate-900 font-medium dark:text-white mb-6 font-[family-name:var(--font-gagalin)] leading-tight">
@@ -802,7 +802,7 @@ export default function LandingPage() {
                 viewport={{ once: true }}
                 transition={{ duration: 0.5 }}
               >
-                <span className="text-blue-400 font-bold tracking-wider text-lg mb-2 block font-[family-name:var(--font-kalam)]">
+                <span className="text-blue-400 font-bold tracking-wider text-lg md:text-xl mb-2 block font-[family-name:var(--font-kalam)]">
                   Tutor Berpengalaman
                 </span>
                 <h2 className="text-2xl md:text-5xl font-medium text-white mb-4 font-[family-name:var(--font-gagalin)] leading-tight">
