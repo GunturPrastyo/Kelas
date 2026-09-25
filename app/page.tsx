@@ -553,7 +553,7 @@ export default function LandingPage() {
           <h2 className="text-2xl md:text-5xl font-medium text-slate-900 dark:text-white font-[family-name:var(--font-gagalin)] leading-tight mb-4">
             Pengalaman Belajar <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-purple-600">Terbaik</span>
           </h2>
-          <p className="text-md md:text-lg text-slate-600 dark:text-slate-400 max-w-xl leading-relaxed">
+          <p className="text-md md:text-lg text-slate-600 dark:text-slate-400 max-w-2xl leading-relaxed">
             Nikmati berbagai fitur interaktif dan canggih yang dirancang khusus untuk mempercepat pemahaman serta memaksimalkan proses belajarmu.
           </p>
         </div>
