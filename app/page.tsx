@@ -746,7 +746,7 @@ export default function LandingPage() {
                   {[...modules, ...modules].map((modul, idx) => (
                     <div
                       key={`scroll-card-${modul._id}-${idx}`}
-                      className="bg-white dark:bg-gray-800 rounded-xl p-6 border border-slate-100 dark:border-gray-700 shadow-sm hover:shadow-lg transition-all group mx-2 relative overflow-hidden"
+                      className="bg-white dark:bg-gray-800 rounded-lg p-2 border border-slate-100 dark:border-gray-700 shadow-sm hover:shadow-lg transition-all group mx-2 relative overflow-hidden"
                     >
 
                       <div className="flex justify-between items-start mb-4 relative z-10">
@@ -795,7 +795,7 @@ export default function LandingPage() {
           <div className="flex flex-col lg:flex-row items-center gap-8 lg:gap-8">
 
             {/* Left Column: Text Content */}
-            <div className="w-full lg:w-1/2 text-left relative z-20">
+            <div className="w-full lg:w-1/2 text-left relative z-20 px-0 lg:px-16">
               <motion.div
                 initial={{ opacity: 0, x: -20 }}
                 whileInView={{ opacity: 1, x: 0 }}
@@ -806,7 +806,7 @@ export default function LandingPage() {
                   Tutor Berpengalaman
                 </span>
                 <h2 className="text-2xl md:text-5xl font-medium text-white mb-4 font-[family-name:var(--font-gagalin)] leading-tight">
-                  Belajar Langsung dari <br /> <span className="text-blue-500">Ahlinya</span>
+                  Belajar Langsung dari <span className="text-blue-500">Ahlinya</span>
                 </h2>
               </motion.div>
 
@@ -815,7 +815,7 @@ export default function LandingPage() {
                 whileInView={{ opacity: 1, x: 0 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.5, delay: 0.2 }}
-                className="text-slate-300 text-md md:text-lg font-medium leading-relaxed max-w-lg"
+                className="text-slate-300 text-md md:text-lg font-medium leading-relaxed max-w-xl"
               >
                 Dapatkan wawasan berharga dari praktisi industri dan akademisi berpengalaman yang siap membimbing perjalanan karirmu.
               </motion.p>
