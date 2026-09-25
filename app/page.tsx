@@ -446,10 +446,10 @@ export default function LandingPage() {
         <div className="relative z-10 max-w-full mx-auto px-4 md:px-16 lg:px-12 w-full grid grid-cols-1 lg:grid-cols-2 gap-10 md:gap-16 items-center mt-10 md:mt-0">
           {/* Left: Text */}
           <div className="text-left md:text-left">
-            <div className="text-blue-600 dark:text-blue-400 font-bold tracking-wider text-lg mb-2 block font-[family-name:var(--font-kalam)]">
+            {/* <div className="text-blue-600 dark:text-blue-400 font-bold tracking-wider text-lg mb-2 block font-[family-name:var(--font-kalam)]">
               
               {displayedBadgeText}
-            </div>
+            </div> */}
             <h1 className="text-2xl md:text-5xl text-slate-900 font-medium dark:text-white mb-6 font-[family-name:var(--font-gagalin)] leading-tight">
               Belajar Lebih Efektif dengan <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-500 to-indigo-500">Kurikulum Personal</span>
             </h1>
@@ -974,9 +974,7 @@ export default function LandingPage() {
       <section id="CTA" className="py-16 md:py-24 bg-white dark:bg-gray-900 relative overflow-hidden border-t border-slate-200 dark:border-gray-800">
         <div className="z-10 max-w-full mx-auto px-4 md:px-16 lg:px-12">
           <div className="flex flex-col items-start text-left md:items-center md:text-center mb-12 md:mb-16">
-            <div className="text-blue-600 dark:text-blue-400 font-bold tracking-wider text-lg mb-2 block font-[family-name:var(--font-kalam)]">
-              Kata Mereka
-            </div>
+            
             <motion.h2
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
@@ -1033,11 +1031,9 @@ export default function LandingPage() {
 
       {/* --- CTA SECTION --- */}
       <section id="mulai" className="py-24 md:py-46 px-2 md:px-0 bg-slate-900 dark:bg-slate-950 relative overflow-hidden">
-        <div className="absolute inset-0 bg-blue-600/10 dark:bg-blue-900/10 blur-3xl rounded-full w-1/2 h-1/2 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"></div>
+
         <div className="max-w-full mx-auto px-4 md:px-16 lg:px-12 relative z-10 text-center">
-          <div className="text-blue-400 font-bold tracking-wider text-lg md:text-2xl mb-2 block font-[family-name:var(--font-kalam)]">
-            Mulai Sekarang
-          </div>
+         
           <motion.h2
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -1051,7 +1047,7 @@ export default function LandingPage() {
             Jangan buang waktu mempelajari apa yang sudah kamu tahu. Ikuti tes awal dan dapatkan kurikulum yang dipersonalisasi khusus untukmu.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center ">
-            <Link href="/register" className="group inline-flex items-center justify-center gap-2 bg-blue-600 text-white px-8 py-3.5 rounded-full font-bold hover:bg-blue-700 transition shadow-[0_4px_14px_rgba(37,99,235,0.35)] w-full sm:w-auto">
+            <Link href="/register" className="group inline-flex items-center justify-center gap-2 bg-blue-600 text-white px-8 py-3.5 rounded-full font-bold hover:bg-blue-700 transition w-full sm:w-auto">
               Daftar Gratis Sekarang 
             </Link>
             <a href="#fitur" className="inline-flex items-center justify-center bg-slate-800 text-white px-8 py-3.5 rounded-full font-bold hover:bg-slate-700 transition border border-slate-700 w-full sm:w-auto">
